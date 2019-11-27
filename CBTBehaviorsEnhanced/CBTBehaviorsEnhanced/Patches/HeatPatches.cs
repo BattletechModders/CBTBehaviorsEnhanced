@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using static CBTBehaviors.HeatHelper;
 
 namespace CBTBehaviors {
 
@@ -55,7 +56,6 @@ namespace CBTBehaviors {
                     On Mech Startup sequence - (heatSinkStep=true, applyStartupHeatSinks=true)
                  */
 
-
                 if (!__instance.PerformHeatSinkStep) {
                     // Checks for heat damage, clamps heat to max and min
                     __instance.OwningMech.ReconcileHeat(__instance.RootSequenceGUID, __instance.InstigatorID);
@@ -70,12 +70,6 @@ namespace CBTBehaviors {
                     // We are at the end of the turn - force an overheat
                     Mod.Log.Info("AT END OF TURN - UNIT IS HOT, Checking shutdown");
 
-                    // Calculate the shutdown chance: a random roll, plus the piloting skill
-                    float shutdownRoll = __instance.OwningMech.Combat.NetworkRandom.Float();
-                    float shutdownMod = HeatHelper.GetPilotShutdownMod(__instance.OwningMech);
-                    float shutdownCheckResult = shutdownRoll + shutdownMod;
-                    Mod.Log.Info($"  pilotMod: {shutdownMod} + roll: {shutdownRoll} = shutdownCheckResult: {shutdownCheckResult}");
-
                     float shutdownTarget = 0f;
                     foreach (var item in Mod.Config.Heat.Shutdown.OrderBy(i => i.Key)) {
                         if (__instance.OwningMech.CurrentHeat > item.Key) {
@@ -83,40 +77,60 @@ namespace CBTBehaviors {
                             Mod.Log.Debug($"  Setting shutdown target to {item.Value} as currentHeat: {__instance.OwningMech.CurrentHeat} > bounds: {item.Key}");
                         }
                     }
-                    Mod.Log.Info($"Shutdown target roll set to: {shutdownTarget}");
 
-                    MultiSequence sequence = new MultiSequence(__instance.OwningMech.Combat);
-                    sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
-
-
-                    if (shutdownTarget == -1f) {
-                        // Unit must shutdown!
-                        Mod.Log.Debug($"  currentHeat: {__instance.OwningMech.CurrentHeat} is beyond forced shutdown mark: {shutdownTarget} - Must be forced into a shutdown!.");
-                        sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, "Shutdown Override Successful!", 
-                            FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
-                        //__instance.OwningMech.GenerateOverheatedSequence(__instance);
-                        MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
-                        sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
-
+                    Mod.Log.Debug($"  Shutdown target roll set to: {shutdownTarget}");
+                    if (shutdownTarget == 0f) {
+                        Mod.Log.Debug($"  Target heat below shutdown targets, skipping.");
                     } else {
-                        if (shutdownCheckResult >= shutdownTarget) {
-                            Mod.Log.Debug("  shutdown override skill check passed ");
-                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, "Shutdown Override Successful!",
-                                FloatieMessage.MessageNature.Buff, true), sequence.ChildSequenceCount - 1);
+                        // Calculate the shutdown chance: a random roll, plus the piloting skill
+                        float shutdownRoll = __instance.OwningMech.Combat.NetworkRandom.Float();
+                        float shutdownMod = HeatHelper.GetPilotShutdownMod(__instance.OwningMech);
+                        float shutdownCheckResult = shutdownRoll + shutdownMod;
+                        Mod.Log.Debug($"  pilotMod: {shutdownMod} + roll: {shutdownRoll} = shutdownCheckResult: {shutdownCheckResult}");
 
-                        } else {
-                            Mod.Log.Debug("  shutdown override skill check failed, shutting down");
-                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, "Shutdown Override Failed!",
+                        MultiSequence sequence = new MultiSequence(__instance.OwningMech.Combat);
+
+                        if (shutdownTarget == -1f) {
+                            // Unit must shutdown!
+                            Mod.Log.Debug($"  currentHeat: {__instance.OwningMech.CurrentHeat} is beyond forced shutdown mark: {shutdownTarget} - Must be forced into a shutdown!.");
+                            sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
+
+                            string floatieText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideForced]).ToString();
+                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, floatieText,
                                 FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
+                            // TOOD: Send floatie to combat log with rolls involved
+
+                            //__instance.OwningMech.GenerateOverheatedSequence(__instance);
                             MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
                             sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+                        } else {
+                            if (shutdownCheckResult >= shutdownTarget) {
+                                Mod.Log.Debug("  Shutdown override skill check passed.");
+
+                                string floatieText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideSuccess]).ToString();
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, floatieText,
+                                    FloatieMessage.MessageNature.Buff, true), sequence.ChildSequenceCount - 1);
+                                // TOOD: Send floatie to combat log with rolls involved
+
+                            } else {
+                                Mod.Log.Debug("  Shutdown override skill check failed, shutting down");
+                                sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
+
+                                string floatieText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideFailure]).ToString();
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, floatieText,
+                                    FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                                // TOOD: Send floatie to combat log with rolls involved
+                                MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
+                                sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+                            }
                         }
+
+                        sequence.AddChildSequence(new DelaySequence(__instance.OwningMech.Combat, 2f), sequence.ChildSequenceCount - 1);
+                        __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
                     }
 
-                    sequence.AddChildSequence(new DelaySequence(__instance.OwningMech.Combat, 2f), sequence.ChildSequenceCount - 1);
-                    __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
-                    
                     return false;
                 }
 
@@ -158,6 +172,13 @@ namespace CBTBehaviors {
             }
         }
 
+        [HarmonyPatch(typeof(Mech), "CheckForHeatDamage")]
+        public static class Mech_CheckForHeatDamage {
+            static bool Prefix(Mech __instance, int stackID, string attackerID) {
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(Mech), "OnActivationEnd")]
         public static class Mech_OnActivationEnd {
             private static void Prefix(Mech __instance, string sourceID, int stackItemID) {
@@ -165,58 +186,55 @@ namespace CBTBehaviors {
                 Mod.Log.Debug($"Actor: {__instance.DisplayName}_{__instance.GetPilot().Name} has currentHeat: {__instance.CurrentHeat}" +
                     $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
-                MultiSequence sequence = new MultiSequence(__instance.Combat);
-                sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance, false, -1f), 0);
+                //MultiSequence sequence = new MultiSequence(__instance.Combat);
+                //sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance, false, -1f), 0);
 
+                //if (__instance.IsOverheated) {
+                //    CBTPilotingRules rules = new CBTPilotingRules(__instance.Combat);
+                //    float gutsTestChance = rules.GetGutsModifier(__instance);
+                //    float skillRoll = __instance.Combat.NetworkRandom.Float();
+                //    float ammoRoll = __instance.Combat.NetworkRandom.Float();
 
+                //    int turnsOverheated = __instance.StatCollection.ContainsStatistic(ModStats.TurnsOverheated) ? __instance.StatCollection.GetValue<int>("TurnsOverheated") : 0;
+                //    float shutdownPercentage = HeatHelper.GetShutdownPercentageForTurn(turnsOverheated);
+                //    float ammoExplosionPercentage = HeatHelper.GetAmmoExplosionPercentageForTurn(turnsOverheated);
 
-                if (__instance.IsOverheated) {
-                    CBTPilotingRules rules = new CBTPilotingRules(__instance.Combat);
-                    float gutsTestChance = rules.GetGutsModifier(__instance);
-                    float skillRoll = __instance.Combat.NetworkRandom.Float();
-                    float ammoRoll = __instance.Combat.NetworkRandom.Float();
+                //    Mod.Log.Debug($"Mech:{CombatantHelper.LogLabel(__instance)} is overheated for {turnsOverheated} turns. Checking shutdown override.");
+                //    Mod.Log.Debug($"  Guts -> skill: {__instance.SkillGuts}  divisor: {Mod.Config.GutsDivisor}  bonus: {gutsTestChance}");
+                //    Mod.Log.Debug($"  Skill roll: {skillRoll} plus guts roll: {skillRoll + gutsTestChance}  target: {shutdownPercentage}");
+                //    Mod.Log.Debug($"  Ammo roll: {ammoRoll} plus guts roll: {ammoRoll + gutsTestChance}  target: {ammoExplosionPercentage}");
 
-                    int turnsOverheated = __instance.StatCollection.ContainsStatistic(ModStats.TurnsOverheated) ? __instance.StatCollection.GetValue<int>("TurnsOverheated") : 0;
-                    float shutdownPercentage = HeatHelper.GetShutdownPercentageForTurn(turnsOverheated);
-                    float ammoExplosionPercentage = HeatHelper.GetAmmoExplosionPercentageForTurn(turnsOverheated);
+                //    if (Mod.Config.UseGuts) {
+                //        ammoRoll = ammoRoll + gutsTestChance;
+                //        skillRoll = skillRoll + gutsTestChance;
+                //    }
 
-                    Mod.Log.Debug($"Mech:{CombatantHelper.LogLabel(__instance)} is overheated for {turnsOverheated} turns. Checking shutdown override.");
-                    Mod.Log.Debug($"  Guts -> skill: {__instance.SkillGuts}  divisor: {Mod.Config.GutsDivisor}  bonus: {gutsTestChance}");
-                    Mod.Log.Debug($"  Skill roll: {skillRoll} plus guts roll: {skillRoll + gutsTestChance}  target: {shutdownPercentage}");
-                    Mod.Log.Debug($"  Ammo roll: {ammoRoll} plus guts roll: {ammoRoll + gutsTestChance}  target: {ammoExplosionPercentage}");
+                //    if (HeatHelper.CanAmmoExplode(__instance)) {
+                //        if (ammoRoll < ammoExplosionPercentage) {
+                //            __instance.Combat.MessageCenter.PublishMessage(new FloatieMessage(__instance.GUID, __instance.GUID, "Ammo Overheated!", FloatieMessage.MessageNature.CriticalHit));
 
-                    if (Mod.Config.UseGuts) {
-                        ammoRoll = ammoRoll + gutsTestChance;
-                        skillRoll = skillRoll + gutsTestChance;
-                    }
+                //            var ammoBox = __instance.ammoBoxes.Where(box => box.CurrentAmmo > 0)
+                //                .OrderByDescending(box => box.CurrentAmmo / box.AmmoCapacity)
+                //                .FirstOrDefault();
+                //            if (ammoBox != null) {
+                //                WeaponHitInfo fakeHit = new WeaponHitInfo(stackItemID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null, new AttackDirection[] { AttackDirection.None }, null, null, null);
+                //                ammoBox.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
+                //            }
 
-                    if (HeatHelper.CanAmmoExplode(__instance)) {
-                        if (ammoRoll < ammoExplosionPercentage) {
-                            __instance.Combat.MessageCenter.PublishMessage(new FloatieMessage(__instance.GUID, __instance.GUID, "Ammo Overheated!", FloatieMessage.MessageNature.CriticalHit));
+                //            return;
+                //        }
 
-                            var ammoBox = __instance.ammoBoxes.Where(box => box.CurrentAmmo > 0)
-                                .OrderByDescending(box => box.CurrentAmmo / box.AmmoCapacity)
-                                .FirstOrDefault();
-                            if (ammoBox != null) {
-                                WeaponHitInfo fakeHit = new WeaponHitInfo(stackItemID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null, new AttackDirection[] { AttackDirection.None }, null, null, null);
-                                ammoBox.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
-                            }
+                //        sequence.AddChildSequence(new ShowActorInfoSequence(__instance, "Ammo Explosion Avoided!", FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+                //    }
 
-                            return;
-                        }
-
-                        sequence.AddChildSequence(new ShowActorInfoSequence(__instance, "Ammo Explosion Avoided!", FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
-                    }
-
-                    sequence.AddChildSequence(new DelaySequence(__instance.Combat, 2f), sequence.ChildSequenceCount - 1);
-
-                    __instance.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
-                } else {
-                    int turnsOverheated = __instance.StatCollection.GetValue<int>("TurnsOverheated");
-                    if (turnsOverheated > 0) {
-                        __instance.StatCollection.Set<int>("TurnsOverheated", 0);
-                    }
-                }
+                //    sequence.AddChildSequence(new DelaySequence(__instance.Combat, 2f), sequence.ChildSequenceCount - 1);
+                //    __instance.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
+                //} else {
+                //    int turnsOverheated = __instance.StatCollection.GetValue<int>("TurnsOverheated");
+                //    if (turnsOverheated > 0) {
+                //        __instance.StatCollection.Set<int>("TurnsOverheated", 0);
+                //    }
+                //}
             }
         }
 
@@ -263,6 +281,7 @@ namespace CBTBehaviors {
             public static void Postfix(CombatHUDStatusPanel __instance, Mech mech) {
                 Mod.Log.Trace("CHUBSP:SSDI:POST entered.");
 
+                // TODO: FIXME
                 var type = __instance.GetType();
                 MethodInfo methodInfo = type.GetMethod("ShowDebuff", (BindingFlags.NonPublic | BindingFlags.Instance), null, 
                     new Type[] { typeof(SVGAsset), typeof(Text), typeof(Text), typeof(Vector3), typeof(bool) }, new ParameterModifier[5]);

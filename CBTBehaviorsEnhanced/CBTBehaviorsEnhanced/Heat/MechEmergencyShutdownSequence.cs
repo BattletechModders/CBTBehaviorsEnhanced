@@ -25,8 +25,9 @@ namespace CBTBehaviors {
                 AudioEventManager.CreateVOQueue(text, -1f, null, null);
                 AudioEventManager.QueueVOEvent(text, VOEvents.Mech_Overheat_Shutdown, this.OwningMech);
                 AudioEventManager.StartVOQueue(1f);
+                Mod.Log.Info("  MESS - Playing shutdown sequence.");
                 this.OwningMech.GameRep.PlayVFX(1, this.OwningMech.Combat.Constants.VFXNames.heat_heatShutdown, true, Vector3.zero, false, -1f);
-                this.AddChildSequence(new ShowActorInfoSequence(this.OwningMech, "Emergency Shutdown Initiated!", FloatieMessage.MessageNature.Debuff, true), this.ChildSequenceCount - 1);
+                this.AddChildSequence(new ShowActorInfoSequence(this.OwningMech, "Emergency Shutdown!", FloatieMessage.MessageNature.Debuff, true), this.ChildSequenceCount - 1);
                 WwiseManager.PostEvent<AudioEventList_ui>(AudioEventList_ui.ui_overheat_alarm_3, WwiseManager.GlobalAudioObject, null, null);
                 if (this.OwningMech.team.LocalPlayerControlsTeam) {
                     AudioEventManager.PlayAudioEvent("audioeventdef_musictriggers_combat", "friendly_overheating", null, null);

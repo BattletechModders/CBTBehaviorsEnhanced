@@ -3,15 +3,16 @@ using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using us.frostraptor.modUtils.logging;
 
 namespace CBTBehaviors {
 
     public static class Mod {
 
-        public const string HarmonyPackage = "us.frostraptor.CBTBehaviors";
-        public const string LogName = "cbt_behaviors";
+        public const string HarmonyPackage = "us.frostraptor.CBTBehaviorsEnhanced";
+        public const string LogName = "cbt_behaviors_enhanced";
 
-        public static Logger Log;
+        public static IntraModLogger Log;
         public static string ModDir;
         public static ModConfig Config;
 
@@ -28,7 +29,7 @@ namespace CBTBehaviors {
                 Mod.Config = new ModConfig();
             }
 
-            Log = new Logger(modDirectory, LogName);
+            Log = new IntraModLogger(modDirectory, LogName, Config.Debug, Config.Trace);
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);

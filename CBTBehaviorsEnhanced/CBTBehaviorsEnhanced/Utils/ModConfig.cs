@@ -85,6 +85,16 @@ namespace CBTBehaviors {
         // Movement
         public int ToHitSelfJumped = 2;
 
+
+        public const string FloatieText_ShutdownOverrideForced = "SHUTDOWN_OVERRIDE_FORCED";
+        public const string FloatieText_ShutdownOverrideSuccess = "SHUTDOWN_OVERRIDE_SUCCESS";
+        public const string FloatieText_ShutdownOverrideFailure = "SHUTDOWN_OVERRIDE_FAIL";
+        public Dictionary<string, string> Floaties = new Dictionary<string, string> {
+            { FloatieText_ShutdownOverrideForced, "Emergency Shutdown" },
+            { FloatieText_ShutdownOverrideSuccess, "Pilot Overrode Shutdown" },
+            { FloatieText_ShutdownOverrideFailure, "Shutdown Override Failed!" }
+        };
+
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info($"  DEBUG: {this.Debug} Trace: {this.Trace}");
