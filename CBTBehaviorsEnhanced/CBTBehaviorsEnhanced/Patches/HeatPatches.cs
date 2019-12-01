@@ -6,9 +6,11 @@ using HBS;
 using Localize;
 using SVGImporter;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using us.frostraptor.modUtils;
 using static CBTBehaviors.HeatHelper;
 
 namespace CBTBehaviors {
@@ -19,10 +21,23 @@ namespace CBTBehaviors {
         public static class Mech_Init {
             public static void Postfix(Mech __instance) {
                 Mod.Log.Trace("M:I entered.");
+                // Initialize mod-specific statistics
                 __instance.StatCollection.AddStatistic<int>(ModStats.TurnsOverheated, 0);
 
                 __instance.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
                 __instance.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
+
+                // Override the heat and shutdown levels
+                List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
+                int overheatThreshold = sortedKeys.First();
+                int maxHeat = sortedKeys.Last();
+                Mod.Log.Info($"Setting overheat threshold to {overheatThreshold} and maxHeat to {maxHeat} for actor:{CombatantUtils.Label(__instance)}");
+                __instance.StatCollection.Set<int>("MaxHeat", maxHeat);
+                __instance.StatCollection.Set<int>("OverheatLevel", overheatThreshold);
+
+                // Disable default heat penalties
+                __instance.StatCollection.Set<bool>("IgnoreHeatToHitPenalties", false);
+                __instance.StatCollection.Set<bool>("IgnoreHeatMovementPenalties", false);
             }
         }
 
@@ -38,6 +53,7 @@ namespace CBTBehaviors {
             }
 
             public static bool Prefix(MechHeatSequence __instance, HeatSequenceState newState) {
+
                 if (newState != HeatSequenceState.Finished) { return true; }
 
                 Traverse stateT = Traverse.Create(__instance).Field("state");
@@ -103,7 +119,9 @@ namespace CBTBehaviors {
 
                             //__instance.OwningMech.GenerateOverheatedSequence(__instance);
                             MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
-                            sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+                            mechShutdownSequence.RootSequenceGUID = __instance.SequenceGUID;
+                            __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
+                            //sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
                         } else {
                             if (shutdownCheckResult >= shutdownTarget) {
                                 Mod.Log.Debug("  Shutdown override skill check passed.");
@@ -123,12 +141,14 @@ namespace CBTBehaviors {
 
                                 // TOOD: Send floatie to combat log with rolls involved
                                 MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
-                                sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+                                mechShutdownSequence.RootSequenceGUID = __instance.SequenceGUID;
+                                __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
+                                //sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
                             }
                         }
 
                         sequence.AddChildSequence(new DelaySequence(__instance.OwningMech.Combat, 2f), sequence.ChildSequenceCount - 1);
-                        __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
+                        //__instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
                     }
 
                     return false;
@@ -152,13 +172,13 @@ namespace CBTBehaviors {
                         }
                     }
 
-                    if (__instance.OwningMech.CurrentHeat > __instance.OwningMech.OverheatLevel) {
+                    if (__instance.OwningMech.CurrentHeat > Mod.Config.Heat.ShowLowOverheatAnim) {
                         __instance.OwningMech.GameRep.StopManualPersistentVFX(__instance.OwningMech.Combat.Constants.VFXNames.heat_midHeat_persistent);
                         __instance.OwningMech.GameRep.PlayVFX(8, __instance.OwningMech.Combat.Constants.VFXNames.heat_highHeat_persistent, true, Vector3.zero, false, -1f);
                         return false;
                     }
 
-                    if ((float)__instance.OwningMech.CurrentHeat > (float)__instance.OwningMech.OverheatLevel * 0.5f) {
+                    if ((float)__instance.OwningMech.CurrentHeat > Mod.Config.Heat.ShowExtremeOverheatAnim) {
                         __instance.OwningMech.GameRep.StopManualPersistentVFX(__instance.OwningMech.Combat.Constants.VFXNames.heat_highHeat_persistent);
                         __instance.OwningMech.GameRep.PlayVFX(8, __instance.OwningMech.Combat.Constants.VFXNames.heat_midHeat_persistent, true, Vector3.zero, false, -1f);
                         return false;

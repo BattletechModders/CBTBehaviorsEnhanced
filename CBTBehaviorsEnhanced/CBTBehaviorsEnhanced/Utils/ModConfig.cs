@@ -54,6 +54,8 @@ namespace CBTBehaviors {
             };
             // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
             public float PilotSkillShutdownMulti = 0.05f;
+            public int ShowLowOverheatAnim = 42;
+            public int ShowExtremeOverheatAnim = 90;
 
             // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
             // Explosion should impact most damaging ammo first
