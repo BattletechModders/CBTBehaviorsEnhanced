@@ -38,6 +38,7 @@ namespace CBTBehaviors {
                 // Disable default heat penalties
                 __instance.StatCollection.Set<bool>("IgnoreHeatToHitPenalties", false);
                 __instance.StatCollection.Set<bool>("IgnoreHeatMovementPenalties", false);
+
             }
         }
 
@@ -108,47 +109,51 @@ namespace CBTBehaviors {
 
                         if (shutdownTarget == -1f) {
                             // Unit must shutdown!
-                            Mod.Log.Debug($"  currentHeat: {__instance.OwningMech.CurrentHeat} is beyond forced shutdown mark: {shutdownTarget} - Must be forced into a shutdown!.");
-                            sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
+                            Mod.Log.Debug($"  currentHeat: {__instance.OwningMech.CurrentHeat} is beyond forced shutdown mark: {shutdownTarget} -" +
+                                $" Must be forced into a shutdown!.");
+                            //sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
 
-                            string floatieText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideForced]).ToString();
-                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, floatieText,
+                            string debuffText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideForced]).ToString();
+                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                                 FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
-                            // TOOD: Send floatie to combat log with rolls involved
-
-                            //__instance.OwningMech.GenerateOverheatedSequence(__instance);
                             MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
                             mechShutdownSequence.RootSequenceGUID = __instance.SequenceGUID;
-                            __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
-                            //sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+                            //__instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
+                            sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
                         } else {
                             if (shutdownCheckResult >= shutdownTarget) {
                                 Mod.Log.Debug("  Shutdown override skill check passed.");
 
-                                string floatieText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideSuccess]).ToString();
-                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, floatieText,
+                                string buffText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideSuccess]).ToString();
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, buffText,
                                     FloatieMessage.MessageNature.Buff, true), sequence.ChildSequenceCount - 1);
-                                // TOOD: Send floatie to combat log with rolls involved
+
+                                string detailsText = $"{buffText} - {shutdownCheckResult:P1} > {shutdownTarget:P1}";
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, detailsText,
+                                    FloatieMessage.MessageNature.Neutral, true), sequence.ChildSequenceCount - 1);
 
                             } else {
                                 Mod.Log.Debug("  Shutdown override skill check failed, shutting down");
-                                sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
+                                //sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
 
-                                string floatieText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideFailure]).ToString();
-                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, floatieText,
+                                string debuffText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideFailure]).ToString();
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                                     FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                                string detailsText = $"{debuffText} - {shutdownCheckResult:P1} < {shutdownTarget:P1}";
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, detailsText,
+                                    FloatieMessage.MessageNature.Neutral, true), sequence.ChildSequenceCount - 1);
 
                                 // TOOD: Send floatie to combat log with rolls involved
                                 MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
                                 mechShutdownSequence.RootSequenceGUID = __instance.SequenceGUID;
-                                __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
-                                //sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+                                //__instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
+                                sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
                             }
                         }
 
-                        sequence.AddChildSequence(new DelaySequence(__instance.OwningMech.Combat, 2f), sequence.ChildSequenceCount - 1);
-                        //__instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
+                        __instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
                     }
 
                     return false;

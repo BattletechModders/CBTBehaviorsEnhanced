@@ -93,8 +93,8 @@ namespace CBTBehaviors {
         public const string FloatieText_ShutdownOverrideFailure = "SHUTDOWN_OVERRIDE_FAIL";
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
             { FloatieText_ShutdownOverrideForced, "Emergency Shutdown" },
-            { FloatieText_ShutdownOverrideSuccess, "Pilot Overrode Shutdown" },
-            { FloatieText_ShutdownOverrideFailure, "Shutdown Override Failed!" }
+            { FloatieText_ShutdownOverrideSuccess, "Passed Shutdown Override" },
+            { FloatieText_ShutdownOverrideFailure, "Failed Shutdown Override" }
         };
 
         public void LogConfig() {

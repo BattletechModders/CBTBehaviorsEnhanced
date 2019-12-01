@@ -45,8 +45,8 @@ namespace CBTBehaviors {
                 
                 this.OwningMech.GameRep.PlayVFX(8, this.OwningMech.Combat.Constants.VFXNames.heat_heatShutdown, true, Vector3.zero, false, -1f);
                
-                base.Combat.MessageCenter.PublishMessage(new FloatieMessage(this.OwningMech.GUID, this.OwningMech.GUID, 
-                    "EMERGENCY SHUTDOWN!", FloatieMessage.MessageNature.Debuff));
+                //base.Combat.MessageCenter.PublishMessage(new FloatieMessage(this.OwningMech.GUID, this.OwningMech.GUID, 
+                //    "EMERGENCY SHUTDOWN!", FloatieMessage.MessageNature.Debuff));
                 
                 WwiseManager.PostEvent<AudioEventList_ui>(AudioEventList_ui.ui_overheat_alarm_3, WwiseManager.GlobalAudioObject, null, null);
                 if (this.OwningMech.team.LocalPlayerControlsTeam) {
