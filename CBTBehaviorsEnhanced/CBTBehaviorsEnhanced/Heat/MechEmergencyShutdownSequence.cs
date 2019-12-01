@@ -79,7 +79,6 @@ namespace CBTBehaviors {
         }
 
         private void UpdateState() {
-            Mod.Log.Info("MESS - Update invoked.");
             this.timeInCurrentState += Time.deltaTime;
             EmergencyShutdownState shutdownState = this.state;
             if (shutdownState != EmergencyShutdownState.Rising) {

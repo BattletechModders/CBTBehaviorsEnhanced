@@ -1,6 +1,7 @@
 ﻿
 using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced.Heat;
 using Harmony;
 using HBS;
 using Localize;
@@ -295,6 +296,53 @@ namespace CBTBehaviors {
                 }
             }
         }
+
+        [HarmonyPatch(typeof(CombatHUDHeatDisplay), "Init")]
+        [HarmonyPatch(new Type[] { typeof(float) })]
+        public static class CombatHUDHeatDisplay_Init {
+            public static void Prefix(CombatHUDHeatDisplay __instance) {
+                Mod.Log.Trace("CHUDHD::Init::Pre");
+
+                if (__instance.gameObject.GetComponent<CombatHUDSidePanelHeatHoverElement>() == null) {
+                    Mod.Log.Info($"CREATING HEAT TOOLTIP WITH CHUDHD: {__instance.GetInstanceID()} for actor: {CombatantUtils.Label(__instance.DisplayedActor)}");
+                    CombatHUDSidePanelHeatHoverElement hover = __instance.gameObject.AddComponent<CombatHUDSidePanelHeatHoverElement>();
+                    hover.Init(__instance.HUD);
+                    Mod.Log.Info($"CREATED HEAT TOOLTIP WITH CHUDHD: {__instance.GetInstanceID()}");
+                } else {
+                    Mod.Log.Info("HEAT TOOLTIP ALREADY EXISTS!");
+                }
+
+            }
+        }
+
+        [HarmonyPatch(typeof(CombatHUDHeatDisplay), "RefreshInfo")]
+        public static class CombatHUDHeatDisplay_RefreshInfo {
+            public static void Postfix(CombatHUDHeatDisplay __instance) {
+                Mod.Log.Trace("CHUDHD::RefreshInfo::Post");
+
+                Mod.Log.Info($"-- FINDING HEAT TOOLTIP FOR CHUDHD: {__instance.GetInstanceID()} for actor: {CombatantUtils.Label(__instance.DisplayedActor)}");
+                CombatHUDSidePanelHeatHoverElement hover = __instance.gameObject.GetComponent<CombatHUDSidePanelHeatHoverElement>();
+                if (hover != null && __instance.DisplayedActor is Mech displayedMech) {
+                    Mod.Log.Info("-- UPDATING TOOLTIP DATA.");
+
+                    List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
+                    int overheatThreshold = sortedKeys.First();
+                    int maxHeat = sortedKeys.Last();
+
+                    string warningText = "";
+                    if (displayedMech.IsOverheated) {
+                        float shutdownChance = Mod.Config.Heat.Shutdown[sortedKeys.Last(x => x < displayedMech.CurrentHeat)];
+                        warningText = $"Shutdown chance: {shutdownChance:P1}";
+                    }
+                    hover.SetTitleDescAndWarning("Heat",
+                        $"Heat: {displayedMech.CurrentHeat + displayedMech.TempHeat} of max: {maxHeat}",
+                        warningText);
+                } else {
+                    Mod.Log.Info("-- CHUDSPHHE not found!");
+                }
+            }
+        }
+
 
         [HarmonyPatch(typeof(CombatHUDStatusPanel), "ShowShutDownIndicator", null)]
         public static class CombatHUDStatusPanel_ShowShutDownIndicator {
