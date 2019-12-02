@@ -327,16 +327,20 @@ namespace CBTBehaviors {
 
                     List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
                     int overheatThreshold = sortedKeys.First();
-                    int maxHeat = sortedKeys.Last();
 
+                    // FIXME: Doesn't account for projected heat
+                    // FIXME: Doesn't reduce failure % by pilot skill
                     string warningText = "";
                     if (displayedMech.IsOverheated) {
                         float shutdownChance = Mod.Config.Heat.Shutdown[sortedKeys.Last(x => x < displayedMech.CurrentHeat)];
                         warningText = $"Shutdown chance: {shutdownChance:P1}";
                     }
-                    hover.SetTitleDescAndWarning("Heat",
-                        $"Heat: {displayedMech.CurrentHeat + displayedMech.TempHeat} of max: {maxHeat}",
-                        warningText);
+
+                    int maxHeat = sortedKeys.Last();
+                    int projectedHeat = __instance.HUD.SelectionHandler.ProjectedHeatForState;
+                    int totalHeat = displayedMech.CurrentHeat + displayedMech.TempHeat + projectedHeat;
+                    Mod.Log.Info($"currentHeat: {displayedMech.CurrentHeat}  tempHeat: {displayedMech.TempHeat}  projectedHeat: {projectedHeat} =  totalHeat: {totalHeat}");
+                    hover.UpdateText("Heat", $"Heat: {totalHeat} of max: {maxHeat}", warningText);
                 } else {
                     Mod.Log.Info("-- CHUDSPHHE not found!");
                 }
