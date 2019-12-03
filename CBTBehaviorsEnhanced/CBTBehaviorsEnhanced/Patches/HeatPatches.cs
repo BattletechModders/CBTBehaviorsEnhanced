@@ -305,7 +305,7 @@ namespace CBTBehaviors {
             public static CombatHUD HUD = null;
 
             public static void Postfix(CombatHUDMechTray __instance, CombatHUD ___HUD) {
-                Mod.Log.Info("CHUDMT::Init - entered.");
+                Mod.Log.Trace("CHUDMT::Init - entered.");
 
                 if (__instance.gameObject.GetComponentInChildren<CombatHUDHeatDisplay>() == null) {
                     Mod.Log.Info("COULD NOT FIND HEAT DISPLAY");
@@ -326,32 +326,11 @@ namespace CBTBehaviors {
         [HarmonyPatch(typeof(CombatHUDMechTray), "Update")]
         public static class CombatHUDMechTray_Update {
             public static void Postfix(CombatHUDMechTray __instance) {
-                Mod.Log.Info("CHUDMT::Init - entered.");
+                Mod.Log.Trace("CHUDMT::Update - entered.");
 
                 if (__instance.DisplayedActor is Mech displayedMech && CombatHUDMechTray_Init.HoverElement != null) {
                     //Mod.Log.Info("-- UPDATING TOOLTIP DATA.");
-
-                    List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
-                    int overheatThreshold = sortedKeys.First();
-
-                    // FIXME: Doesn't account for projected heat
-                    // FIXME: Doesn't reduce failure % by pilot skill
-                    string warningText = "";
-                    if (displayedMech.IsOverheated) {
-                        float shutdownChance = Mod.Config.Heat.Shutdown[sortedKeys.Last(x => x < displayedMech.CurrentHeat)];
-                        warningText = $"Shutdown chance: {shutdownChance:P1}";
-                    }
-
-                    int maxHeat = sortedKeys.Last();
-                    int projectedHeat = CombatHUDMechTray_Init.HUD.SelectionHandler.ProjectedHeatForState;
-                    int sinkableHeat = 0;
-                    if (!displayedMech.HasAppliedHeatSinks) {
-                        sinkableHeat -= displayedMech.AdjustedHeatsinkCapacity;
-                    }
-
-                    int totalHeat = displayedMech.CurrentHeat + displayedMech.TempHeat + projectedHeat + sinkableHeat;
-                    Mod.Log.Info($"-- currentHeat: {displayedMech.CurrentHeat}  tempHeat: {displayedMech.TempHeat}  projectedHeat: {projectedHeat} =  totalHeat: {totalHeat}");
-                    CombatHUDMechTray_Init.HoverElement.SetTitleDescAndWarning("Heat", $"Heat: {totalHeat} of max: {maxHeat}", warningText);
+                    CombatHUDMechTray_Init.HoverElement.UpdateText(displayedMech);
                 }
             }
         }
