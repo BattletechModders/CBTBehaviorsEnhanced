@@ -297,33 +297,39 @@ namespace CBTBehaviors {
             }
         }
 
-        [HarmonyPatch(typeof(CombatHUDHeatDisplay), "Init")]
-        [HarmonyPatch(new Type[] { typeof(float) })]
-        public static class CombatHUDHeatDisplay_Init {
-            public static void Prefix(CombatHUDHeatDisplay __instance) {
-                Mod.Log.Trace("CHUDHD::Init::Pre");
+        [HarmonyPatch(typeof(CombatHUDMechTray), "Init")]
+        public static class CombatHUDMechTray_Init {
 
-                if (__instance.gameObject.GetComponent<CombatHUDSidePanelHeatHoverElement>() == null) {
-                    Mod.Log.Info($"CREATING HEAT TOOLTIP WITH CHUDHD: {__instance.GetInstanceID()} for actor: {CombatantUtils.Label(__instance.DisplayedActor)}");
-                    CombatHUDSidePanelHeatHoverElement hover = __instance.gameObject.AddComponent<CombatHUDSidePanelHeatHoverElement>();
-                    hover.Init(__instance.HUD);
-                    Mod.Log.Info($"CREATED HEAT TOOLTIP WITH CHUDHD: {__instance.GetInstanceID()}");
+            // FIXME: Make state var; cleanup on CG destroyed
+            public static CombatHUDSidePanelHeatHoverElement HoverElement = null;
+            public static CombatHUD HUD = null;
+
+            public static void Postfix(CombatHUDMechTray __instance, CombatHUD ___HUD) {
+                Mod.Log.Info("CHUDMT::Init - entered.");
+
+                if (__instance.gameObject.GetComponentInChildren<CombatHUDHeatDisplay>() == null) {
+                    Mod.Log.Info("COULD NOT FIND HEAT DISPLAY");
                 } else {
-                    Mod.Log.Info("HEAT TOOLTIP ALREADY EXISTS!");
-                }
+                    Mod.Log.Info("FOUND HEAT DISPLAY");
 
+                    CombatHUDHeatDisplay heatDisplay = __instance.gameObject.GetComponentInChildren<CombatHUDHeatDisplay>();
+
+                    HoverElement = heatDisplay.gameObject.AddComponent<CombatHUDSidePanelHeatHoverElement>();
+                    HoverElement.name = "GBK_HOVER";
+                    HoverElement.Init(___HUD);
+                    Mod.Log.Info($"CREATED HEAT TOOLTIP WITH CHUDHD: {__instance.GetInstanceID()}");
+                }
+                HUD = ___HUD;
             }
         }
 
-        [HarmonyPatch(typeof(CombatHUDHeatDisplay), "RefreshInfo")]
-        public static class CombatHUDHeatDisplay_RefreshInfo {
-            public static void Postfix(CombatHUDHeatDisplay __instance) {
-                Mod.Log.Trace("CHUDHD::RefreshInfo::Post");
+        [HarmonyPatch(typeof(CombatHUDMechTray), "Update")]
+        public static class CombatHUDMechTray_Update {
+            public static void Postfix(CombatHUDMechTray __instance) {
+                Mod.Log.Info("CHUDMT::Init - entered.");
 
-                Mod.Log.Info($"-- FINDING HEAT TOOLTIP FOR CHUDHD: {__instance.GetInstanceID()} for actor: {CombatantUtils.Label(__instance.DisplayedActor)}");
-                CombatHUDSidePanelHeatHoverElement hover = __instance.gameObject.GetComponent<CombatHUDSidePanelHeatHoverElement>();
-                if (hover != null && __instance.DisplayedActor is Mech displayedMech) {
-                    Mod.Log.Info("-- UPDATING TOOLTIP DATA.");
+                if (__instance.DisplayedActor is Mech displayedMech && CombatHUDMechTray_Init.HoverElement != null) {
+                    //Mod.Log.Info("-- UPDATING TOOLTIP DATA.");
 
                     List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
                     int overheatThreshold = sortedKeys.First();
@@ -337,16 +343,18 @@ namespace CBTBehaviors {
                     }
 
                     int maxHeat = sortedKeys.Last();
-                    int projectedHeat = __instance.HUD.SelectionHandler.ProjectedHeatForState;
-                    int totalHeat = displayedMech.CurrentHeat + displayedMech.TempHeat + projectedHeat;
-                    Mod.Log.Info($"currentHeat: {displayedMech.CurrentHeat}  tempHeat: {displayedMech.TempHeat}  projectedHeat: {projectedHeat} =  totalHeat: {totalHeat}");
-                    hover.UpdateText("Heat", $"Heat: {totalHeat} of max: {maxHeat}", warningText);
-                } else {
-                    Mod.Log.Info("-- CHUDSPHHE not found!");
+                    int projectedHeat = CombatHUDMechTray_Init.HUD.SelectionHandler.ProjectedHeatForState;
+                    int sinkableHeat = 0;
+                    if (!displayedMech.HasAppliedHeatSinks) {
+                        sinkableHeat -= displayedMech.AdjustedHeatsinkCapacity;
+                    }
+
+                    int totalHeat = displayedMech.CurrentHeat + displayedMech.TempHeat + projectedHeat + sinkableHeat;
+                    Mod.Log.Info($"-- currentHeat: {displayedMech.CurrentHeat}  tempHeat: {displayedMech.TempHeat}  projectedHeat: {projectedHeat} =  totalHeat: {totalHeat}");
+                    CombatHUDMechTray_Init.HoverElement.SetTitleDescAndWarning("Heat", $"Heat: {totalHeat} of max: {maxHeat}", warningText);
                 }
             }
         }
-
 
         [HarmonyPatch(typeof(CombatHUDStatusPanel), "ShowShutDownIndicator", null)]
         public static class CombatHUDStatusPanel_ShowShutDownIndicator {
