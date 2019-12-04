@@ -39,6 +39,7 @@ namespace CBTBehaviors {
                 { 15, -1 }, { 30, -2 }, { 45, -3 }, { 60, -4 }, { 75, -5 },
                 { 93, -6 }, { 111, -7 }, { 129, -8 }, { 147, -9 }
             };
+            public float MovementMinimum = 30.0f; // Really suggest not changing this
 
             // 8:-1, 13:-2, 17:-3, 24:-4, 33:-5, 41:-6, 48:-7
             public Dictionary<int, int> Firing = new Dictionary<int, int> {

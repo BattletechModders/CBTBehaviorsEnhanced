@@ -90,7 +90,7 @@ namespace CBTBehaviors {
 
                     float shutdownTarget = 0f;
                     foreach (var item in Mod.Config.Heat.Shutdown.OrderBy(i => i.Key)) {
-                        if (__instance.OwningMech.CurrentHeat > item.Key) {
+                        if (__instance.OwningMech.CurrentHeat >= item.Key) {
                             shutdownTarget = item.Value;
                             Mod.Log.Debug($"  Setting shutdown target to {item.Value} as currentHeat: {__instance.OwningMech.CurrentHeat} > bounds: {item.Key}");
                         }
@@ -321,6 +321,8 @@ namespace CBTBehaviors {
                     Mod.Log.Debug($"Mech {CombatantHelper.LogLabel(__instance)} has overheated, applying movement penalty:{movePenalty}");
                     __result -= movePenalty;
                 }
+
+
             }
         }
 
@@ -329,7 +331,25 @@ namespace CBTBehaviors {
         [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
         public static class Mech_MaxWalkDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
-                Mod.Log.Info("M:MWD:GET entered.");
+                Mod.Log.Trace("M:MWD:GET entered.");
+                Mod.Log.Info($"Actor:{CombatantUtils.Label(__instance)} has walk: {__instance.WalkSpeed}  run: {__instance.RunSpeed}");
+
+                float walkDistance = __instance.WalkSpeed;
+                if (__instance.IsLegged) {
+                    walkDistance = Mod.Config.Heat.MovementMinimum;
+                } else {
+                    float moveMod = 0f;
+                    foreach (var item in Mod.Config.Heat.Movement.OrderBy(i => i.Key)) {
+                        if (__instance.CurrentHeat >= item.Key) {
+                            moveMod = item.Value;
+                            Mod.Log.Debug($"  Setting move penalty to {item.Value} as currentHeat: {__instance.CurrentHeat} >= bounds: {item.Key}");
+                        }
+                    }
+
+                    if (moveMod != 0f) {
+
+                    }
+                }
             }
         }
 
@@ -338,7 +358,7 @@ namespace CBTBehaviors {
         [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
         public static class Mech_MaxSprintDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
-                Mod.Log.Info("M:MSD:GET entered.");
+                Mod.Log.Trace("M:MSD:GET entered.");
             }
         }
 
@@ -346,7 +366,7 @@ namespace CBTBehaviors {
         [HarmonyPatch("MaxBackwardDistance", MethodType.Getter)]
         public static class Mech_MaxBackwardDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
-                Mod.Log.Info("M:MBD:GET entered.");
+                Mod.Log.Trace("M:MBD:GET entered.");
             }
         }
 
