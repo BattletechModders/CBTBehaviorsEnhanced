@@ -53,9 +53,10 @@ namespace CBTBehaviors {
                 { 102, 1.0f }, { 114, 1.1f }, { 126, 1.2f }, { 138, 1.3f }, { 150, -1f }
             };
             // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
-            public float PilotSkillShutdownMulti = 0.05f;
-            public int ShowLowOverheatAnim = 42;
-            public int ShowExtremeOverheatAnim = 90;
+            public float PilotSkillMulti = 0.05f;
+            public int ShowLowOverheatAnim = 42; // When to show as steaming
+            public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
+            public float ShutdownFallThreshold = 0.75f;
 
             // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
             // Explosion should impact most damaging ammo first
@@ -72,11 +73,15 @@ namespace CBTBehaviors {
 
             // 32:8+, 39:10+, 47:12+
             // If life support damaged, can't be avoided and is in addition to normal damage
-            public Dictionary<int, int> PilotInjury = new Dictionary<int, int> { };
+            public Dictionary<int, float> PilotInjury = new Dictionary<int, float> {
+                { 84, 0.3f }, { 117, 0.6f}, { 141, 0.8f }
+            };
 
             // 36:8+, 44:10+
             // If roll fails, roll a hit location on the front column of mech critical hit table and apply single critical hit to location
-            public Dictionary<int, float> SystemFailures = new Dictionary<int, float> { };
+            public Dictionary<int, float> SystemFailures = new Dictionary<int, float> {
+                { 108, 0.3f }, { 132, 0.6f},
+            };
         }
         public HeatOptions Heat = new HeatOptions();
 
@@ -88,13 +93,15 @@ namespace CBTBehaviors {
         public int ToHitSelfJumped = 2;
 
 
-        public const string FloatieText_ShutdownOverrideForced = "SHUTDOWN_OVERRIDE_FORCED";
-        public const string FloatieText_ShutdownOverrideSuccess = "SHUTDOWN_OVERRIDE_SUCCESS";
-        public const string FloatieText_ShutdownOverrideFailure = "SHUTDOWN_OVERRIDE_FAIL";
+        public const string FT_Shutdown_Forced = "SHUTDOWN_OVERRIDE_FORCED";
+        public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
+        public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAIL";
+        public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
-            { FloatieText_ShutdownOverrideForced, "Emergency Shutdown" },
-            { FloatieText_ShutdownOverrideSuccess, "Passed Shutdown Override" },
-            { FloatieText_ShutdownOverrideFailure, "Failed Shutdown Override" }
+            { FT_Shutdown_Forced, "Emergency Shutdown" },
+            { FT_Shutdown_Override, "Passed Shutdown Override" },
+            { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
+            { FT_Shutdown_Fall, "Falling from Shutdown" },
         };
 
         public void LogConfig() {

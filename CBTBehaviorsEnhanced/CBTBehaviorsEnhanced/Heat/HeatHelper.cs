@@ -80,11 +80,11 @@ namespace CBTBehaviors {
             return false;
         }
 
-        public static float GetPilotShutdownMod(AbstractActor actor) {
+        public static float GetPilotMod(AbstractActor actor) {
             float shutdownMod = 0f;
             if (actor != null && actor.GetPilot() != null) {
                 int actorSkill = SkillUtils.NormalizeSkill(actor.GetPilot().Piloting);
-                shutdownMod = actorSkill * Mod.Config.Heat.PilotSkillShutdownMulti;
+                shutdownMod = actorSkill * Mod.Config.Heat.PilotSkillMulti;
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(actor)} has normalizedSkill: {actorSkill} with shutdownMod: {shutdownMod}");
             } else {
                 Mod.Log.Info($"WARNING: Actor {actor.DisplayName} has no pilot!");

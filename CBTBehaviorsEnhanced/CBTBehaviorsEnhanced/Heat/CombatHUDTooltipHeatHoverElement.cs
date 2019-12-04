@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using CBTBehaviors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using us.frostraptor.modUtils;
@@ -45,19 +46,18 @@ namespace CBTBehaviorsEnhanced.Heat {
                 this.TempHeat = displayedMech.TempHeat;
 
                 int sinkableHeat = !displayedMech.HasAppliedHeatSinks ? displayedMech.AdjustedHeatsinkCapacity * -1 : 0;
-                int futureHeat = CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat;
+                int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat);
                 Mod.Log.Debug($"  currentHeat: {CurrentHeat}  tempHeat: {TempHeat}  projectedHeat: {ProjectedHeat}  sinkableHeat: {sinkableHeat}" +
                     $"  =  futureHeat: {futureHeat}");
 
                 string warningText = "";
                 if (futureHeat >= overHeatlevel) {
-                    int shutdownIdx = ShutdownThresholds.LastOrDefault(x => x < futureHeat);
+                    int shutdownIdx = ShutdownThresholds.LastOrDefault(x => x <= futureHeat);
                     float rawShutdownChance = Mod.Config.Heat.Shutdown[shutdownIdx];
-                    float pilotSkillReduction = Mod.Config.Heat.PilotSkillShutdownMulti * displayedMech.GetPilot().Piloting;
-                    float modifiedShutdownChance = rawShutdownChance - pilotSkillReduction;
-                    Mod.Log.Debug($"  rawShutdownChance: {rawShutdownChance}  pilotSkillReduction: {pilotSkillReduction}  modifiedShutdownChance: {modifiedShutdownChance}");
+                    float pilotSkillReduction = Mod.Config.Heat.PilotSkillMulti * displayedMech.GetPilot().Piloting;
+                    Mod.Log.Debug($"  rawShutdownChance: {rawShutdownChance}  pilotSkillReduction: {pilotSkillReduction}");
 
-                    warningText = $"WARNING: Shutdown with check < {modifiedShutdownChance:P1}";
+                    warningText = $"Shutdown: d100+{pilotSkillReduction * 100:#.#} < {rawShutdownChance:P1}";
                 }
 
                 base.SetTitleDescAndWarning("Heat", $"Heat: {futureHeat} / {maxHeatLevel}", warningText);

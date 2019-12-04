@@ -100,33 +100,62 @@ namespace CBTBehaviors {
                     if (shutdownTarget == 0f) {
                         Mod.Log.Debug($"  Target heat below shutdown targets, skipping.");
                     } else {
+                        float pilotMod = HeatHelper.GetPilotMod(__instance.OwningMech);
+
                         // Calculate the shutdown chance: a random roll, plus the piloting skill
                         float shutdownRoll = __instance.OwningMech.Combat.NetworkRandom.Float();
-                        float shutdownMod = HeatHelper.GetPilotShutdownMod(__instance.OwningMech);
-                        float shutdownCheckResult = shutdownRoll + shutdownMod;
-                        Mod.Log.Debug($"  pilotMod: {shutdownMod} + roll: {shutdownRoll} = shutdownCheckResult: {shutdownCheckResult}");
+                        float shutdownCheckResult = shutdownRoll + pilotMod;
+                        Mod.Log.Debug($"  pilotMod: {pilotMod} + roll: {shutdownRoll} = shutdownCheckResult: {shutdownCheckResult}");
 
+                        // Calculate a fall chance; a random roll, plus the piloting skill
+                        float fallRoll = __instance.OwningMech.Combat.NetworkRandom.Float();
+                        float fallCheckResult = fallRoll + pilotMod;
+                        Mod.Log.Debug($"  pilotMod: {pilotMod} + roll: {fallRoll} = fallCheckResult: {fallCheckResult}");
+                        
                         MultiSequence sequence = new MultiSequence(__instance.OwningMech.Combat);
-
+                        // Possible sequences
+                        //  Shutdown
+                        //  Fall from shutdown
+                        //  Ammo Explosion
+                        //  System damage
+                        //  Pilot injury
+                        //  Pilot death
                         if (shutdownTarget == -1f) {
                             // Unit must shutdown!
                             Mod.Log.Debug($"  currentHeat: {__instance.OwningMech.CurrentHeat} is beyond forced shutdown mark: {shutdownTarget} -" +
                                 $" Must be forced into a shutdown!.");
                             //sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
 
-                            string debuffText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideForced]).ToString();
+                            string debuffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Forced]).ToString();
                             sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                                 FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
                             MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
                             mechShutdownSequence.RootSequenceGUID = __instance.SequenceGUID;
-                            //__instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
                             sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+
+                            if (fallCheckResult < Mod.Config.Heat.ShutdownFallThreshold) {
+                                Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
+
+                                string fallDebuffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Fall]).ToString();
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
+                                    FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                                string fallDetailsText = $"{fallDebuffText} - {fallCheckResult:P1} < {Mod.Config.Heat.ShutdownFallThreshold:P1}";
+                                sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDetailsText,
+                                    FloatieMessage.MessageNature.Neutral, true), sequence.ChildSequenceCount - 1);
+
+                                MechFallSequence mfs = new MechFallSequence(__instance.OwningMech, "Overheat", new Vector2(0f, -1f));
+                                mfs.RootSequenceGUID = __instance.SequenceGUID;
+                                sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
+                            } else {
+                                Mod.Log.Info($"Pilot check to avoid falling passed.");
+                            }
                         } else {
                             if (shutdownCheckResult >= shutdownTarget) {
                                 Mod.Log.Debug("  Shutdown override skill check passed.");
 
-                                string buffText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideSuccess]).ToString();
+                                string buffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Override]).ToString();
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, buffText,
                                     FloatieMessage.MessageNature.Buff, true), sequence.ChildSequenceCount - 1);
 
@@ -138,7 +167,7 @@ namespace CBTBehaviors {
                                 Mod.Log.Debug("  Shutdown override skill check failed, shutting down");
                                 //sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance.OwningMech, false, -1f), 0);
 
-                                string debuffText = new Text(Mod.Config.Floaties[ModConfig.FloatieText_ShutdownOverrideFailure]).ToString();
+                                string debuffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                                     FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
@@ -146,11 +175,27 @@ namespace CBTBehaviors {
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, detailsText,
                                     FloatieMessage.MessageNature.Neutral, true), sequence.ChildSequenceCount - 1);
 
-                                // TOOD: Send floatie to combat log with rolls involved
                                 MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech);
                                 mechShutdownSequence.RootSequenceGUID = __instance.SequenceGUID;
-                                //__instance.OwningMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechShutdownSequence));
                                 sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+
+                                if (fallCheckResult < Mod.Config.Heat.ShutdownFallThreshold) {
+                                    Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
+
+                                    string fallDebuffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Fall]).ToString();
+                                    sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
+                                        FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                                    string fallDetailsText = $"{fallDebuffText} - {fallCheckResult:P1} < {Mod.Config.Heat.ShutdownFallThreshold:P1}";
+                                    sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDetailsText,
+                                        FloatieMessage.MessageNature.Neutral, true), sequence.ChildSequenceCount - 1);
+
+                                    MechFallSequence mfs = new MechFallSequence(__instance.OwningMech, "Overheat", new Vector2(0f, -1f));
+                                    mfs.RootSequenceGUID = __instance.SequenceGUID;
+                                    sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
+                                } else {
+                                    Mod.Log.Info($"Pilot check to avoid falling passed.");
+                                }
                             }
                         }
 
@@ -276,6 +321,32 @@ namespace CBTBehaviors {
                     Mod.Log.Debug($"Mech {CombatantHelper.LogLabel(__instance)} has overheated, applying movement penalty:{movePenalty}");
                     __result -= movePenalty;
                 }
+            }
+        }
+
+
+        [HarmonyPatch(typeof(Mech))]
+        [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
+        public static class Mech_MaxWalkDistance_Get {
+            public static void Postfix(Mech __instance, ref float __result) {
+                Mod.Log.Info("M:MWD:GET entered.");
+            }
+        }
+
+
+        [HarmonyPatch(typeof(Mech))]
+        [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
+        public static class Mech_MaxSprintDistance_Get {
+            public static void Postfix(Mech __instance, ref float __result) {
+                Mod.Log.Info("M:MSD:GET entered.");
+            }
+        }
+
+        [HarmonyPatch(typeof(Mech))]
+        [HarmonyPatch("MaxBackwardDistance", MethodType.Getter)]
+        public static class Mech_MaxBackwardDistance_Get {
+            public static void Postfix(Mech __instance, ref float __result) {
+                Mod.Log.Info("M:MBD:GET entered.");
             }
         }
 

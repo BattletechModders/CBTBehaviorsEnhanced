@@ -52,6 +52,7 @@ namespace CBTBehaviors {
                 if (this.OwningMech.team.LocalPlayerControlsTeam) {
                     AudioEventManager.PlayAudioEvent("audioeventdef_musictriggers_combat", "friendly_overheating", null, null);
                 }
+
             }
         }
 
