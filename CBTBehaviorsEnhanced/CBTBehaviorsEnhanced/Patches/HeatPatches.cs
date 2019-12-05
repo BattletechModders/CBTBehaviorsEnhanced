@@ -2,6 +2,7 @@
 using BattleTech;
 using BattleTech.UI;
 using CBTBehaviorsEnhanced.Heat;
+using CBTBehaviorsEnhanced.Helper;
 using Harmony;
 using HBS;
 using Localize;
@@ -22,24 +23,7 @@ namespace CBTBehaviors {
         public static class Mech_Init {
             public static void Postfix(Mech __instance) {
                 Mod.Log.Trace("M:I entered.");
-                // Initialize mod-specific statistics
-                __instance.StatCollection.AddStatistic<int>(ModStats.TurnsOverheated, 0);
-
-                __instance.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
-                __instance.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
-
-                // Override the heat and shutdown levels
-                List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
-                int overheatThreshold = sortedKeys.First();
-                int maxHeat = sortedKeys.Last();
-                Mod.Log.Info($"Setting overheat threshold to {overheatThreshold} and maxHeat to {maxHeat} for actor:{CombatantUtils.Label(__instance)}");
-                __instance.StatCollection.Set<int>("MaxHeat", maxHeat);
-                __instance.StatCollection.Set<int>("OverheatLevel", overheatThreshold);
-
-                // Disable default heat penalties
-                __instance.StatCollection.Set<bool>("IgnoreHeatToHitPenalties", false);
-                __instance.StatCollection.Set<bool>("IgnoreHeatMovementPenalties", false);
-
+                MechHelper.InitModStats(__instance);
             }
         }
 
@@ -310,55 +294,31 @@ namespace CBTBehaviors {
         }
 
         [HarmonyPatch(typeof(Mech))]
-        [HarmonyPatch("MoveMultiplier", MethodType.Getter)]
-        public static class Mech_MoveMultiplier_Get {
+        [HarmonyPatch("MaxMeleeEngageRangeDistance", MethodType.Getter)]
+        public static class Mech_MaxMeleeEngageRangeDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
-                Mod.Log.Trace("M:MM:GET entered.");
-                int turnsOverheated = __instance.StatCollection.GetValue<int>("TurnsOverheated");
-
-                if (__instance.IsOverheated && turnsOverheated > 0) {
-                    float movePenalty = HeatHelper.GetOverheatedMovePenaltyForTurn(turnsOverheated);
-                    Mod.Log.Debug($"Mech {CombatantHelper.LogLabel(__instance)} has overheated, applying movement penalty:{movePenalty}");
-                    __result -= movePenalty;
-                }
-
-
+                Mod.Log.Trace("M:MMERD:GET entered.");
+                // TODO: Should this be Run or Walk speed?
+                __result = MechHelper.CalcRunSpeed(__instance);
             }
         }
-
 
         [HarmonyPatch(typeof(Mech))]
         [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
         public static class Mech_MaxWalkDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
                 Mod.Log.Trace("M:MWD:GET entered.");
-                Mod.Log.Info($"Actor:{CombatantUtils.Label(__instance)} has walk: {__instance.WalkSpeed}  run: {__instance.RunSpeed}");
-
-                float walkDistance = __instance.WalkSpeed;
-                if (__instance.IsLegged) {
-                    walkDistance = Mod.Config.Heat.MovementMinimum;
-                } else {
-                    float moveMod = 0f;
-                    foreach (var item in Mod.Config.Heat.Movement.OrderBy(i => i.Key)) {
-                        if (__instance.CurrentHeat >= item.Key) {
-                            moveMod = item.Value;
-                            Mod.Log.Debug($"  Setting move penalty to {item.Value} as currentHeat: {__instance.CurrentHeat} >= bounds: {item.Key}");
-                        }
-                    }
-
-                    if (moveMod != 0f) {
-
-                    }
-                }
+                __result = MechHelper.CalcWalkSpeed(__instance);
             }
         }
 
-
+        // TODO: Enforce on vehicles?
         [HarmonyPatch(typeof(Mech))]
         [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
         public static class Mech_MaxSprintDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
                 Mod.Log.Trace("M:MSD:GET entered.");
+                __result = MechHelper.CalcRunSpeed(__instance);
             }
         }
 
@@ -367,6 +327,7 @@ namespace CBTBehaviors {
         public static class Mech_MaxBackwardDistance_Get {
             public static void Postfix(Mech __instance, ref float __result) {
                 Mod.Log.Trace("M:MBD:GET entered.");
+                __result = MechHelper.CalcWalkSpeed(__instance);
             }
         }
 

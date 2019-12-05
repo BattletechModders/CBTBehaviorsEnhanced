@@ -80,6 +80,7 @@
     <Compile Include="Heat\HeatHelper.cs" />
     <Compile Include="Heat\MechEmergencyShutdownSequence.cs" />
     <Compile Include="Helper\CombatantHelper.cs" />
+    <Compile Include="Helper\MechHelper.cs" />
     <Compile Include="Patches\HeatPatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
     <Compile Include="Patches\PilotingPatches.cs" />
