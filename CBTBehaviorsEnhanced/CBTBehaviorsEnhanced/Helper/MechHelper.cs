@@ -48,8 +48,8 @@ namespace CBTBehaviorsEnhanced.Helper {
 
             float walkDistance = mech.WalkSpeed;
             if (moveMod != 0f) {
-                walkDistance = mech.WalkSpeed - moveMod;
-                Mod.Log.Debug($"  Walk speed: {mech.WalkSpeed}m - modifier: {moveMod} = {walkDistance}m");
+                walkDistance = mech.WalkSpeed + moveMod;
+                Mod.Log.Debug($"  Walk speed: {mech.WalkSpeed}m + modifier: {moveMod} = {walkDistance}m");
             }
 
             // Normalize to the minimum if somehow we're below that.

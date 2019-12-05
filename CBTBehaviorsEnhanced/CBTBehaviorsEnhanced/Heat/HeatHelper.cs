@@ -6,20 +6,6 @@ namespace CBTBehaviors {
 
     public static class HeatHelper {
 
-        public static float GetShutdownPercentageForTurn(int turn) {
-            int count = Mod.Config.ShutdownPercentages.Length;
-
-            if (turn <= 0) {
-                return Mod.Config.ShutdownPercentages[0];
-            }
-
-            if (turn > count - 1) {
-                turn = count - 1;
-            }
-
-            return Mod.Config.ShutdownPercentages[turn];
-        }
-
         public static float GetAmmoExplosionPercentageForTurn(int turn) {
             int count = Mod.Config.AmmoExplosionPercentages.Length;
 
@@ -32,34 +18,6 @@ namespace CBTBehaviors {
             }
 
             return Mod.Config.AmmoExplosionPercentages[turn];
-        }
-
-        public static float GetOverheatedMovePenaltyForTurn(int turn) {
-            int count = Mod.Config.OverheatedMovePenalty.Length;
-
-            if (turn <= 0) {
-                return (float)Mod.Config.OverheatedMovePenalty[0];
-            }
-
-            if (turn > count) {
-                turn = count;
-            }
-
-            return Mod.Config.OverheatedMovePenalty[turn - 1];
-        }
-
-        public static float GetHeatToHitModifierForTurn(int turn) {
-            int count = Mod.Config.HeatToHitModifiers.Length;
-
-            if (turn <= 0) {
-                return (float)Mod.Config.HeatToHitModifiers[0];
-            }
-
-            if (turn > count) {
-                turn = count;
-            }
-
-            return (float)Mod.Config.HeatToHitModifiers[turn - 1];
         }
 
         public static bool CanAmmoExplode(Mech mech) {

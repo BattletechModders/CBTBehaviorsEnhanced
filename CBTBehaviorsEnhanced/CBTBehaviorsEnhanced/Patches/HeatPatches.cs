@@ -331,20 +331,22 @@ namespace CBTBehaviors {
             }
         }
 
+        // TODO: Memoize this; its invoked multiple times
         [HarmonyPatch(typeof(ToHit), "GetHeatModifier")]
         public static class ToHit_GetHeatModifier {
             public static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker) {
                 Mod.Log.Trace("TH:GHM entered.");
-                if (attacker is Mech mech && mech.StatCollection.ContainsStatistic(ModStats.TurnsOverheated)) {
+                if (attacker is Mech mech && mech.IsOverheated) {
 
-                    int turnsOverheated = mech.StatCollection.GetValue<int>(ModStats.TurnsOverheated);
-                    if (turnsOverheated > 0) {
-                        float modifier = HeatHelper.GetHeatToHitModifierForTurn(turnsOverheated);
-                        __result = modifier;
-                        Mod.Log.Debug($"Mech {CombatantHelper.LogLabel(mech)} has overheat ToHit modifier:{modifier}");
-                    } else {
-                        __result = 0f;
+                    float penalty = 0f;
+                    foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
+                        if (mech.CurrentHeat >= kvp.Key) {
+                            penalty = kvp.Value;
+                            Mod.Log.Debug($"  attackPenalty:{penalty} from heat: {mech.CurrentHeat} >= {kvp.Key}");
+                        }
                     }
+
+                    __result = penalty;
                 }
             }
         }
@@ -410,11 +412,12 @@ namespace CBTBehaviors {
                         new Text("SHUT DOWN", new object[0]), new Text("This target is easier to hit, and Called Shots can be made against this target.", new object[0]),
                         __instance.defaultIconScale, false });
                 } else if (mech.IsOverheated) {
-                    float shutdownChance = HeatHelper.GetShutdownPercentageForTurn(turnsOverheated);
+                    float shutdownChance = 0;
                     float ammoExplosionChance = HeatHelper.GetAmmoExplosionPercentageForTurn(turnsOverheated);
                     Mod.Log.Debug($"Mech:{CombatantHelper.LogLabel(mech)} is overheated, shutdownChance:{shutdownChance}% ammoExplosionChance:{ammoExplosionChance}%");
 
-                    string descr = string.Format("This unit may trigger a Shutdown at the end of the turn unless heat falls below critical levels.\nShutdown Chance: {0:P2}\nAmmo Explosion Chance: {1:P2}", 
+                    string descr = string.Format("This unit may trigger a Shutdown at the end of the turn unless heat falls below critical levels." +
+                        "\nShutdown Chance: {0:P2}\nAmmo Explosion Chance: {1:P2}", 
                         shutdownChance, ammoExplosionChance);
                     methodInfo.Invoke(__instance, new object[] { LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
                         new Text("OVERHEATING", new object[0]), new Text(descr, new object[0]), __instance.defaultIconScale, false });
