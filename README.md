@@ -1,41 +1,72 @@
 # CBTBehaviors
-This mod for the [HBS BattleTech](http://battletechgame.com/) game changes several game behaviors to be closer to the Table Top behaviors. A quick summary of these behaviors are as follows:
+This mod for the [HBS BattleTech](http://battletechgame.com/) game changes several behaviors to more closely emulate the TableTop BattleTech experience. A summary this mod's changes are:
 
-* Overheating no longer deals damage, but instead you have a chance to resist the shutdown and/or explode any ammo you have.
+* Overheating is completely revamped and no longer deals structural damage. Instead, you can be forced to shutdown, experience ammo explosions, pilot injuries, or critical hits, and experience significant movement and attacking penalties.
+* When attacking, you suffer a +1 penalty if you walked, +2 if you sprinted, and +3 if you jumped.
+* Sprinting no longer ends your turn.
+* Evasion is not longer removed after attacks.
 * Additional hits when you are unstable can cause a fall. This is resisted by your piloting skill.
-* Evasion is no longer removed after attacks.
-* Sprinting no longer ends your turn, and incurs a +1 ToHit penalty for attackers.
-* Jumping incurs a +2 ToHit penalty for attackers.
 * ToHit modifiers can be more effectively stacked to make hits more easily.
 
-This mod directly copies [McFistyBuns'](https://github.com/McFistyBuns) excellent mods, which sadly are no longer updated:
+This mod was influenced by [McFistyBuns'](https://github.com/McFistyBuns) excellent mods, which sadly are no longer updated. His code was released without a license, but in a discussion with LadyAlekto (of RougeTech) he granted a right to re-use his mod as she liked. While most of the code has been replaced, portions of the original code remains and has been relicensed under the MIT license to honor that exchange.
 
-* <https://github.com/McFistyBuns/CBTHeat>
-* <https://github.com/McFistyBuns/CBTPiloting>
-* <https://github.com/McFistyBuns/CBTMovement>
+## Heat Scale Changes
 
-Credit for the code and text descriptions go to [McFistyBuns](https://github.com/McFistyBuns). He granted LadyAlekto (of RogueTech) fame the right to reuse his mods as she liked, which I've taken and implemented at her request. The code has been relicensed under the MIT license to honor that exchange.
+These changes replace the default overheating behaviors, in which high heat levels caused internal structure damage. Instead it introduces a series of progressively more difficult random skill tests that cause negative effects when failed, as well as attack and movement modifiers at high heat levels.
 
-**NOTICE**: This mod enforces combat turns at all times, to prevent some HBS bugs that cause issues in the transition from non-combat to combat states. This cannot be disabled as its essential to the mod's operation!
+* __ToHit Modifiers__ is a penalty to the unit's chance to hit
+* __Movement Modifiers__ is a penalty to the unit's base Walking Speed, which also reduces it's running speed (see Movement Changes)
+* __Shutdown Chance__ is the threshold a percentile check (d100) must equal or exceed, or the Mech will be forced into a Shutdown
+* __Ammo Explosion Chance__ is the threshold a percentile check (d100) must equal or exceed, or the most damaging ammo box remaining will explode and inflict internal damage
+* __Pilot Injury Chance__ is the threshold a percentile check (d100) must equal or exceed, or the Pilot will suffer one point of damage
+* __System Failure Chance__ is the threshold a percentile check (d100) must equal or exceed, or one randomly selected internal component will be destroyed
 
-## Classic Heat
+These changes are tied to the _Classic BattleTech (CBT)_ extended heat scale, which normally ranges from 0 to 50 heat. The HBS game expanded heat values on a 3:1 basis, so this implementation uses a 0 to 150 scale for heat. Multiple effects can occur at the same heat level, which can result in the unit shutting down, having an ammo explosion, and injuring the pilot all at once!
 
-Based upon https://github.com/McFistyBuns/CBTHeat, this mod blends the HBS BattleTech and TableTop styles. Mechs no longer suffer damage from overheating. In exchange, your mech has a chance to shutdown and have any ammo explode each turn you are overheated past the first. You also have to-hit modifiers applied when you are at a high heat.
+All heat effects are resolved at the end of the current turn, __except__ for the movement and attack modifiers. The code patches them them difficult to only implement at end-of-turn, so they are applied as soon as they happen.
 
-The chances are tied to the original _ClassicBattleTech (CBT)_ heat scale. The original CBT heat scale had 4 Shutdown roll chances and 4 Ammo Explosion chances as well as Heat modifiers to Hit. The chances (which were originally 2d6 rolls) have been converted  and applied them to the overheat mechanic of the game. The game will roll randomly for each percentage. Ammo Explosion results are applied first.
+The table below lists the thresholds for the default configuration provided in `mod.json`.
 
-**NEW in v0.2.0**: Movement Modifiers Movement modifiers work the same way ToHit Modifiers. The movement modifier will increase the longer your mech is overheated. That means the longer you overheat, the less movement you will have available. This only affects walk and sprint movement. Jump is unaffected.
+| Heat Level | Shutdown Chance | Ammo Explosion | Pilot Injury | System Failure | Attack Modifier | Movement Modifier |
+| -- | -- | -- | -- | -- | -- | -- |
+| 15 | - | - | - | - | - | -30m |
+| 24 | - | - | - | - | -1 | -30m |
+| 30 | - | - | - | - | -1 | -60m |
+| 39 | - | - | - | - | -2 | -60m |
+| 42 | 10% | - | - | - | -2 | -90m |
+| 45 | 10% | - | - | - | -2 | -90m |
+| 51 | 10% | - | - | - | -3 | -90m |
+| 54 | 30% | - | - | - | -3 | -90m |
+| 57 | 30% | 10% | - | - | -3 | -90m |
+| 60 | 30% | 10% | - | - | -3 | -120m |
+| 66 | 60% | 10% | - | - | -3 | -120m |
+| 69 | 60% | 30% | - | - | -3 | -120m |
+| 72 | 60% | 30% | - | - | -4 | -120m |
+| 75 | 60% | 30% | - | - | -4 | -150m |
+| 78 | 80% | 30% | - | - | -4 | -150m |
+| 84 | 80% | 50% | 30% | - | -4 | -150m |
+| 90 | 90% | 50% | 30% | - | -4 | -180m |
+| 93 | 90% | 50% | 30% | - | -4 | -180m |
+| 99 | 90% | 50% | 30% | - | -5 | -180m |
+| 102 | 100% | 50% | 30% | - | -5 | -210m |
+| 105 | 100% | 80% | 30% | - | -5 | -210m |
+| 108 | 100% | 80% | 30% | 30% | -5 | -210m |
+| 111 | 100% | 80% | 30% | 30% | -5 | -210m |
+| 114 | 110% | 80% | 30% | 30% | -5 | -210m |
+| 117 | 110% | 80% | 60% | 30% | -5 | -210m |
+| 120 | 110% | 95% | 60% | 30% | -5 | -210m |
+| 123 | 110% | 95% | 60% | 30% | -6 | -210m |
+| 126 | 120% | 95% | 60% | 30% | -6 | -210m |
+| 129 | 120% | 95% | 60% | 30% | -6 | -240m |
+| 132 | 120% | 95% | 60% | 60% | -6 | -240m |
+| 135 | 120% | Auto | 60% | 60% | -6 | -240m |
+| 138 | 130% | Auto | 60% | 60% | -6 | -240m |
+| 141 | 130% | Auto | 80% | 60% | -6 | -240m |
+| 144 | 130% | Auto | 80% | 60% | -7 | -240m |
+| 147 | 130% | Auto | 80% | 60% | -7 | -270m |
+| 150 | Auto | Auto | 80% | 60% | -7 | -270m |
 
-The way the game applies movement modifiers is that it adds up all the the modifiers, subtracts them from 1 to get what is essentially a percentage, and then multiplies that by your total movement. So that means, for example, on the first overheat turn, you will have 90% of your total movement available to use (assuming you don't have any other movement modifiers, like a missing leg).
-
-| Rounds Overheated | Shutdown Chance | Ammo Explosion Chance | ToHit Modifier | Move Modifier |
-| ----------------- | --------------- | --------------------- | -------------- | ------------- |
-| 1                 | 8.3%            | 0                     | +1             | 0.1           |
-| 2                 | 27.8%           | 8.3%                  | +2             | 0.2           |
-| 3                 | 58.3%           | 27.8%                 | +3             | 0.3           |
-| 4+                | 83.3%           | 58.3%                 | +4             | 0.4           |
-
-These chances are also displayed in the Overheat notification badge above the heat bar. Bringing your heat bar all the way to shutdown still shuts the mech down.
+The chances above are displayed in a tooltip shown when hovering over the heat-bar in the bottom left corner, just above the Mech paper doll. These values are dynamically updated when you target an enemy, so you can predict will occur at the end of your turn.
 
 All chances and modifiers are configurable in the mod.json file.
 
@@ -47,14 +78,14 @@ Whenever you mech becomes unstable, every hit that causes stability damage will 
 
 Difficulty percentage is configurable in the mod.json file.
 
-## Classic Movement 
+## Classic Movement
 
 CBT Movement is an attempt to bring Classic Battletech Tabletop movement rules flavor into HBS's BATTLETECH game. Features include:
 
 - Sprinting no longer ends the turn
 - Evasion is no longer removed after attacks
 - Any movement now incurs a +1 ToHit Penalty
-- Sprinting incurs an addtional +1 ToHit Penalty
+- Sprinting incurs an additional +1 ToHit Penalty
 - Jumping incurs an additional +2 ToHit Penalty
 - ToHit modifiers are allowed to go below your base to hit chance, making something easier to hit if you stack you modifiers right
 
@@ -64,4 +95,4 @@ The way movement currently works in the game is that ToHitSelfWalk modifiers are
 
 * If you are shutdown, you auto-fail Piloting checks. Reflect this in Classic Piloting
 * One destroyed leg means movement of 1 MP, no running, gains a +5 PSR modifier, jumping requires a PSR
-
+* Heat Modifiers are applied dynamically; this means you can fire, raise your heat, and suddenly not be able to move. This should be fixed, but requires some state management.
