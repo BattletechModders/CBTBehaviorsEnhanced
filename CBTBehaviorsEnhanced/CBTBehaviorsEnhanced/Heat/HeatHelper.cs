@@ -1,53 +1,56 @@
 ﻿
 using BattleTech;
+using Localize;
+using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviors {
 
     public static class HeatHelper {
 
-        public static float GetAmmoExplosionPercentageForTurn(int turn) {
-            int count = Mod.Config.AmmoExplosionPercentages.Length;
-
-            if (turn <= 0) {
-                return Mod.Config.AmmoExplosionPercentages[0];
+        public static bool DidCheckPassThreshold(SortedDictionary<int, float> dict, Mech mech, float skillMod, string floatieText) {
+            float checkTarget = 0f;
+            foreach (KeyValuePair<int, float> kvp in dict) {
+                if (mech.CurrentHeat >= kvp.Key) {
+                    checkTarget = kvp.Value;
+                }
             }
-
-            if (turn > count - 1) {
-                turn = count - 1;
-            }
-
-            return Mod.Config.AmmoExplosionPercentages[turn];
+            Mod.Log.Debug($"  target roll set to: {checkTarget}");
+            return PassedCheck(checkTarget, mech, skillMod, floatieText);
+        }
+        public static bool DidCheckPassThreshold(float checkTarget, Mech mech, float skillMod, string floatieText) {
+            return PassedCheck(checkTarget, mech, skillMod, floatieText);
         }
 
-        public static bool CanAmmoExplode(Mech mech) {
-            if (mech.ammoBoxes.Count == 0) {
-                return false;
-            }
+        private static bool PassedCheck(float checkTarget, Mech mech, float skillMod, string floatieText) {
+            if (checkTarget <= 0f) { return true; }
 
-            int ammoCount = 0;
+            float randomRoll = mech.Combat.NetworkRandom.Float();
+            float checkResult = randomRoll + skillMod;
+            Mod.Log.Debug($"  pilotMod: {skillMod} + roll: {randomRoll} = checkResult: {checkResult}");
 
-            foreach (var ammoBox in mech.ammoBoxes) {
-                ammoCount += ammoBox.CurrentAmmo;
-            }
+            string operatorText = "=";
+            if (checkResult > checkTarget) { operatorText = ">"; } else if (checkResult < checkTarget) { operatorText = "<"; }
 
-            if (ammoCount > 0) {
-                return true;
-            }
+            mech.Combat.MessageCenter.PublishMessage(
+                new FloatieMessage(mech.GUID, mech.GUID, $"{floatieText.ToString()} {randomRoll} + {skillMod } {new Text(operatorText).ToString()} {checkTarget}", FloatieMessage.MessageNature.Neutral)
+                );
 
-            return false;
+            return checkTarget != -1f && checkResult < checkTarget;
         }
 
-        public static float GetPilotMod(AbstractActor actor) {
-            float shutdownMod = 0f;
+        public static float GetPilotingMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
+        public static float GetGutsMulti(AbstractActor actor) { return GetSkillMulti(actor, false);  }
+        private static float GetSkillMulti(AbstractActor actor, bool gutsSkill) {
+            float skillMulti = 0f;
             if (actor != null && actor.GetPilot() != null) {
-                int actorSkill = SkillUtils.NormalizeSkill(actor.GetPilot().Piloting);
-                shutdownMod = actorSkill * Mod.Config.Heat.PilotSkillMulti;
-                Mod.Log.Debug($"Actor: {CombatantUtils.Label(actor)} has normalizedSkill: {actorSkill} with shutdownMod: {shutdownMod}");
+                int actorSkill = SkillUtils.NormalizeSkill(gutsSkill ? actor.GetPilot().Guts : actor.GetPilot().Piloting);
+                skillMulti = actorSkill * Mod.Config.Heat.PilotSkillMulti;
+                Mod.Log.Debug($"Actor: {CombatantUtils.Label(actor)} has normalized guts: {actorSkill} adjusted to skillMulti: {skillMulti}");
             } else {
                 Mod.Log.Info($"WARNING: Actor {actor.DisplayName} has no pilot!");
             }
-            return shutdownMod;
+            return skillMulti;
         }
 
         public class CBTPilotingRules {

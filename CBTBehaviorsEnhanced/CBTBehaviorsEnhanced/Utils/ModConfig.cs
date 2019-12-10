@@ -107,15 +107,22 @@ namespace CBTBehaviors {
         public int ToHitSelfJumped = 2;
 
 
-        public const string FT_Shutdown_Forced = "SHUTDOWN_OVERRIDE_FORCED";
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
-        public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAIL";
+        public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
+        public const string FT_Check_Explosion = "EXPLOSION_CHECK";
+        public const string FT_Check_Shutdown = "SHUTDOWN_CHECK";
+        public const string FT_Check_Injury = "INJURY_CHECK";
+        public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
+        public const string FT_Check_Fall = "FAILLING_CHECK";
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
-            { FT_Shutdown_Forced, "Emergency Shutdown" },
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
             { FT_Shutdown_Fall, "Falling from Shutdown" },
+            { FT_Check_Explosion, "Ammo Explosion Check" },
+            { FT_Check_Shutdown, "Shutdown Check" },
+            { FT_Check_Injury, "Pilot Injury Check" },
+            { FT_Check_System_Failure, "System Failure Check" }
         };
 
         public void LogConfig() {
