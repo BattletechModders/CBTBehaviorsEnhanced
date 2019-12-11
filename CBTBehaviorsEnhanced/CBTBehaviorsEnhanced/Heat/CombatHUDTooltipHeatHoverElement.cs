@@ -4,6 +4,7 @@ using CBTBehaviors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Heat {
@@ -15,19 +16,11 @@ namespace CBTBehaviorsEnhanced.Heat {
         private int ProjectedHeat = 0;
         private int TempHeat = 0;
 
-        private List<int> ShutdownThresholds = null;
-        private int overHeatlevel = 0;
-        private int maxHeatLevel = 0;
-
         public new void Init(CombatHUD HUD) {
             CombatHUD = HUD;
 
-            ShutdownThresholds = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
-            overHeatlevel = ShutdownThresholds.First();
-            maxHeatLevel = ShutdownThresholds.Last();
-
             this.Title = new Localize.Text("HEAT LEVEL");
-            this.Description = new Localize.Text($"HEAT: 0 / {maxHeatLevel}");
+            this.Description = new Localize.Text($"Heat: 0 / 0");
             this.WarningText = new Localize.Text("");
 
             base.Init(CombatHUD);
@@ -35,9 +28,8 @@ namespace CBTBehaviorsEnhanced.Heat {
 
         public void UpdateText(Mech displayedMech) {
 
-            if (displayedMech.CurrentHeat != CurrentHeat || 
-                CombatHUD.SelectionHandler.ProjectedHeatForState != ProjectedHeat ||
-                displayedMech.TempHeat != TempHeat) {
+            if (displayedMech.CurrentHeat != CurrentHeat || displayedMech.TempHeat != TempHeat ||
+                CombatHUD.SelectionHandler.ProjectedHeatForState != ProjectedHeat) {
                 Mod.Log.Debug($"Updating heat dialog for actor: {CombatantUtils.Label(displayedMech)}");
 
                 Mod.Log.Debug($"  current values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}");
@@ -46,21 +38,61 @@ namespace CBTBehaviorsEnhanced.Heat {
                 this.TempHeat = displayedMech.TempHeat;
 
                 int sinkableHeat = !displayedMech.HasAppliedHeatSinks ? displayedMech.AdjustedHeatsinkCapacity * -1 : 0;
-                int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat);
+                int totalHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat);
                 Mod.Log.Debug($"  currentHeat: {CurrentHeat}  tempHeat: {TempHeat}  projectedHeat: {ProjectedHeat}  sinkableHeat: {sinkableHeat}" +
-                    $"  =  futureHeat: {futureHeat}");
+                    $"  =  futureHeat: {totalHeat}");
+                
+                float gutsMulti = HeatHelper.GetGutsMulti(displayedMech);
+                float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
+                StringBuilder descSB = new StringBuilder($"Heat: {totalHeat} / {maxHeat}\n");
+                StringBuilder warningSB = new StringBuilder("");
 
-                string warningText = "";
-                if (futureHeat >= overHeatlevel) {
-                    int shutdownIdx = ShutdownThresholds.LastOrDefault(x => x <= futureHeat);
-                    float rawShutdownChance = Mod.Config.Heat.Shutdown[shutdownIdx];
-                    float pilotSkillReduction = Mod.Config.Heat.PilotSkillMulti * displayedMech.GetPilot().Piloting;
-                    Mod.Log.Debug($"  rawShutdownChance: {rawShutdownChance}  pilotSkillReduction: {pilotSkillReduction}");
-
-                    warningText = $"Shutdown: d100+{pilotSkillReduction * 100:#.#} < {rawShutdownChance:P1}";
+                float threshold = 0f;
+                // Check Ammo
+                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion) {
+                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
+                if (threshold != 0f && threshold != -1f) { 
+                    Mod.Log.Debug($"Ammo Explosion Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
+                    descSB.Append($"Ammo Explosion on d100+{gutsMulti * 100f} < {threshold:P1}\n");
+                } else if (threshold == -1f) {
+                    warningSB.Append("Guaranteed Ammo Explosion!\n");
+                }
+                threshold = 0f;
 
-                base.SetTitleDescAndWarning("Heat", $"Heat: {futureHeat} / {maxHeatLevel}", warningText);
+                // Check Injury
+                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.PilotInjury) {
+                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                }
+                if (threshold != 0f) {
+                    Mod.Log.Debug($"Injury Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
+                    descSB.Append($"Pilot Injury on d100+{gutsMulti * 100f} < {threshold:P1}\n");
+                }
+                threshold = 0f;
+
+                // Check System Failure
+                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.SystemFailures) {
+                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                }
+                if (threshold != 0f) {
+                    Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
+                    descSB.Append($"System Failure on d100+{gutsMulti * 100f} < {threshold:P1}\n");
+                }
+                threshold = 0f;
+
+                // Check Shutdown
+                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown) {
+                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                }
+                if (threshold != 0f && threshold != -1f) {
+                    Mod.Log.Debug($"Shutdown Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
+                    descSB.Append($"Shutdown on d100+{gutsMulti * 100f} < {threshold:P1}");
+                } else if (threshold == -1f) {
+                    warningSB.Append("Guaranteed Shutdown!");
+                }
+                threshold = 0f;
+
+                base.SetTitleDescAndWarning("Heat", descSB.ToString(), warningSB.ToString());
                 Mod.Log.Info($" Updated values: t:'{base.Title}' / d:'{base.Description}' / w:'{base.WarningText}'");
             }
 

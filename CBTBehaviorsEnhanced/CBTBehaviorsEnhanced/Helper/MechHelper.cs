@@ -29,7 +29,7 @@ namespace CBTBehaviorsEnhanced.Helper {
         }
 
         public static float CalcWalkSpeed(Mech mech) {
-            Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has walk: {mech.WalkSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
+            //Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has walk: {mech.WalkSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
 
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
             if (mech.IsLegged) {
@@ -49,7 +49,7 @@ namespace CBTBehaviorsEnhanced.Helper {
             float walkDistance = mech.WalkSpeed;
             if (moveMod != 0f) {
                 walkDistance = mech.WalkSpeed + moveMod;
-                Mod.Log.Debug($"  Walk speed: {mech.WalkSpeed}m + modifier: {moveMod} = {walkDistance}m");
+                //Mod.Log.Debug($"  Walk speed: {mech.WalkSpeed}m + modifier: {moveMod} = {walkDistance}m");
             }
 
             // Normalize to the minimum if somehow we're below that.
@@ -59,7 +59,7 @@ namespace CBTBehaviorsEnhanced.Helper {
         }
 
         public static float CalcRunSpeed(Mech mech) {
-            Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has run: {mech.RunSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
+            //Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has run: {mech.RunSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
 
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
             if (mech.IsLegged) {
@@ -76,7 +76,7 @@ namespace CBTBehaviorsEnhanced.Helper {
             
             float walkSpeed = CalcWalkSpeed(mech);
             float runSpeed = walkSpeed * runMulti;
-            Mod.Log.Debug($"  Run speed {runSpeed}m = walkSpeed: {walkSpeed}m x runMulti: {runMulti}");
+            //Mod.Log.Debug($"  Run speed {runSpeed}m = walkSpeed: {walkSpeed}m x runMulti: {runMulti}");
 
             return runSpeed;
         }

@@ -1,6 +1,8 @@
 ﻿
 using BattleTech;
+using CustomComponents;
 using Localize;
+using MechEngineer.Features.ComponentExplosions;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
@@ -15,7 +17,7 @@ namespace CBTBehaviors {
                     checkTarget = kvp.Value;
                 }
             }
-            Mod.Log.Debug($"  target roll set to: {checkTarget}");
+            //Mod.Log.Debug($"  target roll set to: {checkTarget}");
             return PassedCheck(checkTarget, mech, skillMod, floatieText);
         }
         public static bool DidCheckPassThreshold(float checkTarget, Mech mech, float skillMod, string floatieText) {
@@ -27,16 +29,17 @@ namespace CBTBehaviors {
 
             float randomRoll = mech.Combat.NetworkRandom.Float();
             float checkResult = randomRoll + skillMod;
-            Mod.Log.Debug($"  pilotMod: {skillMod} + roll: {randomRoll} = checkResult: {checkResult}");
+            Mod.Log.Debug($"  pilotMod: {skillMod} + roll: {randomRoll} = checkResult: {checkResult} vs. checkTarget: {checkTarget}");
 
             string operatorText = "=";
-            if (checkResult > checkTarget) { operatorText = ">"; } else if (checkResult < checkTarget) { operatorText = "<"; }
+            if (checkResult > checkTarget) { operatorText = ">"; } 
+            else if (checkResult < checkTarget) { operatorText = "<"; }
 
             mech.Combat.MessageCenter.PublishMessage(
-                new FloatieMessage(mech.GUID, mech.GUID, $"{floatieText.ToString()} {randomRoll} + {skillMod } {new Text(operatorText).ToString()} {checkTarget}", FloatieMessage.MessageNature.Neutral)
+                new FloatieMessage(mech.GUID, mech.GUID, $"{new Text(floatieText).ToString()} {randomRoll} + {skillMod} {operatorText} {checkTarget}", FloatieMessage.MessageNature.Neutral)
                 );
 
-            return checkTarget != -1f && checkResult < checkTarget;
+            return checkTarget != -1f && checkResult >= checkTarget;
         }
 
         public static float GetPilotingMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
@@ -52,6 +55,38 @@ namespace CBTBehaviors {
             }
             return skillMulti;
         }
+
+        public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isInferno) {
+            float totalDamage = 0f;
+            AmmunitionBox mosDangerousBox = null;
+            foreach (AmmunitionBox ammoBox in mech.ammoBoxes) {
+                if (ammoBox.IsFunctional == false) {
+                    Mod.Log.Debug($" AmmoBox: '{ammoBox.UIName}' is not functional, skipping."); 
+                    continue; 
+                }
+
+                if (ammoBox.CurrentAmmo <= 0) {
+                    Mod.Log.Debug($" AmmoBox: '{ammoBox.UIName}' has no ammo, skipping.");
+                    continue; 
+                }
+
+                if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp)) {
+                    Mod.Log.Info($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
+                }
+
+                float boxDamage = isInferno ? ammoBox.CurrentAmmo * compExp.HeatDamagePerAmmo : ammoBox.CurrentAmmo * compExp.ExplosionDamagePerAmmo;
+                Mod.Log.Debug($" AmmoBox: {ammoBox.UIName} has {ammoBox.CurrentAmmo} rounds with explosion/ammo: {compExp.ExplosionDamagePerAmmo} " +
+                    $"heat/ammo: {compExp.HeatDamagePerAmmo} stab/ammo: {compExp.StabilityDamagePerAmmo} " +
+                    $"for {boxDamage} total {(isInferno ? "inferno" : "explosion")} damage.");
+
+                if (boxDamage > totalDamage) {
+                    mosDangerousBox = ammoBox;
+                    totalDamage = boxDamage;
+                }
+            }
+
+            return mosDangerousBox;
+        } 
 
         public class CBTPilotingRules {
             private readonly CombatGameState combat;

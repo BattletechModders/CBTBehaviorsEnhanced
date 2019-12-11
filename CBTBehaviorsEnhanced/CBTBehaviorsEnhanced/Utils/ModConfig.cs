@@ -106,7 +106,6 @@ namespace CBTBehaviors {
         // Movement
         public int ToHitSelfJumped = 2;
 
-
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
         public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";

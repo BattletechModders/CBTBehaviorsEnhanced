@@ -9,6 +9,7 @@ using Localize;
 using SVGImporter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using us.frostraptor.modUtils;
@@ -85,27 +86,68 @@ namespace CBTBehaviors {
                     float pilotingMulti = HeatHelper.GetPilotingMulti(__instance.OwningMech);
                     Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {gutsMulti}  pilotingMulti: {pilotingMulti}");
 
-                    bool failedAmmoCheck = HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Explosion);
-                    bool failedShutdownCheck = HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Shutdown);
-                    bool failedSystemFailureCheck = HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_System_Failure);
-                    bool failedInjuryCheck = HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Injury);
-                    bool failedFallingCheck = HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, pilotingMulti, ModConfig.FT_Check_Fall);
-                    Mod.Log.Debug($" failedAmmoCheck: {failedAmmoCheck}  failedShutdownCheck: {failedShutdownCheck}  " +
+                    bool failedAmmoCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Explosion);
+                    bool failedInfernoAmmoCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Explosion);
+                    bool failedShutdownCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Shutdown);
+                    bool failedSystemFailureCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_System_Failure);
+                    bool failedInjuryCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Injury);
+                    bool failedFallingCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, pilotingMulti, ModConfig.FT_Check_Fall);
+                    Mod.Log.Debug($" failedAmmoCheck: {failedAmmoCheck}  failedInferoCheck: {failedInfernoAmmoCheck}  failedShutdownCheck: {failedShutdownCheck}  " +
                         $"failedSystemFailureCheck: {failedSystemFailureCheck}  failedInjuryCheck: {failedInjuryCheck}");
 
                     // Resolve Pilot Injury
                     if (failedInjuryCheck) {
                         Mod.Log.Debug("-- Pilot Injury check failed, forcing injury from heat");
+                        __instance.OwningMech.pilot.InjurePilot(__instance.SequenceGUID.ToString(), __instance.RootSequenceGUID, 1, DamageType.OverheatSelf, null, __instance.OwningMech);
+                        if (!__instance.OwningMech.pilot.IsIncapacitated) {
+                            AudioEventManager.SetPilotVOSwitch<AudioSwitch_dialog_dark_light>(AudioSwitch_dialog_dark_light.dark, __instance.OwningMech);
+                            AudioEventManager.PlayPilotVO(VOEvents.Pilot_TakeDamage, __instance.OwningMech, null, null, true);
+                            if (__instance.OwningMech.team.LocalPlayerControlsTeam) {
+                                AudioEventManager.PlayAudioEvent("audioeventdef_musictriggers_combat", "friendly_warrior_injured", null, null);
+                            }
+                        }
                     }
 
                     // Resolve System Damage
                     if (failedSystemFailureCheck) {
                         Mod.Log.Debug("-- System Failure check failed, forcing system damage");
+                        List<MechComponent> functionalComponents = __instance.OwningMech.allComponents.Where(mc => mc.IsFunctional).ToList();
+                        MechComponent componentToDamage = functionalComponents.GetRandomElement();
+                        Mod.Log.Debug($" Destroying component: {componentToDamage.UIName} from heat damage.");
+
+                        WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
+                            new AttackDirection[] { AttackDirection.None }, null, null, null);
+                        componentToDamage.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
                     }
 
-                    // Resolve Ammo Explosion
+                    // Resolve Ammo Explosion - regular ammo
                     if (failedAmmoCheck) {
                         Mod.Log.Debug("-- Ammo Explosion check failed, forcing ammo explosion");
+
+                        AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, false);
+                        if (mostDamaging != null) {
+                            Mod.Log.Debug($" Exploding ammo: {mostDamaging.UIName}");
+                            WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null, 
+                                new AttackDirection[] { AttackDirection.None }, null, null, null);
+                            mostDamaging.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
+                        } else {
+                            Mod.Log.Debug(" Unit has no ammo boxes, skipping.");
+                        }
+                    }
+
+                    // Resolve Ammo Explosion - inferno ammo
+                    if (failedInfernoAmmoCheck) {
+                        Mod.Log.Debug("-- Inferno Ammo Explosion check failed, forcing inferno ammo explosion");
+
+                        AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, true);
+                        if (mostDamaging != null) {
+                            Mod.Log.Debug($" Exploding inferno ammo: {mostDamaging.UIName}");
+                            WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
+                                new AttackDirection[] { AttackDirection.None }, null, null, null);
+                            mostDamaging.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
+                        } else {
+                            Mod.Log.Debug(" Unit has no inferno ammo boxes, skipping.");
+                        }
                     }
 
                     // Resolve Shutdown + Fall
@@ -182,6 +224,7 @@ namespace CBTBehaviors {
             }
         }
 
+        // Deliberately empty to prevent all damage
         [HarmonyPatch(typeof(Mech), "CheckForHeatDamage")]
         public static class Mech_CheckForHeatDamage {
             static bool Prefix(Mech __instance, int stackID, string attackerID) {
@@ -195,56 +238,6 @@ namespace CBTBehaviors {
 
                 Mod.Log.Debug($"Actor: {__instance.DisplayName}_{__instance.GetPilot().Name} has currentHeat: {__instance.CurrentHeat}" +
                     $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
-
-                //MultiSequence sequence = new MultiSequence(__instance.Combat);
-                //sequence.SetCamera(CameraControl.Instance.ShowDeathCam(__instance, false, -1f), 0);
-
-                //if (__instance.IsOverheated) {
-                //    CBTPilotingRules rules = new CBTPilotingRules(__instance.Combat);
-                //    float gutsTestChance = rules.GetGutsModifier(__instance);
-                //    float skillRoll = __instance.Combat.NetworkRandom.Float();
-                //    float ammoRoll = __instance.Combat.NetworkRandom.Float();
-
-                //    int turnsOverheated = __instance.StatCollection.ContainsStatistic(ModStats.TurnsOverheated) ? __instance.StatCollection.GetValue<int>("TurnsOverheated") : 0;
-                //    float shutdownPercentage = HeatHelper.GetShutdownPercentageForTurn(turnsOverheated);
-                //    float ammoExplosionPercentage = HeatHelper.GetAmmoExplosionPercentageForTurn(turnsOverheated);
-
-                //    Mod.Log.Debug($"Mech:{CombatantHelper.LogLabel(__instance)} is overheated for {turnsOverheated} turns. Checking shutdown override.");
-                //    Mod.Log.Debug($"  Guts -> skill: {__instance.SkillGuts}  divisor: {Mod.Config.GutsDivisor}  bonus: {gutsTestChance}");
-                //    Mod.Log.Debug($"  Skill roll: {skillRoll} plus guts roll: {skillRoll + gutsTestChance}  target: {shutdownPercentage}");
-                //    Mod.Log.Debug($"  Ammo roll: {ammoRoll} plus guts roll: {ammoRoll + gutsTestChance}  target: {ammoExplosionPercentage}");
-
-                //    if (Mod.Config.UseGuts) {
-                //        ammoRoll = ammoRoll + gutsTestChance;
-                //        skillRoll = skillRoll + gutsTestChance;
-                //    }
-
-                //    if (HeatHelper.CanAmmoExplode(__instance)) {
-                //        if (ammoRoll < ammoExplosionPercentage) {
-                //            __instance.Combat.MessageCenter.PublishMessage(new FloatieMessage(__instance.GUID, __instance.GUID, "Ammo Overheated!", FloatieMessage.MessageNature.CriticalHit));
-
-                //            var ammoBox = __instance.ammoBoxes.Where(box => box.CurrentAmmo > 0)
-                //                .OrderByDescending(box => box.CurrentAmmo / box.AmmoCapacity)
-                //                .FirstOrDefault();
-                //            if (ammoBox != null) {
-                //                WeaponHitInfo fakeHit = new WeaponHitInfo(stackItemID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null, new AttackDirection[] { AttackDirection.None }, null, null, null);
-                //                ammoBox.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
-                //            }
-
-                //            return;
-                //        }
-
-                //        sequence.AddChildSequence(new ShowActorInfoSequence(__instance, "Ammo Explosion Avoided!", FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
-                //    }
-
-                //    sequence.AddChildSequence(new DelaySequence(__instance.Combat, 2f), sequence.ChildSequenceCount - 1);
-                //    __instance.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
-                //} else {
-                //    int turnsOverheated = __instance.StatCollection.GetValue<int>("TurnsOverheated");
-                //    if (turnsOverheated > 0) {
-                //        __instance.StatCollection.Set<int>("TurnsOverheated", 0);
-                //    }
-                //}
             }
         }
 
@@ -302,7 +295,7 @@ namespace CBTBehaviors {
                     foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
                         if (mech.CurrentHeat >= kvp.Key) {
                             penalty = kvp.Value;
-                            Mod.Log.Debug($"  attackPenalty:{penalty} from heat: {mech.CurrentHeat} >= {kvp.Key}");
+                            //Mod.Log.Debug($"  attackPenalty:{penalty} from heat: {mech.CurrentHeat} >= {kvp.Key}");
                         }
                     }
 
@@ -329,9 +322,8 @@ namespace CBTBehaviors {
                     CombatHUDHeatDisplay heatDisplay = __instance.gameObject.GetComponentInChildren<CombatHUDHeatDisplay>();
 
                     HoverElement = heatDisplay.gameObject.AddComponent<CombatHUDSidePanelHeatHoverElement>();
-                    HoverElement.name = "GBK_HOVER";
+                    HoverElement.name = "CBTBE_Hover_Element";
                     HoverElement.Init(___HUD);
-                    Mod.Log.Info($"CREATED HEAT TOOLTIP WITH CHUDHD: {__instance.GetInstanceID()}");
                 }
                 HUD = ___HUD;
             }
@@ -349,6 +341,7 @@ namespace CBTBehaviors {
             }
         }
 
+        // TODO: FIXME
         [HarmonyPatch(typeof(CombatHUDStatusPanel), "ShowShutDownIndicator", null)]
         public static class CombatHUDStatusPanel_ShowShutDownIndicator {
             public static bool Prefix(CombatHUDStatusPanel __instance) {
