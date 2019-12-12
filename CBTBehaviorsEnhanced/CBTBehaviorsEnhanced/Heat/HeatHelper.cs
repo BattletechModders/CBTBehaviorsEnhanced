@@ -29,14 +29,14 @@ namespace CBTBehaviors {
 
             float randomRoll = mech.Combat.NetworkRandom.Float();
             float checkResult = randomRoll + skillMod;
-            Mod.Log.Debug($"  pilotMod: {skillMod} + roll: {randomRoll} = checkResult: {checkResult} vs. checkTarget: {checkTarget}");
+            Mod.Log.Debug($"  pilotMod: {skillMod:#.##} + roll: {randomRoll:#.##} = checkResult: {checkResult:#.##} vs. checkTarget: {checkTarget:#.##}");
 
             string operatorText = "=";
             if (checkResult > checkTarget) { operatorText = ">"; } 
             else if (checkResult < checkTarget) { operatorText = "<"; }
 
             mech.Combat.MessageCenter.PublishMessage(
-                new FloatieMessage(mech.GUID, mech.GUID, $"{new Text(floatieText).ToString()} {randomRoll} + {skillMod} {operatorText} {checkTarget}", FloatieMessage.MessageNature.Neutral)
+                new FloatieMessage(mech.GUID, mech.GUID, $"{new Text(floatieText).ToString()} {randomRoll:#.##} + {skillMod:#.##} = {checkResult:P1} {operatorText} {checkTarget:P1}", FloatieMessage.MessageNature.Neutral)
                 );
 
             return checkTarget != -1f && checkResult >= checkTarget;

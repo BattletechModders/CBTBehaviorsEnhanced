@@ -42,7 +42,7 @@ namespace CBTBehaviorsEnhanced.Helper {
             foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Movement) {
                 if (mech.CurrentHeat >= kvp.Key) {
                     moveMod = kvp.Value * 30.0f;
-                    Mod.Log.Debug($" Move penalty = {moveMod}m as currentHeat: {mech.CurrentHeat} >= bounds: {kvp.Key}");
+                    //Mod.Log.Debug($" Move penalty = {moveMod}m as currentHeat: {mech.CurrentHeat} >= bounds: {kvp.Key}");
                 }
             }
 
