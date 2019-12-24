@@ -7,7 +7,7 @@
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
     "Contact": "",
     "DLL": "CBTBehaviorsEnhanced.dll",
-    "DependsOn" : [ "IRBTModUtils" ],
+    "DependsOn" : [ "IRBTModUtils", "MechEngineer" ],
     "Settings": {
         "Debug" : true,
         "Trace" : false,
