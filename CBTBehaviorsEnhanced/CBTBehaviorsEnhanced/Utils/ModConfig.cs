@@ -20,7 +20,7 @@ namespace CBTBehaviors {
 
     public class ModConfig {
 
-        public bool Debug = false;
+        public bool Debug = true;
         public bool Trace = false;
 
         // Heat
@@ -54,11 +54,6 @@ namespace CBTBehaviors {
                 { 42, 0.1f }, { 54, 0.3f }, { 66, 0.6f}, { 78, 0.8f }, { 90, 0.9f },
                 { 102, 1.0f }, { 114, 1.1f }, { 126, 1.2f }, { 138, 1.3f }, { 150, -1f }
             };
-            // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
-            public float PilotSkillMulti = 0.05f;
-            public int ShowLowOverheatAnim = 42; // When to show as steaming
-            public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
-            public float ShutdownFallThreshold = 0.75f;
 
             // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
             // Explosion should impact most damaging ammo first
@@ -84,9 +79,19 @@ namespace CBTBehaviors {
             public SortedDictionary<int, float> SystemFailures = new SortedDictionary<int, float> {
                 { 108, 0.3f }, { 132, 0.6f},
             };
+
+            // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
+            public float PilotSkillMulti = 0.05f;
+            public int ShowLowOverheatAnim = 42; // When to show as steaming
+            public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
+            public float ShutdownFallThreshold = 0.75f;
         }
         public HeatOptions Heat = new HeatOptions();
 
+        public class MovementOptions {
+
+        }
+        public MovementOptions Movement = new MovementOptions();
 
         public class MoveOptions {
             // The minimum amount a unit should always be allowed to take. This shouldn't go below 45m, as otherwise the unit won't be able to move at all.
@@ -127,6 +132,10 @@ namespace CBTBehaviors {
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info($"  DEBUG: {this.Debug} Trace: {this.Trace}");
+            Mod.Log.Info("=== MOVEMENT OPTIONS ===");
+
+            Mod.Log.Info("=== HEAT OPTIONS ===");
+
             Mod.Log.Info("=== MOD CONFIG END ===");
         }
     }

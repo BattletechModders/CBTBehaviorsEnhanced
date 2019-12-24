@@ -10,19 +10,6 @@ namespace CBTBehaviors {
 
     public static class MovementPatches {
 
-        //[HarmonyPatch(typeof(EncounterLayerData))]
-        //[HarmonyPatch("ContractInitialize")]
-        //public static class EncounterLayerData_ContractInitialize {
-        //    static void Prefix(EncounterLayerData __instance) {
-        //        Mod.Log.Trace("ELD:CI entered");
-        //        try {
-        //            __instance.turnDirectorBehavior = TurnDirectorBehaviorType.AlwaysInterleaved;
-        //        } catch (Exception e) {
-        //            Mod.Log.Info($"Failed to set behavior to interleaved due to:{e.Message}");
-        //        }
-        //    }
-        //}
-
         [HarmonyPatch(typeof(ToHit), "GetAllModifiers")]
         public static class ToHit_GetAllModifiers {
             private static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker, Weapon weapon, ICombatant target,
@@ -72,13 +59,6 @@ namespace CBTBehaviors {
             }
         }
 
-        //[HarmonyPatch(typeof(AbstractActor), "DoneWithActor")]
-        //public static class AbstractActor_DoneWithActor {
-        //    static void Postfix(AbstractActor __instance) {
-        //        Mod.Log.Info($"AA:DWA - entered.");
-        //    }
-        //}
-
         [HarmonyPatch(typeof(CombatHUDMechwarriorTray), "ResetMechwarriorButtons")]
         public static class CombatHUDMechwarriorTray_ResetMechwarriorButtons {
             static void Prefix(CombatHUDMechwarriorTray __instance, AbstractActor actor) {
@@ -95,15 +75,6 @@ namespace CBTBehaviors {
                     Traverse turnDirectorT = Traverse.Create(actor.Combat.TurnDirector).Property("_isInterleaved");
                     turnDirectorT.SetValue(false);
                 }
-
-                //Mod.Log.Info($"  TD isInterleaved: {actor.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {actor.Combat.TurnDirector.IsInterleavePending}" +
-                //    $"  isNonInterleavePending: {actor.Combat.TurnDirector.IsNonInterleavePending}");
-
-                //if (actor == null) {
-                //    Mod.Log.Info($"CHUDMT:RMB - entered with null actor");
-                //} else {
-                //    Mod.Log.Info($"CHUDMT:RMB - entered for actor:{actor.DisplayName}");
-                //}
             }
         }
 
@@ -112,12 +83,6 @@ namespace CBTBehaviors {
             private static void Prefix(ActorMovementSequence __instance) {
                 Mod.Log.Trace("AMS:OC entered");
                 // Check for visibility to any enemies 
-
-                //Mod.Log.Info($" Actor {__instance.owningActor.DisplayName} has autoBrace: {__instance.owningActor.AutoBrace}  canShootAfterSprinting:{__instance.owningActor.CanShootAfterSprinting}");
-                //Mod.Log.Info($" Sequence - consumesActivation: {__instance.ConsumesActivation}  forceActivationEnd: {__instance.ForceActivationEnd}");
-                //Mod.Log.Info($"TD isInterleaved: {__instance.owningActor.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.owningActor.Combat.TurnDirector.IsInterleavePending}" +
-                //    $"  isNonInterleavePending: {__instance.owningActor.Combat.TurnDirector.IsNonInterleavePending}");
-
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
                     if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
                         Mod.Log.Info("AMS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
@@ -131,25 +96,11 @@ namespace CBTBehaviors {
             }
         }
 
-        //[HarmonyPatch(typeof(SelectionStateSprint))]
-        //[HarmonyPatch("ConsumesFiring", MethodType.Getter)]
-        //public static class SelectionState_ConsumesFiring_Getter {
-        //    static void Postfix(SelectionStateSprint __instance, bool __result) {
-        //        //Mod.Log.Info($"SS:CF returning result: {__result}");
-        //    }
-        //}
-
-
         [HarmonyPatch(typeof(MechJumpSequence), "OnComplete")]
         public static class MechJumpSequence_OnComplete {
             private static void Prefix(MechJumpSequence __instance) {
                 Mod.Log.Trace("MJS:OC entered");
                 // Check for visibility to any enemies
-
-                //Mod.Log.Info($" Actor {__instance.owningActor.DisplayName} has autoBrace: {__instance.owningActor.AutoBrace}");
-                //Mod.Log.Info($"TD isInterleaved: {__instance.owningActor.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.owningActor.Combat.TurnDirector.IsInterleavePending}" +
-                //    $"  isNonInterleavePending: {__instance.owningActor.Combat.TurnDirector.IsNonInterleavePending}");
-                
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved &&
                     __instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
                     //Mod.Log.Info("MJS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
@@ -159,49 +110,6 @@ namespace CBTBehaviors {
             }
         }
 
-        //[HarmonyPatch(typeof(AbstractActor), "OnActivationEnd")]
-        //public static class AbstractActor_OnActivationEnd {
-        //    private static void Postfix(AbstractActor __instance) {
-        //        Mod.Log.Info("AA:OAE invoked");
-        //        if (__instance.Combat.TurnDirector.IsInterleavePending && __instance.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
-        //            Mod.Log.Info("AMS:OAE TD interleave is pending and enemies are detected - notifying of contact ");
-        //            //__instance.Combat.TurnDirector.OnPhaseBeginComplete();
-        //        }
-
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(Team))]
-        //[HarmonyPatch("AllUnitsDoneMoving", MethodType.Getter)]
-        //public static class Team_AllUnitsDoneMoving {
-        //    private static void Prefix(Team __instance, ref bool __result) {
-        //        Mod.Log.Info($"T:AUDM invoked");
-        //        if (__instance.Combat.TurnDirector.IsInterleavePending && __instance.GetDetectedEnemyUnits().Count > 0) {
-        //            Mod.Log.Info("T:AUDM TD interleave is pending and enemies are detected - returning true");
-        //            __result = true;
-        //        }
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(AbstractActor), "IsAvailableOnPhase")]
-        //public static class AbstractActor_IsAvailableOnPhase {
-        //    private static void Postfix(AbstractActor __instance, ref bool __result) {
-        //        Mod.Log.Info($"AA:IAOP invoked");
-        //        if (__instance.Combat.TurnDirector.IsInterleavePending && __instance.GetDetectedEnemyUnits().Count > 0 && __instance.HasBegunActivation == false) {
-        //            Mod.Log.Info("AA:IAOP TD interleave is pending and enemies are detected - returning true");
-        //            __result = false;
-        //        }
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(DoneWithActorSequence), "CompleteOrders")]
-        //public static class DoneWithActorSequence_CompleteOrders {
-        //    private static void Prefix(DoneWithActorSequence __instance) {
-        //        Mod.Log.Info($"DOAS:CO invoked");
-        //        //__instance.owningActor.Combat.TurnDirector.OnPhaseBeginComplete();
-        //    }
-        //}
-
         [HarmonyPatch(typeof(Team), "GetNextAvailableUnit")]
         public static class Team_GetNextAvailableUnit {
             private static void Postfix(Team __instance, ref AbstractActor __result) {
@@ -209,11 +117,6 @@ namespace CBTBehaviors {
 
                 if (__instance.IsLocalPlayer && __instance.Combat.TurnDirector.IsInterleavePending) {
                     Mod.Log.Info("  IsInterleavePending - returning no available unit and deferring all units.");
-                    //foreach (AbstractActor unit in __instance.units) {
-                    //    if (!unit.HasActivatedThisRound) {
-                    //        Mod.Log.Info($"  Deferring unit: {unit.DisplayName} with canBeDeferred: {unit.CanDeferUnit}");
-                    //    }
-                    //}
                     __instance.DoneWithAllAvailableActors();
 
                     __result = null;
@@ -284,6 +187,17 @@ namespace CBTBehaviors {
             }
         }
 
+        // Mitigate DFA self damage based upon piloting skill
+        [HarmonyPatch(typeof(Mech), "TakeWeaponDamage")]
+        public static class Mech_TakeWeaponDamage {
+            public static void Prefix(Mech __instance, ref float damageAmount, DamageType damageType) {
+                // 		public override void TakeWeaponDamage(WeaponHitInfo hitInfo, int hitLocation, Weapon weapon, float damageAmount, float directStructureDamage, int hitIndex, DamageType damageType)
+                if (damageType == DamageType.DFASelf) {
+
+                }
+            }
+        }
+
 
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
         public static class AbstractActor_ResolveAttackSequence_Patch {
@@ -296,22 +210,19 @@ namespace CBTBehaviors {
             private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection) {
                 Mod.Log.Trace("AA:RAS:POST entered");
 
-                //int evasivePipsCurrent = __instance.EvasivePipsCurrent;
-                //__instance.ConsumeEvasivePip(true);
-                //int evasivePipsCurrent2 = __instance.EvasivePipsCurrent;
-                //if (evasivePipsCurrent2 < evasivePipsCurrent && !__instance.IsDead && !__instance.IsFlaggedForDeath) {
-                //    __instance.Combat.MessageCenter.PublishMessage(new FloatieMessage(__instance.GUID, __instance.GUID, "-1 EVASION", FloatieMessage.MessageNature.Debuff));
-                //}
-
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(sequenceID);
                 if (attackSequence != null) {
                     if (!attackSequence.GetAttackDidDamage(__instance.GUID)) {
                         return;
                     }
-                    List<Effect> list = __instance.Combat.EffectManager.GetAllEffectsTargeting(__instance).FindAll((Effect x) => x.EffectData.targetingData.effectTriggerType == EffectTriggerType.OnDamaged);
+                    List<Effect> list = __instance.Combat.EffectManager
+                        .GetAllEffectsTargeting(__instance)
+                        .FindAll((Effect x) => x.EffectData.targetingData.effectTriggerType == EffectTriggerType.OnDamaged);
+                    
                     for (int i = 0; i < list.Count; i++) {
                         list[i].OnEffectTakeDamage(attackSequence.attacker, __instance);
                     }
+                    
                     if (attackSequence.isMelee) {
                         int value = attackSequence.attacker.StatCollection.GetValue<int>(ModStats.MeleeHitPushBackPhases);
                         if (value > 0) {

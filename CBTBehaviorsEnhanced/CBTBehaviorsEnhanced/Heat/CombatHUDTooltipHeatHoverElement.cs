@@ -38,19 +38,19 @@ namespace CBTBehaviorsEnhanced.Heat {
                 this.TempHeat = displayedMech.TempHeat;
 
                 int sinkableHeat = !displayedMech.HasAppliedHeatSinks ? displayedMech.AdjustedHeatsinkCapacity * -1 : 0;
-                int totalHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat);
+                int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat);
                 Mod.Log.Debug($"  currentHeat: {CurrentHeat}  tempHeat: {TempHeat}  projectedHeat: {ProjectedHeat}  sinkableHeat: {sinkableHeat}" +
-                    $"  =  futureHeat: {totalHeat}");
+                    $"  =  futureHeat: {futureHeat}");
                 
                 float gutsMulti = HeatHelper.GetGutsMulti(displayedMech);
                 float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
-                StringBuilder descSB = new StringBuilder($"Heat: {totalHeat} / {maxHeat}\n");
+                StringBuilder descSB = new StringBuilder($"Heat: {futureHeat} / {maxHeat}\n");
                 StringBuilder warningSB = new StringBuilder("");
 
                 float threshold = 0f;
                 // Check Ammo
                 foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion) {
-                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f && threshold != -1f) { 
                     Mod.Log.Debug($"Ammo Explosion Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
@@ -62,7 +62,7 @@ namespace CBTBehaviorsEnhanced.Heat {
 
                 // Check Injury
                 foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.PilotInjury) {
-                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f) {
                     Mod.Log.Debug($"Injury Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
@@ -72,7 +72,7 @@ namespace CBTBehaviorsEnhanced.Heat {
 
                 // Check System Failure
                 foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.SystemFailures) {
-                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f) {
                     Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
@@ -82,7 +82,7 @@ namespace CBTBehaviorsEnhanced.Heat {
 
                 // Check Shutdown
                 foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown) {
-                    if (totalHeat >= kvp.Key) { threshold = kvp.Value; }
+                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f && threshold != -1f) {
                     Mod.Log.Debug($"Shutdown Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
@@ -91,6 +91,25 @@ namespace CBTBehaviorsEnhanced.Heat {
                     warningSB.Append("Guaranteed Shutdown!");
                 }
                 threshold = 0f;
+
+                // Attack modifiers
+                int modifier = 0;
+                foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
+                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
+                }
+                if (threshold != 0) {
+                    Mod.Log.Debug($"Attack Modifier: -{modifier}");
+                }
+                modifier = 0;
+
+                // Movement modifier
+                foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
+                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
+                }
+                if (threshold != 0) {
+                    Mod.Log.Debug($"Movement Modifier: -{modifier * 30}");
+                }
+                modifier = 0;
 
                 base.SetTitleDescAndWarning("Heat", descSB.ToString(), warningSB.ToString());
                 Mod.Log.Info($" Updated values: t:'{base.Title}' / d:'{base.Description}' / w:'{base.WarningText}'");
