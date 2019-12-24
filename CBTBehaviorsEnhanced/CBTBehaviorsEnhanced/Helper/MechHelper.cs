@@ -1,10 +1,9 @@
 ﻿using BattleTech;
-using CBTBehaviors;
 using System.Collections.Generic;
 using System.Linq;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Helper {
+namespace CBTBehaviorsEnhanced {
     public class MechHelper {
 
         public static void InitModStats(Mech mech) {
@@ -79,6 +78,20 @@ namespace CBTBehaviorsEnhanced.Helper {
             //Mod.Log.Debug($"  Run speed {runSpeed}m = walkSpeed: {walkSpeed}m x runMulti: {runMulti}");
 
             return runSpeed;
+        }
+
+        public static float GetPilotingMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
+        public static float GetGutsMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
+        private static float GetSkillMulti(AbstractActor actor, bool gutsSkill) {
+            float skillMulti = 0f;
+            if (actor != null && actor.GetPilot() != null) {
+                int actorSkill = SkillUtils.NormalizeSkill(gutsSkill ? actor.GetPilot().Guts : actor.GetPilot().Piloting);
+                skillMulti = actorSkill * Mod.Config.Heat.PilotSkillMulti;
+                Mod.Log.Debug($"Actor: {CombatantUtils.Label(actor)} has normalized guts: {actorSkill} adjusted to skillMulti: {skillMulti}");
+            } else {
+                Mod.Log.Info($"WARNING: Actor {actor.DisplayName} has no pilot!");
+            }
+            return skillMulti;
         }
     }
 }

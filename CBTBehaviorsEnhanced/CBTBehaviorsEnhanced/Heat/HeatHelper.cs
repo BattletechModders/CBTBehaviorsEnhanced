@@ -4,12 +4,9 @@ using CustomComponents;
 using Localize;
 using MechEngineer.Features.ComponentExplosions;
 using System.Collections.Generic;
-using us.frostraptor.modUtils;
 
-namespace CBTBehaviors {
-
+namespace CBTBehaviorsEnhanced {
     public static class HeatHelper {
-
         public static bool DidCheckPassThreshold(SortedDictionary<int, float> dict, Mech mech, float skillMod, string floatieText) {
             float checkTarget = 0f;
             foreach (KeyValuePair<int, float> kvp in dict) {
@@ -47,19 +44,6 @@ namespace CBTBehaviors {
             return checkTarget != -1f && checkResult >= checkTarget;
         }
 
-        public static float GetPilotingMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
-        public static float GetGutsMulti(AbstractActor actor) { return GetSkillMulti(actor, false);  }
-        private static float GetSkillMulti(AbstractActor actor, bool gutsSkill) {
-            float skillMulti = 0f;
-            if (actor != null && actor.GetPilot() != null) {
-                int actorSkill = SkillUtils.NormalizeSkill(gutsSkill ? actor.GetPilot().Guts : actor.GetPilot().Piloting);
-                skillMulti = actorSkill * Mod.Config.Heat.PilotSkillMulti;
-                Mod.Log.Debug($"Actor: {CombatantUtils.Label(actor)} has normalized guts: {actorSkill} adjusted to skillMulti: {skillMulti}");
-            } else {
-                Mod.Log.Info($"WARNING: Actor {actor.DisplayName} has no pilot!");
-            }
-            return skillMulti;
-        }
 
         public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isInferno) {
             float totalDamage = 0f;

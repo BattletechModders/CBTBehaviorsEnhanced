@@ -1,8 +1,8 @@
 ﻿
 using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced;
 using CBTBehaviorsEnhanced.Heat;
-using CBTBehaviorsEnhanced.Helper;
 using Harmony;
 using HBS;
 using Localize;
@@ -14,7 +14,7 @@ using System.Reflection;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
 
     public static class HeatPatches {
 
@@ -82,8 +82,8 @@ namespace CBTBehaviors {
                     //  Pilot injury
                     //  Pilot death
 
-                    float gutsMulti = HeatHelper.GetGutsMulti(__instance.OwningMech);
-                    float pilotingMulti = HeatHelper.GetPilotingMulti(__instance.OwningMech);
+                    float gutsMulti = MechHelper.GetGutsMulti(__instance.OwningMech);
+                    float pilotingMulti = MechHelper.GetPilotingMulti(__instance.OwningMech);
                     Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {gutsMulti}  pilotingMulti: {pilotingMulti}");
 
                     bool failedAmmoCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Explosion);

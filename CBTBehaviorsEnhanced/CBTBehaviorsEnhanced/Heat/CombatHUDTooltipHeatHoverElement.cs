@@ -1,6 +1,5 @@
 ﻿using BattleTech;
 using BattleTech.UI;
-using CBTBehaviors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +41,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 Mod.Log.Debug($"  currentHeat: {CurrentHeat}  tempHeat: {TempHeat}  projectedHeat: {ProjectedHeat}  sinkableHeat: {sinkableHeat}" +
                     $"  =  futureHeat: {futureHeat}");
                 
-                float gutsMulti = HeatHelper.GetGutsMulti(displayedMech);
+                float gutsMulti = MechHelper.GetGutsMulti(displayedMech);
                 float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
                 StringBuilder descSB = new StringBuilder($"Heat: {futureHeat} / {maxHeat}\n");
                 StringBuilder warningSB = new StringBuilder("");

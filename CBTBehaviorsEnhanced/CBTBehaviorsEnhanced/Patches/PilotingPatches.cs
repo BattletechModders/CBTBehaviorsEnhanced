@@ -3,7 +3,7 @@ using BattleTech;
 using Harmony;
 using System;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
 
     public static class PilotingPatches {
 

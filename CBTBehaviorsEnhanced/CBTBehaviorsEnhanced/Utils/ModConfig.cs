@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
     
     public class ModStats {
         public const string TurnsOverheated = "TurnsOverheated";

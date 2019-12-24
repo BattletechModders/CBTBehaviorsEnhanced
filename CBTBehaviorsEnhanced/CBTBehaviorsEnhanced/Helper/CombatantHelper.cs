@@ -1,6 +1,6 @@
 ﻿using BattleTech;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
 
     public static class CombatantHelper {
         public static string LogLabel(ICombatant combatant) {

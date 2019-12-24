@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
 
     public static class MovementPatches {
 

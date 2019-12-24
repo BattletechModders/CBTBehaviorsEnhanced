@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Reflection;
 using us.frostraptor.modUtils.logging;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
 
     public static class Mod {
 

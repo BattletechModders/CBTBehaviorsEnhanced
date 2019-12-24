@@ -2,7 +2,7 @@
 using BattleTech;
 using UnityEngine;
 
-namespace CBTBehaviors {
+namespace CBTBehaviorsEnhanced {
 
     class MechEmergencyShutdownSequence : MultiSequence {
         
