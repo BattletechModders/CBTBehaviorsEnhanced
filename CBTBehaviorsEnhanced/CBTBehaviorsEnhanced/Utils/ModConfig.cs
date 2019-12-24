@@ -118,7 +118,7 @@ namespace CBTBehaviors {
         public const string FT_Check_Shutdown = "SHUTDOWN_CHECK";
         public const string FT_Check_Injury = "INJURY_CHECK";
         public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
-        public const string FT_Check_Fall = "FAILLING_CHECK";
+        public const string FT_Check_Fall = "FALLING_CHECK";
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },

@@ -39,7 +39,9 @@ namespace CBTBehaviors {
             else if (checkResult < checkTarget) { operatorText = "<"; }
 
             mech.Combat.MessageCenter.PublishMessage(
-                new FloatieMessage(mech.GUID, mech.GUID, $"{new Text(floatieText).ToString()} {randomRoll:#.##} + {skillMod:#.##} = {checkResult:P1} {operatorText} {checkTarget:P1}", FloatieMessage.MessageNature.Neutral)
+                new FloatieMessage(mech.GUID, mech.GUID, 
+                    $"{new Text(floatieText).ToString()} {randomRoll:#.##} + {skillMod:#.##} = {checkResult:P1} {operatorText} {checkTarget:P1}", 
+                    FloatieMessage.MessageNature.Neutral)
                 );
 
             return checkTarget != -1f && checkResult >= checkTarget;
