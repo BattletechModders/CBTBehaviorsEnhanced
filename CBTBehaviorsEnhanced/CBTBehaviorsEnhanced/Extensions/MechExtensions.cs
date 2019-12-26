@@ -23,10 +23,10 @@ namespace CBTBehaviorsEnhanced.Extensions {
                 malus = mech.StatCollection.GetStatistic(ModStats.PilotingMalus).Value<int>();
             }
 
-            int adjustedSkill = Math.Max(0, (actorSkill - malus)/100);
+            float adjustedSkill = actorSkill - malus > 0f ? actorSkill - malus : 0f;
             Mod.Log.Debug($"  AdjustedSkill: {adjustedSkill} = actorSkill: {actorSkill} - malus: {malus}.");
 
-            float checkMod = adjustedSkill;
+            float checkMod = adjustedSkill * multi;
             Mod.Log.Debug($"  CheckMod: {checkMod} = adjustedSkill: {adjustedSkill} * multi: {multi}");
             return checkMod;
         }

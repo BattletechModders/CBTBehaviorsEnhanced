@@ -94,6 +94,9 @@ namespace CBTBehaviorsEnhanced {
             public bool ShowAllStabilityRolls = false;
 
             public float StandAttemptFallChance = 0.30f;
+
+            // How many damage points 
+            public int FallingDamagePerTenTons = 5;
         }
         public PilotingOptions Piloting = new PilotingOptions();
 

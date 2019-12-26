@@ -5,6 +5,7 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Melee {
   
+    // Force the source or target to make a piloting check or fall down
     [HarmonyPatch(typeof(MechMeleeSequence), "OnMeleeComplete")]
     public static class MechMeleeSequence_OnMeleeComplete {
         public static void Postfix(MechMeleeSequence __instance, MessageCenterMessage message) {

@@ -5,12 +5,13 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Melee {
 
+    // Force the source and target to make piloting checks on a DFA attack or fall
     [HarmonyPatch(typeof(MechDFASequence), "OnMeleeComplete")]
     public static class MechDFASequence_OnMeleeComplete {
         public static void Postfix(MechDFASequence __instance, MessageCenterMessage message) {
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
             if (!attackCompleteMessage.attackSequence.attackCompletelyMissed) {
-                Mod.Log.Debug($" Kick attack by {CombatantUtils.Label(__instance.OwningMech)} vs. {CombatantUtils.Label(__instance.DFATarget)} succeeded.");
+                Mod.Log.Debug($" DFA attack by {CombatantUtils.Label(__instance.OwningMech)} vs. {CombatantUtils.Label(__instance.DFATarget)} succeeded.");
 
                 // Check for source falling
                 float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Melee.SkillMulti);
