@@ -10,6 +10,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     public static class MechDFASequence_OnMeleeComplete {
         public static void Postfix(MechDFASequence __instance, MessageCenterMessage message) {
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
+            Mod.Log.Info($"DFA success ratio: {attackCompleteMessage.attackSequence.RatioSuccessfulHits}");
             if (!attackCompleteMessage.attackSequence.attackCompletelyMissed) {
                 Mod.Log.Debug($" DFA attack by {CombatantUtils.Label(__instance.OwningMech)} vs. {CombatantUtils.Label(__instance.DFATarget)} succeeded.");
 

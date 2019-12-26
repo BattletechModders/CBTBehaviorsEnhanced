@@ -31,13 +31,17 @@ namespace CBTBehaviorsEnhanced {
             string operatorText = "=";
             if (checkResult > checkTarget) { operatorText = ">"; } else if (checkResult < checkTarget) { operatorText = "<"; }
 
-            mech.Combat.MessageCenter.PublishMessage(
-                new FloatieMessage(mech.GUID, mech.GUID,
-                    $"{new Text(floatieText).ToString()} {randomRoll:#.##} + {skillMod:#.##} = {checkResult:P1} {operatorText} {checkTarget:P1}",
-                    FloatieMessage.MessageNature.Neutral)
-                );
+            bool passedCheck = checkTarget != -1f && checkResult >= checkTarget;
+            if (!passedCheck) {
+                mech.Combat.MessageCenter.PublishMessage(
+                    new FloatieMessage(mech.GUID, mech.GUID,
+                        //$"{new Text(floatieText).ToString()} {randomRoll:#.##} + {skillMod:#.##} = {checkResult:P1} {operatorText} {checkTarget:P1}",
+                        $"{new Text(floatieText).ToString()} {checkResult:P1} {operatorText} {checkTarget:P1}",
+                        FloatieMessage.MessageNature.Neutral)
+                    );
+            }
 
-            return checkTarget != -1f && checkResult >= checkTarget;
+            return passedCheck;
         }
     }
 }

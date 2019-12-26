@@ -97,8 +97,6 @@ namespace CBTBehaviorsEnhanced {
                     Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
                     bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
                     Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
-                    bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
-                    Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
 
                     // Resolve Pilot Injury
                     if (failedInjuryCheck) {
@@ -168,6 +166,8 @@ namespace CBTBehaviorsEnhanced {
                         };
                         sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
 
+                        bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
+                        Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
                         if (failedFallingCheck) {
                             Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
 
