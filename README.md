@@ -78,7 +78,20 @@ Whenever you mech becomes unstable, every hit that causes stability damage will 
 
 Difficulty percentage is configurable in the mod.json file.
 
-* Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
+* TODO: When standing, make a piloting check or fall over again
+* TODO: When moving through certain terrain, add instability (water, sand, light jungle, heavy jungle, rubble) 
+* TODO: When jumping with damaged leg/foot/hip actuator
+* TODO: When jumping with destroyed leg
+* TODO: When sprinting with damaged hip/gyro
+
+## Classic Melee
+
+* TODO: On a kick, make a piloting check or fall down (source)
+* TODO: On a missed kick, make a piloting check or fall down
+* TODO: On a DFA attack, make a piloting check or fall down (source and target)
+* TODO: On a missed DFA attack, automatically fall down
+* TODO: On a charge attack, make a piloting check or fall down (source and target)
+* TODO: Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
 
 ## Classic Movement
 

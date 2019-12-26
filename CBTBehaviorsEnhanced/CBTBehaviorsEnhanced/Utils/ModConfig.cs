@@ -9,13 +9,16 @@ namespace CBTBehaviorsEnhanced {
         public const string CanShootAfterSprinting = "CanShootAfterSprinting";
         public const string MeleeHitPushBackPhases = "MeleeHitPushBackPhases";
 
-        public const string MovementPenalty = "CBTB_MovePenalty";
-        public const string FiringPenalty = "CBTB_FirePenalty";
+        public const string MovementPenalty = "CBTBE_MovePenalty";
+        public const string FiringPenalty = "CBTBE_FirePenalty";
 
         // Modifies the base 1.5 multiplier for run from walk speed
-        public const string RunMultiMod = "CBTE_RunMultiMod";
+        public const string RunMultiMod = "CBTBE_RunMultiMod";
         public const string OverHeatLevel = "OverheatLevel";
         public const string MaxHeat = "MaxHeat";
+
+        // Reduces piloting effects one for one
+        public const string PilotingMalus = "CBTBE_Piloting_Malus";
     }
 
     public class ModConfig {
@@ -28,11 +31,7 @@ namespace CBTBehaviorsEnhanced {
         public bool UseGuts = false;
         public int GutsDivisor = 40;
 
-        // 4+   ==> 91.66%
-        // 6+   ==> 72.22%
-        // 8+   ==> 41.67%
-        // 10+  ==> 16.67%
-        // 12+  ==>  2.78%
+        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
 
         // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
         public class HeatOptions {
@@ -81,17 +80,38 @@ namespace CBTBehaviorsEnhanced {
             };
 
             // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
-            public float PilotSkillMulti = 0.05f;
             public int ShowLowOverheatAnim = 42; // When to show as steaming
             public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
             public float ShutdownFallThreshold = 0.75f;
         }
         public HeatOptions Heat = new HeatOptions();
 
-        public class MovementOptions {
+        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
+        public class PilotingOptions {
+            public float SkillMulti = 0.05f;
+            public float StabilityCheck = 0.30f;
+            public float DFAReductionMulti = 0.05f;
+            public bool ShowAllStabilityRolls = false;
 
+            public float StandAttemptFallChance = 0.30f;
         }
-        public MovementOptions Movement = new MovementOptions();
+        public PilotingOptions Piloting = new PilotingOptions();
+
+        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
+        public class MeleeOptions {
+            public float SkillMulti = 0.05f;
+
+            public float MadeChargeFallChance = 0.60f;
+            public float MadeDFAFallChance = 0.90f;
+            public float MissedKickFallChance = 0.30f;
+
+            public float HitByChargeFallChance = 0.60f;
+            public float HitByDFAFallChance = 0.60f;
+            public float HitByKickFallChance = 0.30f;
+
+            // TODO: Is this even necessary? Just make DFA a high value. public bool ForceFallOnFailedDFA = true;
+        }
+        public MeleeOptions Melee = new MeleeOptions();
 
         public class MoveOptions {
             // The minimum amount a unit should always be allowed to take. This shouldn't go below 45m, as otherwise the unit won't be able to move at all.
@@ -105,8 +125,6 @@ namespace CBTBehaviorsEnhanced {
         public MoveOptions Move = new MoveOptions();
 
         // Piloting
-        public float PilotStabilityCheck = 0.30f;
-        public bool ShowAllStabilityRolls = false;
 
         // Movement
         public int ToHitSelfJumped = 2;
@@ -119,6 +137,9 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Check_Injury = "INJURY_CHECK";
         public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
         public const string FT_Check_Fall = "FALLING_CHECK";
+        public const string FT_Melee_Kick = "MELEE_KICK";
+        public const string FT_Melee_Charge = "MELEE_CHARGE";
+        public const string FT_Melee_DFA = "MELEE_DFA";
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
@@ -126,7 +147,10 @@ namespace CBTBehaviorsEnhanced {
             { FT_Check_Explosion, "Ammo Explosion Check" },
             { FT_Check_Shutdown, "Shutdown Check" },
             { FT_Check_Injury, "Pilot Injury Check" },
-            { FT_Check_System_Failure, "System Failure Check" }
+            { FT_Check_System_Failure, "System Failure Check" },
+            { FT_Melee_Kick, "Kick Falling Check" },
+            { FT_Melee_Charge, "Charge Falling Check" },
+            { FT_Melee_DFA, "DFA Falling Check" }
         };
 
         public void LogConfig() {

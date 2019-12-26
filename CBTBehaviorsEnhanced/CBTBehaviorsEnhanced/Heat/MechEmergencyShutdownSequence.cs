@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CBTBehaviorsEnhanced {
 
+    // TODO: May be unnecessary since we're patching CheckForHeatDamage... one or the other can go
     class MechEmergencyShutdownSequence : MultiSequence {
         
         private EmergencyShutdownState state;
@@ -21,17 +22,11 @@ namespace CBTBehaviorsEnhanced {
         public MechEmergencyShutdownSequence(Mech mech) : base(mech.Combat) {
             this.OwningMech = mech;
             this.setState(EmergencyShutdownState.Rising);
-            //this.SetState();
         }
 
         private Mech OwningMech { get; set; }
 
-        //private void SetState() {
-        //    Mod.Log.Info($"Mech {this.OwningMech.DisplayName}_{this.OwningMech.GetPilot().Name} shuts down from overheating");
-        //    this.OwningMech.IsShutDown = true;
-        //    this.OwningMech.DumpAllEvasivePips();
-        //}
-
+        // Prevent the debuff floatie
         public override void OnAdded() {
             base.OnAdded();
             if (this.OwningMech.GameRep != null) {
@@ -44,9 +39,6 @@ namespace CBTBehaviorsEnhanced {
                 AudioEventManager.StartVOQueue(1f);
                 
                 this.OwningMech.GameRep.PlayVFX(8, this.OwningMech.Combat.Constants.VFXNames.heat_heatShutdown, true, Vector3.zero, false, -1f);
-               
-                //base.Combat.MessageCenter.PublishMessage(new FloatieMessage(this.OwningMech.GUID, this.OwningMech.GUID, 
-                //    "EMERGENCY SHUTDOWN!", FloatieMessage.MessageNature.Debuff));
                 
                 WwiseManager.PostEvent<AudioEventList_ui>(AudioEventList_ui.ui_overheat_alarm_3, WwiseManager.GlobalAudioObject, null, null);
                 if (this.OwningMech.team.LocalPlayerControlsTeam) {
@@ -56,6 +48,7 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
+        // Prevent call to checkForHeatDamage
         private void setState(EmergencyShutdownState newState) {
             Mod.Log.Info($"MESS - Setting state to: {newState} for actor: {CombatantHelper.LogLabel(this.OwningMech)}");
             if (this.state == newState) {

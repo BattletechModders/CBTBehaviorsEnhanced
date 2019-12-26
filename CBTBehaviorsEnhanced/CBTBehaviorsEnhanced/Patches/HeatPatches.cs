@@ -2,6 +2,7 @@
 using BattleTech;
 using BattleTech.UI;
 using CBTBehaviorsEnhanced;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Heat;
 using Harmony;
 using HBS;
@@ -82,21 +83,21 @@ namespace CBTBehaviorsEnhanced {
                     //  Pilot injury
                     //  Pilot death
 
-                    float gutsMulti = MechHelper.GetGutsMulti(__instance.OwningMech);
-                    float pilotingMulti = MechHelper.GetPilotingMulti(__instance.OwningMech);
-                    Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {gutsMulti}  pilotingMulti: {pilotingMulti}");
+                    float heatCheck = __instance.OwningMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+                    float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
+                    Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
 
-                    bool failedAmmoCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Explosion);
+                    bool failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
                     Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
-                    bool failedInfernoAmmoCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Explosion);
+                    bool failedInfernoAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
                     Mod.Log.Debug($"  failedInfernoAmmoCheck: {failedInfernoAmmoCheck}");
-                    bool failedShutdownCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Shutdown);
+                    bool failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
                     Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
-                    bool failedSystemFailureCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_System_Failure);
+                    bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
                     Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
-                    bool failedInjuryCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, gutsMulti, ModConfig.FT_Check_Injury);
+                    bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
                     Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
-                    bool failedFallingCheck = !HeatHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotingMulti, ModConfig.FT_Check_Fall);
+                    bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
                     Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
 
                     // Resolve Pilot Injury

@@ -33,20 +33,20 @@ namespace CBTBehaviorsEnhanced {
                         float skillRoll = __instance.Combat.NetworkRandom.Float();
                         float skillTotal = skillRoll + skillBonus;
 
-                        Mod.Log.Debug($" Skill check -> bonus: {skillBonus}  roll: {skillRoll}  rollTotal: {skillTotal}  target:{Mod.Config.PilotStabilityCheck}");
+                        Mod.Log.Debug($" Skill check -> bonus: {skillBonus}  roll: {skillRoll}  rollTotal: {skillTotal}  target:{Mod.Config.Piloting.StabilityCheck}");
                         
-                        if (skillTotal < Mod.Config.PilotStabilityCheck) {
+                        if (skillTotal < Mod.Config.Piloting.StabilityCheck) {
                             Mod.Log.Debug(string.Format(" Skill Check Failed! Flagging for Knockdown"));
                             bool showMessage = !target.IsFlaggedForKnockdown;
 
                             target.FlagForKnockdown();
-                            if (Mod.Config.ShowAllStabilityRolls || showMessage)
+                            if (Mod.Config.Piloting.ShowAllStabilityRolls || showMessage)
                             {
                                 target.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(new ShowActorInfoSequence(target, $"Stability Check: Failed!", FloatieMessage.MessageNature.Debuff, true)));
                             }
                         } else {
                             Mod.Log.Debug(string.Format(" Skill Check Succeeded!"));
-                            if (Mod.Config.ShowAllStabilityRolls)
+                            if (Mod.Config.Piloting.ShowAllStabilityRolls)
                             {
                                 target.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(new ShowActorInfoSequence(target, $"Stability Check: Passed!", FloatieMessage.MessageNature.Buff, true)));
                             }

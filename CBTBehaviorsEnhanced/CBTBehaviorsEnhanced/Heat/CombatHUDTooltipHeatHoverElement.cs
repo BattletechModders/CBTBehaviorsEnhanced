@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,8 +41,8 @@ namespace CBTBehaviorsEnhanced.Heat {
                 int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + sinkableHeat);
                 Mod.Log.Debug($"  currentHeat: {CurrentHeat}  tempHeat: {TempHeat}  projectedHeat: {ProjectedHeat}  sinkableHeat: {sinkableHeat}" +
                     $"  =  futureHeat: {futureHeat}");
-                
-                float gutsMulti = MechHelper.GetGutsMulti(displayedMech);
+
+                float heatCheck = displayedMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
                 float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
                 StringBuilder descSB = new StringBuilder($"Heat: {futureHeat} / {maxHeat}\n");
                 StringBuilder warningSB = new StringBuilder("");
@@ -52,8 +53,8 @@ namespace CBTBehaviorsEnhanced.Heat {
                     if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f && threshold != -1f) { 
-                    Mod.Log.Debug($"Ammo Explosion Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
-                    descSB.Append($"Ammo Explosion on d100+{gutsMulti * 100f} < {threshold:P1}\n");
+                    Mod.Log.Debug($"Ammo Explosion Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                    descSB.Append($"Ammo Explosion on d100+{heatCheck * 100f} < {threshold:P1}\n");
                 } else if (threshold == -1f) {
                     warningSB.Append("Guaranteed Ammo Explosion!\n");
                 }
@@ -64,8 +65,8 @@ namespace CBTBehaviorsEnhanced.Heat {
                     if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f) {
-                    Mod.Log.Debug($"Injury Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
-                    descSB.Append($"Pilot Injury on d100+{gutsMulti * 100f} < {threshold:P1}\n");
+                    Mod.Log.Debug($"Injury Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                    descSB.Append($"Pilot Injury on d100+{heatCheck * 100f} < {threshold:P1}\n");
                 }
                 threshold = 0f;
 
@@ -74,8 +75,8 @@ namespace CBTBehaviorsEnhanced.Heat {
                     if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f) {
-                    Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
-                    descSB.Append($"System Failure on d100+{gutsMulti * 100f} < {threshold:P1}\n");
+                    Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                    descSB.Append($"System Failure on d100+{heatCheck * 100f} < {threshold:P1}\n");
                 }
                 threshold = 0f;
 
@@ -84,8 +85,8 @@ namespace CBTBehaviorsEnhanced.Heat {
                     if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0f && threshold != -1f) {
-                    Mod.Log.Debug($"Shutdown Threshold: {threshold:P1} vs. d100+{gutsMulti * 100f}");
-                    descSB.Append($"Shutdown on d100+{gutsMulti * 100f} < {threshold:P1}");
+                    Mod.Log.Debug($"Shutdown Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                    descSB.Append($"Shutdown on d100+{heatCheck * 100f} < {threshold:P1}");
                 } else if (threshold == -1f) {
                     warningSB.Append("Guaranteed Shutdown!");
                 }

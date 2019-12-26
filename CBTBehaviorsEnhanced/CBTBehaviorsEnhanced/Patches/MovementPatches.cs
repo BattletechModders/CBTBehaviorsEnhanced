@@ -45,17 +45,9 @@ namespace CBTBehaviorsEnhanced {
 
                 if (actor.HasMovedThisRound && actor.JumpedLastRound) {
                     Traverse addToolTipDetailT = Traverse.Create(__instance).Method("AddToolTipDetail", "JUMPED SELF", Mod.Config.ToHitSelfJumped);
-                    Mod.Log.Debug($"Invoking addToolTipDetail for: JUMPED SELF = {Mod.Config.ToHitSelfJumped}");
+                    Mod.Log.Trace($"Invoking addToolTipDetail for: JUMPED SELF = {Mod.Config.ToHitSelfJumped}");
                     addToolTipDetailT.GetValue();
                 }
-            }
-        }
-
-        [HarmonyPatch(typeof(AbstractActor), "InitEffectStats")]
-        public static class AbstractActor_InitEffectStats {
-            static void Postfix(AbstractActor __instance) {
-                Mod.Log.Info($"AA:IES entered- setting CanShootAfterSprinting for actor:{__instance.DisplayName}");
-                __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, true);
             }
         }
 
@@ -186,18 +178,6 @@ namespace CBTBehaviorsEnhanced {
                 return false;
             }
         }
-
-        // Mitigate DFA self damage based upon piloting skill
-        [HarmonyPatch(typeof(Mech), "TakeWeaponDamage")]
-        public static class Mech_TakeWeaponDamage {
-            public static void Prefix(Mech __instance, ref float damageAmount, DamageType damageType) {
-                // 		public override void TakeWeaponDamage(WeaponHitInfo hitInfo, int hitLocation, Weapon weapon, float damageAmount, float directStructureDamage, int hitIndex, DamageType damageType)
-                if (damageType == DamageType.DFASelf) {
-
-                }
-            }
-        }
-
 
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
         public static class AbstractActor_ResolveAttackSequence_Patch {

@@ -1,6 +1,8 @@
 ﻿using BattleTech;
+using Localize;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
@@ -11,6 +13,7 @@ namespace CBTBehaviorsEnhanced {
             mech.StatCollection.AddStatistic<int>(ModStats.TurnsOverheated, 0);
             mech.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
             mech.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
+            mech.StatCollection.AddStatistic<int>(ModStats.PilotingMalus, 0);
 
             // Override the heat and shutdown levels
             List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
@@ -80,18 +83,20 @@ namespace CBTBehaviorsEnhanced {
             return runSpeed;
         }
 
-        public static float GetPilotingMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
-        public static float GetGutsMulti(AbstractActor actor) { return GetSkillMulti(actor, false); }
-        private static float GetSkillMulti(AbstractActor actor, bool gutsSkill) {
-            float skillMulti = 0f;
-            if (actor != null && actor.GetPilot() != null) {
-                int actorSkill = SkillUtils.NormalizeSkill(gutsSkill ? actor.GetPilot().Guts : actor.GetPilot().Piloting);
-                skillMulti = actorSkill * Mod.Config.Heat.PilotSkillMulti;
-                Mod.Log.Debug($"Actor: {CombatantUtils.Label(actor)} has normalized guts: {actorSkill} adjusted to skillMulti: {skillMulti}");
-            } else {
-                Mod.Log.Info($"WARNING: Actor {actor.DisplayName} has no pilot!");
-            }
-            return skillMulti;
+        // Create a falling sequence, publish a floatie with the error
+        public static void AddFallingSequence(Mech mech, MultiSequence parentSequence, string floatieText) {
+
+            string fallDebuffText = new Text(Mod.Config.Floaties[floatieText]).ToString();
+            parentSequence.AddChildSequence(
+                new ShowActorInfoSequence(mech, fallDebuffText, FloatieMessage.MessageNature.Debuff, true),
+                parentSequence.ChildSequenceCount - 1);
+
+            MechFallSequence mfs = new MechFallSequence(mech, floatieText, new Vector2(0f, -1f)) {
+                RootSequenceGUID = parentSequence.SequenceGUID
+            };
+            parentSequence.AddChildSequence(mfs, parentSequence.ChildSequenceCount - 1);
         }
+
+
     }
 }
