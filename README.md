@@ -10,6 +10,8 @@ This mod for the [HBS BattleTech](http://battletechgame.com/) game changes sever
 
 This mod was influenced by [McFistyBuns'](https://github.com/McFistyBuns) excellent mods, which sadly are no longer updated. His code was released without a license, but in a discussion with LadyAlekto (of RougeTech) he granted a right to re-use his mod as she liked. While most of the code has been replaced, portions of the original code remains and has been relicensed under the MIT license to honor that exchange.
 
+This mod requires [https://github.com/iceraptor/IRBTModUtils/]. Grab the latest release of __IRBTModUtils__ and extract it in your Mods/ directory alongside of this mod.
+
 ## Heat Scale Changes
 
 These changes replace the default overheating behaviors, in which high heat levels caused internal structure damage. Instead it introduces a series of progressively more difficult random skill tests that cause negative effects when failed, as well as attack and movement modifiers at high heat levels.
@@ -86,12 +88,13 @@ Difficulty percentage is configurable in the mod.json file.
 
 ## Classic Melee
 
-* TODO: On a kick, make a piloting check or fall down (source)
-* TODO: On a missed kick, make a piloting check or fall down
-* TODO: On a DFA attack, make a piloting check or fall down (source and target)
-* TODO: On a missed DFA attack, automatically fall down
-* TODO: On a charge attack, make a piloting check or fall down (source and target)
-* TODO: Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
+* On a kick, make a piloting check or fall down (source)
+* On a missed kick, make a piloting check or fall down
+* On a DFA attack, make a piloting check or fall down (source and target)
+* On a missed DFA attack, automatically fall down
+* On a charge attack, make a piloting check or fall down (source and target)
+* Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
+* TODO: Allow selection of melee type
 
 ## Classic Movement
 
@@ -113,4 +116,3 @@ The way movement currently works in the game is that ToHitSelfWalk modifiers are
 * One destroyed leg means movement of 1 MP, no running, gains a +5 PSR modifier, jumping requires a PSR
 * Heat Modifiers are applied dynamically; this means you can fire, raise your heat, and suddenly not be able to move. This should be fixed, but requires some state management.
 * Disable `MechEngineer.Features.MoveMultiplierStat` - it will be completely ignored by the revamped heat-based movement logic
-* 
