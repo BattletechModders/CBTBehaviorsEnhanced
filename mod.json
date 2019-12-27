@@ -1,7 +1,7 @@
 {
     "Name": "CBTBehaviorsEnhanced",
     "Enabled": true,
-    "Version": "0.1.0",
+    "Version": "0.3.3",
     "Description": "",
     "Author": "FrostRaptor",
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
@@ -11,14 +11,9 @@
     "Settings": {
         "Debug" : true,
         "Trace" : false,
-        "ShutdownPercentages": [0.083, 0.278, 0.583, 0.833],
-        "AmmoExplosionPercentages": [0, 0.083, 0.278, 0.583],
-        "HeatToHitModifiers": [1, 2, 3, 4],
-        "UseGuts": false,
-        "GutsDivisor": 40,
-        "OverheatedMovePenalty": [0.1, 0.2, 0.3, 0.4],
-        "PilotStabilityCheck" : 0.30,
+
         "ToHitSelfJumped": 2,
+        
         "Heat" : {
             "Movement" : { "15": 1, "30" : 2, "45" : 3, "60" : 4, "75" : 5, "93" : 6, "111" : 7, "129" : 8, "147" : 9 },
             "Firing" : { "24" : 1, "39" : 2, "51" : 3, "72" : 4, "99" : 5, "123" : 6, "144" : 7 },
@@ -26,10 +21,48 @@
             "Explosion" : { "57" : 0.1, "69": 0.3, "84" : 0.5, "105" : 0.8, "120" : 0.95, "135" : -1 },
             "PilotInjury" : { "84" : 0.3, "117" : 0.6, "141" : 0.8 },
             "SystemFailures" : { "108" : 0.3, "132" : 0.6 },
-            "PilotSkillMulti" : 0.05,
             "ShowLowOverheatAnim" : 42,
             "ShowExtremeOverheatAnim" : 90,
             "ShutdownFallThreshold" : 0.75
+        },
+        
+        "Melee" : {
+            "SkillMulti" : 0.05,
+            "MadeChargeFallChance" : 0.60,
+            "MadeDFAFallChance" : 0.90,
+            "MissedKickFallChance" : 0.30,
+            "HitByChargeFallChance" : 0.60,
+            "HitByDFAFallChance" : 0.60,
+            "HitByKickFallChance" : 0.30
+        },
+        
+        "Move" : {
+            "MinimumMove" : 40.0,
+            "RunMulti" : 1.5
+        },
+        
+        "Piloting" : {
+            "SkillMulti" : 0.05,
+            "StabilityCheck" : 0.30,
+            "DFAReductionMulti" : 0.05,
+            "ShowAllStabilityRolls" : false,
+            "FallingDamagePerTenTons" : 5
+        },
+        
+        "Floaties" : {
+            "SHUTDOWN_OVERRIDE_SUCCESS" : "Passed Shutdown Override",
+            "SHUTDOWN_OVERRIDE_FAILED" : "Failed Shutdown Override",
+            "SHUTDOWN_FALL" : "Falling from Shutdown",
+
+            "EXPLOSION_CHECK" : "Ammo Explosion Check",
+            "SHUTDOWN_CHECK" : "Shutdown Check",
+            "INJURY_CHECK" : "Pilot Injury Check",
+            "SYSTEM_FAILURE_CHECK": "System Failure Check",
+            "FALLING_CHECK" : "Falling Check",
+
+            "MELEE_KICK" : "Kick Falling Check"
+            "MELEE_CHARGE" : "Charge Falling Check"
+            "MELEE_DFA" : "DFA Falling Check"
         }
     }
 }

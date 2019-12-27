@@ -26,13 +26,8 @@ namespace CBTBehaviorsEnhanced {
         public bool Debug = true;
         public bool Trace = false;
 
-        // Heat
-        public float[] AmmoExplosionPercentages = new float[] { 0f, 0.083f, 0.278f, 0.583f };
-        public bool UseGuts = false;
-        public int GutsDivisor = 40;
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
-
         // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
         public class HeatOptions {
             // 5:-1, 10:-2, 15:-3, 20:-4, 25:-5, 31:-6, 37:-7, 43:-8, 49:-9
@@ -86,19 +81,7 @@ namespace CBTBehaviorsEnhanced {
         }
         public HeatOptions Heat = new HeatOptions();
 
-        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
-        public class PilotingOptions {
-            public float SkillMulti = 0.05f;
-            public float StabilityCheck = 0.30f;
-            public float DFAReductionMulti = 0.05f;
-            public bool ShowAllStabilityRolls = false;
-
-            public float StandAttemptFallChance = 0.30f;
-
-            // How many damage points 
-            public int FallingDamagePerTenTons = 5;
-        }
-        public PilotingOptions Piloting = new PilotingOptions();
+ 
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         public class MeleeOptions {
@@ -127,7 +110,19 @@ namespace CBTBehaviorsEnhanced {
         }
         public MoveOptions Move = new MoveOptions();
 
-        // Piloting
+        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
+        public class PilotingOptions {
+            public float SkillMulti = 0.05f;
+            public float StabilityCheck = 0.30f;
+            public float DFAReductionMulti = 0.05f;
+            public bool ShowAllStabilityRolls = false;
+
+            public float StandAttemptFallChance = 0.30f;
+
+            // How many damage points 
+            public int FallingDamagePerTenTons = 5;
+        }
+        public PilotingOptions Piloting = new PilotingOptions();
 
         // Movement
         public int ToHitSelfJumped = 2;
@@ -135,11 +130,13 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
         public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
+
         public const string FT_Check_Explosion = "EXPLOSION_CHECK";
         public const string FT_Check_Shutdown = "SHUTDOWN_CHECK";
         public const string FT_Check_Injury = "INJURY_CHECK";
         public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
         public const string FT_Check_Fall = "FALLING_CHECK";
+
         public const string FT_Melee_Kick = "MELEE_KICK";
         public const string FT_Melee_Charge = "MELEE_CHARGE";
         public const string FT_Melee_DFA = "MELEE_DFA";
@@ -147,10 +144,13 @@ namespace CBTBehaviorsEnhanced {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
             { FT_Shutdown_Fall, "Falling from Shutdown" },
+
             { FT_Check_Explosion, "Ammo Explosion Check" },
             { FT_Check_Shutdown, "Shutdown Check" },
             { FT_Check_Injury, "Pilot Injury Check" },
             { FT_Check_System_Failure, "System Failure Check" },
+            { FT_Check_Fall, "Falling Check" },
+
             { FT_Melee_Kick, "Kick Falling Check" },
             { FT_Melee_Charge, "Charge Falling Check" },
             { FT_Melee_DFA, "DFA Falling Check" }

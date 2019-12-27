@@ -1,10 +1,7 @@
 ﻿
 using BattleTech;
 using CustomComponents;
-using Localize;
 using MechEngineer.Features.ComponentExplosions;
-using System;
-using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced {
     public static class HeatHelper {
@@ -40,22 +37,6 @@ namespace CBTBehaviorsEnhanced {
 
             return mosDangerousBox;
         } 
-
-        public class CBTPilotingRules {
-            private readonly CombatGameState combat;
-
-            public CBTPilotingRules(CombatGameState combat) {
-                this.combat = combat;
-            }
-
-            public float GetGutsModifier(AbstractActor actor) {
-                Pilot pilot = actor.GetPilot();
-
-                float num = (pilot != null) ? ((float)pilot.Guts) : 1f;
-                float gutsDivisor = Mod.Config.GutsDivisor;
-                return num / gutsDivisor;
-            }
-        }
 
     }
 }
