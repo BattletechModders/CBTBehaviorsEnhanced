@@ -1,34 +1,10 @@
 ﻿using BattleTech;
 using Localize;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
     public class MechHelper {
-
-        public static void InitModStats(Mech mech) {
-            // Initialize mod-specific statistics
-            mech.StatCollection.AddStatistic<int>(ModStats.TurnsOverheated, 0);
-            mech.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
-            mech.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
-            mech.StatCollection.AddStatistic<int>(ModStats.PilotingMalus, 0);
-
-            // Override the heat and shutdown levels
-            List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
-            int overheatThreshold = sortedKeys.First();
-            int maxHeat = sortedKeys.Last();
-            Mod.Log.Info($"Setting overheat threshold to {overheatThreshold} and maxHeat to {maxHeat} for actor:{CombatantUtils.Label(mech)}");
-            mech.StatCollection.Set<int>(ModStats.MaxHeat, maxHeat);
-            mech.StatCollection.Set<int>(ModStats.OverHeatLevel, overheatThreshold);
-
-            mech.StatCollection.Set<float>(ModStats.RunMultiMod, 0f);
-
-            // Disable default heat penalties
-            mech.StatCollection.Set<bool>("IgnoreHeatToHitPenalties", false);
-            mech.StatCollection.Set<bool>("IgnoreHeatMovementPenalties", false);
-        }
 
         public static float CalcWalkSpeed(Mech mech) {
             //Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has walk: {mech.WalkSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
