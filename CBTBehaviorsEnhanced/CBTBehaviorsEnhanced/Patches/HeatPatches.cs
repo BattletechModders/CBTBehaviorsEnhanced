@@ -1,7 +1,6 @@
 ﻿
 using BattleTech;
 using BattleTech.UI;
-using CBTBehaviorsEnhanced;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Heat;
 using Harmony;
@@ -24,7 +23,26 @@ namespace CBTBehaviorsEnhanced {
         public static class Mech_Init {
             public static void Postfix(Mech __instance) {
                 Mod.Log.Trace("M:I entered.");
-                MechHelper.InitModStats(__instance);
+
+                // Initialize mod-specific statistics
+                __instance.StatCollection.AddStatistic<int>(ModStats.TurnsOverheated, 0);
+                __instance.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
+                __instance.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
+                __instance.StatCollection.AddStatistic<int>(ModStats.ActuatorDamageMalus, 0);
+
+                // Override the heat and shutdown levels
+                List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
+                int overheatThreshold = sortedKeys.First();
+                int maxHeat = sortedKeys.Last();
+                Mod.Log.Info($"Setting overheat threshold to {overheatThreshold} and maxHeat to {maxHeat} for actor:{CombatantUtils.Label(__instance)}");
+                __instance.StatCollection.Set<int>(ModStats.MaxHeat, maxHeat);
+                __instance.StatCollection.Set<int>(ModStats.OverHeatLevel, overheatThreshold);
+
+                __instance.StatCollection.Set<float>(ModStats.RunMultiMod, 0f);
+
+                // Disable default heat penalties
+                __instance.StatCollection.Set<bool>("IgnoreHeatToHitPenalties", false);
+                __instance.StatCollection.Set<bool>("IgnoreHeatMovementPenalties", false);
             }
         }
 
@@ -365,7 +383,7 @@ namespace CBTBehaviorsEnhanced {
                 int turnsOverheated = mech.StatCollection.ContainsStatistic(ModStats.TurnsOverheated) ? mech.StatCollection.GetValue<int>("TurnsOverheated") : 0;
 
                 if (mech.IsShutDown) {
-                    Mod.Log.Debug($"Mech:{CombatantHelper.LogLabel(mech)} is shutdown.");
+                    Mod.Log.Debug($"Mech:{CombatantUtils.Label(mech)} is shutdown.");
                     methodInfo.Invoke(__instance, new object[] { LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
                         new Text("SHUT DOWN", new object[0]), new Text("This target is easier to hit, and Called Shots can be made against this target.", new object[0]),
                         __instance.defaultIconScale, false });
@@ -373,7 +391,7 @@ namespace CBTBehaviorsEnhanced {
                     float shutdownChance = 0;
                     float ammoExplosionChance = 0;
                     // FIXME: Remove this old code
-                    Mod.Log.Debug($"Mech:{CombatantHelper.LogLabel(mech)} is overheated, shutdownChance:{shutdownChance}% ammoExplosionChance:{ammoExplosionChance}%");
+                    Mod.Log.Debug($"Mech:{CombatantUtils.Label(mech)} is overheated, shutdownChance:{shutdownChance}% ammoExplosionChance:{ammoExplosionChance}%");
 
                     string descr = string.Format("This unit may trigger a Shutdown at the end of the turn unless heat falls below critical levels." +
                         "\nShutdown Chance: {0:P2}\nAmmo Explosion Chance: {1:P2}", 

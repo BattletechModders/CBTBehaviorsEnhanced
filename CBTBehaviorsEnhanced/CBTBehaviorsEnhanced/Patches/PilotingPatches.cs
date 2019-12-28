@@ -2,6 +2,7 @@
 using BattleTech;
 using Harmony;
 using System;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
 
@@ -24,7 +25,7 @@ namespace CBTBehaviorsEnhanced {
                     stabilityDamage *= __instance.EntrenchedMultiplier;
 
                     Mod.Log.Debug($" == Checking Piloting Stability");
-                    Mod.Log.Debug($"   target:{CombatantHelper.LogLabel(target)} isMech:{(actor is Mech)} IsDead:{target.IsDead} IsUnsteady:{target.IsUnsteady} IsOrWillBeProne:{target.IsOrWillBeProne}");
+                    Mod.Log.Debug($"   target:{CombatantUtils.Label(target)} isMech:{(actor is Mech)} IsDead:{target.IsDead} IsUnsteady:{target.IsUnsteady} IsOrWillBeProne:{target.IsOrWillBeProne}");
                     Mod.Log.Debug($"   weapon stability damage:{stabilityDamage}");
                     
                     if (stabilityDamage > 0 && !target.IsDead && target.IsUnsteady && !target.IsOrWillBeProne) {

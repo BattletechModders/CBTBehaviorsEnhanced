@@ -1,6 +1,7 @@
 ﻿
 using BattleTech;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
 
@@ -50,7 +51,7 @@ namespace CBTBehaviorsEnhanced {
 
         // Prevent call to checkForHeatDamage
         private void setState(EmergencyShutdownState newState) {
-            Mod.Log.Info($"MESS - Setting state to: {newState} for actor: {CombatantHelper.LogLabel(this.OwningMech)}");
+            Mod.Log.Info($"MESS - Setting state to: {newState} for actor: {CombatantUtils.Label(this.OwningMech)}");
             if (this.state == newState) {
                 return;
             }
