@@ -33,12 +33,16 @@
             "MissedKickFallChance" : 0.30,
             "HitByChargeFallChance" : 0.60,
             "HitByDFAFallChance" : 0.60,
-            "HitByKickFallChance" : 0.30
+            "HitByKickFallChance" : 0.30,
+            "AllowMeleeFromSprint" : true,
         },
         
         "Move" : {
+            "SkillMulti" : 0.05,
             "MinimumMove" : 40.0,
-            "RunMulti" : 1.5
+            "RunMulti" : 1.5,
+            "FallAfterRunChance" : 0.30,
+            "FallAfterJumpChance" : 0.30
         },
         
         "Piloting" : {
@@ -46,6 +50,7 @@
             "StabilityCheck" : 0.30,
             "DFAReductionMulti" : 0.05,
             "ShowAllStabilityRolls" : false,
+            "StandAttemptFallChance" : 0.30,
             "FallingDamagePerTenTons" : 5
         },
         
@@ -55,6 +60,7 @@
             "SHUTDOWN_FALL" : "Falling from Shutdown",
 
             "EXPLOSION_CHECK" : "Ammo Explosion Check",
+            "VOLATILE_EXPLOSION_CHECK" : "Volatile Ammo Explosion Check",
             "SHUTDOWN_CHECK" : "Shutdown Check",
             "INJURY_CHECK" : "Pilot Injury Check",
             "SYSTEM_FAILURE_CHECK": "System Failure Check",
@@ -62,7 +68,10 @@
 
             "MELEE_KICK" : "Kick Falling Check",
             "MELEE_CHARGE" : "Charge Falling Check",
-            "MELEE_DFA" : "DFA Falling Check"
+            "MELEE_DFA" : "DFA Falling Check",
+
+            "RUN_AND_FALL" : "Sprinted with Damage",
+            "JUMP_AND_FALL" : "Jumped with Damage"
         }
     }
 }
