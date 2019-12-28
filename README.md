@@ -82,9 +82,9 @@ Difficulty percentage is configurable in the mod.json file.
 
 * TODO: When standing, make a piloting check or fall over again
 * TODO: When moving through certain terrain, add instability (water, sand, light jungle, heavy jungle, rubble) 
-* TODO: When jumping with damaged leg/foot/hip actuator
-* TODO: When jumping with destroyed leg
-* TODO: When sprinting with damaged hip/gyro
+* When jumping with damaged leg/foot/hip actuator
+* When jumping with destroyed leg
+* When sprinting with damaged hip/gyro
 
 ## Classic Melee
 

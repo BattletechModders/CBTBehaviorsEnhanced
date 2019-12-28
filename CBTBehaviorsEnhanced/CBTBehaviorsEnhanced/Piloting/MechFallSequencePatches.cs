@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using Harmony;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,11 @@ namespace CBTBehaviorsEnhanced.Piloting {
         public static void Prefix(MechFallSequence __instance) {
             int damagePointsTT = (int)Math.Ceiling(__instance.OwningMech.tonnage / 10f);
             Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} will suffer {damagePointsTT} TT damage points.");
+
+            // Check for any pilot skill damage reduction
+            float damageReduction = 1.0f - __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.DFAReductionMulti);
+            float reducedDamage = (float)Math.Max(0f, Math.Floor(damageReduction * damagePointsTT));
+            Mod.Log.Debug($" Reducing TT fall damage from: {damagePointsTT} by {damageReduction:P1} to {reducedDamage}");
 
             List<int> locationDamage = new List<int>();
             while (damagePointsTT >= 5) {

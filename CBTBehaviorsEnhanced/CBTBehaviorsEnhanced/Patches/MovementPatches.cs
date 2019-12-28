@@ -1,10 +1,12 @@
 ﻿
 using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced.Extensions;
 using Harmony;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
 
@@ -74,7 +76,7 @@ namespace CBTBehaviorsEnhanced {
         public static class ActorMovementSequence_OnComplete {
             private static void Prefix(ActorMovementSequence __instance) {
                 Mod.Log.Trace("AMS:OC entered");
-                // Check for visibility to any enemies 
+                // Interleaved - check for visibility to any enemies 
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
                     if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
                         Mod.Log.Info("AMS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
@@ -85,6 +87,16 @@ namespace CBTBehaviorsEnhanced {
                     }
                 }
 
+                // Movement - check for damage after a sprint, and if so force a piloting check
+                if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0) {
+                    Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
+                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
+                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, sourceSkillMulti, ModConfig.FT_Fall_After_Run);
+                    if (!sourcePassed) {
+                        Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after sprinting with actuator damage, forcing fall.");
+                        MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Run);
+                    }
+                }
             }
         }
 
@@ -98,7 +110,17 @@ namespace CBTBehaviorsEnhanced {
                     //Mod.Log.Info("MJS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
                     __instance.owningActor.AutoBrace = false;
                 }
- 
+
+                // Movement - check for damage after a sprint, and if so force a piloting check
+                if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0) {
+                    Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
+                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
+                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, sourceSkillMulti, ModConfig.FT_Fall_After_Jump);
+                    if (!sourcePassed) {
+                        Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after jumping with actuator damage, forcing fall.");
+                        MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Jump);
+                    }
+                }
             }
         }
 

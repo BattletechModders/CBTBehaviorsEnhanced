@@ -18,14 +18,13 @@ namespace CBTBehaviorsEnhanced {
         public const string MaxHeat = "MaxHeat";
 
         // Reduces piloting effects one for one
-        public const string PilotingMalus = "CBTBE_Piloting_Malus";
+        public const string ActuatorDamageMalus = "CBTBE_ActuatorDamage_Malus";
     }
 
     public class ModConfig {
 
         public bool Debug = true;
         public bool Trace = false;
-
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
@@ -81,8 +80,6 @@ namespace CBTBehaviorsEnhanced {
         }
         public HeatOptions Heat = new HeatOptions();
 
- 
-
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         public class MeleeOptions {
             public float SkillMulti = 0.05f;
@@ -95,11 +92,15 @@ namespace CBTBehaviorsEnhanced {
             public float HitByDFAFallChance = 0.60f;
             public float HitByKickFallChance = 0.30f;
 
+            public bool AllowMeleeFromSprint = true;
+
             // TODO: Is this even necessary? Just make DFA a high value. public bool ForceFallOnFailedDFA = true;
         }
         public MeleeOptions Melee = new MeleeOptions();
 
         public class MoveOptions {
+            public float SkillMulti = 0.05f;
+
             // The minimum amount a unit should always be allowed to take. This shouldn't go below 45m, as otherwise the unit won't be able to move at all.
             // 45 is used because while a hex is 30m, design masks can increase/decrease this by some amount. Most don't go beyond 1.2/0.8, so 40 is a number
             //  that should guarantee one move on all terrain types
@@ -107,6 +108,12 @@ namespace CBTBehaviorsEnhanced {
 
             // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
             public float RunMulti = 1.5f;
+
+            // If you have leg damage and run, you can fall
+            public float FallAfterRunChance = 0.30f;
+
+            // If you have leg damage and jump, you can fall
+            public float FallAfterJumpChance = 0.30f;
         }
         public MoveOptions Move = new MoveOptions();
 
@@ -140,6 +147,10 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Melee_Kick = "MELEE_KICK";
         public const string FT_Melee_Charge = "MELEE_CHARGE";
         public const string FT_Melee_DFA = "MELEE_DFA";
+
+        public const string FT_Fall_After_Run = "RUN_AND_FALL";
+        public const string FT_Fall_After_Jump = "JUMP_AND_FALL";
+
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
@@ -153,7 +164,10 @@ namespace CBTBehaviorsEnhanced {
 
             { FT_Melee_Kick, "Kick Falling Check" },
             { FT_Melee_Charge, "Charge Falling Check" },
-            { FT_Melee_DFA, "DFA Falling Check" }
+            { FT_Melee_DFA, "DFA Falling Check" },
+
+            { FT_Fall_After_Run, "Sprinted with Damage" },
+            { FT_Fall_After_Jump, "Jumped with Damage" }
         };
 
         public void LogConfig() {
