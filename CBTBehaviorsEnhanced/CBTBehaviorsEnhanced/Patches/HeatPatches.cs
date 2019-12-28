@@ -105,10 +105,6 @@ namespace CBTBehaviorsEnhanced {
                     float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
                     Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
 
-                    bool failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
-                    Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
-                    bool failedInfernoAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
-                    Mod.Log.Debug($"  failedInfernoAmmoCheck: {failedInfernoAmmoCheck}");
                     bool failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
                     Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
                     bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
@@ -142,32 +138,42 @@ namespace CBTBehaviorsEnhanced {
                     }
 
                     // Resolve Ammo Explosion - regular ammo
-                    if (failedAmmoCheck) {
-                        Mod.Log.Debug("-- Ammo Explosion check failed, forcing ammo explosion");
+                    bool failedAmmoCheck = false;
+                    AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, false);
+                    if (mostDamaging != null) {
+                        failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
+                        Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
+                        if (failedAmmoCheck) {
+                            Mod.Log.Debug("-- Ammo Explosion check failed, forcing ammo explosion");
 
-                        AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, false);
-                        if (mostDamaging != null) {
-                            Mod.Log.Debug($" Exploding ammo: {mostDamaging.UIName}");
-                            WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null, 
-                                new AttackDirection[] { AttackDirection.None }, null, null, null);
-                            mostDamaging.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
-                        } else {
-                            Mod.Log.Debug(" Unit has no ammo boxes, skipping.");
+                            if (mostDamaging != null) {
+                                Mod.Log.Debug($" Exploding ammo: {mostDamaging.UIName}");
+                                WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
+                                    new AttackDirection[] { AttackDirection.None }, null, null, null);
+                                mostDamaging.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
+                            } else {
+                                Mod.Log.Debug(" Unit has no ammo boxes, skipping.");
+                            }
                         }
                     }
 
                     // Resolve Ammo Explosion - inferno ammo
-                    if (failedInfernoAmmoCheck) {
-                        Mod.Log.Debug("-- Inferno Ammo Explosion check failed, forcing inferno ammo explosion");
+                    bool failedVolatileAmmoCheck = false;
+                    AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, true);
+                    if (mostDamagingVolatile != null) {
+                        failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
+                        Mod.Log.Debug($"  failedVolatileAmmoCheck: {failedVolatileAmmoCheck}");
+                        if (failedVolatileAmmoCheck) {
+                            Mod.Log.Debug("-- Volatile Ammo Explosion check failed, forcing volatile ammo explosion");
 
-                        AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, true);
-                        if (mostDamaging != null) {
-                            Mod.Log.Debug($" Exploding inferno ammo: {mostDamaging.UIName}");
-                            WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
-                                new AttackDirection[] { AttackDirection.None }, null, null, null);
-                            mostDamaging.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
-                        } else {
-                            Mod.Log.Debug(" Unit has no inferno ammo boxes, skipping.");
+                            if (mostDamaging != null) {
+                                Mod.Log.Debug($" Exploding inferno ammo: {mostDamagingVolatile.UIName}");
+                                WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
+                                    new AttackDirection[] { AttackDirection.None }, null, null, null);
+                                mostDamagingVolatile.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
+                            } else {
+                                Mod.Log.Debug(" Unit has no inferno ammo boxes, skipping.");
+                            }
                         }
                     }
 

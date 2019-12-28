@@ -3,7 +3,7 @@
 namespace CBTBehaviorsEnhanced.Components {
 
     [CustomComponent("VolatileAmmo")]
-    class VolatileAmmoComponent : SimpleCustomComponent {
-        public bool IsVolatile = true;
+    class VolatileAmmo : SimpleCustomComponent {
+        public float damageWeighting = 1f;
     }
 }

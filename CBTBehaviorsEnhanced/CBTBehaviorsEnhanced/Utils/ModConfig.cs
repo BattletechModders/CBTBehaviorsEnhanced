@@ -139,6 +139,7 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
 
         public const string FT_Check_Explosion = "EXPLOSION_CHECK";
+        public const string FT_Check_Volatile_Explosion = "VOLATILE_EXPLOSION_CHECK";
         public const string FT_Check_Shutdown = "SHUTDOWN_CHECK";
         public const string FT_Check_Injury = "INJURY_CHECK";
         public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
@@ -157,6 +158,7 @@ namespace CBTBehaviorsEnhanced {
             { FT_Shutdown_Fall, "Falling from Shutdown" },
 
             { FT_Check_Explosion, "Ammo Explosion Check" },
+            { FT_Check_Volatile_Explosion, "Volatile Ammo Explosion Check" },
             { FT_Check_Shutdown, "Shutdown Check" },
             { FT_Check_Injury, "Pilot Injury Check" },
             { FT_Check_System_Failure, "System Failure Check" },
