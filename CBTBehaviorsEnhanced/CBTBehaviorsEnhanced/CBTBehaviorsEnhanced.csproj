@@ -82,10 +82,10 @@
     <Compile Include="Heat\HeatHelper.cs" />
     <Compile Include="Heat\MechEmergencyShutdownSequence.cs" />
     <Compile Include="Helper\CheckHelper.cs" />
-    <Compile Include="Helper\CombatantHelper.cs" />
     <Compile Include="Helper\MechHelper.cs" />
     <Compile Include="Melee\MechDFASequence.cs" />
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
+    <Compile Include="Melee\PathingPatches.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\HeatPatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
