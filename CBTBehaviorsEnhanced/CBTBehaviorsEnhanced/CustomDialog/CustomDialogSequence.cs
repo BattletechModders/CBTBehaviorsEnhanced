@@ -1,7 +1,9 @@
 ﻿using BattleTech;
 using BattleTech.UI;
+using BattleTech.UI.TMProWrapper;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.CustomDialog {
@@ -67,7 +69,20 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
                 this.sideStack.ShowPortrait(this.content.CastDef.defaultEmotePortrait.tempPortrait);
             }
 
-            float showDuration = this.content.GetDialogueTime();
+            try {
+                Transform speakerNameFieldT = this.sideStack.gameObject.transform.Find("Representation/dialog-layout/Portrait/speakerNameField");
+                if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }
+                speakerNameFieldT.gameObject.SetActive(true);
+
+                LocalizableText speakerNameLT = speakerNameFieldT.GetComponentInChildren<LocalizableText>();
+                speakerNameLT.SetText(content.SpeakerName);
+                speakerNameLT.gameObject.SetActive(true);
+                speakerNameLT.alignment = TMPro.TextAlignmentOptions.Bottom;
+
+            } catch (Exception e) {
+                Mod.Log.Error("Failed to set display name due to error!");
+                Mod.Log.Error(e);
+            }
 
             // TODO: Note that audio content will be ignored
             //if (this.content.HasAudioEvent()) {
@@ -77,9 +92,9 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
             //    showDuration = 30f;
             //}
 
+            float showDuration = this.content.GetDialogueTime();
             this.activeDialog = this.sideStack.GetNextItem();
             this.activeDialog.Init(showDuration, true, new Action(this.AfterDialogShow), new Action(this.AfterDialogHide));
-            this.activeDialog.SpeakerName = new BattleTech.UI.TMProWrapper.LocalizableText();
 
             Mod.Log.Info($"CDS - Showing dialog: words:{this.content.words} color:{this.content.wordsColor} speakerName:{this.content.SpeakerName} timeout: {this.content.GetDialogueTime()}");
             this.activeDialog.Show(this.content.words, this.content.wordsColor, this.content.SpeakerName);
@@ -97,12 +112,18 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
         }
 
         public void AfterDialogShow() {
+            Mod.Log.Info("After dialog show!");
             this.sideStack.AfterDialogShow();
         }
 
         public void AfterDialogHide() {
+            Mod.Log.Info("After dialog hide!");
             this.sideStack.AfterDialogHide();
-            this.PlayMessage();
+            //this.PlayMessage();
+
+            Transform speakerNameFieldT = this.sideStack.gameObject.transform.Find("Representation/dialog-layout/Portrait/speakerNameField");
+            if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }
+            speakerNameFieldT.gameObject.SetActive(false);
         }
 
         public void UserRequestHide() {
