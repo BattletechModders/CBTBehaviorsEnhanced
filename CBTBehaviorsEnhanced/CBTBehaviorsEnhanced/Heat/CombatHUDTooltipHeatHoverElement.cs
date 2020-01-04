@@ -98,8 +98,8 @@ namespace CBTBehaviorsEnhanced.Heat {
                     if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
                 }
                 if (threshold != 0) {
-                    Mod.Log.Debug($"Attack Modifier: -{modifier}");
-                    descSB.Append($"Attack Penalty: -{modifier}");
+                    Mod.Log.Debug($"Attack Modifier: +{modifier}");
+                    descSB.Append($"Attack Penalty: +{modifier}");
                 }
                 modifier = 0;
 
