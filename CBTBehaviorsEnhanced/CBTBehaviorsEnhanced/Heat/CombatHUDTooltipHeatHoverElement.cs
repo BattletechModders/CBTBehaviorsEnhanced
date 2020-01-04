@@ -99,6 +99,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 }
                 if (threshold != 0) {
                     Mod.Log.Debug($"Attack Modifier: -{modifier}");
+                    descSB.Append($"Attack Penalty: -{modifier}");
                 }
                 modifier = 0;
 
@@ -108,6 +109,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 }
                 if (threshold != 0) {
                     Mod.Log.Debug($"Movement Modifier: -{modifier * 30}");
+                    descSB.Append($"Movement Penalty: -{modifier * 30}");
                 }
                 modifier = 0;
 
