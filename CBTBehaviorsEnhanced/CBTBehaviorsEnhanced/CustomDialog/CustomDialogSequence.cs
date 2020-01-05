@@ -53,20 +53,15 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
 
         private void Play() {
             Mod.Log.Info($"CDS - PLAY INVOKED FOR {CombatantUtils.Label(this.dialogueSource)}");
-            // TODO: SOLVE THIS
-            //if (this.content.cameraFocus.HasGuid) {
-            //    base.FocusCamera(this.content, this.dialogSourceGUID);
-            //}
-
+           
             Mod.Log.Info("CDS - PanelFrame opened");
             this.sideStack.PanelFrame.gameObject.SetActive(true);
-            //this.sideStack.ShowPortrait(this.content.GetPortraitSprite());
-            if (this.dialogueSource.GetPilot() != null) {
+            if (this.dialogueSource.team.IsLocalPlayer) {
                 Mod.Log.Debug($"  Displaying pilot portrait");
                 this.sideStack.ShowPortrait(this.dialogueSource.GetPilot().GetPortraitSpriteThumb());
             } else {
                 Mod.Log.Debug($"  Displaying castDef portrait");
-                this.sideStack.ShowPortrait(this.content.CastDef.defaultEmotePortrait.tempPortrait);
+                this.sideStack.ShowPortrait(this.content.CastDef.defaultEmotePortrait.LoadPortrait(false));
             }
 
             try {
@@ -84,15 +79,7 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
                 Mod.Log.Error(e);
             }
 
-            // TODO: Note that audio content will be ignored
-            //if (this.content.HasAudioEvent()) {
-            //    Mod.Log.Info("CDS - PLAYING AUDIO");
-            //    AudioEventManager.DialogSequencePlaying = true;
-            //    DialogueAudioEvent.Play(base.Combat, this.content, new AkCallbackManager.EventCallback(this.AudioCallback));
-            //    showDuration = 30f;
-            //}
-
-            float showDuration = this.content.GetDialogueTime();
+            float showDuration = this.content.GetDialogueTime() * 2f;
             this.activeDialog = this.sideStack.GetNextItem();
             this.activeDialog.Init(showDuration, true, new Action(this.AfterDialogShow), new Action(this.AfterDialogHide));
 
@@ -100,15 +87,7 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
             this.activeDialog.Show(this.content.words, this.content.wordsColor, this.content.SpeakerName);
             Mod.Log.Info("CDS - DONE");
 
-            base.Combat.MessageCenter.PublishMessage(new DialogueContinueMessage(this.dialogueSource.GUID, this.content.conversationIdx));
-        }
-
-        public void AudioCallback(object in_cookie, AkCallbackType in_type, object in_info) {
-            if (this.activeDialog != null) {
-                this.activeDialog.FadeOut(0.5f);
-            }
-            this.activeDialog = null;
-            this.content = null;
+            //base.Combat.MessageCenter.PublishMessage(new DialogueContinueMessage(this.dialogueSource.GUID, this.content.conversationIdx));
         }
 
         public void AfterDialogShow() {
@@ -119,7 +98,6 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
         public void AfterDialogHide() {
             Mod.Log.Info("After dialog hide!");
             this.sideStack.AfterDialogHide();
-            //this.PlayMessage();
 
             Transform speakerNameFieldT = this.sideStack.gameObject.transform.Find("Representation/dialog-layout/Portrait/speakerNameField");
             if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }

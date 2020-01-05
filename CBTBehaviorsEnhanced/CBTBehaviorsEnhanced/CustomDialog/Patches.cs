@@ -45,7 +45,7 @@ namespace CBTBehaviorsEnhanced.CustomDialog {
             // TODO: Fix castdef for player units?
             CastDef castDef = Coordinator.CreateCast(__instance);
             // Note: Supplying __instance.GUID breaks...
-            DialogueContent content = new DialogueContent("Turns done!", Color.red, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0f);
+            DialogueContent content = new DialogueContent("My turn is finished!", Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0f);
             content.ContractInitialize(__instance.Combat);
 
             Mod.Log.Info("  --PUBLISHING MESSAGE");
