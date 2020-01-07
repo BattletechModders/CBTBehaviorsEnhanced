@@ -110,9 +110,12 @@ CBT Movement is an attempt to bring Classic Battletech Tabletop movement rules f
 
 The way movement currently works in the game is that ToHitSelfWalk modifiers are applied whenever you make any movement. So Sprinting, for example, will have a +1 for movement and an additional +1 for sprinting, bringing it in line with the original Tabletop rules of +2. The same applies to the Jump ToHit Modifiers.
 
-## NOTES
+## NOTES TODO ERRORS
 
-* If you are shutdown, you auto-fail Piloting checks. Reflect this in Classic Piloting
-* One destroyed leg means movement of 1 MP, no running, gains a +5 PSR modifier, jumping requires a PSR
+* TODO: If you are shutdown, you auto-fail Piloting checks. Reflect this in Classic Piloting
+* TODO: One destroyed leg means movement of 1 MP, no running, gains a +5 PSR modifier, jumping requires a PSR
 * Heat Modifiers are applied dynamically; this means you can fire, raise your heat, and suddenly not be able to move. This should be fixed, but requires some state management.
 * Disable `MechEngineer.Features.MoveMultiplierStat` - it will be completely ignored by the revamped heat-based movement logic
+* TODO: Select melee style
+* TODO: Punches should roll on punch table, kicks on kick table, etc
+* ERROR: Problems in interleaved mode if you hit "OK" before everyone is done moving.

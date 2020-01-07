@@ -25,8 +25,8 @@ namespace CBTBehaviorsEnhanced {
         public bool Debug = true;
         public bool Trace = false;
 
-        public class DialogueOptions {
-            public List<string> KnockdownQuips = new List<string>() {
+        public class QipsConfig {
+            public List<string> Knockdown = new List<string>() {
                 "Oh .. shit!",
                 "FML",
                 "This is going to hurt..",
@@ -44,7 +44,7 @@ namespace CBTBehaviorsEnhanced {
                 "Biting the dust!"
             };
         }
-        public DialogueOptions Dialogue = new DialogueOptions();
+        public QipsConfig Qips = new QipsConfig();
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105

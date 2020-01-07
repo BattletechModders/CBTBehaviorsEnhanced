@@ -64,15 +64,11 @@ namespace CBTBehaviorsEnhanced {
         public static void AddFallingSequence(Mech mech, MultiSequence parentSequence, string floatieText) {
 
             string fallDebuffText = new Text(Mod.Config.Floaties[floatieText]).ToString();
-            //parentSequence.AddChildSequence(
-            //    new ShowActorInfoSequence(mech, fallDebuffText, FloatieMessage.MessageNature.Debuff, true),
-            //    parentSequence.ChildSequenceCount - 1);
             MultiSequence sequence = new ShowActorInfoSequence(mech, fallDebuffText, FloatieMessage.MessageNature.Debuff, true);
 
             MechFallSequence mfs = new MechFallSequence(mech, floatieText, new Vector2(0f, -1f)) {
                 RootSequenceGUID = parentSequence.SequenceGUID
             };
-            //parentSequence.AddChildSequence(mfs, parentSequence.ChildSequenceCount - 1);
             sequence.AddChildSequence(mfs, 0);
 
             mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));

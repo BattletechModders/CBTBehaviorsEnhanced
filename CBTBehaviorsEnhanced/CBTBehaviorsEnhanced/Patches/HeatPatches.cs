@@ -77,8 +77,13 @@ namespace CBTBehaviorsEnhanced {
                  */
 
                 if (!__instance.PerformHeatSinkStep) {
+                    Mod.Log.Debug($"Reconciling heat for actor: {CombatantUtils.Label(__instance.OwningMech)}");
+                    Mod.Log.Debug($"  Before - currentHeat: {__instance.OwningMech.CurrentHeat}  tempHeat: {__instance.OwningMech.TempHeat}  " +
+                        $"isPastMaxHeat: {__instance.OwningMech.IsPastMaxHeat}  hasAppliedHeatSinks: {__instance.OwningMech.HasAppliedHeatSinks}");
                     // Checks for heat damage, clamps heat to max and min
                     __instance.OwningMech.ReconcileHeat(__instance.RootSequenceGUID, __instance.InstigatorID);
+                    Mod.Log.Debug($"  After - currentHeat: {__instance.OwningMech.CurrentHeat}  tempHeat: {__instance.OwningMech.TempHeat}  " +
+                        $"isPastMaxHeat: {__instance.OwningMech.IsPastMaxHeat}  hasAppliedHeatSinks: {__instance.OwningMech.HasAppliedHeatSinks}");
                 }
 
                 //if (__instance.OwningMech.IsPastMaxHeat && !__instance.OwningMech.IsShutDown) {
@@ -103,7 +108,6 @@ namespace CBTBehaviorsEnhanced {
                     float heatCheck = __instance.OwningMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
                     float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
                     Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
-
 
                     // Resolve Pilot Injury
                     bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);

@@ -12,7 +12,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
     [HarmonyPatch(typeof(MechFallSequence), "OnAdded")]
     public class MechFallSequence_OnAdded {
         public static void Postfix(MechFallSequence __instance) {
-            string quip = Mod.Config.Dialogue.KnockdownQuips[Mod.Random.Next(0, Mod.Config.Dialogue.KnockdownQuips.Count)];
+            string quip = Mod.Config.Qips.Knockdown[Mod.Random.Next(0, Mod.Config.Qips.Knockdown.Count)];
             string localizedQuip = new Localize.Text(quip).ToString();
             CastDef castDef = Coordinator.CreateCast(__instance.OwningMech);
             DialogueContent content = new DialogueContent(
