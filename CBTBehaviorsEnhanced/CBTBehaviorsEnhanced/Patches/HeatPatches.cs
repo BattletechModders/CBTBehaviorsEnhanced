@@ -104,14 +104,10 @@ namespace CBTBehaviorsEnhanced {
                     float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
                     Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
 
-                    bool failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
-                    Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
-                    bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
-                    Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
-                    bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
-                    Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
 
                     // Resolve Pilot Injury
+                    bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
+                    Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
                     if (failedInjuryCheck) {
                         Mod.Log.Debug("-- Pilot Injury check failed, forcing injury from heat");
                         __instance.OwningMech.pilot.InjurePilot(__instance.SequenceGUID.ToString(), __instance.RootSequenceGUID, 1, DamageType.OverheatSelf, null, __instance.OwningMech);
@@ -125,6 +121,8 @@ namespace CBTBehaviorsEnhanced {
                     }
 
                     // Resolve System Damage
+                    bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
+                    Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
                     if (failedSystemFailureCheck) {
                         Mod.Log.Debug("-- System Failure check failed, forcing system damage");
                         List<MechComponent> functionalComponents = __instance.OwningMech.allComponents.Where(mc => mc.IsFunctional).ToList();
@@ -177,6 +175,8 @@ namespace CBTBehaviorsEnhanced {
                     }
 
                     // Resolve Shutdown + Fall
+                    bool failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
+                    Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
                     if (failedShutdownCheck) {
                         Mod.Log.Debug("-- Shutdown check failed, forcing unit to shutdown");
 

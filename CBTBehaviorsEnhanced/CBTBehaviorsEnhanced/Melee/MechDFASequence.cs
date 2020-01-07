@@ -4,7 +4,8 @@ using Harmony;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Melee {
-
+    // TODO: Make the check for the miss/pass here, but add the fall checks after OnWeaponAttackSequenceComplete
+    
     // Force the source and target to make piloting checks on a DFA attack or fall
     [HarmonyPatch(typeof(MechDFASequence), "OnMeleeComplete")]
     public static class MechDFASequence_OnMeleeComplete {

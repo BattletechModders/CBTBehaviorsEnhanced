@@ -44,7 +44,7 @@ namespace CBTBehaviorsEnhanced.Heat {
 
                 float heatCheck = displayedMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
                 float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
-                StringBuilder descSB = new StringBuilder($"Heat: {futureHeat} / {maxHeat}\n");
+                StringBuilder descSB = new StringBuilder($"Heat: {futureHeat} / {maxHeat}");
                 StringBuilder warningSB = new StringBuilder("");
 
                 float threshold = 0f;
@@ -54,9 +54,9 @@ namespace CBTBehaviorsEnhanced.Heat {
                 }
                 if (threshold != 0f && threshold != -1f) { 
                     Mod.Log.Debug($"Ammo Explosion Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
-                    descSB.Append($"Ammo Explosion on d100+{heatCheck * 100f} < {threshold:P1}\n");
+                    descSB.Append($"\nAmmo Explosion on d100+{heatCheck * 100f} < {threshold:P1}");
                 } else if (threshold == -1f) {
-                    warningSB.Append("Guaranteed Ammo Explosion!\n");
+                    warningSB.Append("Guaranteed Ammo Explosion!");
                 }
                 threshold = 0f;
 
@@ -66,7 +66,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 }
                 if (threshold != 0f) {
                     Mod.Log.Debug($"Injury Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
-                    descSB.Append($"Pilot Injury on d100+{heatCheck * 100f} < {threshold:P1}\n");
+                    descSB.Append($"\nPilot Injury on d100+{heatCheck * 100f} < {threshold:P1}");
                 }
                 threshold = 0f;
 
@@ -76,7 +76,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 }
                 if (threshold != 0f) {
                     Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
-                    descSB.Append($"System Failure on d100+{heatCheck * 100f} < {threshold:P1}\n");
+                    descSB.Append($"\nSystem Failure on d100+{heatCheck * 100f} < {threshold:P1}");
                 }
                 threshold = 0f;
 
@@ -86,30 +86,30 @@ namespace CBTBehaviorsEnhanced.Heat {
                 }
                 if (threshold != 0f && threshold != -1f) {
                     Mod.Log.Debug($"Shutdown Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
-                    descSB.Append($"Shutdown on d100+{heatCheck * 100f} < {threshold:P1}");
+                    descSB.Append($"\nShutdown on d100+{heatCheck * 100f} < {threshold:P1}");
                 } else if (threshold == -1f) {
-                    warningSB.Append("Guaranteed Shutdown!");
+                    warningSB.Append("\nGuaranteed Shutdown!");
                 }
                 threshold = 0f;
 
                 // Attack modifiers
                 int modifier = 0;
                 foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
-                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
+                    if (futureHeat >= kvp.Key) { modifier = kvp.Value; }
                 }
-                if (threshold != 0) {
+                if (modifier != 0) {
                     Mod.Log.Debug($"Attack Modifier: +{modifier}");
-                    descSB.Append($"Attack Penalty: +{modifier}");
+                    descSB.Append($"\nAttack Penalty: +{modifier}");
                 }
                 modifier = 0;
 
                 // Movement modifier
                 foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
-                    if (futureHeat >= kvp.Key) { threshold = kvp.Value; }
+                    if (futureHeat >= kvp.Key) { modifier = kvp.Value; }
                 }
-                if (threshold != 0) {
-                    Mod.Log.Debug($"Movement Modifier: -{modifier * 30}");
-                    descSB.Append($"Movement Penalty: -{modifier * 30}");
+                if (modifier != 0) {
+                    Mod.Log.Debug($"Movement Modifier: -{modifier * 30}m");
+                    descSB.Append($"\nMovement Penalty: -{modifier * 30}m");
                 }
                 modifier = 0;
 

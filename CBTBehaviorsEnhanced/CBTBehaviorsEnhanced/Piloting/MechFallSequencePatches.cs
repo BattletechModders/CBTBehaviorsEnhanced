@@ -19,8 +19,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
                 localizedQuip, Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
                 );
             content.ContractInitialize(__instance.OwningMech.Combat);
-            __instance.OwningMech.Combat.MessageCenter.PublishMessage(
-                new CustomDialogMessage(__instance.OwningMech, content, 3000));
+            __instance.OwningMech.Combat.MessageCenter.PublishMessage(new CustomDialogMessage(__instance.OwningMech, content, 3));
         }
     }
 

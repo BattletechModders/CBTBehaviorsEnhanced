@@ -20,9 +20,15 @@ namespace CBTBehaviorsEnhanced {
 
         private static bool PassedCheck(float checkTarget, Mech mech, float skillMod, string floatieText) {
             // If there's no threshold, you auto-pass
-            if (checkTarget <= 0f) { return true; }
+            if (checkTarget <= 0f) {
+                Mod.Log.Debug("Check against 0 or less auto-passed.");
+                return true;
+            }
             // If the threshold is -1, you auto-fail
-            if (checkTarget == -1f) { return false; }
+            if (checkTarget == -1f) {
+                Mod.Log.Debug("Check against -1 auto-failed.");
+                return false;
+            }
 
             float randomRoll = mech.Combat.NetworkRandom.Float();
             float checkResult = randomRoll + skillMod;
