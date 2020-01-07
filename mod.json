@@ -1,7 +1,7 @@
 {
     "Name": "CBTBehaviorsEnhanced",
     "Enabled": true,
-    "Version": "0.3.5",
+    "Version": "0.3.6",
     "Description": "",
     "Author": "FrostRaptor",
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
@@ -12,9 +12,7 @@
     "Settings": {
         "Debug" : true,
         "Trace" : false,
-
         "ToHitSelfJumped": 2,
-        
         "Heat" : {
             "Movement" : { "15": -1, "30" : -2, "45" : -3, "60" : -4, "75" : -5, "93" : -6, "111" : -7, "129" : -8, "147" : -9 },
             "Firing" : { "24" : 1, "39" : 2, "51" : 3, "72" : 4, "99" : 5, "123" : 6, "144" : 7 },
@@ -73,6 +71,23 @@
 
             "RUN_AND_FALL" : "Sprinted with Damage",
             "JUMP_AND_FALL" : "Jumped with Damage"
-        }
+        },
+        "Quips": [
+                "Oh .. shit!",
+                "FML",
+                "This is going to hurt..",
+                "This takes the cake",
+                "Not again..",
+                "A bitter pill",
+                "Balls!",
+                "And... here we go",
+                "D'oh!",
+                "Shaken, not stirred",
+                "Resistance is futile",
+                "Well, isn't that special?",
+                "I love you, too",
+                "Just some armor...",
+                "Biting the dust!"
+        ]
     }
 }
