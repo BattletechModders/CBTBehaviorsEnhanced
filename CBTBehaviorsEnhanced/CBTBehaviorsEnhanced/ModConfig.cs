@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace CBTBehaviorsEnhanced {
     
     public class ModStats {
-        public const string TurnsOverheated = "TurnsOverheated";
         public const string CanShootAfterSprinting = "CanShootAfterSprinting";
         public const string MeleeHitPushBackPhases = "MeleeHitPushBackPhases";
 
@@ -25,6 +24,27 @@ namespace CBTBehaviorsEnhanced {
 
         public bool Debug = true;
         public bool Trace = false;
+
+        public class DialogueOptions {
+            public List<string> KnockdownQuips = new List<string>() {
+                "Oh .. shit!",
+                "FML",
+                "This is going to hurt..",
+                "This takes the cake",
+                "Not again..",
+                "A bitter pill",
+                "Balls!",
+                "And... here we go",
+                "D'oh!",
+                "Shaken, not stirred",
+                "Resistance is futile",
+                "Well, isn't that special?",
+                "I love you, too",
+                "Just some armor...",
+                "Biting the dust!"
+            };
+        }
+        public DialogueOptions Dialogue = new DialogueOptions();
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
@@ -130,32 +150,6 @@ namespace CBTBehaviorsEnhanced {
             public int FallingDamagePerTenTons = 5;
         }
         public PilotingOptions Piloting = new PilotingOptions();
-
-        public class CastOptions {
-            public string[] Portraits = {
-                    "sprites/Portraits/guiTxrPort_DEST_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_01_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_02_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_03_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_04_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_05_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_06_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_07_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_08_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_09_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_10_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_11_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_12_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_davion_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_default_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_kurita_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_liao_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_marik_utr.png",
-                    "sprites/Portraits/guiTxrPort_GenericMW_steiner_utr.png",
-            };
-            public string CallsignsPath = "../../BattleTech_Data/StreamingAssets/data/nameLists/name_callsign.txt";
-        }
-        public CastOptions Cast = new CastOptions();
 
         // Movement
         public int ToHitSelfJumped = 2;

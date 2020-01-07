@@ -3,9 +3,26 @@ using CBTBehaviorsEnhanced.Extensions;
 using Harmony;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using us.frostraptor.modUtils;
+using us.frostraptor.modUtils.CustomDialog;
 
 namespace CBTBehaviorsEnhanced.Piloting {
+
+    [HarmonyPatch(typeof(MechFallSequence), "OnAdded")]
+    public class MechFallSequence_OnAdded {
+        public static void Postfix(MechFallSequence __instance) {
+            string quip = Mod.Config.Dialogue.KnockdownQuips[Mod.Random.Next(0, Mod.Config.Dialogue.KnockdownQuips.Count)];
+            string localizedQuip = new Localize.Text(quip).ToString();
+            CastDef castDef = Coordinator.CreateCast(__instance.OwningMech);
+            DialogueContent content = new DialogueContent(
+                localizedQuip, Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
+                );
+            content.ContractInitialize(__instance.OwningMech.Combat);
+            __instance.OwningMech.Combat.MessageCenter.PublishMessage(
+                new CustomDialogMessage(__instance.OwningMech, content, 3000));
+        }
+    }
 
     [HarmonyPatch(typeof(MechFallSequence), "OnComplete")]
     public class MechFallSequence_OnComplete {

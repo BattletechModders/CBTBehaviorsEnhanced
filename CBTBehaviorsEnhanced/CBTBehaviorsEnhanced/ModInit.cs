@@ -6,7 +6,6 @@ using System.Reflection;
 using us.frostraptor.modUtils.logging;
 
 namespace CBTBehaviorsEnhanced {
-
     public static class Mod {
 
         public const string HarmonyPackage = "us.frostraptor.CBTBehaviorsEnhanced";

@@ -25,7 +25,6 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Log.Trace("M:I entered.");
 
                 // Initialize mod-specific statistics
-                __instance.StatCollection.AddStatistic<int>(ModStats.TurnsOverheated, 0);
                 __instance.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
                 __instance.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
                 __instance.StatCollection.AddStatistic<int>(ModStats.ActuatorDamageMalus, 0);
@@ -344,10 +343,8 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Log.Trace("CHUDMT::Init - entered.");
 
                 if (__instance.gameObject.GetComponentInChildren<CombatHUDHeatDisplay>() == null) {
-                    Mod.Log.Info("COULD NOT FIND HEAT DISPLAY");
+                    Mod.Log.Warn("COULD NOT FIND HEAT DISPLAY");
                 } else {
-                    Mod.Log.Info("FOUND HEAT DISPLAY");
-
                     CombatHUDHeatDisplay heatDisplay = __instance.gameObject.GetComponentInChildren<CombatHUDHeatDisplay>();
 
                     HoverElement = heatDisplay.gameObject.AddComponent<CombatHUDSidePanelHeatHoverElement>();
@@ -385,8 +382,6 @@ namespace CBTBehaviorsEnhanced {
                 var type = __instance.GetType();
                 MethodInfo methodInfo = type.GetMethod("ShowDebuff", (BindingFlags.NonPublic | BindingFlags.Instance), null, 
                     new Type[] { typeof(SVGAsset), typeof(Text), typeof(Text), typeof(Vector3), typeof(bool) }, new ParameterModifier[5]);
-
-                int turnsOverheated = mech.StatCollection.ContainsStatistic(ModStats.TurnsOverheated) ? mech.StatCollection.GetValue<int>("TurnsOverheated") : 0;
 
                 if (mech.IsShutDown) {
                     Mod.Log.Debug($"Mech:{CombatantUtils.Label(mech)} is shutdown.");
