@@ -183,7 +183,7 @@ namespace CBTBehaviorsEnhanced {
                     if (failedShutdownCheck) {
                         Mod.Log.Debug("-- Shutdown check failed, forcing unit to shutdown");
 
-                        string debuffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
+                        string debuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
                         sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                             FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
@@ -197,7 +197,7 @@ namespace CBTBehaviorsEnhanced {
                         if (failedFallingCheck) {
                             Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
 
-                            string fallDebuffText = new Text(Mod.Config.Floaties[ModConfig.FT_Shutdown_Fall]).ToString();
+                            string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Fall]).ToString();
                             sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
                                 FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
