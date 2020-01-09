@@ -20,7 +20,14 @@ namespace CBTBehaviorsEnhanced {
 
         private static bool PassedCheck(float checkTarget, Mech mech, float skillMod, string floatieText) {
             // If the threshold is -1, you auto-fail
-            if (checkTarget == -1f) { return false; }
+            if (checkTarget == -1f) {
+                mech.Combat.MessageCenter.PublishMessage(
+                    new FloatieMessage(mech.GUID, mech.GUID,
+                    $"{new Text(floatieText).ToString()} {new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Auto_Fail]).ToString()}", 
+                    FloatieMessage.MessageNature.Neutral)
+                    );
+                return false;
+            }
             // If there's no threshold, you auto-pass
             if (checkTarget <= 0f) { return true; }
 
@@ -35,7 +42,6 @@ namespace CBTBehaviorsEnhanced {
             if (!passedCheck) {
                 mech.Combat.MessageCenter.PublishMessage(
                     new FloatieMessage(mech.GUID, mech.GUID,
-                        //$"{new Text(floatieText).ToString()} {randomRoll:#.##} + {skillMod:#.##} = {checkResult:P1} {operatorText} {checkTarget:P1}",
                         $"{new Text(floatieText).ToString()} {checkResult:P1} {operatorText} {checkTarget:P1}",
                         FloatieMessage.MessageNature.Neutral)
                     );
