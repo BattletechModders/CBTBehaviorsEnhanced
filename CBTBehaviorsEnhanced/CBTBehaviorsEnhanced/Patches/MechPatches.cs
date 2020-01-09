@@ -25,6 +25,7 @@ namespace CBTBehaviorsEnhanced.Patches {
     public static class Mech_ApplyStartupHeatSinks {
         public static bool Prefix(Mech __instance, int stackID) {
             Mod.Log.Trace("M:ASHS - entered.");
+            Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance)} sinking {__instance.AdjustedHeatsinkCapacity} at startup.");
             __instance.ApplyHeatSinks(stackID);
             return false;
         }
