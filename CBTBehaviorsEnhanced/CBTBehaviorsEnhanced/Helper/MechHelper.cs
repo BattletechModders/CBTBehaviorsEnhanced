@@ -3,6 +3,7 @@ using Localize;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
     public class MechHelper {

@@ -18,9 +18,9 @@ namespace CBTBehaviorsEnhanced {
 
     public static class HeatPatches {
 
-        [HarmonyPatch(typeof(Mech), "Init")]
+        [HarmonyPatch(typeof(Mech), "InitEffectStats")]
         [HarmonyAfter("MechEngineer.Features.Engine")]
-        public static class Mech_Init {
+        public static class Mech_InitEffectStats {
             public static void Postfix(Mech __instance) {
                 Mod.Log.Trace("M:I entered.");
 
@@ -28,6 +28,7 @@ namespace CBTBehaviorsEnhanced {
                 __instance.StatCollection.AddStatistic<int>(ModStats.MovementPenalty, 0);
                 __instance.StatCollection.AddStatistic<int>(ModStats.FiringPenalty, 0);
                 __instance.StatCollection.AddStatistic<int>(ModStats.ActuatorDamageMalus, 0);
+                __instance.StatCollection.AddStatistic<float>(ModStats.RunMultiMod, 0f);
 
                 // Override the heat and shutdown levels
                 List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
@@ -37,11 +38,9 @@ namespace CBTBehaviorsEnhanced {
                 __instance.StatCollection.Set<int>(ModStats.MaxHeat, maxHeat);
                 __instance.StatCollection.Set<int>(ModStats.OverHeatLevel, overheatThreshold);
 
-                __instance.StatCollection.Set<float>(ModStats.RunMultiMod, 0f);
-
                 // Disable default heat penalties
-                __instance.StatCollection.Set<bool>("IgnoreHeatToHitPenalties", false);
-                __instance.StatCollection.Set<bool>("IgnoreHeatMovementPenalties", false);
+                __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatToHitPenalties, false);
+                __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatMovementPenalties, false);
             }
         }
 
@@ -365,7 +364,6 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Log.Trace("CHUDMT::Update - entered.");
 
                 if (__instance.DisplayedActor is Mech displayedMech && CombatHUDMechTray_Init.HoverElement != null) {
-                    //Mod.Log.Info("-- UPDATING TOOLTIP DATA.");
                     CombatHUDMechTray_Init.HoverElement.UpdateText(displayedMech);
                 }
             }

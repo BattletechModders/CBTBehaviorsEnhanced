@@ -95,6 +95,7 @@ Difficulty percentage is configurable in the mod.json file.
 * On a charge attack, make a piloting check or fall down (source and target)
 * Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
 * TODO: Allow selection of melee type
+* Allows moving to different melee positions (duplicate of MeleeMover by Morphyum)
 
 ## Classic Movement
 

@@ -5,24 +5,24 @@ using System.Collections.Generic;
 namespace CBTBehaviorsEnhanced {
     
     public class ModStats {
+        public const string IgnoreHeatToHitPenalties = "IgnoreHeatToHitPenalties";
+        public const string IgnoreHeatMovementPenalties = "IgnoreHeatMovementPenalties";
         public const string CanShootAfterSprinting = "CanShootAfterSprinting";
         public const string MeleeHitPushBackPhases = "MeleeHitPushBackPhases";
-
-        public const string MovementPenalty = "CBTBE_MovePenalty";
-        public const string FiringPenalty = "CBTBE_FirePenalty";
-
-        // Modifies the base 1.5 multiplier for run from walk speed
-        public const string RunMultiMod = "CBTBE_RunMultiMod";
         public const string OverHeatLevel = "OverheatLevel";
         public const string MaxHeat = "MaxHeat";
 
+        public const string MovementPenalty = "CBTBE_MovePenalty"; // int
+        public const string FiringPenalty = "CBTBE_FirePenalty"; // int
         // Reduces piloting effects one for one
-        public const string ActuatorDamageMalus = "CBTBE_ActuatorDamage_Malus";
+        public const string ActuatorDamageMalus = "CBTBE_ActuatorDamage_Malus";  // int
+        // Modifies the base 1.5 multiplier for run from walk speed
+        public const string RunMultiMod = "CBTBE_RunMultiMod"; // float
     }
 
     public class ModConfig {
 
-        public bool Debug = true;
+        public bool Debug = false;
         public bool Trace = false;
 
         public class QipsConfig {
