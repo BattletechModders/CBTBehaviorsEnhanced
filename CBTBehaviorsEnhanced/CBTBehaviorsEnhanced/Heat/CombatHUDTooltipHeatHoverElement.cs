@@ -88,7 +88,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (threshold != 0f) {
                     Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
                     descSB.Append(new Localize.Text(
-                        Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold }
+                        Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold }
                         ));
                 }
                 threshold = 0f;
