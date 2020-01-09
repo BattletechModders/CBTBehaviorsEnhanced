@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
+using CBTBehaviorsEnhanced.Helper;
 using Harmony;
 using System;
 using System.Collections.Generic;
@@ -13,14 +14,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
     public class MechFallSequence_OnAdded {
         public static void Postfix(MechFallSequence __instance) {
             Mod.Log.Trace("MFS:OnAdded - entered.");
-            string quip = Mod.Config.Qips.Knockdown[Mod.Random.Next(0, Mod.Config.Qips.Knockdown.Count)];
-            string localizedQuip = new Localize.Text(quip).ToString();
-            CastDef castDef = Coordinator.CreateCast(__instance.OwningMech);
-            DialogueContent content = new DialogueContent(
-                localizedQuip, Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
-                );
-            content.ContractInitialize(__instance.OwningMech.Combat);
-            __instance.OwningMech.Combat.MessageCenter.PublishMessage(new CustomDialogMessage(__instance.OwningMech, content, 3));
+            QuipHelper.PublishQuip(__instance.OwningMech, Mod.Config.Qips.Knockdown);            
         }
     }
 
