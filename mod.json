@@ -24,7 +24,6 @@
             "ShowExtremeOverheatAnim" : 90,
             "ShutdownFallThreshold" : 0.75
         },
-        
         "Melee" : {
             "SkillMulti" : 0.05,
             "MadeChargeFallChance" : 0.60,
@@ -60,6 +59,7 @@
             "EXPLOSION_CHECK" : "Ammo Explosion Check",
             "VOLATILE_EXPLOSION_CHECK" : "Volatile Ammo Explosion Check",
             "SHUTDOWN_CHECK" : "Shutdown Check",
+            "STARTUP_CHECK" : "Startup Check",
             "INJURY_CHECK" : "Pilot Injury Check",
             "SYSTEM_FAILURE_CHECK": "System Failure Check",
             "FALLING_CHECK" : "Falling Check",
@@ -67,7 +67,8 @@
             "MELEE_CHARGE" : "Charge Falling Check",
             "MELEE_DFA" : "DFA Falling Check",
             "RUN_AND_FALL" : "Sprinted with Damage",
-            "JUMP_AND_FALL" : "Jumped with Damage"
+            "JUMP_AND_FALL" : "Jumped with Damage",
+            "AUTO_FAIL" : "Automatic Failure"
         },
         "LocalizedCHUDTooltips" : {
             "TITLE" : "HEAT LEVEL",
