@@ -12,6 +12,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
     [HarmonyPatch(typeof(MechFallSequence), "OnAdded")]
     public class MechFallSequence_OnAdded {
         public static void Postfix(MechFallSequence __instance) {
+            Mod.Log.Trace("MFS:OnAdded - entered.");
             string quip = Mod.Config.Qips.Knockdown[Mod.Random.Next(0, Mod.Config.Qips.Knockdown.Count)];
             string localizedQuip = new Localize.Text(quip).ToString();
             CastDef castDef = Coordinator.CreateCast(__instance.OwningMech);
@@ -26,6 +27,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
     [HarmonyPatch(typeof(MechFallSequence), "OnComplete")]
     public class MechFallSequence_OnComplete {
         public static void Prefix(MechFallSequence __instance) {
+            Mod.Log.Trace("MFS:OnComplete - entered.");
             int damagePointsTT = (int)Math.Ceiling(__instance.OwningMech.tonnage / 10f);
             Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} will suffer {damagePointsTT} TT damage points.");
 

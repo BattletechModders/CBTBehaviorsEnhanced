@@ -1,9 +1,7 @@
 ﻿using BattleTech;
 using Localize;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
     public class MechHelper {
@@ -50,7 +48,6 @@ namespace CBTBehaviorsEnhanced {
             float runMulti = Mod.Config.Move.RunMulti;
             if (mech.StatCollection.ContainsStatistic(ModStats.RunMultiMod)) {
                 float runMultiMod = mech.StatCollection.GetStatistic(ModStats.RunMultiMod).Value<float>();
-                Mod.Log.Debug($"  Modifying base run multiplier {runMulti} + {runMultiMod}");
                 runMulti += runMultiMod;
             }
             
@@ -64,15 +61,15 @@ namespace CBTBehaviorsEnhanced {
         // Create a falling sequence, publish a floatie with the error
         public static void AddFallingSequence(Mech mech, MultiSequence parentSequence, string floatieText) {
 
-            string fallDebuffText = new Text(Mod.Config.Floaties[floatieText]).ToString();
-            MultiSequence sequence = new ShowActorInfoSequence(mech, fallDebuffText, FloatieMessage.MessageNature.Debuff, true);
+            MechFallSequence mechFallSequence = new MechFallSequence(mech, floatieText, new Vector2(0f, -1f));
 
-            MechFallSequence mfs = new MechFallSequence(mech, floatieText, new Vector2(0f, -1f)) {
-                RootSequenceGUID = parentSequence.SequenceGUID
+            string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[floatieText]).ToString();
+            MultiSequence showInfoSequence = new ShowActorInfoSequence(mech, fallDebuffText, FloatieMessage.MessageNature.Debuff, false) {
+                RootSequenceGUID = mechFallSequence.SequenceGUID
             };
-            sequence.AddChildSequence(mfs, 0);
+            mechFallSequence.AddChildSequence(showInfoSequence, mechFallSequence.MessageIndex);
 
-            mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
+            mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechFallSequence));
         }
 
     }
