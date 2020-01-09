@@ -1,22 +1,7 @@
 {
   "Heat": {
-    "CriticalHeatPerLocationLight": 0,
-    "CriticalHeatPerLocationMedium": 0,
-    "CriticalHeatPerLocationHeavy": 0,
-    "CriticalHeatPerLocationAssault": 0
-  },
-  "MoveConstants": {
-    "OverheatedMovePenalty": 0
-  },
-  "ToHit": {
-    "ToHitSelfSprinted": 1,
-    "ToHitSelfWalkLight": 1,
-    "ToHitSelfWalkMedium": 1,
-    "ToHitSelfWalkHeavy": 1,
-    "ToHitSelfWalkAssault": 1,
-    "ToHitSelfWalkVehicle": 1
-  },
-  "ResolutionConstants": {
-    "AllowTotalNegativeModifier": true
-  }
+    "WalkHeat": 0,
+    "SprintHeat": 6,
+    "ShowPeakHeat": false
+  },  
 }
