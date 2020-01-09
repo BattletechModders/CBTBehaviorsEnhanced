@@ -43,6 +43,15 @@ namespace CBTBehaviorsEnhanced {
                 "Just some armor...",
                 "Biting the dust!"
             };
+            public List<string> Startup = new List<string> {
+                "Start damn you",
+                "Can't see through this heat",
+                "Where is the start button?",
+                "Override damn it, override!",
+                "Time to void the warranty",
+                "Why won't you turn on",
+                "I put in the startup sequence!"
+            };
         }
         public QipsConfig Qips = new QipsConfig();
 
@@ -158,20 +167,19 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
         public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
-
         public const string FT_Check_Explosion = "EXPLOSION_CHECK";
         public const string FT_Check_Volatile_Explosion = "VOLATILE_EXPLOSION_CHECK";
         public const string FT_Check_Shutdown = "SHUTDOWN_CHECK";
+        public const string FT_Check_Startup = "STARTUP_CHECK";
         public const string FT_Check_Injury = "INJURY_CHECK";
         public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
         public const string FT_Check_Fall = "FALLING_CHECK";
-
         public const string FT_Melee_Kick = "MELEE_KICK";
         public const string FT_Melee_Charge = "MELEE_CHARGE";
         public const string FT_Melee_DFA = "MELEE_DFA";
-
         public const string FT_Fall_After_Run = "RUN_AND_FALL";
         public const string FT_Fall_After_Jump = "JUMP_AND_FALL";
+        public const string FT_Auto_Fail = "AUTO_FAIL";
         public Dictionary<string, string> LocalizedFloaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
@@ -180,6 +188,7 @@ namespace CBTBehaviorsEnhanced {
             { FT_Check_Explosion, "Ammo Explosion Check" },
             { FT_Check_Volatile_Explosion, "Volatile Ammo Explosion Check" },
             { FT_Check_Shutdown, "Shutdown Check" },
+            { FT_Check_Startup, "Startup Check" },
             { FT_Check_Injury, "Pilot Injury Check" },
             { FT_Check_System_Failure, "System Failure Check" },
             { FT_Check_Fall, "Falling Check" },
@@ -189,7 +198,9 @@ namespace CBTBehaviorsEnhanced {
             { FT_Melee_DFA, "DFA Falling Check" },
 
             { FT_Fall_After_Run, "Sprinted with Damage" },
-            { FT_Fall_After_Jump, "Jumped with Damage" }
+            { FT_Fall_After_Jump, "Jumped with Damage" },
+
+            { FT_Auto_Fail, "Automatic Failure" }
         };
 
         // CombatHUDTooltip Localization 
@@ -215,6 +226,12 @@ namespace CBTBehaviorsEnhanced {
             { CHUD_TT_Attack, "Attack Penalty: +{0}" },
             { CHUD_TT_Move, "Movement Penalty: -{0}m" },
         };
+
+        public class FeatureList {
+            public bool StartupChecks = true;
+        }
+        public FeatureList Features = new FeatureList();
+
 
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
