@@ -154,6 +154,7 @@ namespace CBTBehaviorsEnhanced {
         // Movement
         public int ToHitSelfJumped = 2;
 
+        // Floatie localization text
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
         public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
@@ -171,8 +172,7 @@ namespace CBTBehaviorsEnhanced {
 
         public const string FT_Fall_After_Run = "RUN_AND_FALL";
         public const string FT_Fall_After_Jump = "JUMP_AND_FALL";
-
-        public Dictionary<string, string> Floaties = new Dictionary<string, string> {
+        public Dictionary<string, string> LocalizedFloaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
             { FT_Shutdown_Fall, "Falling from Shutdown" },
@@ -190,6 +190,30 @@ namespace CBTBehaviorsEnhanced {
 
             { FT_Fall_After_Run, "Sprinted with Damage" },
             { FT_Fall_After_Jump, "Jumped with Damage" }
+        };
+
+        // CombatHUDTooltip Localization 
+        public const string CHUD_TT_Title = "TITLE";
+        public const string CHUD_TT_Heat = "HEAT_AND_SINKING";
+        public const string CHUD_TT_Explosion = "AMMO_EXP_CHANCE";
+        public const string CHUD_TT_Explosion_Warning = "AMMO_EXP_WARNING";
+        public const string CHUD_TT_Injury = "PILOT_INJURY_CHANCE";
+        public const string CHUD_TT_Sys_Failure = "SYSTEM_FAILURE_CHANCE";
+        public const string CHUD_TT_Shutdown = "SHUTDOWN_CHANCE";
+        public const string CHUD_TT_Shutdown_Warning = "SHUTDOWN_WARNING";
+        public const string CHUD_TT_Attack = "ATTACK_PENALTY";
+        public const string CHUD_TT_Move = "MOVEMENT_PENALTY";
+        public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
+            { CHUD_TT_Title, "HEAT LEVEL" },
+            { CHUD_TT_Heat, "Heat: {0} of {1}  Sinking: {2}" },
+            { CHUD_TT_Explosion, "\nAmmo Explosion on d100+{0 * 100f} < {1:P1}" },
+            { CHUD_TT_Explosion_Warning, "Guaranteed Ammo Explosion!" },
+            { CHUD_TT_Injury, "\nPilot Injury on d100+{0} < {1:P1}" },
+            { CHUD_TT_Sys_Failure, "\nSystem Failure on d100+{0} < {1:P1}" },
+            { CHUD_TT_Shutdown, "\nShutdown on d100+{0} < {1:P1}" },
+            { CHUD_TT_Shutdown_Warning, "Guaranteed Shutdown!" },
+            { CHUD_TT_Attack, "Attack Penalty: +{0}" },
+            { CHUD_TT_Move, "Movement Penalty: -{0}m" },
         };
 
         public void LogConfig() {
