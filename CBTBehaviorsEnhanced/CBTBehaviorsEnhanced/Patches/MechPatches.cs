@@ -19,4 +19,15 @@ namespace CBTBehaviorsEnhanced.Patches {
             }
         }
     }
+
+    // Forces your startup sequence to only sink your capacity, not the ratio HBS uses
+    [HarmonyPatch(typeof(Mech), "ApplyStartupHeatSinks")]
+    public static class Mech_ApplyStartupHeatSinks {
+        public static bool Prefix(Mech __instance, int stackID) {
+            Mod.Log.Trace("M:ASHS - entered.");
+            __instance.ApplyHeatSinks(stackID);
+            return false;
+        }
+    }
+
 }
