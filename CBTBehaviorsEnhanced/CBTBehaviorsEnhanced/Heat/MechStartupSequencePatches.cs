@@ -18,20 +18,21 @@ namespace CBTBehaviorsEnhanced.Heat {
 
             // Check to see if we should restart automatically
             float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
-            bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, mech, heatCheck, ModConfig.FT_Check_Shutdown);
+            int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
+            bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModConfig.FT_Check_Startup);
             if (passedStartupCheck) { return true; } // Do the normal startup process
 
             Mod.Log.Debug($"Mech: {CombatantUtils.Label(mech)} failed a startup roll, venting heat but remaining offline.");
 
             QuipHelper.PublishQuip(mech, Mod.Config.Qips.Startup);
 
+            DoneWithActorSequence doneWithActorSequence = (DoneWithActorSequence)mech.GetDoneWithActorOrders();
             MechHeatSequence mechHeatSequence = new MechHeatSequence(mech, true, true, "STARTUP");
-            DoneWithActorSequence dwas = (DoneWithActorSequence)mech.GetDoneWithActorOrders();
-            mechHeatSequence.AddChildSequence(dwas, mechHeatSequence.MessageIndex);
+            doneWithActorSequence.AddChildSequence(mechHeatSequence, mechHeatSequence.MessageIndex);
 
-            InvocationStackSequenceCreated message = new InvocationStackSequenceCreated(mechHeatSequence, __instance);
+            InvocationStackSequenceCreated message = new InvocationStackSequenceCreated(doneWithActorSequence, __instance);
             combatGameState.MessageCenter.PublishMessage(message);
-            AddSequenceToStackMessage.Publish(combatGameState.MessageCenter, mechHeatSequence);
+            AddSequenceToStackMessage.Publish(combatGameState.MessageCenter, doneWithActorSequence);
 
             //mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechHeatSequence));
 
