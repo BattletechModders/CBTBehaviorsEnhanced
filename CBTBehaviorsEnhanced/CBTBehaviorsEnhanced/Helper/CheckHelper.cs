@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced {
     public class CheckHelper {
-        public static bool DidCheckPassThreshold(SortedDictionary<int, float> dict, Mech mech, float skillMod, string floatieText) {
+        public static bool DidCheckPassThreshold(SortedDictionary<int, float> dict, int heatValue, Mech mech, float skillMod, string floatieText) {
             float checkTarget = 0f;
             foreach (KeyValuePair<int, float> kvp in dict) {
-                if (mech.CurrentHeat >= kvp.Key) {
+                if (heatValue >= kvp.Key) {
                     checkTarget = kvp.Value;
                 }
             }
-            Mod.Log.Debug($"  target roll set to: {checkTarget} for heat: {mech.CurrentHeat}");
+            Mod.Log.Debug($"  target roll set to: {checkTarget} for heat: {heatValue}");
             return PassedCheck(checkTarget, mech, skillMod, floatieText);
         }
         public static bool DidCheckPassThreshold(float checkTarget, Mech mech, float skillMod, string floatieText) {
