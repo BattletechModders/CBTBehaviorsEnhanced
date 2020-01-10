@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
     <Compile Include="Helper\QuipHelper.cs" />
+    <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
     <Compile Include="ModInit.cs" />
     <Compile Include="Components\VolatileAmmo.cs" />
     <Compile Include="Extensions\MechExtensions.cs" />

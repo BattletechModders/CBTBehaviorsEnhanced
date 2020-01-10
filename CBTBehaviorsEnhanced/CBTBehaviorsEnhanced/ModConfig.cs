@@ -173,8 +173,6 @@ namespace CBTBehaviorsEnhanced {
         public class BiomeBreachOptions {
             public float VacuumCheck = 0.17f;
             public float ThinAtmoCheck = 0.03f;
-            public List<string> VacuumBiomes = new List<string> { "lunarVacuum" };
-            public List<string> ThinAtmoBiomes = new List<string> { "martianVacuum" };
         }
         public BiomeBreachOptions Breaches = new BiomeBreachOptions();
 

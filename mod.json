@@ -60,13 +60,7 @@
         
         "Breaches" : {
             "VacuumCheck" : 0.17,
-            "ThinAtmoCheck" : 0.03,
-            "VacuumBiomes" : [
-                "lunarVacuum"
-            ],
-            "ThinAtmoBiomes" : [
-                "martianVacuum"
-            ]
+            "ThinAtmoCheck" : 0.03
         },
 
         "LocalizedFloaties" : {

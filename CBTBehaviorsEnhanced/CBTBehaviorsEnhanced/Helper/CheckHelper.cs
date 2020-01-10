@@ -14,15 +14,15 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Debug($"  target roll set to: {checkTarget} for heat: {heatValue}");
             return PassedCheck(checkTarget, mech, skillMod, floatieText);
         }
-        public static bool DidCheckPassThreshold(float checkTarget, Mech mech, float skillMod, string floatieText) {
-            return PassedCheck(checkTarget, mech, skillMod, floatieText);
+        public static bool DidCheckPassThreshold(float checkTarget, AbstractActor actor, float skillMod, string floatieText) {
+            return PassedCheck(checkTarget, actor, skillMod, floatieText);
         }
 
-        private static bool PassedCheck(float checkTarget, Mech mech, float skillMod, string floatieText) {
+        private static bool PassedCheck(float checkTarget, AbstractActor actor, float skillMod, string floatieText) {
             // If the threshold is -1, you auto-fail
             if (checkTarget == -1f) {
-                mech.Combat.MessageCenter.PublishMessage(
-                    new FloatieMessage(mech.GUID, mech.GUID,
+                actor.Combat.MessageCenter.PublishMessage(
+                    new FloatieMessage(actor.GUID, actor.GUID,
                     $"{new Text(floatieText).ToString()} {new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Auto_Fail]).ToString()}", 
                     FloatieMessage.MessageNature.Neutral)
                     );
@@ -31,7 +31,7 @@ namespace CBTBehaviorsEnhanced {
             // If there's no threshold, you auto-pass
             if (checkTarget <= 0f) { return true; }
 
-            float randomRoll = mech.Combat.NetworkRandom.Float();
+            float randomRoll = actor.Combat.NetworkRandom.Float();
             float checkResult = randomRoll + skillMod;
             Mod.Log.Debug($"  pilotMod: {skillMod:#.##} + roll: {randomRoll:#.##} = checkResult: {checkResult:#.##} vs. checkTarget: {checkTarget:#.##}");
 
@@ -40,8 +40,8 @@ namespace CBTBehaviorsEnhanced {
 
             bool passedCheck = checkTarget != -1f && checkResult >= checkTarget;
             if (!passedCheck) {
-                mech.Combat.MessageCenter.PublishMessage(
-                    new FloatieMessage(mech.GUID, mech.GUID,
+                actor.Combat.MessageCenter.PublishMessage(
+                    new FloatieMessage(actor.GUID, actor.GUID,
                         $"{new Text(floatieText).ToString()} {checkResult:P1} {operatorText} {checkTarget:P1}",
                         FloatieMessage.MessageNature.Neutral)
                     );
