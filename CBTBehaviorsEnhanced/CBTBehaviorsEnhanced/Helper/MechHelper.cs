@@ -1,7 +1,9 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using Localize;
 using System.Collections.Generic;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {
     public class MechHelper {
@@ -70,6 +72,27 @@ namespace CBTBehaviorsEnhanced {
             mechFallSequence.AddChildSequence(showInfoSequence, mechFallSequence.MessageIndex);
 
             mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechFallSequence));
+        }
+
+        public static void PilotCheckOnInstabilityDamage(Mech target, float stabilityDamage) {
+            // Do nothing in these cases
+            if (target.IsDead || target.IsOrWillBeProne || !target.IsUnsteady) {
+                Mod.Log.Debug($"Target: {CombatantUtils.Label(target)} is dead, will be prone, or has no stability damage. Skipping.");
+                return;
+            }
+
+            float pilotCheck = target.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
+            bool didCheckPass = CheckHelper.DidCheckPassThreshold(Mod.Config.Piloting.StabilityCheck, target, pilotCheck, ModConfig.FT_Check_Fall);
+            if (!didCheckPass) {
+                Mod.Log.Debug($"Actor: {CombatantUtils.Label(target)} failed a knockdown check due to instability, starting fall sequence.");
+                target.FlagForKnockdown();
+
+                string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Check_Fall]).ToString();
+                target.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(
+                    new ShowActorInfoSequence(target, fallDebuffText, FloatieMessage.MessageNature.Debuff, true)
+                    ));
+            }
+
         }
 
     }
