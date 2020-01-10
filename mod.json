@@ -13,6 +13,7 @@
         "Debug" : true,
         "Trace" : false,
         "Features" : {
+            "BiomeBreaches" : true,
             "StartupChecks" : true
         },
         
