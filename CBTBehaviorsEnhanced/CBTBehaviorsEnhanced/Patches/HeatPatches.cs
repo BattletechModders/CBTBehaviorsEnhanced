@@ -109,7 +109,7 @@ namespace CBTBehaviorsEnhanced {
                     Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
 
                     // Resolve Pilot Injury
-                    bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
+                    bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
                     Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
                     if (failedInjuryCheck) {
                         Mod.Log.Debug("-- Pilot Injury check failed, forcing injury from heat");
@@ -124,7 +124,7 @@ namespace CBTBehaviorsEnhanced {
                     }
 
                     // Resolve System Damage
-                    bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
+                    bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
                     Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
                     if (failedSystemFailureCheck) {
                         Mod.Log.Debug("-- System Failure check failed, forcing system damage");
@@ -141,7 +141,7 @@ namespace CBTBehaviorsEnhanced {
                     bool failedAmmoCheck = false;
                     AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, false);
                     if (mostDamaging != null) {
-                        failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
+                        failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
                         Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
                         if (failedAmmoCheck) {
                             Mod.Log.Debug("-- Ammo Explosion check failed, forcing ammo explosion");
@@ -161,7 +161,7 @@ namespace CBTBehaviorsEnhanced {
                     bool failedVolatileAmmoCheck = false;
                     AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(__instance.OwningMech, true);
                     if (mostDamagingVolatile != null) {
-                        failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
+                        failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
                         Mod.Log.Debug($"  failedVolatileAmmoCheck: {failedVolatileAmmoCheck}");
                         if (failedVolatileAmmoCheck) {
                             Mod.Log.Debug("-- Volatile Ammo Explosion check failed, forcing volatile ammo explosion");
@@ -177,37 +177,46 @@ namespace CBTBehaviorsEnhanced {
                         }
                     }
 
-                    // Resolve Shutdown + Fall
-                    bool failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
-                    Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
-                    if (failedShutdownCheck) {
-                        Mod.Log.Debug("-- Shutdown check failed, forcing unit to shutdown");
+                    bool failedShutdownCheck = false;
+                    if (!__instance.OwningMech.IsShutDown) {
+                        // Resolve Shutdown + Fall
+                        failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
+                        Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
+                        if (failedShutdownCheck) {
+                            Mod.Log.Debug("-- Shutdown check failed, forcing unit to shutdown");
 
-                        string debuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
-                        sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
-                            FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
-
-                        MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech) {
-                            RootSequenceGUID = __instance.SequenceGUID
-                        };
-                        sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
-
-                        bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
-                        Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
-                        if (failedFallingCheck) {
-                            Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
-
-                            string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Fall]).ToString();
-                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
+                            string debuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
+                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                                 FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
-                            MechFallSequence mfs = new MechFallSequence(__instance.OwningMech, "Overheat", new Vector2(0f, -1f)) {
+                            MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance.OwningMech) {
                                 RootSequenceGUID = __instance.SequenceGUID
                             };
-                            sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
-                        } else {
-                            Mod.Log.Info($"Pilot check to avoid falling passed.");
+                            sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+
+                            if (__instance.OwningMech.IsOrWillBeProne) {
+                                bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
+                                Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
+                                if (failedFallingCheck) {
+                                    Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
+
+                                    string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Fall]).ToString();
+                                    sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
+                                        FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                                    MechFallSequence mfs = new MechFallSequence(__instance.OwningMech, "Overheat", new Vector2(0f, -1f)) {
+                                        RootSequenceGUID = __instance.SequenceGUID
+                                    };
+                                    sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
+                                } else {
+                                    Mod.Log.Info($"Pilot check to avoid falling passed.");
+                                }
+                            } else {
+                                Mod.Log.Debug("Unit is already prone, skipping.");
+                            }
                         }
+                    } else {
+                        Mod.Log.Debug("Unit is already shutdown, skipping.");
                     }
 
                     if (failedInjuryCheck || failedSystemFailureCheck || failedAmmoCheck || failedShutdownCheck) {
