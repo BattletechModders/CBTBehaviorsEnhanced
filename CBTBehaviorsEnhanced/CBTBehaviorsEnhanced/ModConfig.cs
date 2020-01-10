@@ -18,6 +18,7 @@ namespace CBTBehaviorsEnhanced {
         public const string ActuatorDamageMalus = "CBTBE_ActuatorDamage_Malus";  // int
         // Modifies the base 1.5 multiplier for run from walk speed
         public const string RunMultiMod = "CBTBE_RunMultiMod"; // float
+        public const string HullBreachImmunity = "CBTBE_HullBreachImmunity";
     }
 
     public class ModConfig {
