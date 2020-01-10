@@ -43,47 +43,63 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
             // Reset any combat state
             ModState.BreachCheck = 0f;
+            ModState.BreachAttackId = 0;
+            ModState.BreachHitsMech.Clear();
+            ModState.BreachHitsTurret.Clear();
+            ModState.BreachHitsVehicle.Clear();
         }
     }
 
-    [HarmonyPatch(typeof(AttackDirector.AttackSequence), "OnAttackSequenceResolveDamage")]
-    public static class AttackDirector_AttackSequence_OnAttackSequenceResolveDamage {
+    [HarmonyPatch(typeof(AttackDirector), "OnAttackSequenceBegin")]
+    public static class AttackDirector_OnAttackSequenceBegin {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
-        public static void Prefix(AttackDirector.AttackSequence __instance, MessageCenterMessage message) {
-            Mod.Log.Trace("AD.AS::OASRD::Pre - entered.");
-            ModState.BreachAttackId = __instance.id;
+        public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
+            Mod.Log.Debug("AD:OASB - entered.");
+
+            int sequenceId = ((AttackSequenceBeginMessage)message).sequenceId;
+            AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
+
+            ModState.BreachAttackId = attackSequence.id;
         }
+    }
+    
+    [HarmonyPatch(typeof(AttackDirector), "OnAttackSequenceEnd")]
+    public static class AttackDirector_OnAttackSequenceEnd {
+        public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
-        public static void Postfix(AttackDirector.AttackSequence __instance, MessageCenterMessage message) {
-            Mod.Log.Trace("AD.AS::OASRD::Post - entered.");
+        public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
+            Mod.Log.Debug("AD:OASE - entered.");
 
-            if (ModState.BreachAttackId != __instance.id) {
+            AttackSequenceEndMessage attackSequenceEndMessage = (AttackSequenceEndMessage)message;
+            int sequenceId = attackSequenceEndMessage.sequenceId;
+            AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
+
+            if (ModState.BreachAttackId != attackSequence.id) {
                 Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
                 return;
             }
 
-            if (ModState.BreachHitsMech.Count == 0 && ModState.BreachHitsTurret.Count == 0 && ModState.BreachHitsVehicle.Count == 0) {
-                Mod.Log.Debug("No breach hits, skipping.");
-                return;
-            }
-
-            if (__instance.chosenTarget is Mech targetMech) {
+            if (attackSequence.chosenTarget is Mech targetMech) {
+                Mod.Log.Debug($"Checking hull breaches for targetMech: {CombatantUtils.Label(targetMech)}");
                 ResolveMechHullBreaches(targetMech);
             }
-            if (__instance.chosenTarget is Turret targetTurret) {
+            if (attackSequence.chosenTarget is Turret targetTurret) {
+                Mod.Log.Debug($"Checking hull breaches for targetTurret: {CombatantUtils.Label(targetTurret)}");
                 ResolveTurretHullBreaches(targetTurret);
             }
-            if (__instance.chosenTarget is Vehicle targetVehicle) {
+            if (attackSequence.chosenTarget is Vehicle targetVehicle) {
+                Mod.Log.Debug($"Checking hull breaches for targetVehicle: {CombatantUtils.Label(targetVehicle)}");
                 ResolveVehicleHullBreaches(targetVehicle);
             }
-
 
             // Reset state
             ModState.BreachAttackId = 0;
             ModState.BreachHitsMech.Clear();
             ModState.BreachHitsTurret.Clear();
             ModState.BreachHitsVehicle.Clear();
+
+            Mod.Log.Debug("AD:OASE - exiting.");
         }
 
         // Resolve mech hits - mark components invalid, but kill the pilot on a head-hit
@@ -244,9 +260,13 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
                 return;
             }
-
+            
             Mod.Log.Debug($" --- Location: {location} needs breach check.");
-            ModState.BreachHitsMech[location]++;
+            if (ModState.BreachHitsMech.ContainsKey(location)) {
+                ModState.BreachHitsMech[location]++;
+            } else {
+                ModState.BreachHitsMech.Add(location, 1);
+            }
         }
     }
 
@@ -264,7 +284,11 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             }
 
             Mod.Log.Debug($" --- Location: {location} needs breach check.");
-            ModState.BreachHitsTurret[location]++;
+            if (ModState.BreachHitsTurret.ContainsKey(location)) {
+                ModState.BreachHitsTurret[location]++;
+            } else {
+                ModState.BreachHitsTurret.Add(location, 1);
+            }
         }
     }
 
@@ -282,7 +306,11 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             }
 
             Mod.Log.Debug($" --- Location: {location} needs breach check.");
-            ModState.BreachHitsVehicle[location]++;
+            if (ModState.BreachHitsVehicle.ContainsKey(location)) {
+                ModState.BreachHitsVehicle[location]++;
+            } else {
+                ModState.BreachHitsVehicle.Add(location, 1);
+            }
         }
     }
 

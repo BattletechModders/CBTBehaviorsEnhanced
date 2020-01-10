@@ -16,7 +16,6 @@ namespace CBTBehaviorsEnhanced {
             // Reinitialize state
             BreachCheck = 0f;
             BreachAttackId = 0;
-
             BreachHitsMech.Clear();
             BreachHitsTurret.Clear();
             BreachHitsVehicle.Clear();

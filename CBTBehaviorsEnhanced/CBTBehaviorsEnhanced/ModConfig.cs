@@ -26,6 +26,12 @@ namespace CBTBehaviorsEnhanced {
         public bool Debug = false;
         public bool Trace = false;
 
+        public class FeatureList {
+            public bool BiomeBreaches = true;
+            public bool StartupChecks = true;
+        }
+        public FeatureList Features = new FeatureList();
+
         public class QipsConfig {
             public List<string> Breach = new List<string>() {
                 "Shit, explosive decomission!",
@@ -177,7 +183,6 @@ namespace CBTBehaviorsEnhanced {
         }
         public BiomeBreachOptions Breaches = new BiomeBreachOptions();
 
-
         // Movement
         public int ToHitSelfJumped = 2;
 
@@ -246,13 +251,6 @@ namespace CBTBehaviorsEnhanced {
             { CHUD_TT_Attack, "\nAttack Penalty: +{0}" },
             { CHUD_TT_Move, "\nMovement Penalty: -{0}m" },
         };
-
-        public class FeatureList {
-            public bool BiomeBreaches = true;
-            public bool StartupChecks = true;
-        }
-        public FeatureList Features = new FeatureList();
-
 
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
