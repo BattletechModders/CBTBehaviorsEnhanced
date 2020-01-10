@@ -34,6 +34,7 @@ namespace CBTBehaviorsEnhanced {
                 "I cant breathe!",
                 "There are cracks in my cockpit!"
             };
+
             public List<string> Knockdown = new List<string>() {
                 "Oh .. shit!",
                 "FML",
@@ -51,6 +52,7 @@ namespace CBTBehaviorsEnhanced {
                 "Just some armor...",
                 "Biting the dust!"
             };
+
             public List<string> Startup = new List<string> {
                 "Start damn you",
                 "Can't see through this heat",
