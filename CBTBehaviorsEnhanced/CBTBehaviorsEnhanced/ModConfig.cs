@@ -26,6 +26,14 @@ namespace CBTBehaviorsEnhanced {
         public bool Trace = false;
 
         public class QipsConfig {
+            public List<string> Breach = new List<string>() {
+                "Shit, explosive decomission!",
+                "Hull integrity breach detected!",
+                "I've lost something to atmo!",
+                "I hope life support holds up",
+                "I cant breathe!",
+                "There are cracks in my cockpit!"
+            };
             public List<string> Knockdown = new List<string>() {
                 "Oh .. shit!",
                 "FML",
@@ -160,6 +168,15 @@ namespace CBTBehaviorsEnhanced {
         }
         public PilotingOptions Piloting = new PilotingOptions();
 
+        public class BiomeBreachOptions {
+            public float VacuumCheck = 0.17f;
+            public float ThinAtmoCheck = 0.03f;
+            public List<string> VacuumBiomes = new List<string> { "lunarVacuum" };
+            public List<string> ThinAtmoBiomes = new List<string> { "martianVacuum" };
+        }
+        public BiomeBreachOptions Breaches = new BiomeBreachOptions();
+
+
         // Movement
         public int ToHitSelfJumped = 2;
 
@@ -180,6 +197,7 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Fall_After_Run = "RUN_AND_FALL";
         public const string FT_Fall_After_Jump = "JUMP_AND_FALL";
         public const string FT_Auto_Fail = "AUTO_FAIL";
+        public const string FT_Hull_Breach = "HULL_BREACH";
         public Dictionary<string, string> LocalizedFloaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
@@ -200,7 +218,8 @@ namespace CBTBehaviorsEnhanced {
             { FT_Fall_After_Run, "Sprinted with Damage" },
             { FT_Fall_After_Jump, "Jumped with Damage" },
 
-            { FT_Auto_Fail, "Automatic Failure" }
+            { FT_Auto_Fail, "Automatic Failure" },
+            { FT_Hull_Breach, "Hull Breach Check" }
         };
 
         // CombatHUDTooltip Localization 
@@ -222,12 +241,13 @@ namespace CBTBehaviorsEnhanced {
             { CHUD_TT_Injury, "\nPilot Injury on d100+{0} < {1:P1}" },
             { CHUD_TT_Sys_Failure, "\nSystem Failure on d100+{0} < {1:P1}" },
             { CHUD_TT_Shutdown, "\nShutdown on d100+{0} < {1:P1}" },
-            { CHUD_TT_Shutdown_Warning, "Guaranteed Shutdown!" },
-            { CHUD_TT_Attack, "Attack Penalty: +{0}" },
-            { CHUD_TT_Move, "Movement Penalty: -{0}m" },
+            { CHUD_TT_Shutdown_Warning, "\nGuaranteed Shutdown!" },
+            { CHUD_TT_Attack, "\nAttack Penalty: +{0}" },
+            { CHUD_TT_Move, "\nMovement Penalty: -{0}m" },
         };
 
         public class FeatureList {
+            public bool BiomeBreaches = true;
             public bool StartupChecks = true;
         }
         public FeatureList Features = new FeatureList();

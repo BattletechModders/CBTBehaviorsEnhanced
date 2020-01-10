@@ -51,7 +51,7 @@
             "StandAttemptFallChance" : 0.30,
             "FallingDamagePerTenTons" : 5
         },
-        
+
         "LocalizedFloaties" : {
             "SHUTDOWN_OVERRIDE_SUCCESS" : "Passed Shutdown Override",
             "SHUTDOWN_OVERRIDE_FAILED" : "Failed Shutdown Override",
@@ -68,8 +68,10 @@
             "MELEE_DFA" : "DFA Falling Check",
             "RUN_AND_FALL" : "Sprinted with Damage",
             "JUMP_AND_FALL" : "Jumped with Damage",
-            "AUTO_FAIL" : "Automatic Failure"
+            "AUTO_FAIL" : "Automatic Failure",
+            "HULL_BREACH" : "Hull Breach Check"
         },
+
         "LocalizedCHUDTooltips" : {
             "TITLE" : "HEAT LEVEL",
             "HEAT_AND_SINKING" : "Heat: {0} of {1}  Sinking: {2}",
@@ -82,6 +84,7 @@
             "ATTACK_PENALTY" : "\nAttack Penalty: +{0}",
             "MOVEMENT_PENALTY" : "\nMovement Penalty: -{0}m"
         },
+
         "Quips": [
                 "Oh .. shit!",
                 "FML",
