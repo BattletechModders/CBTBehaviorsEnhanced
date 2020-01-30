@@ -19,6 +19,11 @@ namespace CBTBehaviorsEnhanced {
         // Modifies the base 1.5 multiplier for run from walk speed
         public const string RunMultiMod = "CBTBE_RunMultiMod"; // float
         public const string HullBreachImmunity = "CBTBE_HullBreachImmunity";
+
+        // This value is set by the ME DamageIgnore feature - see https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/DamageIgnore/DamageIgnoreHelper.cs
+        public const string ME_IgnoreDamage = "ignore_damage";
+        // This value is a vanilla value
+        public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
     }
 
     public class ModConfig {
@@ -241,7 +246,7 @@ namespace CBTBehaviorsEnhanced {
         public const string CHUD_TT_Move = "MOVEMENT_PENALTY";
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
-            { CHUD_TT_Heat, "Heat: {0} of {1}  Sinking: {2}" },
+            { CHUD_TT_Heat, "Heat: {0} of {1}  Will Sink: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
             { CHUD_TT_Explosion, "\nAmmo Explosion on d100+{0 * 100f} < {1:P1}" },
             { CHUD_TT_Explosion_Warning, "Guaranteed Ammo Explosion!" },
             { CHUD_TT_Injury, "\nPilot Injury on d100+{0} < {1:P1}" },
