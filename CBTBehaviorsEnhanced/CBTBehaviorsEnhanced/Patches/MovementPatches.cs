@@ -39,7 +39,10 @@ namespace CBTBehaviorsEnhanced {
         [HarmonyPatch(typeof(CombatHUDWeaponSlot), "SetHitChance", new Type[] { typeof(ICombatant) })]
         public static class CombatHUDWeaponSlot_SetHitChance {
 
-            private static void Postfix(CombatHUDWeaponSlot __instance, ICombatant target) {
+            private static void Postfix(CombatHUDWeaponSlot __instance, ICombatant target, Weapon ___displayedWeapon, CombatHUD ___HUD) {
+
+                if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null || target == null) { return; }
+
                 Mod.Log.Trace("CHUDWS:SHC entered");
 
                 AbstractActor actor = __instance.DisplayedWeapon.parent;

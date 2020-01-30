@@ -92,7 +92,8 @@
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
-    <Compile Include="Patches\HeatPatches.cs" />
+    <Compile Include="Patches\CombatHUDHeatPatches.cs" />
+    <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
     <Compile Include="Patches\PilotingPatches.cs" />
