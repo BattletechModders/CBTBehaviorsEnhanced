@@ -78,6 +78,11 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             int sequenceId = attackSequenceEndMessage.sequenceId;
             AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
 
+            if (attackSequence == null) {
+                Mod.Log.Error($"ATTACK SEQUENCE FOR ID {sequenceId} IS NULL - SKIPPING!");
+                return;
+            }
+
             if (ModState.BreachAttackId != attackSequence.id) {
                 Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
                 return;
