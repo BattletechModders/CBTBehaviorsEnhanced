@@ -30,6 +30,9 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 default:
                     return;
             }
+
+            // Remain interleaved until the end of the round. This prevents the case where you immediately get dropped out of combat, then get forced back into it.
+            __instance.EncounterLayerData.turnDirectorBehavior = TurnDirectorBehaviorType.RemainInterleaved;
         }
 
     }

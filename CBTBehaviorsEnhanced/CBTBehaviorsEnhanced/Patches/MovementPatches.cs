@@ -204,6 +204,32 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
+        // Intercept the condition where contact has been lost, and shift that logic to the end of the round
+        [HarmonyPatch(typeof(TurnDirector), "NotifyContact")]
+        public static class TurnDirector_NotifyContact {
+            public static bool Prefix(TurnDirector __instance, VisibilityLevel contactLevel) {
+                Mod.Log.Trace($"TD:NC - entered.");
+                if (__instance.IsInterleaved && contactLevel == VisibilityLevel.None && !__instance.DoAnyUnitsHaveContactWithEnemy) {
+                    Mod.Log.Info("Intercepting lostContact state, allowing remainder of actors to move.");
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        // Intercept the condition where contact has been lost, and shift that logic to the beginning of a turn.
+        [HarmonyPatch(typeof(TurnDirector), "EndCurrentRound")]
+        public static class TurnDirector_EndCurrentRound {
+            public static void Postfix(TurnDirector __instance) {
+                Mod.Log.Trace($"TD:ECR - entered.");
+                if (__instance.IsInterleaved && !__instance.DoAnyUnitsHaveContactWithEnemy) {
+                    Mod.Log.Info("No actors have contact, returning to non-interleaved mode.");
+                    __instance.Combat.MessageCenter.PublishMessage(new LostContactMessage());
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
         public static class AbstractActor_ResolveAttackSequence_Patch {
             
