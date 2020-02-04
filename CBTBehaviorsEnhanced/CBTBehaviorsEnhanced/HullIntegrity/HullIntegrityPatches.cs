@@ -11,48 +11,6 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
     // Apply hull integrity breaches as per Tac-Ops pg. 54. 
 
-    [HarmonyPatch(typeof(CombatGameState), "_Init")]
-    public static class CombatGameState__Init {
-        public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
-
-        public static void Postfix(CombatGameState __instance) {
-            Mod.Log.Trace("CGS:_I - entered.");
-
-            switch (__instance.MapMetaData.biomeSkin) {
-                case Biome.BIOMESKIN.lunarVacuum:
-                    ModState.BreachCheck = Mod.Config.Breaches.VacuumCheck;
-                    Mod.Log.Debug($"Lunar biome detected - setting breach chance to: {ModState.BreachCheck}");
-                    break;
-                case Biome.BIOMESKIN.martianVacuum:
-                    ModState.BreachCheck = Mod.Config.Breaches.ThinAtmoCheck;
-                    Mod.Log.Debug($"Martian biome detected - setting breach chance to: {ModState.BreachCheck}");
-                    break;
-                default:
-                    return;
-            }
-
-            // Remain interleaved until the end of the round. This prevents the case where you immediately get dropped out of combat, then get forced back into it.
-            __instance.EncounterLayerData.turnDirectorBehavior = TurnDirectorBehaviorType.RemainInterleaved;
-        }
-
-    }
-
-    [HarmonyPatch(typeof(CombatGameState), "OnCombatGameDestroyed")]
-    public static class CombatGameState_OnCombatGameDestroyed {
-        public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
-
-        public static void Postfix(CombatGameState __instance) {
-            Mod.Log.Trace("CGS:OCGD - entered.");
-
-            // Reset any combat state
-            ModState.BreachCheck = 0f;
-            ModState.BreachAttackId = 0;
-            ModState.BreachHitsMech.Clear();
-            ModState.BreachHitsTurret.Clear();
-            ModState.BreachHitsVehicle.Clear();
-        }
-    }
-
     [HarmonyPatch(typeof(AttackDirector), "OnAttackSequenceBegin")]
     public static class AttackDirector_OnAttackSequenceBegin {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }

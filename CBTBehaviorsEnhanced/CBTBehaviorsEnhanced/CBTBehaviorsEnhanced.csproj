@@ -72,6 +72,10 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TerrainModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -92,11 +96,13 @@
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
+    <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUDHeatPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
     <Compile Include="Patches\PilotingPatches.cs" />
+    <Compile Include="Patches\TurnDirectorPatches.cs" />
     <Compile Include="Piloting\MechFallSequencePatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModConfig.cs" />
