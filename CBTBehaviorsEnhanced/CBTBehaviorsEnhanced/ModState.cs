@@ -5,6 +5,8 @@ using System.Collections.Generic;
 namespace CBTBehaviorsEnhanced {
     public static class ModState {
 
+        public static CombatGameState Combat = null;
+
         public static float BreachCheck = 0f;
         public static int BreachAttackId = 0;
 
@@ -14,6 +16,8 @@ namespace CBTBehaviorsEnhanced {
 
         public static void Reset() {
             // Reinitialize state
+            Combat = null;
+
             BreachCheck = 0f;
             BreachAttackId = 0;
             BreachHitsMech.Clear();

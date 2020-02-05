@@ -24,6 +24,7 @@ namespace CBTBehaviorsEnhanced.Patches {
     [HarmonyPatch(new Type[] { typeof(float) })]
     public static class CombatHUDHeatDisplay_Init {
 
+        // Resize the heat bar to its original value
         public static void Postfix(CombatHUDHeatDisplay __instance, float dangerLevel) {
             if (__instance.DisplayedActor != null && __instance.DisplayedActor is Mech) {
                 Mech displayedMech = __instance.DisplayedActor as Mech;
