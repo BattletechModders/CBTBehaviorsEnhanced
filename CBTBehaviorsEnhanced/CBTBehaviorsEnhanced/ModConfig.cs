@@ -244,6 +244,13 @@ namespace CBTBehaviorsEnhanced {
         public const string CHUD_TT_Shutdown_Warning = "SHUTDOWN_WARNING";
         public const string CHUD_TT_Attack = "ATTACK_PENALTY";
         public const string CHUD_TT_Move = "MOVEMENT_PENALTY";
+
+        // Overheat warning
+        public const string CHUDSP_TT_WARN_SHUTDOWN_TITLE = "SHUTDOWN_ICON_TITLE";
+        public const string CHUDSP_TT_WARN_SHUTDOWN_TEXT = "SHUTDOWN_ICON_TEXT";
+        public const string CHUDSP_TT_WARN_OVERHEAT_TITLE = "OVERHEAT_ICON_TITLE";
+        public const string CHUDSP_TT_WARN_OVERHEAT_TEXT = "OVERHEAT_ICON_TEXT";
+
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
             { CHUD_TT_Heat, "Heat: {0} of {1}  Will Sink: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
@@ -255,6 +262,11 @@ namespace CBTBehaviorsEnhanced {
             { CHUD_TT_Shutdown_Warning, "\nGuaranteed Shutdown!" },
             { CHUD_TT_Attack, "\nAttack Penalty: +{0}" },
             { CHUD_TT_Move, "\nMovement Penalty: -{0}m" },
+
+            { CHUDSP_TT_WARN_SHUTDOWN_TITLE, "\nMovement Penalty: -{0}m" },
+            { CHUDSP_TT_WARN_SHUTDOWN_TEXT, "\nMovement Penalty: -{0}m" },
+            { CHUDSP_TT_WARN_OVERHEAT_TITLE, "\nMovement Penalty: -{0}m" },
+            { CHUDSP_TT_WARN_OVERHEAT_TEXT, "\nMovement Penalty: -{0}m" },
         };
 
         public void LogConfig() {

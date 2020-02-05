@@ -95,8 +95,6 @@ namespace CBTBehaviorsEnhanced.Patches {
                         new Text("SHUT DOWN", new object[0]), new Text("This target is easier to hit, and Called Shots can be made against this target.", new object[0]),
                         __instance.defaultIconScale, false });
             } else if (mech.IsOverheated) {
-                float shutdownChance = 0;
-                float ammoExplosionChance = 0;
                 // FIXME: Remove this old code
                 Mod.Log.Debug($"Mech:{CombatantUtils.Label(mech)} is overheated, shutdownChance:{shutdownChance}% ammoExplosionChance:{ammoExplosionChance}%");
 
