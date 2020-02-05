@@ -98,6 +98,7 @@
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUDHeatPatches.cs" />
+    <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
