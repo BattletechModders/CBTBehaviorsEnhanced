@@ -254,19 +254,19 @@ namespace CBTBehaviorsEnhanced {
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
             { CHUD_TT_Heat, "Heat: {0} of {1}  Will Sink: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
-            { CHUD_TT_Explosion, "\nAmmo Explosion on d100+{0 * 100f} < {1:P1}" },
+            { CHUD_TT_Explosion, "\nAmmo Explosion on d100+{0} < {1:P1}" },
             { CHUD_TT_Explosion_Warning, "Guaranteed Ammo Explosion!" },
             { CHUD_TT_Injury, "\nPilot Injury on d100+{0} < {1:P1}" },
             { CHUD_TT_Sys_Failure, "\nSystem Failure on d100+{0} < {1:P1}" },
             { CHUD_TT_Shutdown, "\nShutdown on d100+{0} < {1:P1}" },
             { CHUD_TT_Shutdown_Warning, "\nGuaranteed Shutdown!" },
-            { CHUD_TT_Attack, "\nAttack Penalty: +{0}" },
-            { CHUD_TT_Move, "\nMovement Penalty: -{0}m" },
+            { CHUD_TT_Attack, "\nAttack Penalty: <color=#FF0000>+{0}</color>" },
+            { CHUD_TT_Move, "\nMovement Penalty: <color=#FF0000>-{0}m</color>" },
 
-            { CHUDSP_TT_WARN_SHUTDOWN_TITLE, "\nMovement Penalty: -{0}m" },
-            { CHUDSP_TT_WARN_SHUTDOWN_TEXT, "\nMovement Penalty: -{0}m" },
-            { CHUDSP_TT_WARN_OVERHEAT_TITLE, "\nMovement Penalty: -{0}m" },
-            { CHUDSP_TT_WARN_OVERHEAT_TEXT, "\nMovement Penalty: -{0}m" },
+            { CHUDSP_TT_WARN_SHUTDOWN_TITLE, "SHUT DOWN" },
+            { CHUDSP_TT_WARN_SHUTDOWN_TEXT, "This target is easier to hit, and Called Shots can be made against this target. When clicking the restart button, a piloting check will if the BattleMech restarts." },
+            { CHUDSP_TT_WARN_OVERHEAT_TITLE, "OVERHEATING" },
+            { CHUDSP_TT_WARN_OVERHEAT_TEXT, "This unit will suffer penalties, may shutdown or even explode unless heat is reduced past critical levels.\n<i>Hover over the heat bar to see a detailed breakdown.</i>" },
         };
 
         public void LogConfig() {
