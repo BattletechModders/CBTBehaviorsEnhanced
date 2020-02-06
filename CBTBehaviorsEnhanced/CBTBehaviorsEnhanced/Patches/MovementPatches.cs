@@ -235,11 +235,16 @@ namespace CBTBehaviorsEnhanced {
             
             private static bool Prefix(AbstractActor __instance) {
                 Mod.Log.Trace("AA:RAS:PRE entered");
-                return false;
+                if (ModConfig.EnablePermanentEvasion)
+                    return false;
+                else
+                    return true;
             }
 
             private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection) {
                 Mod.Log.Trace("AA:RAS:POST entered");
+                if (!ModConfig.EnablePermanentEvasion)
+                    return;
 
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(sequenceID);
                 if (attackSequence != null) {
