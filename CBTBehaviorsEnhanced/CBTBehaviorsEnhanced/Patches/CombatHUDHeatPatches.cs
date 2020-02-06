@@ -90,19 +90,17 @@ namespace CBTBehaviorsEnhanced.Patches {
                 new Type[] { typeof(SVGAsset), typeof(Text), typeof(Text), typeof(Vector3), typeof(bool) }, new ParameterModifier[5]);
 
             if (mech.IsShutDown) {
-                Mod.Log.Debug($"Mech:{CombatantUtils.Label(mech)} is shutdown.");
-                methodInfo.Invoke(__instance, new object[] { LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
-                        new Text("SHUT DOWN", new object[0]), new Text("This target is easier to hit, and Called Shots can be made against this target.", new object[0]),
-                        __instance.defaultIconScale, false });
+                methodInfo.Invoke(__instance, new object[] { 
+                    LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
+                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
+                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
+                    __instance.defaultIconScale, false });
             } else if (mech.IsOverheated) {
-                // FIXME: Remove this old code
-                Mod.Log.Debug($"Mech:{CombatantUtils.Label(mech)} is overheated, shutdownChance:{shutdownChance}% ammoExplosionChance:{ammoExplosionChance}%");
-
-                string descr = string.Format("This unit may trigger a Shutdown at the end of the turn unless heat falls below critical levels." +
-                    "\nShutdown Chance: {0:P2}\nAmmo Explosion Chance: {1:P2}",
-                    shutdownChance, ammoExplosionChance);
-                methodInfo.Invoke(__instance, new object[] { LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
-                        new Text("OVERHEATING", new object[0]), new Text(descr, new object[0]), __instance.defaultIconScale, false });
+                methodInfo.Invoke(__instance, new object[] {
+                    LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
+                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
+                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_OVERHEAT_TEXT]),
+                    __instance.defaultIconScale, false });
             }
         }
     }

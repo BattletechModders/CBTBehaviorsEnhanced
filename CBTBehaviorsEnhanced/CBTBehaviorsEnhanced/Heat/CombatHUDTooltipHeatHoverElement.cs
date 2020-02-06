@@ -52,7 +52,6 @@ namespace CBTBehaviorsEnhanced.Heat {
             int overallSinkCapacity = displayedMech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, false) *-1;
             Mod.Log.Debug($"  remainingCapacity: {displayedMech.HeatSinkCapacity}  rawCapacity: {overallSinkCapacity}  normedAdjustedFraction: {sinkableHeat}");
 
-            //int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + cacTerrainHeat + sinkableHeat);
             int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + cacTerrainHeat);
             Mod.Log.Debug($"  currentHeat: {CurrentHeat} + tempHeat: {TempHeat} + projectedHeat: {ProjectedHeat} + cacTerrainheat: {cacTerrainHeat} + sinkableHeat: {sinkableHeat}" +
                 $"  =  futureHeat: {futureHeat}");
@@ -71,6 +70,8 @@ namespace CBTBehaviorsEnhanced.Heat {
             ));
 
             float thresholdHeat = futureHeat + sinkableHeat;
+            Mod.Log.Debug($"THRESHOLD HEAT: {thresholdHeat}");
+
             float threshold = 0f;
             // Check Ammo
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion) {
@@ -82,11 +83,12 @@ namespace CBTBehaviorsEnhanced.Heat {
                     Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold }
                     ));
             } else if (threshold == -1f) {
+                Mod.Log.Debug($"Ammo Explosion Guaranteed!");
                 warningSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Explosion_Warning]));
             }
-            threshold = 0f;
 
             // Check Injury
+            threshold = 0f;
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.PilotInjury) {
                 if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
@@ -96,9 +98,9 @@ namespace CBTBehaviorsEnhanced.Heat {
                     Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold }
                     ));
             }
-            threshold = 0f;
 
             // Check System Failure
+            threshold = 0f;
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.SystemFailures) {
                 if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
@@ -108,9 +110,9 @@ namespace CBTBehaviorsEnhanced.Heat {
                     Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold }
                     ));
             }
-            threshold = 0f;
 
             // Check Shutdown
+            threshold = 0f;
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown) {
                 if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
@@ -120,9 +122,9 @@ namespace CBTBehaviorsEnhanced.Heat {
                     Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold }
                 ));
             } else if (threshold == -1f) {
+                Mod.Log.Debug($"Shutdown Guaranteed!");
                 warningSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Shutdown_Warning]));
             }
-            threshold = 0f;
 
             // Attack modifiers
             int modifier = 0;
@@ -143,7 +145,6 @@ namespace CBTBehaviorsEnhanced.Heat {
                 Mod.Log.Debug($"Movement Modifier: -{modifier * 30}m");
                 descSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Move], new object[] { modifier * 30f }));
             }
-            modifier = 0;
 
             base.SetTitleDescAndWarning("Heat", descSB.ToString(), warningSB.ToString());
         }
