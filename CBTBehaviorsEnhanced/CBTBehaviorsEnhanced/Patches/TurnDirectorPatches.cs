@@ -14,12 +14,15 @@ namespace CBTBehaviorsEnhanced.Patches {
         public static void Postfix(TurnDirector __instance, MessageCenterMessage message) {
 
             // Remain interleaved until the end of the round. This prevents the case where you immediately get dropped out of combat, then get forced back into it.
-            //if (__instance != null && __instance.Combat.EncounterLayerData != null) {
-            //    __instance.Combat.EncounterLayerData.turnDirectorBehavior = TurnDirectorBehaviorType.RemainInterleaved;
-            //    Mod.Log.Info("Interleaved mode set to: REMAIN_INTERLEAVED");
-            //} else {
-            //    Mod.Log.Warn("COULD NOT FIND ENCOUNTER_LAYER_DATA - INTERLEAVED FIX CANNOT BE APPLIED!");
-            //}
+            if (__instance != null && __instance.Combat.EncounterLayerData != null)
+            {
+                __instance.Combat.EncounterLayerData.turnDirectorBehavior = TurnDirectorBehaviorType.RemainInterleaved;
+                Mod.Log.Info("Interleaved mode set to: REMAIN_INTERLEAVED");
+            }
+            else
+            {
+                Mod.Log.Warn("COULD NOT FIND ENCOUNTER_LAYER_DATA - INTERLEAVED FIX CANNOT BE APPLIED!");
+            }
 
             // Check for hull breach biomes
             TerrainGenerator terrainGenerator = Terrain.activeTerrains != null ? Terrain.activeTerrain.GetComponent<TerrainGenerator>() : null;
