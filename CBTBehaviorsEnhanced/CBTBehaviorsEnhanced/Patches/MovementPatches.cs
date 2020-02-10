@@ -18,7 +18,7 @@ namespace CBTBehaviorsEnhanced {
                 Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot) {
                 Mod.Log.Trace("TH:GAM entered");
 
-                if (attacker.HasMovedThisRound && attacker.JumpedLastRound) {
+                if (attacker.HasMovedThisRound && attacker.JumpedLastRound && !(ModConfig.dZ_Abilities && attacker.SkillTactics != 10)) {
                     __result = __result + (float)Mod.Config.ToHitSelfJumped;
                 }
             }

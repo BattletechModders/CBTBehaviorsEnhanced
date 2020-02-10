@@ -31,6 +31,7 @@ namespace CBTBehaviorsEnhanced {
         public bool Debug = false;
         public bool Trace = false;
         public static bool EnablePermanentEvasion = true;
+        public static bool dZ_Abilities = false;
 
         public class FeatureList {
             public bool BiomeBreaches = true;
