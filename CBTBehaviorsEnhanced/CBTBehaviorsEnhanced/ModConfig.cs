@@ -30,7 +30,11 @@ namespace CBTBehaviorsEnhanced {
 
         public bool Debug = false;
         public bool Trace = false;
+
+        // If true, will enable evasion 
         public static bool EnablePermanentEvasion = true;
+
+        // If true, applies special behaviors for DonZappo's abilities
         public static bool dZ_Abilities = false;
 
         public class FeatureList {
