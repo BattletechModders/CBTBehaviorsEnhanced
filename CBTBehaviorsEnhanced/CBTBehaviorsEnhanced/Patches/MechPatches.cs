@@ -111,10 +111,11 @@ namespace CBTBehaviorsEnhanced.Patches {
             __result = MechHelper.CalcRunSpeed(__instance);
 
             //This is an easy place to put this where it will always be checked. This is the key to full non-interleaved combat.
-            if (__instance.Combat.TurnDirector.IsInterleaved)
+            if (__instance.Combat.TurnDirector.IsInterleaved) {
                 __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, true);
-            else
+            } else {
                 __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, false);
+            }
         }
     }
 
