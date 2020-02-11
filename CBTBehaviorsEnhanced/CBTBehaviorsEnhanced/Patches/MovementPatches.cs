@@ -18,7 +18,7 @@ namespace CBTBehaviorsEnhanced {
                 Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot) {
                 Mod.Log.Trace("TH:GAM entered");
 
-                if (attacker.HasMovedThisRound && attacker.JumpedLastRound) {
+                if (attacker.HasMovedThisRound && attacker.JumpedLastRound && !(ModConfig.dZ_Abilities && attacker.SkillTactics != 10)) {
                     __result = __result + (float)Mod.Config.ToHitSelfJumped;
                 }
             }
@@ -58,17 +58,24 @@ namespace CBTBehaviorsEnhanced {
 
         [HarmonyPatch(typeof(CombatHUDMechwarriorTray), "ResetMechwarriorButtons")]
         public static class CombatHUDMechwarriorTray_ResetMechwarriorButtons {
-            static void Prefix(CombatHUDMechwarriorTray __instance, AbstractActor actor) {
-                Mod.Log.Trace($"CHUDMT:RMB:post entered.");
-                if (actor != null && actor.Combat.TurnDirector.IsInterleavePending) {
-                    Traverse turnDirectorT = Traverse.Create(actor.Combat.TurnDirector).Property("_isInterleaved");
-                    turnDirectorT.SetValue(true);
-                }
-            }
 
-            static void Postfix(CombatHUDMechwarriorTray __instance, AbstractActor actor) {
+        //Don't trigger early interleaved turns. The postfix can likely be cut, too, but I didn't test its removal. 
+
+            //static void Prefix(CombatHUDMechwarriorTray __instance, AbstractActor actor)
+            //{
+            //    Mod.Log.Trace($"CHUDMT:RMB:post entered.");
+            //    if (actor != null && actor.Combat.TurnDirector.IsInterleavePending)
+            //    {
+            //        Traverse turnDirectorT = Traverse.Create(actor.Combat.TurnDirector).Property("_isInterleaved");
+            //        turnDirectorT.SetValue(true);
+            //    }
+            //}
+
+            static void Postfix(CombatHUDMechwarriorTray __instance, AbstractActor actor)
+            {
                 Mod.Log.Trace($"CHUDMT:RMB:post entered.");
-                if (actor != null && actor.Combat.TurnDirector.IsInterleavePending) {
+                if (actor != null && actor.Combat.TurnDirector.IsInterleavePending)
+                {
                     Traverse turnDirectorT = Traverse.Create(actor.Combat.TurnDirector).Property("_isInterleaved");
                     turnDirectorT.SetValue(false);
                 }
@@ -128,18 +135,23 @@ namespace CBTBehaviorsEnhanced {
         }
 
         [HarmonyPatch(typeof(Team), "GetNextAvailableUnit")]
-        public static class Team_GetNextAvailableUnit {
-            private static void Postfix(Team __instance, ref AbstractActor __result) {
+        public static class Team_GetNextAvailableUnit
+        {
+            private static void Postfix(Team __instance, ref AbstractActor __result)
+            {
                 Mod.Log.Info($"T:GNAU invoked with null AA? {__result == null}");
 
-                if (__instance.IsLocalPlayer && __instance.Combat.TurnDirector.IsInterleavePending) {
+                if (__instance.IsLocalPlayer && __instance.Combat.TurnDirector.IsInterleavePending)
+                {
                     Mod.Log.Info("  IsInterleavePending - returning no available unit and deferring all units.");
-                    __instance.DoneWithAllAvailableActors();
+                    //This isn't necessary as we don't have to jump to Combat turns early.
 
-                    __result = null;
+                    //__instance.DoneWithAllAvailableActors();
 
-                    ReserveActorInvocation message = new ReserveActorInvocation(__instance.Combat.LocalPlayerTeam, ReserveActorAction.DONE, __instance.Combat.TurnDirector.CurrentRound);
-                    __instance.Combat.MessageCenter.PublishMessage(message);
+                    //__result = null;
+
+                    //ReserveActorInvocation message = new ReserveActorInvocation(__instance.Combat.LocalPlayerTeam, ReserveActorAction.DONE, __instance.Combat.TurnDirector.CurrentRound);
+                    //__instance.Combat.MessageCenter.PublishMessage(message);
                 }
             }
         }
@@ -177,10 +189,12 @@ namespace CBTBehaviorsEnhanced {
 
         [HarmonyPatch(typeof(TurnDirector), "OnTurnActorActivateComplete")]
         public static class TurnDirector_OnTurnActorActivateComplete {
-            private static bool Prefix(TurnDirector __instance) {
+            private static bool Prefix(TurnDirector __instance)
+            {
                 Mod.Log.Info($"TD:OTAAC invoked");
 
-                if (__instance.IsMissionOver) {
+                if (__instance.IsMissionOver)
+                {
                     return false;
                 }
 
@@ -190,11 +204,14 @@ namespace CBTBehaviorsEnhanced {
                 int numUnusedUnitsForCurrentPhase = __instance.TurnActors[__instance.ActiveTurnActorIndex].GetNumUnusedUnitsForCurrentPhase();
                 Mod.Log.Info($"There are {numUnusedUnitsForCurrentPhase} unusedUnits in the current phase)");
 
-                if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0) {
+                if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0)
+                {
                     Mod.Log.Info("Sending TurnActorActivateMessage");
                     Traverse staamT = Traverse.Create(__instance).Method("SendTurnActorActivateMessage", new object[] { __instance.ActiveTurnActorIndex });
                     staamT.GetValue();
-                } else {
+                }
+                else
+                {
                     Mod.Log.Info("Incrementing ActiveTurnActor");
                     Traverse iataT = Traverse.Create(__instance).Method("IncrementActiveTurnActor");
                     iataT.GetValue();
@@ -218,6 +235,7 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
+
         // Intercept the condition where contact has been lost, and shift that logic to the beginning of a turn.
         [HarmonyPatch(typeof(TurnDirector), "EndCurrentRound")]
         public static class TurnDirector_EndCurrentRound {
@@ -235,11 +253,16 @@ namespace CBTBehaviorsEnhanced {
             
             private static bool Prefix(AbstractActor __instance) {
                 Mod.Log.Trace("AA:RAS:PRE entered");
-                return false;
+                if (ModConfig.EnablePermanentEvasion)
+                    return false;
+                else
+                    return true;
             }
 
             private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection) {
                 Mod.Log.Trace("AA:RAS:POST entered");
+                if (!ModConfig.EnablePermanentEvasion)
+                    return;
 
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(sequenceID);
                 if (attackSequence != null) {
