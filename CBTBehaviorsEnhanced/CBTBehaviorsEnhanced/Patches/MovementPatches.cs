@@ -18,7 +18,9 @@ namespace CBTBehaviorsEnhanced {
                 Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot) {
                 Mod.Log.Trace("TH:GAM entered");
 
-                if (attacker.HasMovedThisRound && attacker.JumpedLastRound && !(ModConfig.dZ_Abilities && attacker.SkillTactics != 10)) {
+                if (attacker.HasMovedThisRound && attacker.JumpedLastRound && 
+                    // Special trigger for dz's abilities
+                    !(ModConfig.dZ_Abilities && attacker.SkillTactics != 10)) {
                     __result = __result + (float)Mod.Config.ToHitSelfJumped;
                 }
             }
@@ -56,32 +58,6 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
-        [HarmonyPatch(typeof(CombatHUDMechwarriorTray), "ResetMechwarriorButtons")]
-        public static class CombatHUDMechwarriorTray_ResetMechwarriorButtons {
-
-        //Don't trigger early interleaved turns. The postfix can likely be cut, too, but I didn't test its removal. 
-
-            //static void Prefix(CombatHUDMechwarriorTray __instance, AbstractActor actor)
-            //{
-            //    Mod.Log.Trace($"CHUDMT:RMB:post entered.");
-            //    if (actor != null && actor.Combat.TurnDirector.IsInterleavePending)
-            //    {
-            //        Traverse turnDirectorT = Traverse.Create(actor.Combat.TurnDirector).Property("_isInterleaved");
-            //        turnDirectorT.SetValue(true);
-            //    }
-            //}
-
-            static void Postfix(CombatHUDMechwarriorTray __instance, AbstractActor actor)
-            {
-                Mod.Log.Trace($"CHUDMT:RMB:post entered.");
-                if (actor != null && actor.Combat.TurnDirector.IsInterleavePending)
-                {
-                    Traverse turnDirectorT = Traverse.Create(actor.Combat.TurnDirector).Property("_isInterleaved");
-                    turnDirectorT.SetValue(false);
-                }
-            }
-        }
-
         [HarmonyPatch(typeof(ActorMovementSequence), "OnComplete")]
         public static class ActorMovementSequence_OnComplete {
             private static void Prefix(ActorMovementSequence __instance) {
@@ -110,6 +86,30 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
+        // Prevents a mech from being able to move into combat or use abilities from non-interleaved mode
+        [HarmonyPatch(typeof(ActorMovementSequence), "ConsumesFiring", MethodType.Getter)]
+        public static class ActorMovementSequence_ConsumesFiring_Getter {
+            private static void Postfix(ActorMovementSequence __instance, ref bool __result) {
+                Mod.Log.Trace("AMS:CF:GET entered");
+
+                Mod.Log.Info($"CONSUMES FIRING : {!__instance.OwningActor.Combat.TurnDirector.IsInterleaved}");
+                if (!__instance.OwningActor.Combat.TurnDirector.IsInterleaved) { __result = true; }
+            }
+        }
+
+
+        // Prevents a mech from being able to jump into combat from non-interleaved mode
+        [HarmonyPatch(typeof(MechJumpSequence), "ConsumesFiring", MethodType.Getter)]
+        public static class MechJumpSequence_ConsumesFiring_Getter {
+            private static void Postfix(MechJumpSequence __instance, ref bool __result) {
+                Mod.Log.Trace("AMS:CF:GET entered");
+
+                Mod.Log.Info($"JUMP CONSUMES FIRING : {!__instance.owningActor.Combat.TurnDirector.IsInterleaved}");
+                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) { __result = true; }
+            }
+        }
+
+
         [HarmonyPatch(typeof(MechJumpSequence), "OnComplete")]
         public static class MechJumpSequence_OnComplete {
             private static void Prefix(MechJumpSequence __instance) {
@@ -134,29 +134,7 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
-        [HarmonyPatch(typeof(Team), "GetNextAvailableUnit")]
-        public static class Team_GetNextAvailableUnit
-        {
-            private static void Postfix(Team __instance, ref AbstractActor __result)
-            {
-                Mod.Log.Info($"T:GNAU invoked with null AA? {__result == null}");
-
-                if (__instance.IsLocalPlayer && __instance.Combat.TurnDirector.IsInterleavePending)
-                {
-                    Mod.Log.Info("  IsInterleavePending - returning no available unit and deferring all units.");
-                    //This isn't necessary as we don't have to jump to Combat turns early.
-
-                    //__instance.DoneWithAllAvailableActors();
-
-                    //__result = null;
-
-                    //ReserveActorInvocation message = new ReserveActorInvocation(__instance.Combat.LocalPlayerTeam, ReserveActorAction.DONE, __instance.Combat.TurnDirector.CurrentRound);
-                    //__instance.Combat.MessageCenter.PublishMessage(message);
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Team),"DoneWithAllAvailableActors")]
+        [HarmonyPatch(typeof(Team), "DoneWithAllAvailableActors")]
         public static class Team_DoneWithAllAvailableActors {
             private static void Prefix(Team __instance, List<IStackSequence> __result) {
                 Mod.Log.Info($"T:DWAAA invoked");
@@ -187,82 +165,18 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
-        [HarmonyPatch(typeof(TurnDirector), "OnTurnActorActivateComplete")]
-        public static class TurnDirector_OnTurnActorActivateComplete {
-            private static bool Prefix(TurnDirector __instance)
-            {
-                Mod.Log.Info($"TD:OTAAC invoked");
-
-                if (__instance.IsMissionOver)
-                {
-                    return false;
-                }
-
-                Mod.Log.Info($"TD isInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.Combat.TurnDirector.IsInterleavePending}" +
-                    $"  isNonInterleavePending: {__instance.Combat.TurnDirector.IsNonInterleavePending}");
-
-                int numUnusedUnitsForCurrentPhase = __instance.TurnActors[__instance.ActiveTurnActorIndex].GetNumUnusedUnitsForCurrentPhase();
-                Mod.Log.Info($"There are {numUnusedUnitsForCurrentPhase} unusedUnits in the current phase)");
-
-                if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0)
-                {
-                    Mod.Log.Info("Sending TurnActorActivateMessage");
-                    Traverse staamT = Traverse.Create(__instance).Method("SendTurnActorActivateMessage", new object[] { __instance.ActiveTurnActorIndex });
-                    staamT.GetValue();
-                }
-                else
-                {
-                    Mod.Log.Info("Incrementing ActiveTurnActor");
-                    Traverse iataT = Traverse.Create(__instance).Method("IncrementActiveTurnActor");
-                    iataT.GetValue();
-                }
-
-                return false;
-            }
-        }
-
-        // Intercept the condition where contact has been lost, and shift that logic to the end of the round
-        [HarmonyPatch(typeof(TurnDirector), "NotifyContact")]
-        public static class TurnDirector_NotifyContact {
-            public static bool Prefix(TurnDirector __instance, VisibilityLevel contactLevel) {
-                Mod.Log.Trace($"TD:NC - entered.");
-                if (__instance.IsInterleaved && contactLevel == VisibilityLevel.None && !__instance.DoAnyUnitsHaveContactWithEnemy) {
-                    Mod.Log.Info("Intercepting lostContact state, allowing remainder of actors to move.");
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        }
-
-
-        // Intercept the condition where contact has been lost, and shift that logic to the beginning of a turn.
-        [HarmonyPatch(typeof(TurnDirector), "EndCurrentRound")]
-        public static class TurnDirector_EndCurrentRound {
-            public static void Postfix(TurnDirector __instance) {
-                Mod.Log.Trace($"TD:ECR - entered.");
-                if (__instance.IsInterleaved && !__instance.DoAnyUnitsHaveContactWithEnemy) {
-                    Mod.Log.Info("No actors have contact, returning to non-interleaved mode.");
-                    __instance.Combat.MessageCenter.PublishMessage(new LostContactMessage());
-                }
-            }
-        }
-
+        // Prevents losing evasion when attacked
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
         public static class AbstractActor_ResolveAttackSequence_Patch {
             
             private static bool Prefix(AbstractActor __instance) {
                 Mod.Log.Trace("AA:RAS:PRE entered");
-                if (ModConfig.EnablePermanentEvasion)
-                    return false;
-                else
-                    return true;
+                return !ModConfig.EnablePermanentEvasion;
             }
 
             private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection) {
                 Mod.Log.Trace("AA:RAS:POST entered");
-                if (!ModConfig.EnablePermanentEvasion)
-                    return;
+                if (!ModConfig.EnablePermanentEvasion) { return; }
 
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(sequenceID);
                 if (attackSequence != null) {
@@ -286,9 +200,7 @@ namespace CBTBehaviorsEnhanced {
                         }
                     }
                 }
-
             }
-
         }
     }
 }
