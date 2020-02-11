@@ -91,8 +91,6 @@ namespace CBTBehaviorsEnhanced {
         public static class ActorMovementSequence_ConsumesFiring_Getter {
             private static void Postfix(ActorMovementSequence __instance, ref bool __result) {
                 Mod.Log.Trace("AMS:CF:GET entered");
-
-                Mod.Log.Info($"CONSUMES FIRING : {!__instance.OwningActor.Combat.TurnDirector.IsInterleaved}");
                 if (!__instance.OwningActor.Combat.TurnDirector.IsInterleaved) { __result = true; }
             }
         }
@@ -103,8 +101,6 @@ namespace CBTBehaviorsEnhanced {
         public static class MechJumpSequence_ConsumesFiring_Getter {
             private static void Postfix(MechJumpSequence __instance, ref bool __result) {
                 Mod.Log.Trace("AMS:CF:GET entered");
-
-                Mod.Log.Info($"JUMP CONSUMES FIRING : {!__instance.owningActor.Combat.TurnDirector.IsInterleaved}");
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) { __result = true; }
             }
         }
