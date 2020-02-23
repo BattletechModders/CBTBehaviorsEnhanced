@@ -6,36 +6,42 @@ using HBS;
 using Localize;
 using SVGImporter;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches {
 
-    //[HarmonyPatch(typeof(CombatHUDHeatMeter), "")]
-    //public static class CombatHUDHeatMeter_Foo {
-    //}
-
-    [HarmonyPatch(typeof(CombatHUDHeatDisplay), "Init")]
-    [HarmonyPatch(new Type[] { typeof(float) })]
-    public static class CombatHUDHeatDisplay_Init {
+    [HarmonyPatch(typeof(CombatHUDHeatMeter), "GetMaxOuterHeatLevel")]
+    public static class CombatHUDHeatMeter_GetMaxOuterHeatLevel {
 
         // Resize the heat bar to its original value
-        public static void Postfix(CombatHUDHeatDisplay __instance, float dangerLevel) {
-            if (__instance.DisplayedActor != null && __instance.DisplayedActor is Mech) {
-                Mech displayedMech = __instance.DisplayedActor as Mech;
+        public static void Postfix(CombatHUDHeatMeter __instance, Mech mech, ref int __result) {
+            Mod.Log.Trace("CHUDHD:GMOHL - entered.");
+            //Mod.Log.Debug($"MAXOUTERHEATLEVEL FOR: {CombatantUtils.Label(mech)} = {__result}");
+            // TODO: Calculate max heat from range at mod load
+            __result = (int)(42 * 1.75f);
+        }
+    }
 
-                Traverse origWidthT = Traverse.Create(__instance).Property("origWidth");
-                float origWidth = origWidthT.GetValue<float>();
 
-                Traverse rectTransformT = Traverse.Create(__instance).Property("rectTransform");
-                RectTransform rectTransform = rectTransformT.GetValue<RectTransform>();
-                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, origWidth);
-            }
+    [HarmonyPatch(typeof(CombatHUDHeatDisplay), "DangerLevel", MethodType.Getter)]
+    public static class CombatHUDHeatDisplay_DangerLevel_Getter {
+        public static void Postfix(CombatHUDHeatDisplay __instance, ref float __result) {
+            Mod.Log.Trace("CHUDHD:DL - entered.");
+            // Mod.Log.Debug($" DangerLevel: {__result} for mech: {CombatantUtils.Label(displayedMech)} == Overheat level: {displayedMech.OverheatLevel} / MaxHeat: {displayedMech.MaxHeat}");
+            // TODO: Calculate max heat from range at mod load
+            __result = 42f / 150f;
+            // Mod.Log.Debug($"   Updated result to: {__result}");
+        }
+    }
+
+    [HarmonyPatch(typeof(CombatHUDHeatDisplay), "RefreshInfo")]
+    [HarmonyPatch()]
+    public static class CombatHUDHeatDisplay_RefreshInfo {
+        public static void Postfix(CombatHUDHeatDisplay __instance) {
+            Mod.Log.Trace("CHUDHD:RI - entered.");
+            // Disable the overheating icon... because it sucks.
+            __instance.OverHeatedIcon.SetActive(false);
         }
     }
 

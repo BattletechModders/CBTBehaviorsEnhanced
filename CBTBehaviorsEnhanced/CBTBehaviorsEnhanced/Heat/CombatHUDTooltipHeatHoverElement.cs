@@ -59,8 +59,16 @@ namespace CBTBehaviorsEnhanced.Heat {
             float heatCheck = displayedMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
             float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
 
+            float thresholdHeat = futureHeat + sinkableHeat;
+            Mod.Log.Debug($"THRESHOLD HEAT: {thresholdHeat}");
+
             StringBuilder descSB = new StringBuilder("");
             StringBuilder warningSB = new StringBuilder("");
+
+            // Future heat
+            descSB.Append(new Localize.Text(
+                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_End_Heat], new object[] { thresholdHeat, maxHeat }
+            ));
 
             // Heat line
             float sinkCapMulti = displayedMech.DesignMaskHeatMulti(isProjectedHeat);
@@ -69,8 +77,6 @@ namespace CBTBehaviorsEnhanced.Heat {
                 Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Heat], new object[] { futureHeat, maxHeat, sinkableHeat, overallSinkCapacity, sinkCapMultiColor, sinkCapMulti }
             ));
 
-            float thresholdHeat = futureHeat + sinkableHeat;
-            Mod.Log.Debug($"THRESHOLD HEAT: {thresholdHeat}");
 
             float threshold = 0f;
             // Check Ammo

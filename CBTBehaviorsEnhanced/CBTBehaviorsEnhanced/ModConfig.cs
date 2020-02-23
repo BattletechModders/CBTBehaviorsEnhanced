@@ -241,6 +241,7 @@ namespace CBTBehaviorsEnhanced {
 
         // CombatHUDTooltip Localization 
         public const string CHUD_TT_Title = "TITLE";
+        public const string CHUD_TT_End_Heat = "END_OF_TURN_HEAT";
         public const string CHUD_TT_Heat = "HEAT_AND_SINKING";
         public const string CHUD_TT_Explosion = "AMMO_EXP_CHANCE";
         public const string CHUD_TT_Explosion_Warning = "AMMO_EXP_WARNING";
@@ -259,7 +260,8 @@ namespace CBTBehaviorsEnhanced {
 
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
-            { CHUD_TT_Heat, "Heat: {0} of {1}  Will Sink: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
+            { CHUD_TT_End_Heat, "Projected Heat: {0} of {1}" },
+            { CHUD_TT_Heat, "\n--Current Heat: {0} of {1}  Heat Sinking: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
             { CHUD_TT_Explosion, "\nAmmo Explosion on d100+{0} < {1:P1}" },
             { CHUD_TT_Explosion_Warning, "Guaranteed Ammo Explosion!" },
             { CHUD_TT_Injury, "\nPilot Injury on d100+{0} < {1:P1}" },
