@@ -1,11 +1,13 @@
 ﻿
 using BattleTech;
 using CBTBehaviorsEnhanced.Components;
+using CBTBehaviorsEnhanced.Extensions;
 using CustAmmoCategories;
 using CustomComponents;
 using MechEngineer.Features.ComponentExplosions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -143,6 +145,55 @@ namespace CBTBehaviorsEnhanced {
             }
 
             return (int)Math.Ceiling(terrainHeat);
+        }
+
+        public class CalculatedHeat {
+            public int CurrentHeat;
+            public int ProjectedHeat;
+            public int TempHeat;
+
+            public int CACTerrainHeat;
+            public int CurrentPathNodes;
+            public bool IsProjectedHeat;
+
+            public int SinkableHeat;
+            public int OverallSinkCapacity;
+            public int FutureHeat;
+            public int ThresholdHeat;
+        }
+
+        public static CalculatedHeat CalculateHeat(Mech mech, int projectedHeat) {
+            // Calculate the heat from CAC burning 
+            int cacTerrainHeat = mech.CACTerrainHeat();
+            int currentPathNodes = mech.Pathing != null && mech.Pathing.CurrentPath != null ? mech.Pathing.CurrentPath.Count : 0;
+
+            bool isProjectedHeat = projectedHeat != 0 || currentPathNodes != 0;
+            int sinkableHeat = mech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, true) * -1;
+            int overallSinkCapacity = mech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, false) * -1;
+            Mod.Log.Trace($"  remainingCapacity: {mech.HeatSinkCapacity}  rawCapacity: {overallSinkCapacity}  normedAdjustedFraction: {sinkableHeat}");
+
+            int currentHeat = mech.CurrentHeat;
+            int tempHeat = mech.TempHeat;
+
+            int futureHeat = Math.Max(0, currentHeat + tempHeat + projectedHeat + cacTerrainHeat);
+            Mod.Log.Trace($"  currentHeat: {currentHeat} + tempHeat: {tempHeat} + projectedHeat: {projectedHeat} + cacTerrainheat: {cacTerrainHeat} + sinkableHeat: {sinkableHeat}" +
+                $"  =  futureHeat: {futureHeat}");
+
+            int thresholdHeat = Math.Max(0, futureHeat + sinkableHeat);
+            Mod.Log.Trace($"Threshold heat: {thresholdHeat} = futureHeat: {futureHeat} + sinkableHeat: {sinkableHeat}");
+
+            return new CalculatedHeat {
+                CurrentHeat = currentHeat,
+                ProjectedHeat = projectedHeat,
+                TempHeat = tempHeat,
+                CACTerrainHeat = cacTerrainHeat,
+                CurrentPathNodes = currentPathNodes,
+                IsProjectedHeat = isProjectedHeat,
+                SinkableHeat = sinkableHeat,
+                OverallSinkCapacity = overallSinkCapacity,
+                FutureHeat = futureHeat,
+                ThresholdHeat = thresholdHeat
+            };
         }
 
         public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isVolatile) {

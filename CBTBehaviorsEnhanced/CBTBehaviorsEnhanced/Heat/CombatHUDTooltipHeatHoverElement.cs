@@ -1,11 +1,13 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using CBTBehaviorsEnhanced.Extensions;
+using Harmony;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using us.frostraptor.modUtils;
+using static CBTBehaviorsEnhanced.HeatHelper;
 
 namespace CBTBehaviorsEnhanced.Heat {
     public class CombatHUDSidePanelHeatHoverElement : CombatHUDSidePanelHoverElement {
@@ -29,64 +31,59 @@ namespace CBTBehaviorsEnhanced.Heat {
         }
 
         public void UpdateText(Mech displayedMech) {
-            // Calculate the heat from CAC burning 
-            int cacTerrainHeat = displayedMech.CACTerrainHeat();
-            int currentPathNodes = displayedMech.Pathing != null && displayedMech.Pathing.CurrentPath != null ? displayedMech.Pathing.CurrentPath.Count : 0;
 
-            if (displayedMech.CurrentHeat == CurrentHeat && displayedMech.TempHeat == TempHeat && 
-                CombatHUD.SelectionHandler.ProjectedHeatForState == ProjectedHeat && cacTerrainHeat == this.CACTerrainHeat
-                && currentPathNodes == CurrentPathNodes) { return; }
+            CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(displayedMech, CombatHUD.SelectionHandler.ProjectedHeatForState);
+
+            // If everything has changed, skip and avoid the update
+            if (calculatedHeat.CurrentHeat == CurrentHeat && 
+                calculatedHeat.TempHeat == TempHeat &&
+                calculatedHeat.ProjectedHeat == ProjectedHeat && 
+                calculatedHeat.CACTerrainHeat == this.CACTerrainHeat && 
+                calculatedHeat.CurrentPathNodes == CurrentPathNodes) { return; }
 
             Mod.Log.Debug($"Updating heat dialog for actor: {CombatantUtils.Label(displayedMech)}");
-
-            Mod.Log.Debug($"  current values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {cacTerrainHeat}  currentPathNodes: {currentPathNodes}");
-            this.CurrentHeat = displayedMech.CurrentHeat;
-            this.ProjectedHeat = CombatHUD.SelectionHandler.ProjectedHeatForState;
-            this.TempHeat = displayedMech.TempHeat;
-            this.CACTerrainHeat = cacTerrainHeat;
-            this.CurrentPathNodes = currentPathNodes;
-            Mod.Log.Debug($"  updated values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {cacTerrainHeat}  currentPathNodes: {currentPathNodes}");
-
-            bool isProjectedHeat = this.ProjectedHeat != 0 || currentPathNodes != 0;
-            int sinkableHeat = displayedMech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, true) * -1;
-            int overallSinkCapacity = displayedMech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, false) *-1;
-            Mod.Log.Debug($"  remainingCapacity: {displayedMech.HeatSinkCapacity}  rawCapacity: {overallSinkCapacity}  normedAdjustedFraction: {sinkableHeat}");
-
-            int futureHeat = Math.Max(0, CurrentHeat + TempHeat + ProjectedHeat + cacTerrainHeat);
-            Mod.Log.Debug($"  currentHeat: {CurrentHeat} + tempHeat: {TempHeat} + projectedHeat: {ProjectedHeat} + cacTerrainheat: {cacTerrainHeat} + sinkableHeat: {sinkableHeat}" +
-                $"  =  futureHeat: {futureHeat}");
-
-            float heatCheck = displayedMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
-            float maxHeat = Mod.Config.Heat.Shutdown.Last().Key;
-
-            float thresholdHeat = futureHeat + sinkableHeat;
-            Mod.Log.Debug($"THRESHOLD HEAT: {thresholdHeat}");
+            Mod.Log.Debug($"  previous values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
+            this.CurrentHeat = calculatedHeat.CurrentHeat;
+            this.ProjectedHeat = calculatedHeat.ProjectedHeat;
+            this.TempHeat = calculatedHeat.TempHeat;
+            this.CACTerrainHeat = calculatedHeat.CACTerrainHeat;
+            this.CurrentPathNodes = calculatedHeat.CurrentPathNodes;
+            Mod.Log.Debug($"  current values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
 
             StringBuilder descSB = new StringBuilder("");
             StringBuilder warningSB = new StringBuilder("");
 
             // Future heat
             descSB.Append(new Localize.Text(
-                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_End_Heat], new object[] { thresholdHeat, maxHeat }
+                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_End_Heat], new object[] { calculatedHeat.ThresholdHeat, Mod.Config.Heat.MaxHeat }
             ));
 
             // Heat line
-            float sinkCapMulti = displayedMech.DesignMaskHeatMulti(isProjectedHeat);
+            float heatCheck = displayedMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+
+            // Force a recalculation of the overheat warning
+            if (calculatedHeat.FutureHeat > Mod.Config.Heat.WarnAtHeat) {
+                Traverse statusPanelT = Traverse.Create(HUD.MechTray).Field("StatusPanel");
+                CombatHUDStatusPanel combatHUDStatusPanel = statusPanelT.GetValue<CombatHUDStatusPanel>();
+                Traverse showShutdownIndicator = Traverse.Create(combatHUDStatusPanel).Method("ShowShutDownIndicator", new object[] { displayedMech });
+                showShutdownIndicator.GetValue();
+            }
+
+            float sinkCapMulti = displayedMech.DesignMaskHeatMulti(calculatedHeat.IsProjectedHeat);
             string sinkCapMultiColor = sinkCapMulti >= 1f ? "00FF00" : "FF0000";
             descSB.Append(new Localize.Text(
-                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Heat], new object[] { futureHeat, maxHeat, sinkableHeat, overallSinkCapacity, sinkCapMultiColor, sinkCapMulti }
+                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Heat], new object[] { calculatedHeat.FutureHeat, Mod.Config.Heat.MaxHeat, calculatedHeat.SinkableHeat, calculatedHeat.OverallSinkCapacity, sinkCapMultiColor, sinkCapMulti }
             ));
-
 
             float threshold = 0f;
             // Check Ammo
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion) {
-                if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
+                if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f && threshold != -1f) { 
-                Mod.Log.Debug($"Ammo Explosion Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug($"Ammo Explosion Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold }
+                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             } else if (threshold == -1f) {
                 Mod.Log.Debug($"Ammo Explosion Guaranteed!");
@@ -96,36 +93,36 @@ namespace CBTBehaviorsEnhanced.Heat {
             // Check Injury
             threshold = 0f;
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.PilotInjury) {
-                if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
+                if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f) {
-                Mod.Log.Debug($"Injury Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug($"Injury Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold }
+                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             }
 
             // Check System Failure
             threshold = 0f;
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.SystemFailures) {
-                if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
+                if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f) {
-                Mod.Log.Debug($"System Failure Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug($"System Failure Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold }
+                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             }
 
             // Check Shutdown
             threshold = 0f;
             foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown) {
-                if (thresholdHeat >= kvp.Key) { threshold = kvp.Value; }
+                if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f && threshold != -1f) {
-                Mod.Log.Debug($"Shutdown Threshold: {threshold:P1} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug($"Shutdown Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold }
+                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold * 100f }
                 ));
             } else if (threshold == -1f) {
                 Mod.Log.Debug($"Shutdown Guaranteed!");
@@ -135,7 +132,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             // Attack modifiers
             int modifier = 0;
             foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
-                if (thresholdHeat >= kvp.Key) { modifier = kvp.Value; }
+                if (calculatedHeat.ThresholdHeat >= kvp.Key) { modifier = kvp.Value; }
             }
             if (modifier != 0) {
                 Mod.Log.Debug($"Attack Modifier: +{modifier}");
@@ -145,7 +142,7 @@ namespace CBTBehaviorsEnhanced.Heat {
 
             // Movement modifier
             foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
-                if (thresholdHeat >= kvp.Key) { modifier = kvp.Value; }
+                if (calculatedHeat.ThresholdHeat >= kvp.Key) { modifier = kvp.Value; }
             }
             if (modifier != 0) {
                 Mod.Log.Debug($"Movement Modifier: -{modifier * 30}m");

@@ -134,6 +134,10 @@ namespace CBTBehaviorsEnhanced {
             public int ShowLowOverheatAnim = 42; // When to show as steaming
             public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
             public float ShutdownFallThreshold = 0.75f;
+
+            // When to show the shutdown warning and when to where to place the 'overheated' bar
+            public int MaxHeat = 150;
+            public int WarnAtHeat = 42;
         }
         public HeatOptions Heat = new HeatOptions();
 
@@ -261,12 +265,12 @@ namespace CBTBehaviorsEnhanced {
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
             { CHUD_TT_End_Heat, "Projected Heat: {0} of {1}" },
-            { CHUD_TT_Heat, "\n--Current Heat: {0} of {1}  Heat Sinking: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
-            { CHUD_TT_Explosion, "\nAmmo Explosion on d100+{0} < {1:P1}" },
+            { CHUD_TT_Heat, "\n  Current Heat: {0} of {1}  Heat Sinking: {2} of {3} (<color=#{4}>x{5:#.#}</color>)" },
+            { CHUD_TT_Explosion, "\nAmmo Explosion on (d100+{0}) < {1}" },
             { CHUD_TT_Explosion_Warning, "Guaranteed Ammo Explosion!" },
-            { CHUD_TT_Injury, "\nPilot Injury on d100+{0} < {1:P1}" },
-            { CHUD_TT_Sys_Failure, "\nSystem Failure on d100+{0} < {1:P1}" },
-            { CHUD_TT_Shutdown, "\nShutdown on d100+{0} < {1:P1}" },
+            { CHUD_TT_Injury, "\nPilot Injury on (d100+{0}) < {1}" },
+            { CHUD_TT_Sys_Failure, "\nSystem Failure on (d100+{0}) < {1}" },
+            { CHUD_TT_Shutdown, "\nShutdown on (d100+{0}) < {1}" },
             { CHUD_TT_Shutdown_Warning, "\nGuaranteed Shutdown!" },
             { CHUD_TT_Attack, "\nAttack Penalty: <color=#FF0000>+{0}</color>" },
             { CHUD_TT_Move, "\nMovement Penalty: <color=#FF0000>-{0}m</color>" },
