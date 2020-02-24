@@ -46,6 +46,13 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 return;
             }
 
+            float structureDamage = attackSequence.GetStructureDamageDealt(attackSequence.chosenTarget.GUID);
+            Mod.Log.Debug($"Attack sequence {sequenceId} did {structureDamage} structure damage to target: {attackSequence.chosenTarget.GUID}");
+            if (structureDamage == 0f) {
+                Mod.Log.Debug($"Attack did no structure damage, skipping.");
+                return;
+            }
+
             if (attackSequence.chosenTarget is Mech targetMech) {
                 Mod.Log.Debug($"Checking hull breaches for targetMech: {CombatantUtils.Label(targetMech)}");
                 ResolveMechHullBreaches(targetMech);
@@ -88,7 +95,10 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
                 // If no immunity, sum the breach check across all trials
                 float passChance = 1f - ModState.BreachCheck;
-                float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsMech[hitLocation]);
+                //float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsMech[hitLocation]);
+                // TODO: Number of trials is way too rough, and can make breaches extremely common. Weakening to flat percentage chance.
+                float sequencePassChance = Mathf.Pow(passChance, 1);
+
                 float sequenceThreshold = 1f - sequencePassChance;
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsMech[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
@@ -144,7 +154,9 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             foreach (BuildingLocation hitLocation in ModState.BreachHitsTurret.Keys) {
                 // If no immunity, sum the breach check across all trials
                 float passChance = 1f - ModState.BreachCheck;
-                float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsTurret[hitLocation]);
+                //float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsTurret[hitLocation]);
+                // TODO: Number of trials is way too rough, and can make breaches extremely common. Weakening to flat percentage chance.
+                float sequencePassChance = Mathf.Pow(passChance, 1);
                 float sequenceThreshold = 1f - sequencePassChance;
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsTurret[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
@@ -188,7 +200,10 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
                 // If no immunity, sum the breach check across all trials
                 float passChance = 1f - ModState.BreachCheck;
-                float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsVehicle[hitLocation]);
+                //float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsVehicle[hitLocation]);
+                // TODO: Number of trials is way too rough, and can make breaches extremely common. Weakening to flat percentage chance.
+                float sequencePassChance = Mathf.Pow(passChance, 1);
+
                 float sequenceThreshold = 1f - sequencePassChance;
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsVehicle[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
