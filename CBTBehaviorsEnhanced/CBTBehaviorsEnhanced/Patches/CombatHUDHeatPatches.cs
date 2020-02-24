@@ -131,7 +131,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                 if (showHeatWarnings) {
 
                     CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(HUD.SelectedActor as Mech, HUD.SelectionHandler.ProjectedHeatForState);
-                    Mod.Log.Debug($" In CombatHUDAttackModeSelector, projectedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
+                    //Mod.Log.Debug($" In CombatHUDAttackModeSelector, projectedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
                     bool isOverheated = calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat;
                     bool isShutdown = calculatedHeat.ThresholdHeat >= Mod.Config.Heat.MaxHeat;
 
