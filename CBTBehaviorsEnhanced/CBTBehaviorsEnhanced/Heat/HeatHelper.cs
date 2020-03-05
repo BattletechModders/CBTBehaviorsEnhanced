@@ -1,13 +1,11 @@
 ﻿
 using BattleTech;
 using CBTBehaviorsEnhanced.Components;
-using CBTBehaviorsEnhanced.Extensions;
 using CustAmmoCategories;
 using CustomComponents;
 using MechEngineer.Features.ComponentExplosions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using us.frostraptor.modUtils;
 

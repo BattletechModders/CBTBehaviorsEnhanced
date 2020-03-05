@@ -18,6 +18,13 @@ namespace CBTBehaviorsEnhanced.Piloting {
         }
     }
 
+    [HarmonyPatch(typeof(Mech), "CompleteKnockdown")]
+    public class Mech_CompleteKnockdown {
+        public static void Prefix(Mech __instance) {
+            Mod.Log.Trace("M:CK - entered.");
+        }
+    }
+
     [HarmonyPatch(typeof(MechFallSequence), "OnComplete")]
     public class MechFallSequence_OnComplete {
         public static void Prefix(MechFallSequence __instance) {
@@ -43,7 +50,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
             foreach (int damage in locationDamage) {
                 ArmorLocation location = FallingDamageLocations[__instance.OwningMech.Combat.NetworkRandom.Int(0, FallingDamageLocations.Length)];
                 Mod.Log.Debug($"  {damage} damage to location: {location}");
-                __instance.OwningMech.DEBUG_DamageLocation(location, damage, __instance.OwningMech, DamageType.KnockdownSelf);
+                __instance.OwningMech.DEBUG_DamageLocation(location, damage, __instance.OwningMech, DamageType.KnockdownSelf, "FALLING");
             }
         }
 
