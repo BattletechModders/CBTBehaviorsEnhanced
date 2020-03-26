@@ -10,6 +10,7 @@ namespace CBTBehaviorsEnhanced {
 
         public const string HarmonyPackage = "us.frostraptor.CBTBehaviorsEnhanced";
         public const string LogName = "cbt_behaviors_enhanced";
+        public const string LogLabel = "CBTBE";
 
         public static IntraModLogger Log;
         public static string ModDir;
@@ -28,7 +29,7 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Config = new ModConfig();
             }
 
-            Log = new IntraModLogger(modDirectory, LogName, Config.Debug, Config.Trace);
+            Log = new IntraModLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);

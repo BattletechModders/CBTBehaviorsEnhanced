@@ -37,7 +37,7 @@
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
@@ -48,8 +48,9 @@
     <Reference Include="CustomComponents">
       <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\CustomComponents\CustomComponents.dll</HintPath>
     </Reference>
-    <Reference Include="IRBTModUtils">
-      <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\IRBTModUtils\IRBTModUtils.dll</HintPath>
+    <Reference Include="IRBTModUtils, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
     </Reference>
     <Reference Include="MechEngineer">
       <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\MechEngineer\MechEngineer.dll</HintPath>

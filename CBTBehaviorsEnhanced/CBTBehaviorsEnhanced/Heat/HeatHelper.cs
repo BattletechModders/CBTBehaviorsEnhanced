@@ -46,14 +46,14 @@ namespace CBTBehaviorsEnhanced {
                 // Check for currently occupied, or future
                 if (isProjectedHeat) {
                     Mod.Log.Trace("Calculating projected position heat.");
-                    if (mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0) {
+                    if (mech.Pathing != null && mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0) {
 
                         // Determine the destination designMask
                         Mod.Log.Trace($"CurrentPath has: {mech.Pathing.CurrentPath.Count} nodes, using destination path: {mech.Pathing.ResultDestination}");
-                        DesignMaskDef designMask = mech.Combat.MapMetaData.GetPriorityDesignMaskAtPos(mech.Pathing.ResultDestination);
-                        if (designMask != null && !Mathf.Approximately(designMask.heatSinkMultiplier, 1f)) {
-                            Mod.Log.Trace($"Destination design mask: {designMask?.Description?.Name} has heatSinkMulti: x{designMask?.heatSinkMultiplier} ");
-                            capacityMulti *= designMask.heatSinkMultiplier;
+                        DesignMaskDef destinationDesignMaskDef = mech?.Combat?.MapMetaData?.GetPriorityDesignMaskAtPos(mech.Pathing.ResultDestination);
+                        if (destinationDesignMaskDef != null && !Mathf.Approximately(destinationDesignMaskDef.heatSinkMultiplier, 1f)) {
+                            Mod.Log.Trace($"Destination design mask: {destinationDesignMaskDef?.Description?.Name} has heatSinkMulti: x{destinationDesignMaskDef?.heatSinkMultiplier} ");
+                            capacityMulti *= destinationDesignMaskDef.heatSinkMultiplier;
                         }
 
                         // Check for any cells along the way that will apply the burning sticky effect.
@@ -62,19 +62,19 @@ namespace CBTBehaviorsEnhanced {
                             mech, mech.Pathing.CurrentPath, mech.Pathing.ResultDestination, (ICombatant)mech.Pathing.CurrentMeleeTarget, mech.Pathing.MoveType
                             );
                         List<MapTerrainCellWaypoint> terrainWaypoints = DynamicMapHelper.getVisitedWaypoints(mech.Combat, waypointsFromPath);
-                        Mod.Log.Trace($"  Count of waypointsFromPath: {waypointsFromPath.Count}  terrainWaypoints: {terrainWaypoints.Count}");
+                        Mod.Log.Trace($"  Count of waypointsFromPath: {waypointsFromPath?.Count}  terrainWaypoints: {terrainWaypoints?.Count}");
 
                         // This assumes 1) only KMission is using stickyEffects that modify HeatSinkCapacity and 2) it has a stackLimit of 1. Anything else will break this.
                         float stickyModifier = 1f;
                         foreach (MapTerrainCellWaypoint cell in terrainWaypoints) {
-                            if (cell != null && cell.cell.BurningStrength > 0 && cell.cell?.mapMetaData?.designMaskDefs != null) {
+                            if (cell != null && cell?.cell?.BurningStrength > 0 && cell?.cell?.mapMetaData?.designMaskDefs != null) {
                                 Mod.Log.Trace($"  checking burningCell for designMask.");
-                                foreach (DesignMaskDef designMaskDef in cell.cell.mapMetaData.designMaskDefs.Values) {
+                                foreach (DesignMaskDef cellDesignMaskDef in cell?.cell?.mapMetaData?.designMaskDefs?.Values) {
                                     Mod.Log.Trace($"    checking designMask for stickyEffects.");
-                                    if (designMask.stickyEffect != null && designMask.stickyEffect.statisticData != null &&
-                                        designMask.stickyEffect.statisticData.statName == ModStats.VAN_HeatSinkCapacity) {
+                                    if (cellDesignMaskDef.stickyEffect != null && cellDesignMaskDef.stickyEffect?.statisticData != null &&
+                                        cellDesignMaskDef.stickyEffect.statisticData.statName == ModStats.VAN_HeatSinkCapacity) {
                                         Mod.Log.Trace($"      found stickyEffects.");
-                                        stickyModifier = Single.Parse(designMask.stickyEffect.statisticData.modValue);
+                                        stickyModifier = Single.Parse(cellDesignMaskDef.stickyEffect.statisticData.modValue);
                                     }
                                 }
                             }
@@ -90,19 +90,18 @@ namespace CBTBehaviorsEnhanced {
                 } else {
                     Mod.Log.Trace("Calculating current position heat.");
                     if (mech.occupiedDesignMask != null && !Mathf.Approximately(mech.occupiedDesignMask.heatSinkMultiplier, 1f)) {
-                        Mod.Log.Trace($"Multi for currentPos is: {mech.occupiedDesignMask.heatSinkMultiplier}");
+                        Mod.Log.Trace($"Multi for currentPos is: {mech?.occupiedDesignMask?.heatSinkMultiplier}");
                         capacityMulti *= mech.occupiedDesignMask.heatSinkMultiplier;
                     }
 
                 }
 
-                if (mech.Combat.MapMetaData.biomeDesignMask != null && !Mathf.Approximately(mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier, 1f)) {
+                if (mech?.Combat?.MapMetaData?.biomeDesignMask != null && !Mathf.Approximately(mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier, 1f)) {
                     Mod.Log.Trace($"Biome: {mech.Combat.MapMetaData.biomeDesignMask.Id} has heatSinkMulti: x{mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier} ");
                     capacityMulti *= mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier;
                 }
             } catch (Exception e) {
-                Mod.Log.Error($"Failed to calculate designMaskHeatMulti due to error: {e}");
-                Mod.Log.Error(e);
+                Mod.Log.Error($"Failed to calculate designMaskHeatMulti due to error: {e}", e);
             }
             
             Mod.Log.Trace($"Calculated capacityMulti: {capacityMulti} x globalHeatSinkMulti: {mech.Combat.Constants.Heat.GlobalHeatSinkMultiplier} ");
