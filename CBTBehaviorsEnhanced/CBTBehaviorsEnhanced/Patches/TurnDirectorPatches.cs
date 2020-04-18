@@ -1,6 +1,8 @@
 ﻿using BattleTech;
 using Harmony;
+using System.Collections.Generic;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches {
 
@@ -42,14 +44,48 @@ namespace CBTBehaviorsEnhanced.Patches {
     [HarmonyPatch(typeof(TurnDirector), "OnTurnActorActivateComplete")]
     public static class TurnDirector_OnTurnActorActivateComplete {
         private static bool Prefix(TurnDirector __instance) {
-            Mod.Log.Info($"TD:OTAAC invoked");
+            Mod.Log.Debug($"TD:OTAAC invoked");
 
             if (__instance.IsMissionOver) {
                 return false;
             }
 
-            Mod.Log.Info($"TD isInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.Combat.TurnDirector.IsInterleavePending}" +
+            Mod.Log.Debug($"TD isInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.Combat.TurnDirector.IsInterleavePending}" +
                 $"  isNonInterleavePending: {__instance.Combat.TurnDirector.IsNonInterleavePending}");
+
+            foreach (TurnActor turnActor in __instance.TurnActors)
+            {
+                if (turnActor is Team teamActor) 
+                {
+                    Mod.Log.Debug($" -- TEAM: {teamActor.Name} --");
+                    foreach (AbstractActor actor in teamActor.units)
+                    {
+                        Mod.Log.Debug($" ---- UNIT: {actor}");
+                    }
+                }
+                else if (turnActor is AITeam aiTeam)
+                {
+                    Mod.Log.Debug($" -- AI TEAM: {aiTeam.Name} --");
+                    foreach (AbstractActor actor in aiTeam.units)
+                    {
+                        Mod.Log.Debug($" ---- UNIT: {actor}");
+                    }
+                } 
+                else
+                {
+                    Mod.Log.Debug($"Unknown team activated! {turnActor.GUID}");
+                }
+            }
+
+            List<ITaggedItem> objectsOfType = __instance.Combat.ItemRegistry.GetObjectsOfType(TaggedObjectType.Unit);
+            for (int i = 0; i < objectsOfType.Count; i++)
+            {
+                AbstractActor abstractActor = objectsOfType[i] as AbstractActor;
+                if (abstractActor != null && abstractActor.team == null)
+                {
+                    Mod.Log.Error($"Unit {CombatantUtils.Label(abstractActor)} has no assigned team!");
+                }
+            }
 
             int numUnusedUnitsForCurrentPhase = __instance.TurnActors[__instance.ActiveTurnActorIndex].GetNumUnusedUnitsForCurrentPhase();
             Mod.Log.Info($"There are {numUnusedUnitsForCurrentPhase} unusedUnits in the current phase)");
