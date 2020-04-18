@@ -48,9 +48,9 @@
     <Reference Include="CustomComponents">
       <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\CustomComponents\CustomComponents.dll</HintPath>
     </Reference>
-    <Reference Include="IRBTModUtils, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IRBTModUtils, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\BATTLETECH\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
     </Reference>
     <Reference Include="MechEngineer">
       <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\MechEngineer\MechEngineer.dll</HintPath>
