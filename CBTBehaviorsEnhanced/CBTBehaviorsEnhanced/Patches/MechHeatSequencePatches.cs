@@ -57,7 +57,7 @@ namespace CBTBehaviorsEnhanced.Patches {
 
             if (__instance.PerformHeatSinkStep && !__instance.ApplyStartupHeatSinks) {
                 // We are at the end of the turn - force an overheat
-                Mod.Log.Info("AT END OF TURN - CHECKING EFFECTS");
+                Mod.Log.Info($"-- AT END OF TURN FOR {CombatantUtils.Label(__instance.OwningMech)}... CHECKING EFFECTS");
 
                 MultiSequence sequence = new MultiSequence(__instance.OwningMech.Combat);
 
@@ -77,7 +77,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                 bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Injury);
                 Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
                 if (failedInjuryCheck) {
-                    Mod.Log.Debug("-- Pilot Injury check failed, forcing injury from heat");
+                    Mod.Log.Info($"-- Pilot Heat Injury check failed for {CombatantUtils.Label(__instance.OwningMech)}, forcing injury from heat");
                     __instance.OwningMech.pilot.InjurePilot(__instance.SequenceGUID.ToString(), __instance.RootSequenceGUID, 1, DamageType.OverheatSelf, null, __instance.OwningMech);
                     if (!__instance.OwningMech.pilot.IsIncapacitated) {
                         AudioEventManager.SetPilotVOSwitch<AudioSwitch_dialog_dark_light>(AudioSwitch_dialog_dark_light.dark, __instance.OwningMech);
@@ -92,7 +92,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                 bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_System_Failure);
                 Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
                 if (failedSystemFailureCheck) {
-                    Mod.Log.Debug("-- System Failure check failed, forcing system damage");
+                    Mod.Log.Info($"-- System Failure check failed, forcing system damage on unit: {CombatantUtils.Label(__instance.OwningMech)}");
                     List<MechComponent> functionalComponents = new List<MechComponent>();
                     foreach (MechComponent mc in __instance.OwningMech.allComponents) {
                         bool canTarget = mc.IsFunctional;
@@ -105,7 +105,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                         if (canTarget) { functionalComponents.Add(mc); }
                     }
                     MechComponent componentToDamage = functionalComponents.GetRandomElement();
-                    Mod.Log.Debug($" Destroying component: {componentToDamage.UIName} from heat damage.");
+                    Mod.Log.Info($"   Destroying component: {componentToDamage.UIName} from heat damage.");
 
                     WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
                         new AttackDirection[] { AttackDirection.None }, null, null, null);
@@ -119,10 +119,10 @@ namespace CBTBehaviorsEnhanced.Patches {
                     failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
                     Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
                     if (failedAmmoCheck) {
-                        Mod.Log.Debug("-- Ammo Explosion check failed, forcing ammo explosion");
+                        Mod.Log.Info($"-- Ammo Explosion check failed, forcing ammo explosion on unit: {CombatantUtils.Label(__instance.OwningMech)}");
 
                         if (mostDamaging != null) {
-                            Mod.Log.Debug($" Exploding ammo: {mostDamaging.UIName}");
+                            Mod.Log.Info($"   Exploding ammo: {mostDamaging.UIName}");
                             WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
                                 new AttackDirection[] { AttackDirection.None }, null, null, null);
                             mostDamaging.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
@@ -139,10 +139,10 @@ namespace CBTBehaviorsEnhanced.Patches {
                     failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Explosion);
                     Mod.Log.Debug($"  failedVolatileAmmoCheck: {failedVolatileAmmoCheck}");
                     if (failedVolatileAmmoCheck) {
-                        Mod.Log.Debug("-- Volatile Ammo Explosion check failed, forcing volatile ammo explosion");
+                        Mod.Log.Info($"-- Volatile Ammo Explosion check failed on {CombatantUtils.Label(__instance.OwningMech)}, forcing volatile ammo explosion");
 
                         if (mostDamaging != null) {
-                            Mod.Log.Debug($" Exploding inferno ammo: {mostDamagingVolatile.UIName}");
+                            Mod.Log.Info($" Exploding inferno ammo: {mostDamagingVolatile.UIName}");
                             WeaponHitInfo fakeHit = new WeaponHitInfo(__instance.RootSequenceGUID, -1, -1, -1, string.Empty, string.Empty, -1, null, null, null, null, null, null, null,
                                 new AttackDirection[] { AttackDirection.None }, null, null, null);
                             mostDamagingVolatile.DamageComponent(fakeHit, ComponentDamageLevel.Destroyed, true);
@@ -158,7 +158,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                     failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
                     Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
                     if (failedShutdownCheck) {
-                        Mod.Log.Debug("-- Shutdown check failed, forcing unit to shutdown");
+                        Mod.Log.Debug($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance.OwningMech)}, forcing unit to shutdown");
 
                         string debuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
                         sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
@@ -173,7 +173,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                             bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
                             Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
                             if (failedFallingCheck) {
-                                Mod.Log.Info("Pilot check from shutdown failed! Forcing a fall!");
+                                Mod.Log.Info("   Pilot check from shutdown failed! Forcing a fall!");
 
                                 string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Fall]).ToString();
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
@@ -184,7 +184,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                                 };
                                 sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
                             } else {
-                                Mod.Log.Info($"Pilot check to avoid falling passed.");
+                                Mod.Log.Debug($"Pilot check to avoid falling passed.");
                             }
                         } else {
                             Mod.Log.Debug("Unit is already prone, skipping.");
