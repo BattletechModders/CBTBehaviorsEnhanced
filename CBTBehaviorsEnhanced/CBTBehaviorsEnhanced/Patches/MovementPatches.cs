@@ -110,16 +110,20 @@ namespace CBTBehaviorsEnhanced {
         public static class MechJumpSequence_OnComplete {
             private static void Prefix(MechJumpSequence __instance) {
                 Mod.Log.Trace("MJS:OC entered");
+
                 // Check for visibility to any enemies
-                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved &&
-                    __instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
-                    //Mod.Log.Info("MJS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
-                    __instance.owningActor.AutoBrace = false;
-                }
-                else
+                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
                 {
-                    Mod.Log.Info("MJS:OC is not interleaved and no enemies - autobracing ");
-                    __instance.owningActor.AutoBrace = true;
+                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0)
+                    {
+                        Mod.Log.Debug("MJS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
+                        __instance.owningActor.AutoBrace = false;
+                    }
+                    else
+                    {
+                        Mod.Log.Debug("MJS:OC is not interleaved and no enemies - autobracing ");
+                        __instance.owningActor.AutoBrace = true;
+                    }
                 }
 
                 // Movement - check for damage after a jump, and if so force a piloting check
