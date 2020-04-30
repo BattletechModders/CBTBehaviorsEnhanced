@@ -116,8 +116,13 @@ namespace CBTBehaviorsEnhanced {
                     //Mod.Log.Info("MJS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
                     __instance.owningActor.AutoBrace = false;
                 }
+                else
+                {
+                    Mod.Log.Info("MJS:OC is not interleaved and no enemies - autobracing ");
+                    __instance.owningActor.AutoBrace = true;
+                }
 
-                // Movement - check for damage after a sprint, and if so force a piloting check
+                // Movement - check for damage after a jump, and if so force a piloting check
                 if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0) {
                     Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
