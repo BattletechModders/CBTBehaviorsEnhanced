@@ -22,7 +22,19 @@ namespace CBTBehaviorsEnhanced.Heat {
             float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
             int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
             bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModConfig.FT_Check_Startup);
-            
+
+            bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, -1, -1, heatCheck);
+            if (failedInjuryCheck) Mod.Log.Info("  -- unit did not pass injury check!");
+
+            bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, -1, heatCheck);
+            if (failedSystemFailureCheck) Mod.Log.Info("  -- unit did not pass system failure check!");
+
+            bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, -1, heatCheck);
+            if (failedAmmoCheck) Mod.Log.Info("  -- unit did not pass ammo explosion check!");
+
+            bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, -1, heatCheck);
+            if (failedVolatileAmmoCheck) Mod.Log.Info("  -- unit did not pass volatile ammo explosion check!");
+
             if (passedStartupCheck) { return true; } // Do the normal startup process
 
             Mod.Log.Debug($"Mech: {CombatantUtils.Label(mech)} failed a startup roll, venting heat but remaining offline.");
@@ -30,14 +42,8 @@ namespace CBTBehaviorsEnhanced.Heat {
             DoneWithActorSequence doneWithActorSequence = (DoneWithActorSequence)mech.GetDoneWithActorOrders();
             MechHeatSequence mechHeatSequence = new MechHeatSequence(mech, true, true, "STARTUP");
             doneWithActorSequence.AddChildSequence(mechHeatSequence, mechHeatSequence.MessageIndex);
-
-            bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, doneWithActorSequence.RootSequenceGUID, doneWithActorSequence.SequenceGUID, heatCheck);
-            bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, doneWithActorSequence.RootSequenceGUID, heatCheck);
-            bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, doneWithActorSequence.RootSequenceGUID, heatCheck);
-            bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, doneWithActorSequence.RootSequenceGUID, heatCheck);
-
+            
             QuipHelper.PublishQuip(mech, Mod.Config.Qips.Startup);
-           
 
             InvocationStackSequenceCreated message = new InvocationStackSequenceCreated(doneWithActorSequence, __instance);
             combatGameState.MessageCenter.PublishMessage(message);
