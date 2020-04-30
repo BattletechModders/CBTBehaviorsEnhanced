@@ -16,19 +16,28 @@ namespace CBTBehaviorsEnhanced.Heat {
             Mech mech = combatGameState.FindActorByGUID(__instance.MechGUID) as Mech;
             if (mech == null) { return true; }
 
+            Mod.Log.Info($"Processing startup for Mech: {CombatantUtils.Label(mech)}");
+
             // Check to see if we should restart automatically
             float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
             int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
             bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModConfig.FT_Check_Startup);
+            
             if (passedStartupCheck) { return true; } // Do the normal startup process
 
             Mod.Log.Debug($"Mech: {CombatantUtils.Label(mech)} failed a startup roll, venting heat but remaining offline.");
 
-            QuipHelper.PublishQuip(mech, Mod.Config.Qips.Startup);
-
             DoneWithActorSequence doneWithActorSequence = (DoneWithActorSequence)mech.GetDoneWithActorOrders();
             MechHeatSequence mechHeatSequence = new MechHeatSequence(mech, true, true, "STARTUP");
             doneWithActorSequence.AddChildSequence(mechHeatSequence, mechHeatSequence.MessageIndex);
+
+            bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, doneWithActorSequence.RootSequenceGUID, doneWithActorSequence.SequenceGUID, heatCheck);
+            bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, doneWithActorSequence.RootSequenceGUID, heatCheck);
+            bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, doneWithActorSequence.RootSequenceGUID, heatCheck);
+            bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, doneWithActorSequence.RootSequenceGUID, heatCheck);
+
+            QuipHelper.PublishQuip(mech, Mod.Config.Qips.Startup);
+           
 
             InvocationStackSequenceCreated message = new InvocationStackSequenceCreated(doneWithActorSequence, __instance);
             combatGameState.MessageCenter.PublishMessage(message);
