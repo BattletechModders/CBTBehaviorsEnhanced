@@ -75,10 +75,10 @@ namespace CBTBehaviorsEnhanced.Patches {
                 float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
                 Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
 
-                bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(__instance.OwningMech, __instance.RootSequenceGUID, __instance.SequenceGUID, heatCheck);
-                bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(__instance.OwningMech, __instance.RootSequenceGUID, heatCheck);
-                bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(__instance.OwningMech, __instance.RootSequenceGUID, heatCheck);
-                bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(__instance.OwningMech, __instance.RootSequenceGUID, heatCheck);
+                bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(__instance.OwningMech, __instance.OwningMech.CurrentHeat, __instance.RootSequenceGUID, __instance.SequenceGUID, heatCheck);
+                bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(__instance.OwningMech, __instance.OwningMech.CurrentHeat, __instance.RootSequenceGUID, heatCheck);
+                bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(__instance.OwningMech, __instance.OwningMech.CurrentHeat, __instance.RootSequenceGUID, heatCheck);
+                bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(__instance.OwningMech, __instance.OwningMech.CurrentHeat, __instance.RootSequenceGUID, heatCheck);
 
                 bool failedShutdownCheck = false;
                 if (!__instance.OwningMech.IsShutDown)

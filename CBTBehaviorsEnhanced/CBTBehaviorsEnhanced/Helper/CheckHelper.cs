@@ -52,9 +52,9 @@ namespace CBTBehaviorsEnhanced {
             return passedCheck;
         }
 
-        public static bool ResolvePilotInjuryCheck(Mech mech, int rootSequenceGUID, int sequenceGUID, float heatCheck)
+        public static bool ResolvePilotInjuryCheck(Mech mech, int heatToCheck, int rootSequenceGUID, int sequenceGUID, float heatCheck)
         {
-            bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, mech.CurrentHeat, mech, heatCheck, ModConfig.FT_Check_Injury);
+            bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, heatToCheck, mech, heatCheck, ModConfig.FT_Check_Injury);
             Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
             if (failedInjuryCheck)
             {
@@ -74,9 +74,9 @@ namespace CBTBehaviorsEnhanced {
             return failedInjuryCheck;
         }
 
-        public static bool ResolveSystemFailureCheck(Mech mech, int rootSequenceGUID, float heatCheck)
+        public static bool ResolveSystemFailureCheck(Mech mech, int heatToCheck, int rootSequenceGUID, float heatCheck)
         {
-            bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, mech.CurrentHeat, mech, heatCheck, ModConfig.FT_Check_System_Failure);
+            bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, heatToCheck, mech, heatCheck, ModConfig.FT_Check_System_Failure);
             Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
             if (failedSystemFailureCheck)
             {
@@ -106,13 +106,13 @@ namespace CBTBehaviorsEnhanced {
             return failedSystemFailureCheck;
         }
 
-        public static bool ResolveRegularAmmoCheck(Mech mech, int rootSequenceGUID, float heatCheck)
+        public static bool ResolveRegularAmmoCheck(Mech mech, int heatToCheck, int rootSequenceGUID, float heatCheck)
         {
             bool failedAmmoCheck = false;
             AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(mech, false);
             if (mostDamaging != null)
             {
-                failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, mech.CurrentHeat, mech, heatCheck, ModConfig.FT_Check_Explosion);
+                failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, heatToCheck, mech, heatCheck, ModConfig.FT_Check_Explosion);
                 Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
                 if (failedAmmoCheck)
                 {
@@ -135,13 +135,13 @@ namespace CBTBehaviorsEnhanced {
             return failedAmmoCheck;
         }
 
-        public  static bool ResolveVolatileAmmoCheck(Mech mech, int rootSequenceGUID, float heatCheck)
+        public  static bool ResolveVolatileAmmoCheck(Mech mech, int heatToCheck, int rootSequenceGUID, float heatCheck)
         {
             bool failedVolatileAmmoCheck = false;
             AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(mech, true);
             if (mostDamagingVolatile != null)
             {
-                failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, mech.CurrentHeat, mech, heatCheck, ModConfig.FT_Check_Explosion);
+                failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, heatToCheck, mech, heatCheck, ModConfig.FT_Check_Explosion);
                 Mod.Log.Debug($"  failedVolatileAmmoCheck: {failedVolatileAmmoCheck}");
                 if (failedVolatileAmmoCheck)
                 {

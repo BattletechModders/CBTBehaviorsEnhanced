@@ -23,16 +23,16 @@ namespace CBTBehaviorsEnhanced.Heat {
             int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
             bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModConfig.FT_Check_Startup);
 
-            bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, -1, -1, heatCheck);
+            bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, futureHeat, -1, -1, heatCheck);
             if (failedInjuryCheck) Mod.Log.Info("  -- unit did not pass injury check!");
 
-            bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, -1, heatCheck);
+            bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, futureHeat, -1, heatCheck);
             if (failedSystemFailureCheck) Mod.Log.Info("  -- unit did not pass system failure check!");
 
-            bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, -1, heatCheck);
+            bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, futureHeat, -1, heatCheck);
             if (failedAmmoCheck) Mod.Log.Info("  -- unit did not pass ammo explosion check!");
 
-            bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, -1, heatCheck);
+            bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck);
             if (failedVolatileAmmoCheck) Mod.Log.Info("  -- unit did not pass volatile ammo explosion check!");
 
             if (passedStartupCheck) { return true; } // Do the normal startup process
