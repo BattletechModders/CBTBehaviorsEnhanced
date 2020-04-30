@@ -1,28 +1,8 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using Harmony;
-using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches {
-
-    //[HarmonyPatch(typeof(CombatSelectionHandler), "AutoSelectActor")]
-    //public static class CombatSelectionHandler_AutoSelectActor {
-    //    public static void Prefix(CombatSelectionHandler __instance) {
-    //        Traverse combatT = Traverse.Create(__instance).Property("Combat");
-    //        CombatGameState combat = combatT.GetValue<CombatGameState>();
-    //        Mod.Log.Debug($"AUTO SELECT DETAILS:  hasAvailableUnits: {__instance.HasAvailableUnits}" +
-    //            $"  isInterleaved: {combat.TurnDirector.IsInterleaved}  " +
-    //            $"  autoSelectInterleaved: {combat.Constants.CombatUIConstants.AutoSelectDuringInterleaved}" +
-    //            $"  autoSelectNonInterleaved: {combat.Constants.CombatUIConstants.AutoSelectDuringNonInterleaved}" +
-    //            $"  selectedActor: '{CombatantUtils.Label(__instance.SelectedActor)}'" +
-    //            $"  localTeamActive: {combat.LocalPlayerTeam.IsActive}");
-
-    //        if (combat.LocalPlayerTeam.IsActive) {
-    //            AbstractActor nextAvailableUnit = combat.LocalPlayerTeam.GetNextAvailableUnit(__instance.SelectedActor);
-    //            Mod.Log.Debug($" == LOCAL PLAYER ACTIVE, NEXT AVAILABLE: {CombatantUtils.Label(nextAvailableUnit)}");
-    //        }
-    //    }
-    //}
 
     [HarmonyPatch(typeof(CombatSelectionHandler), "RemoveCompletedItems")]
     public static class CombatSelectionHandler_RemoveCompletedItems {
