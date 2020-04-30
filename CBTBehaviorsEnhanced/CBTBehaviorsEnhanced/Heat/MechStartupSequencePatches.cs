@@ -6,7 +6,7 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Heat {
 
-
+    // Forces the mech to make a piloting skill check, or fail to startup when shutdown
     [HarmonyPatch(typeof(MechStartupInvocation), "Invoke")]
     public static class MechStartupInvocation_Invoke {
         public static bool Prepare() { return Mod.Config.Features.StartupChecks; }
