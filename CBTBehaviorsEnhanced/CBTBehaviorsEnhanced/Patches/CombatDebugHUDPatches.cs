@@ -5,6 +5,7 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches
 {
+    // Simple patch that adds 100 heat when the 'overheat' debug command is used.
     [HarmonyPatch(typeof(CombatDebugHUD), "DEBUG_OverheatTarget")]
     static class CombatDebugHUDPatches
     {

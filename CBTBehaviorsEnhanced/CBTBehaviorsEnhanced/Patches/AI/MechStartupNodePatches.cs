@@ -7,7 +7,7 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches.AI
 {
-
+    // This node is used by the behavior tree, and it expects it to always pass. Intercept and apply the explosion logic.
     [HarmonyPatch]
     static class MechStartUpNode_Tick
     {

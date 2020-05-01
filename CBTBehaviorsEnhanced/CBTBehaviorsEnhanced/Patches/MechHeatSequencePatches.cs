@@ -1,9 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
-using CustomComponents;
 using Harmony;
 using Localize;
-using System.Collections.Generic;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -51,25 +49,12 @@ namespace CBTBehaviorsEnhanced.Patches {
                     $"isPastMaxHeat: {__instance.OwningMech.IsPastMaxHeat}  hasAppliedHeatSinks: {__instance.OwningMech.HasAppliedHeatSinks}");
             }
 
-            //if (__instance.OwningMech.IsPastMaxHeat && !__instance.OwningMech.IsShutDown) {
-            //    __instance.OwningMech.GenerateOverheatedSequence(__instance);
-            //    return;
-            //}
-
             if (__instance.PerformHeatSinkStep && !__instance.ApplyStartupHeatSinks)
             {
                 // We are at the end of the turn - force an overheat
                 Mod.Log.Info($"-- AT END OF TURN FOR {CombatantUtils.Label(__instance.OwningMech)}... CHECKING EFFECTS");
 
                 MultiSequence sequence = new MultiSequence(__instance.OwningMech.Combat);
-
-                // Possible sequences
-                //  Shutdown
-                //  Fall from shutdown
-                //  Ammo Explosion - regular & volatile
-                //  System damage
-                //  Pilot injury
-                //  Pilot death
 
                 float heatCheck = __instance.OwningMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
                 float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);

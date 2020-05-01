@@ -1,4 +1,4 @@
-# CBTBehaviors
+# Classic BattleTech Behaviors Enhanced (CBTBE)
 This mod for the [HBS BattleTech](http://battletechgame.com/) game changes several behaviors to more closely emulate the TableTop BattleTech experience. A summary this mod's changes are:
 
 * Overheating is completely revamped and no longer deals structural damage. Instead, you can be forced to shutdown, experience ammo explosions, pilot injuries, or critical hits, and experience significant movement and attacking penalties.
@@ -10,7 +10,15 @@ This mod for the [HBS BattleTech](http://battletechgame.com/) game changes sever
 
 This mod was influenced by [McFistyBuns'](https://github.com/McFistyBuns) excellent mods, which sadly are no longer updated. His code was released without a license, but in a discussion with LadyAlekto (of RougeTech) he granted a right to re-use his mod as she liked. While most of the code has been replaced, portions of the original code remains and has been relicensed under the MIT license to honor that exchange.
 
-This mod requires [https://github.com/iceraptor/IRBTModUtils/]. Grab the latest release of __IRBTModUtils__ and extract it in your Mods/ directory alongside of this mod.
+This mod requires the following mods. Grab the latest releases for each of them and make sure they are present in your Mods/ directory.
+
+*  [IRBTModUtils](https://github.com/iceraptor/IRBTModUtils) - general utility classes common to all of my mods
+* [MechEngineer](https://github.com/BattletechModders/mechengineer) - implements many TableTop components like engines, gyros, actuators, and more. 
+* [CustomComponents](https://github.com/BattletechModders/customcomponents) - provides the ability to tag specific components with mod-specific objects. Used to identify MechEngineer gyros, engines, and more.
+
+:exclamation: Users of KMission's [CustomActivatableEquipment](https://github.com/CMiSSioN/CustomActivatableEquipment) should change the setting `StartupByHeatControl` in mod.json to false. If you do not, AI-based heat effects (ammo explosions, pilot injuries, etc.) will not be applied.
+
+:exclamation: You are strongly encouraged to set `"CBTWalkAndRunMPRounding" : "true"` in Mods\MechEngineer\Settings.json. This will ensure WalkSpeed will be normalized, as well as RunSpeed.
 
 ## Heat Scale Changes
 
@@ -110,6 +118,12 @@ CBT Movement is an attempt to bring Classic Battletech Tabletop movement rules f
 - If you are legged, you are dropped to 1 MP
 
 The way movement currently works in the game is that ToHitSelfWalk modifiers are applied whenever you make any movement. So Sprinting, for example, will have a +1 for movement and an additional +1 for sprinting, bringing it in line with the original Tabletop rules of +2. The same applies to the Jump ToHit Modifiers.
+
+### Walk and Run Normalization
+
+
+
+
 
 ## NOTES TODO ERRORS
 
