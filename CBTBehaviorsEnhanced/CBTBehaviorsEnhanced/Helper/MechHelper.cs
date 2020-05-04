@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using Localize;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using us.frostraptor.modUtils;
@@ -8,34 +9,43 @@ using us.frostraptor.modUtils;
 namespace CBTBehaviorsEnhanced {
     public class MechHelper {
 
+        // Rationalize walk distance into MP, to allow CBT calculations to occur.
+        public static int CalcWalkMP(Mech mech)
+        {
+            // Per Battletech Manual, Running MP is always rounded up. Follow that principle here as well.
+            int rawWalkMP = (int)Math.Ceiling(mech.WalkSpeed / Mod.Config.Move.MetersPerHex);
+            Mod.Log.Trace($"Raw walkMP = {mech.WalkSpeed} / {Mod.Config.Move.MetersPerHex} = {rawWalkMP}");
+
+            // Check for overheat penalties
+            int movePenalty = 0;
+            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Movement)
+            {
+                if (mech.CurrentHeat >= kvp.Key)
+                {
+                    movePenalty = kvp.Value;
+                    //Mod.Log.Debug($" Move penalty = {moveMod}m as currentHeat: {mech.CurrentHeat} >= bounds: {kvp.Key}");
+                }
+            }
+            int modifiedWalkMP = rawWalkMP - movePenalty;
+            Mod.Log.Trace($"Modified walkMP = {rawWalkMP} - {movePenalty} = {modifiedWalkMP}");
+
+            // Normalize to the minimum if somehow we're below that.
+            return modifiedWalkMP >= 1 ? modifiedWalkMP : 1;
+        }
+
+
         public static float CalcWalkSpeed(Mech mech) {
             //Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has walk: {mech.WalkSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
 
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
-            if (mech.IsLegged) {
-                Mod.Log.Debug($"  Mech is legged, returning minimum move distance: {Mod.Config.Move.MinimumMove}");
-                return Mod.Config.Move.MinimumMove;
+            if (mech.IsLegged)
+            {
+                Mod.Log.Debug($"  Mech is legged, returning 1MP.");
+                return 1f * Mod.Config.Move.MetersPerHex;
             }
 
-            // Check for overheat penalties
-            float moveMod = 0f;
-            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Movement) {
-                if (mech.CurrentHeat >= kvp.Key) {
-                    moveMod = kvp.Value * 30.0f;
-                    //Mod.Log.Debug($" Move penalty = {moveMod}m as currentHeat: {mech.CurrentHeat} >= bounds: {kvp.Key}");
-                }
-            }
-
-            float walkDistance = mech.WalkSpeed;
-            if (moveMod != 0f) {
-                walkDistance = mech.WalkSpeed + moveMod;
-                //Mod.Log.Debug($"  Walk speed: {mech.WalkSpeed}m + modifier: {moveMod} = {walkDistance}m");
-            }
-
-            // Normalize to the minimum if somehow we're below that.
-            if (walkDistance < Mod.Config.Move.MinimumMove) { walkDistance = Mod.Config.Move.MinimumMove; }
-
-            return walkDistance;
+            int walkMP = CalcWalkMP(mech);
+            return walkMP * Mod.Config.Move.MetersPerHex;
         }
 
         public static float CalcRunSpeed(Mech mech) {
@@ -43,8 +53,8 @@ namespace CBTBehaviorsEnhanced {
 
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
             if (mech.IsLegged) {
-                Mod.Log.Debug($"  Mech is legged, returning minimum move distance: {Mod.Config.Move.MinimumMove}");
-                return Mod.Config.Move.MinimumMove;
+                Mod.Log.Debug($"  Mech is legged, returning 1MP.");
+                return 1f * Mod.Config.Move.MetersPerHex;
             }
 
             float runMulti = Mod.Config.Move.RunMulti;
@@ -52,12 +62,14 @@ namespace CBTBehaviorsEnhanced {
                 float runMultiMod = mech.StatCollection.GetStatistic(ModStats.RunMultiMod).Value<float>();
                 runMulti += runMultiMod;
             }
-            
-            float walkSpeed = CalcWalkSpeed(mech);
-            float runSpeed = walkSpeed * runMulti;
-            //Mod.Log.Debug($"  Run speed {runSpeed}m = walkSpeed: {walkSpeed}m x runMulti: {runMulti}");
+            Mod.Log.Trace($" Using a final run multiplier of x{runMulti} (from base: {Mod.Config.Move.RunMulti})");
 
-            return runSpeed;
+            int walkMP = CalcWalkMP(mech);
+            // Per Battletech Manual, Running MP is always rounded up. Follow that principle here as well.
+            int runMP = (int)Math.Ceiling(walkMP * runMulti);
+            Mod.Log.Debug($" RunMP of {runMP} from walkMP: {walkMP} x runMulti: {runMulti}");
+
+            return runMP * Mod.Config.Move.MetersPerHex;
         }
 
         // Create a falling sequence, publish a floatie with the error

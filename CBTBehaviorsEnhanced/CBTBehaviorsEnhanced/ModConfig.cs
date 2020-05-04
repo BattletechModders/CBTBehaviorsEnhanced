@@ -162,10 +162,11 @@ namespace CBTBehaviorsEnhanced {
         public class MoveOptions {
             public float SkillMulti = 0.05f;
 
-            // The minimum amount a unit should always be allowed to take. This shouldn't go below 45m, as otherwise the unit won't be able to move at all.
-            // 45 is used because while a hex is 30m, design masks can increase/decrease this by some amount. Most don't go beyond 1.2/0.8, so 40 is a number
-            //  that should guarantee one move on all terrain types
-            public float MinimumMove = 40.0f;
+            // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
+            //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
+            //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 
+            //   with 0.8 movement mods and with a 0.8 elevation pitch.
+            public float MetersPerHex = 24f;
 
             // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
             public float RunMulti = 1.5f;
@@ -175,6 +176,7 @@ namespace CBTBehaviorsEnhanced {
 
             // If you have leg damage and jump, you can fall
             public float FallAfterJumpChance = 0.30f;
+
         }
         public MoveOptions Move = new MoveOptions();
 
@@ -183,9 +185,6 @@ namespace CBTBehaviorsEnhanced {
             public float SkillMulti = 0.05f;
             public float StabilityCheck = 0.30f;
             public float DFAReductionMulti = 0.05f;
-            public bool ShowAllStabilityRolls = false;
-
-            public float StandAttemptFallChance = 0.30f;
 
             // How many damage points 
             public int FallingDamagePerTenTons = 5;
