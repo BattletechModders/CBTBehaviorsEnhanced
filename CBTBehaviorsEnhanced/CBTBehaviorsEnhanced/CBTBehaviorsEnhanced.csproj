@@ -115,9 +115,6 @@
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModState.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y</PostBuildEvent>
