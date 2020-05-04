@@ -91,7 +91,19 @@ namespace CBTBehaviorsEnhanced {
         public static class ActorMovementSequence_ConsumesFiring_Getter {
             private static void Postfix(ActorMovementSequence __instance, ref bool __result) {
                 Mod.Log.Trace("AMS:CF:GET entered");
-                if (!__instance.OwningActor.Combat.TurnDirector.IsInterleaved) { __result = true; }
+                if (!__instance.OwningActor.Combat.TurnDirector.IsInterleaved) 
+                {
+                    // We want to auto-brace, and auto-brace requires that consumesFiring = false. So when no enemies are around, don't consume firing so 
+                    //   that we can auto-brace
+                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0)
+                    {
+                        __result = true;
+                    }
+                    else
+                    {
+                        __result = false;
+                    }
+                }
             }
         }
 
@@ -101,7 +113,19 @@ namespace CBTBehaviorsEnhanced {
         public static class MechJumpSequence_ConsumesFiring_Getter {
             private static void Postfix(MechJumpSequence __instance, ref bool __result) {
                 Mod.Log.Trace("AMS:CF:GET entered");
-                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) { __result = true; }
+                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
+                    // We want to auto-brace, and auto-brace requires that consumesFiring = false. So when no enemies are around, don't consume firing so 
+                    //   that we can auto-brace
+                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0)
+                    {
+                        __result = true;
+                    }
+                    else
+                    {
+                        __result = false;
+                    }
+                    
+                }
             }
         }
 
@@ -126,6 +150,8 @@ namespace CBTBehaviorsEnhanced {
                     }
                 }
 
+                Mod.Log.Trace($"JUMP -- ABILITY_CONSUMES_FIRING: {__instance.AbilityConsumesFiring} / CONSUMES_FIRING: {__instance.ConsumesFiring}");
+
                 // Movement - check for damage after a jump, and if so force a piloting check
                 if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0) {
                     Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
@@ -138,6 +164,24 @@ namespace CBTBehaviorsEnhanced {
                 }
             }
         }
+
+        //[HarmonyPatch(typeof(Mech), "ApplyBraced")]
+        //public static class Mech_ApplyBraced
+        //{
+        //    public static void Prefix(Mech __instance)
+        //    {
+        //        Mod.Log.Trace($" BRACING UNIT: {CombatantUtils.Label(__instance)}");
+        //    }
+        //}
+
+        //[HarmonyPatch(typeof(AbstractActor), "DoneWithActor")]
+        //public static class AbstractActor_DoneWithActor
+        //{
+        //    public static void Prefix(Mech __instance)
+        //    {
+        //        Mod.Log.Trace($" UNIT: {CombatantUtils.Label(__instance)} hasFiredThisRound: {__instance.HasFiredThisRound}  hasSprintedThisRound: {__instance.HasSprintedThisRound}  isAttacking: {__instance.IsAttacking}");
+        //    }
+        //}
 
         // Prevents losing evasion when attacked
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
