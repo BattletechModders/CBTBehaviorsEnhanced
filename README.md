@@ -107,7 +107,7 @@ Difficulty percentage is configurable in the mod.json file.
 
 ## Classic Movement
 
-CBT Movement is an attempt to bring Classic Battletech Tabletop movement rules flavor into HBS's BATTLETECH game. Features include:
+CBT Movement is an attempt to bring Classic BattleTech Tabletop movement rules flavor into HBS's BATTLETECH game. Features include:
 
 - Sprinting no longer ends the turn
 - Evasion is no longer removed after attacks
@@ -117,13 +117,68 @@ CBT Movement is an attempt to bring Classic Battletech Tabletop movement rules f
 - ToHit modifiers are allowed to go below your base to hit chance, making something easier to hit if you stack you modifiers right
 - If you are legged, you are dropped to 1 MP
 
-The way movement currently works in the game is that ToHitSelfWalk modifiers are applied whenever you make any movement. So Sprinting, for example, will have a +1 for movement and an additional +1 for sprinting, bringing it in line with the original Tabletop rules of +2. The same applies to the Jump ToHit Modifiers.
+The way movement currently works in the game is that ToHitSelfWalk modifiers are applied whenever you make any movement. So Sprinting, for example, will have a +1 for movement and an additional +1 for sprinting, bringing it in line with the original Tabletop rules of +2. The same applies to the Jump ToHit Modifiers. 
 
-### Walk and Run Normalization
+### Leg Damage
 
+In CBT when a unit has damaged legs, it becomes difficult for them to remain upright when running or jumping. In CBTBE this penalty is implemented, and units that have actuator damage are forced to make a piloting skill check or suffer a knockdown. 
 
+CBTBE reads a integer statistic named **CBTBE_ActuatorDamage_Malus**. If this value is non-zero, it assumes the unit has actuator damage and should test on a sprint or jump. At the end of a movement sequence, the unit's Piloting skill value is multiplied by `Move.SkillMulti` and a random check between 0 and 100 is made. If the random check plus the skill multiplier result is less than `Move.FallAfterRunChance`, the unit will be knocked down with all the normal effects (such as pilot injury, fall damage, etc). For jumps the total must be less than `Move.FallAfterJumpChance` instead, but otherwise works the same way.
 
+Any Mech that is missing a Leg entirely is reduced to 1 MP of movement, as per CBT rules. See 'Run and Walk MP' below for how that translates into in-engine distances.
 
+:information_source: HBS BT doesn't track actuator damage, but they are provided through MechEngineer. You're encouraged to apply ****CBTBE_ActuatorDamage_Malus** through a [ME Critical effect](https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/CriticalEffects/CriticalEffectsSettings.cs). A sample of such an effect is provided below for example purposes:
+
+```json
+"Settings": [
+    {
+      "durationData": {
+        "duration": -1
+      },
+      "targetingData": {
+        "effectTriggerType": "Passive",
+        "effectTargetType": "Creator",
+        "showInTargetPreview": true,
+        "showInStatusPanel": true
+      },
+      "effectType": "StatisticEffect",
+      "Description": {
+        "Id": "CriticalEffect-HipDestroyed-{location}-pilot-pen",
+        "Name": "Hip Destroyed Piloting Penalty",
+        "Details": "Hit has been destroyed making piloting checks harder to pass",
+        "Icon": "uixSvgIcon_equipment_ActuatorLeg"
+      },
+      "statisticData": {
+        "statName": "CBTBE_ActuatorDamage_Malus",
+        "operation": "Int_Subtract",
+        "modValue": "1",
+        "modType": "System.Single"
+      },
+      "nature": "Debuff"
+    },
+```
+
+You can see RogueTech's implementation in their various [ME critical effects](https://github.com/BattletechModders/RogueTech/tree/master/RogueTech Core/criticalEffects).
+
+### Walk and Run MP
+
+HBS BattleTech allows engines to contribute small fractions of movements to units. In CBT rules, a unit's walk MP times tonnage determines the engine rating. In HBSBT the same calculation applies, but fractional engines apply fractions of movement. This is done because the in-game battlefield is represented in meters, not hexes, and thus small fractions of a engine can allow slightly more movement. In HBSBT this doesn't matter as engines are fixed, and speeds are supplied as fixed JSON values. When [MechEngineer](https://github.com/battletechmodders/mechengineer) entered the picture it created some odd behaviors.
+
+[MechEngineer recently added](https://github.com/BattletechModders/MechEngineer/blob/3ce0f0a9f58e68f0faf079184ae708981a6ea14d/source/Features/Engines/EngineSettings.cs#L29) a new flag that enforces strict rounding for walk and run MP based upon CBT rules. Because CBTBE applies heat penalties, we also apply this logic to movement. In order to do so, we need to rationalize from movement-as-meters to movement-as-MP. The value `MoveOptions.MetersPerHex` is the factor used to reduce movement-as-meters to movement-as-MP. It *currently* defaults to 24, but ideally is kept the same as ME's [MovementPointDistanceMultiplier](https://github.com/BattletechModders/MechEngineer/blob/3ce0f0a9f58e68f0faf079184ae708981a6ea14d/source/Features/Engines/EngineSettings.cs#L32). 
+
+:information_source: This value defaults to 24, because the HBS engine defaults a Hex width to 24.0 in `HexGrid.HexWidth`. However, this distance does not account for vertical changes in the hex. Each hex is comprised of multiple 5m cells, and thus around 6 cells represents one hex. You can have an elevation change of up to 0.8 from one side to the other giving a total linear distance moved of ~ 38m. Couple this with movement multipliers from *designMasks* (like forests) and it may be more appropriate to represent one MP as 40m instead of 24m. However, this change should be coordinated and both ME and CBTBE should change at the same time.
+
+A unit's run speed is determined by it's walkMP times a factor, given as 1.5 in CBT rules. This factor is configurable as the `MoveOptions.RunMulti` in mod.json. All values are rounded up, thus a walkMP of 5 becomes a runMP of 8. These will be represented in-engine as walkSpeed 5 x 24m = 120m and runSpeed 8 x 24m = 192m.
+
+This calculation can be further modified by a per-unit statistic. Any mech can be assigned the float stat **CBTBE_RunMultiMod**, which if present the value will additively modify the value of `RunMulti`. A **CBTBE_RunMultiMod** value of 0.6 would be added to the default 1.5, for a total multiplier of 2.1. This would give a unit with 5 walk MP a run MP of 11 (5 x 2.1 = 10.5, rounded up) for a total of 11 x 24m = 264m runSpeed.
+
+### Classic Movement Configuration Summary
+
+* `Move.SkillMulti` - a percentage value multiplied by the unit's Piloting skill. The result value is added to  all checks related to `FallAfterRunChance` and `FallAfterJumpChance`. 
+* `Move.MetersPerHex` - the number of meters that equals one MP of movement. 
+* `Move.RunMulti` - the base multiplier for calculating run MP from walk MP. Defaults to 1.5, as per CBT rules. All values are rounded up.
+* `Move.FallAfterRunChance` - a percentage chance for a unit to fall after running, when it's leg actuators are damaged. Defaults to 0.30 (30%).
+* `Move.FallAfterJumpChance` - a percentage chance for a unit to fall after it jumps, when its leg actuators are damaged. Defaults to 0.30 (30%).
 
 ## NOTES TODO ERRORS
 
