@@ -142,7 +142,6 @@ namespace CBTBehaviorsEnhanced.Patches {
                 foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
                     if (mech.CurrentHeat >= kvp.Key) {
                         penalty = kvp.Value;
-                        
                     }
                 }
 
