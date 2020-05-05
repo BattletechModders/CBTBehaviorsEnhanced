@@ -88,11 +88,10 @@ Whenever you mech becomes unstable, every hit that causes stability damage will 
 
 Difficulty percentage is configurable in the mod.json file.
 
+### Piloting TODO 
+
 * TODO: When standing, make a piloting check or fall over again
 * TODO: When moving through certain terrain, add instability (water, sand, light jungle, heavy jungle, rubble) 
-* When jumping with damaged leg/foot/hip actuator
-* When jumping with destroyed leg
-* When sprinting with damaged hip/gyro
 
 ## Classic Melee
 
