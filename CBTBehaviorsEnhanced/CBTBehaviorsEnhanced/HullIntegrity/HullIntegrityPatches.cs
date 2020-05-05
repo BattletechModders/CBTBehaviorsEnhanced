@@ -80,13 +80,14 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             bool needsQuip = false;
             foreach (ChassisLocations hitLocation in ModState.BreachHitsMech.Keys) {
                 List<MechComponent> componentsInLocation =
-                    targetMech.allComponents.Where(mc => mc.mechComponentRef.DamageLevel == ComponentDamageLevel.Functional && mc.mechComponentRef.MountedLocation == hitLocation).ToList();
+                    targetMech.allComponents.Where(mc => mc.DamageLevel == ComponentDamageLevel.Functional && 
+                    mc.mechComponentRef.MountedLocation == hitLocation).ToList();
 
                 // Check for immunity in this location
                 bool hasImmunity = false;
                 foreach (MechComponent mc in componentsInLocation) {
                     if (mc.StatCollection.ContainsStatistic(ModStats.HullBreachImmunity)) {
-                        Mod.Log.Debug($"  Component: {mc.UIName} grants hull breach immunity, skipping!");
+                        Mod.Log.Info($"  Component: {mc.UIName} grants hull breach immunity to {CombatantUtils.Label(targetMech)}, skipping!");
                         hasImmunity = true;
                         break;
                     }
@@ -98,7 +99,6 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 //float sequencePassChance = Mathf.Pow(passChance, ModState.BreachHitsMech[hitLocation]);
                 // TODO: Number of trials is way too rough, and can make breaches extremely common. Weakening to flat percentage chance.
                 float sequencePassChance = Mathf.Pow(passChance, 1);
-
                 float sequenceThreshold = 1f - sequencePassChance;
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsMech[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
@@ -106,6 +106,8 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetMech, 0f, Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]);
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(targetMech)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
+                    Mod.Log.Info($" Mech {CombatantUtils.Label(targetMech)} suffers a hull breach in location: {hitLocation}");
+
                     string floatieText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetMech, floatieText, FloatieMessage.MessageNature.Debuff, false);
                     targetMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
@@ -115,12 +117,15 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     if (hitLocation <= ChassisLocations.RightTorso) {
                         switch (hitLocation) {
                             case ChassisLocations.Head:
-                                Mod.Log.Debug($"  Head structure damage taken, killing pilot!");
+                                Mod.Log.Info($"  Head structure damage taken, killing pilot!");
                                 targetMech.GetPilot().KillPilot(targetMech.Combat.Constants, "", 0, DamageType.Enemy, null, null);
                                 break;
                             case ChassisLocations.CenterTorso:
                             default:
-                                if (hitLocation == ChassisLocations.CenterTorso) { Mod.Log.Debug($"  Center Torso hull breach!"); }
+                                if (hitLocation == ChassisLocations.CenterTorso) 
+                                { 
+                                    Mod.Log.Info($"  Center Torso hull breach, unit should die!"); 
+                                }
                                 // Walk the location and disable every component in it
                                 foreach (MechComponent mc in componentsInLocation) {
                                     Mod.Log.Debug($"  Marking component: {mc.defId} of type: {mc.componentDef.Description.Name} nonfunctional");
@@ -140,7 +145,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
             // Check for immunity
             List<MechComponent> components =
-                targetTurret.allComponents.Where(mc => mc.mechComponentRef.DamageLevel == ComponentDamageLevel.Functional).ToList();
+                targetTurret.allComponents.Where(mc => mc.DamageLevel == ComponentDamageLevel.Functional).ToList();
             bool hasImmunity = false;
             foreach (MechComponent mc in components) {
                 if (mc.StatCollection.ContainsStatistic(ModStats.HullBreachImmunity)) {
@@ -164,6 +169,8 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetTurret, 0f, Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]);
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(targetTurret)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
+                    Mod.Log.Info($" Turret {CombatantUtils.Label(targetTurret)} suffers a hull breach in location: {hitLocation}");
+
                     string floatieText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetTurret, floatieText, FloatieMessage.MessageNature.Debuff, false);
                     targetTurret.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
@@ -185,7 +192,8 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
             foreach (VehicleChassisLocations hitLocation in ModState.BreachHitsVehicle.Keys) {
                 List<MechComponent> componentsInLocation =
-                    targetVehicle.allComponents.Where(mc => mc.mechComponentRef.DamageLevel == ComponentDamageLevel.Functional && mc.mechComponentRef.MountedLocation == (ChassisLocations)hitLocation).ToList();
+                    targetVehicle.allComponents.Where(mc => mc.DamageLevel == ComponentDamageLevel.Functional && 
+                    mc.vehicleComponentRef.MountedLocation == (VehicleChassisLocations)hitLocation).ToList();
 
                 // Check for immunity in this location
                 bool hasImmunity = false;
@@ -211,6 +219,8 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetVehicle, 0f, Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]);
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(targetVehicle)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
+                    Mod.Log.Info($" Vehicle {CombatantUtils.Label(targetVehicle)} suffers a hull breach in location: {hitLocation}");
+
                     string floatieText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetVehicle, floatieText, FloatieMessage.MessageNature.Debuff, false);
                     targetVehicle.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
@@ -273,6 +283,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         }
     }
 
+    // Yes, this is intentional. That's the actual function name
     [HarmonyPatch(typeof(Vehicle), "applyStructureStatDamage")]
     public static class Vehicle_ApplyStructureStatDamage {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
