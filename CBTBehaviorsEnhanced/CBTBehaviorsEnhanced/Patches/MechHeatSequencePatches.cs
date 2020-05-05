@@ -27,7 +27,7 @@ namespace CBTBehaviorsEnhanced.Patches {
             HeatSequenceState currentState = (HeatSequenceState)stateT.GetValue<int>();
             if (currentState == newState) { return true; }
 
-            Mod.Log.Info($"MHS - executing updated logic for state: {newState} on actor:{__instance.OwningMech.DisplayName}_{__instance.OwningMech.GetPilot().Name}.");
+            Mod.Log.Debug($"MHS - executing updated logic for state: {newState} on actor:{CombatantUtils.Label(__instance.OwningMech)}.");
             stateT.SetValue((int)newState);
 
             Traverse timeInCurrentStateT = Traverse.Create(__instance).Field("timeInCurrentState");
@@ -73,7 +73,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                     Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
                     if (failedShutdownCheck)
                     {
-                        Mod.Log.Debug($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance.OwningMech)}, forcing unit to shutdown");
+                        Mod.Log.Info($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance.OwningMech)}, forcing unit to shutdown");
 
                         string debuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
                         sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
@@ -105,7 +105,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                             }
                             else
                             {
-                                Mod.Log.Debug($"Pilot check to avoid falling passed.");
+                                Mod.Log.Info($"Pilot check to avoid falling passed.");
                             }
                         }
                         else
