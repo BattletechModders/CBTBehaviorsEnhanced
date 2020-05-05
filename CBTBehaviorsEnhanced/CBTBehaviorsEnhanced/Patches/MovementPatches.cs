@@ -65,10 +65,10 @@ namespace CBTBehaviorsEnhanced {
                 // Interleaved - check for visibility to any enemies 
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
                     if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
-                        Mod.Log.Info("AMS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
+                        Mod.Log.Debug("AMS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
                         __instance.owningActor.AutoBrace = false;
                     } else {
-                        Mod.Log.Info("AMS:OC TD is not interleaved and no enemies - autobracing ");
+                        Mod.Log.Debug("AMS:OC TD is not interleaved and no enemies - autobracing ");
                         __instance.owningActor.AutoBrace = true;
                     }
                 }

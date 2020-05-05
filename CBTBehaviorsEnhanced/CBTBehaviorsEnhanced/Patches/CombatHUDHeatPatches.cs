@@ -8,6 +8,7 @@ using SVGImporter;
 using System;
 using System.Reflection;
 using UnityEngine;
+using us.frostraptor.modUtils;
 using static CBTBehaviorsEnhanced.HeatHelper;
 
 namespace CBTBehaviorsEnhanced.Patches {
@@ -100,14 +101,14 @@ namespace CBTBehaviorsEnhanced.Patches {
             Mod.Log.Debug($" In ShutdownIndicator, projectedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
 
             if (mech.IsShutDown) {
-                Mod.Log.Debug(" DISPLAYING SHUTDOWN WARNING");
+                Mod.Log.Info($" MECH {CombatantUtils.Label(mech)} IS SHUTDOWN, DISPLAYING SHUTDOWN WARNING");
                 methodInfo.Invoke(__instance, new object[] { 
                     LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
                     new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
                     new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
                     __instance.defaultIconScale, false });
             } else if (calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat) {
-                Mod.Log.Debug($" DISPLAYING OVERHEAT WARNING - heat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}");
+                Mod.Log.Info($"DISPLAYING OVERHEAT WARNING FOR MECH {CombatantUtils.Label(mech)} - heat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}");
                 methodInfo.Invoke(__instance, new object[] {
                     LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
                     new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
