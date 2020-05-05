@@ -77,7 +77,11 @@ namespace CBTBehaviorsEnhanced {
                 if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0) {
                     Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
-                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, sourceSkillMulti, ModConfig.FT_Fall_After_Run);
+                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
+                    float checkMod = sourceSkillMulti + damagePenalty;
+                    Mod.Log.Debug($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
+
+                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModConfig.FT_Fall_After_Run);
                     if (!sourcePassed) {
                         Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after sprinting with actuator damage, forcing fall.");
                         MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Run);
@@ -156,7 +160,11 @@ namespace CBTBehaviorsEnhanced {
                 if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0) {
                     Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
-                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, sourceSkillMulti, ModConfig.FT_Fall_After_Jump);
+                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
+                    float checkMod = sourceSkillMulti + damagePenalty;
+                    Mod.Log.Debug($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
+
+                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModConfig.FT_Fall_After_Jump);
                     if (!sourcePassed) {
                         Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after jumping with actuator damage, forcing fall.");
                         MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Jump);
