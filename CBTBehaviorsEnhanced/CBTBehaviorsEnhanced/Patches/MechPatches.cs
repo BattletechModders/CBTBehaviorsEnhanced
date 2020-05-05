@@ -88,7 +88,7 @@ namespace CBTBehaviorsEnhanced.Patches {
     public static class Mech_MaxWalkDistance_Get {
         public static void Postfix(Mech __instance, ref float __result) {
             Mod.Log.Trace("M:MWD:GET entered.");
-            __result = MechHelper.CalcWalkSpeed(__instance);
+            __result = MechHelper.FinalWalkSpeed(__instance);
         }
     }
 
@@ -98,7 +98,7 @@ namespace CBTBehaviorsEnhanced.Patches {
     public static class Mech_MaxBackwardDistance_Get {
         public static void Postfix(Mech __instance, ref float __result) {
             Mod.Log.Trace("M:MBD:GET entered.");
-            __result = MechHelper.CalcWalkSpeed(__instance);
+            __result = MechHelper.FinalWalkSpeed(__instance);
         }
     }
 
@@ -108,7 +108,7 @@ namespace CBTBehaviorsEnhanced.Patches {
     public static class Mech_MaxSprintDistance_Get {
         public static void Postfix(Mech __instance, ref float __result) {
             Mod.Log.Trace("M:MSD:GET entered.");
-            __result = MechHelper.CalcRunSpeed(__instance);
+            __result = MechHelper.FinalRunSpeed(__instance);
 
             //This is an easy place to put this where it will always be checked. This is the key to full non-interleaved combat.
             if (__instance.Combat.TurnDirector.IsInterleaved) {
@@ -126,7 +126,7 @@ namespace CBTBehaviorsEnhanced.Patches {
         public static void Postfix(Mech __instance, ref float __result) {
             Mod.Log.Trace("M:MMERD:GET entered.");
             // TODO: Should this be Run or Walk speed?
-            __result = MechHelper.CalcRunSpeed(__instance);
+            __result = MechHelper.FinalRunSpeed(__instance);
         }
     }
 

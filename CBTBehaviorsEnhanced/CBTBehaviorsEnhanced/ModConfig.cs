@@ -160,22 +160,32 @@ namespace CBTBehaviorsEnhanced {
         public MeleeOptions Melee = new MeleeOptions();
 
         public class MoveOptions {
-            public float SkillMulti = 0.05f;
+            //  his is set to 40m, because it should 
+            public float MinimumMove = 40f;
 
-            // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
-            //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
-            //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 
-            //   with 0.8 movement mods and with a 0.8 elevation pitch.
-            public float MetersPerHex = 24f;
+            // How much walk distance is removed for each point of heat penalty
+            public float HeatMovePenalty = 24f;
 
             // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
             public float RunMulti = 1.5f;
+
+            // Multiplier for the pilot's piloting skill used in the check for FallAfterRunChance and FallAfterJumpChance
+            public float SkillMulti = 0.05f;
 
             // If you have leg damage and run, you can fall
             public float FallAfterRunChance = 0.30f;
 
             // If you have leg damage and jump, you can fall
             public float FallAfterJumpChance = 0.30f;
+
+            // If true, walk and run speeds will be normalized to MP instead of the HBS speeds.
+            // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
+            public bool SpeedAsMP = false;
+
+            //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
+            //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 
+            //   with 0.8 movement mods and with a 0.8 elevation pitch.
+            public float MPMetersPerHex = 24f;
 
         }
         public MoveOptions Move = new MoveOptions();
