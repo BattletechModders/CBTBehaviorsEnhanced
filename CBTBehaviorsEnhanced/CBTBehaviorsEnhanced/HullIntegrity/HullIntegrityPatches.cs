@@ -42,7 +42,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             }
 
             if (ModState.BreachAttackId != attackSequence.id) {
-                Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
+                Mod.Log.Info($"Attack sequence ID {attackSequence.id} does not match Hull Breach Attack Id - skipping hull breach resolution.");
                 return;
             }
 

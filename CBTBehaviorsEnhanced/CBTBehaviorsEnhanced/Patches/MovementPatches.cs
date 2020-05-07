@@ -89,8 +89,8 @@ namespace CBTBehaviorsEnhanced {
                         Mod.Log.Debug($" OwningActor: {CombatantUtils.Label(__instance.owningActor)} is " +
                             $"mech: {mech != null}  isShutdown: {mech?.IsShutDown}  " +
                             $"doneWithActorSequence isNotNull: {dwaSeq != null}  " +
-                            $"isInterleaved: {__instance.owningActor.Combat.TurnDirector.IsInterleaved}  " +
-                            $"detectedEnemyUnits: {mech.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count}");
+                            $"isInterleaved: {__instance?.owningActor?.Combat?.TurnDirector?.IsInterleaved}  " +
+                            $"detectedEnemyUnits: {__instance?.owningActor?.Combat?.LocalPlayerTeam?.GetDetectedEnemyUnits()?.Count}");
 
                         if (mech != null && !mech.IsShutDown && dwaSeq != null && 
                             !mech.Combat.TurnDirector.IsInterleaved &&
