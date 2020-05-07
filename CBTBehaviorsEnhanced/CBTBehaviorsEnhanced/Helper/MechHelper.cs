@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced {
                     //Mod.Log.Debug($" Move penalty = {moveMod}m as currentHeat: {mech.CurrentHeat} >= bounds: {kvp.Key}");
                 }
             }
-            int modifiedWalkMP = rawWalkMP - movePenalty;
+            int modifiedWalkMP = rawWalkMP + movePenalty;
             Mod.Log.Trace($"Modified walkMP = {rawWalkMP} - {movePenalty} = {modifiedWalkMP}");
 
             // Normalize to the minimum if somehow we're below that.
@@ -46,7 +46,7 @@ namespace CBTBehaviorsEnhanced {
                 }
             }
             float movePenaltyDist = movePenalty * Mod.Config.Move.HeatMovePenalty;
-            float modifiedWalkSpeed = mech.WalkSpeed - movePenaltyDist;
+            float modifiedWalkSpeed = mech.WalkSpeed + movePenaltyDist;
             Mod.Log.Trace($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
 
             // Normalize to the minimum if somehow we're below that.
