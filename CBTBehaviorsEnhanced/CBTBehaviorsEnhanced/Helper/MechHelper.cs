@@ -47,7 +47,7 @@ namespace CBTBehaviorsEnhanced {
             }
             float movePenaltyDist = movePenalty * Mod.Config.Move.HeatMovePenalty;
             float modifiedWalkSpeed = mech.WalkSpeed - movePenaltyDist;
-            Mod.Log.Debug($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
+            Mod.Log.Trace($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
 
             // Normalize to the minimum if somehow we're below that.
             return modifiedWalkSpeed < Mod.Config.Move.MinimumMove ? Mod.Config.Move.MinimumMove : modifiedWalkSpeed;
@@ -104,7 +104,7 @@ namespace CBTBehaviorsEnhanced {
                 int walkMP = CalcWalkMP(mech);
                 // Per Battletech Manual, Running MP is always rounded up. Follow that principle here as well.
                 int runMP = (int)Math.Ceiling(walkMP * runMulti);
-                Mod.Log.Debug($" RunMP of {runMP} from walkMP: {walkMP} x runMulti: {runMulti}");
+                Mod.Log.Trace($" RunMP of {runMP} from walkMP: {walkMP} x runMulti: {runMulti}");
 
                 return runMP * Mod.Config.Move.MPMetersPerHex;
             }
@@ -120,7 +120,7 @@ namespace CBTBehaviorsEnhanced {
                 float walkSpeed = CalcWalkDist(mech);
                 // Per Battletech Manual, Running MP is always rounded up. Follow that principle here as well.
                 float runSpeed = (float) Math.Ceiling(walkSpeed * runMulti);
-                Mod.Log.Debug($" RunSpeed of {runSpeed} from walkSpeed: {walkSpeed} x runMulti: {runMulti}");
+                Mod.Log.Trace($" RunSpeed of {runSpeed} from walkSpeed: {walkSpeed} x runMulti: {runMulti}");
 
                 return runSpeed;
             }

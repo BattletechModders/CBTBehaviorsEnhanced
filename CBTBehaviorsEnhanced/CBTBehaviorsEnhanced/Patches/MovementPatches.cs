@@ -58,10 +58,72 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
+        [HarmonyPatch(typeof(OrderSequence), "OnUpdate")]
+        public static class OrderSequence_OnUpdate
+        {
+            public static void Prefix(OrderSequence __instance)
+            {
+                Mod.Log.Debug($"OS:OU - entered for actor: {CombatantUtils.Label(__instance?.owningActor)}");
+                if (__instance == null) return;
+
+                Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
+                bool sequenceIsComplete = sequenceIsCompleteT.GetValue<bool>();
+                bool baseIsComplete = __instance.childSequences.Count == 0 || (__instance.childSequences.Count == 1 && __instance.cameraSequence != null && __instance.cameraSequence.IsFinished);
+                Mod.Log.Debug($"  ordersAreComplete: {__instance.OrdersAreComplete}  self.isComplete: {__instance.IsComplete}  base.isComplete: {baseIsComplete}  " +
+                    $"#childSequences: {__instance?.childSequences?.Count}  cameraSequence: {__instance?.cameraSequence?.IsFinished}  sequenceIsComplete: {sequenceIsComplete}");
+                if (__instance.ChildSequenceCount > 0)
+                {
+                    foreach (IStackSequence seq in __instance.childSequences)
+                    {
+                        Mod.Log.Debug($" -- child sequence  type: {seq.GetType()}  msgIdx: {seq.MessageIndex}");
+                    }
+                }
+
+                if (__instance.OrdersAreComplete && baseIsComplete && !sequenceIsComplete)
+                {
+                    Mod.Log.Debug($"OrderSequence consumesActivation: {__instance.ConsumesActivation}");
+                    if (__instance.ConsumesActivation)
+                    {
+                        DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
+                        Mech mech = __instance.owningActor as Mech;
+                        Mod.Log.Debug($" OwningActor: {CombatantUtils.Label(__instance.owningActor)} is " +
+                            $"mech: {mech != null}  isShutdown: {mech?.IsShutDown}  " +
+                            $"doneWithActorSequence isNotNull: {dwaSeq != null}  " +
+                            $"isInterleaved: {__instance.owningActor.Combat.TurnDirector.IsInterleaved}  " +
+                            $"detectedEnemyUnits: {mech.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count}");
+
+                        if (mech != null && !mech.IsShutDown && dwaSeq != null && 
+                            !mech.Combat.TurnDirector.IsInterleaved &&
+                            mech.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count == 0)
+                        {
+                            Mod.Log.Debug($"Creating heat sequence for mech.");
+                            // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
+                            MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
+                            if (heatSequence != null)
+                            {
+                                Mod.Log.Debug($"  Done, adding sequence: {heatSequence.SequenceGUID} to instance.");
+                                __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
+                            }
+                            else
+                            {
+                                Mod.Log.Debug($" HEAT SEQUENCE IS NULL - PROBABLY AN ERROR!");
+                            }
+                        }
+                        else 
+                        {
+                            Mod.Log.Debug("HEAT SEQUENCE CONDITIONAL FAILED");
+                        }
+                    }
+                }
+                
+            }
+        }
+
         [HarmonyPatch(typeof(ActorMovementSequence), "OnComplete")]
         public static class ActorMovementSequence_OnComplete {
             private static void Prefix(ActorMovementSequence __instance) {
-                Mod.Log.Trace("AMS:OC entered");
+                Mod.Log.Debug($"AMS:OC entered for actor: {CombatantUtils.Label(__instance?.OwningActor)}");
+
                 // Interleaved - check for visibility to any enemies 
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
                     if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
@@ -87,6 +149,12 @@ namespace CBTBehaviorsEnhanced {
                         MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Run);
                     }
                 }
+            }
+
+            static void Postfix(ActorMovementSequence __instance)
+            {
+                Mod.Log.Debug($"AMS:OC:post - actor: {CombatantUtils.Label(__instance.OwningActor)} " +
+                    $"autoBrace: {__instance.OwningActor.AutoBrace}  hasFired: {__instance.OwningActor.HasFiredThisRound}  consumesFiring: {__instance.ConsumesFiring}");
             }
         }
 
@@ -137,7 +205,7 @@ namespace CBTBehaviorsEnhanced {
         [HarmonyPatch(typeof(MechJumpSequence), "OnComplete")]
         public static class MechJumpSequence_OnComplete {
             private static void Prefix(MechJumpSequence __instance) {
-                Mod.Log.Trace("MJS:OC entered");
+                Mod.Log.Debug($"MJS:OC entered for actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
                 // Check for visibility to any enemies
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
@@ -170,6 +238,12 @@ namespace CBTBehaviorsEnhanced {
                         MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Jump);
                     }
                 }
+            }
+
+            static void Postfix(MechJumpSequence __instance)
+            {
+                Mod.Log.Debug($"MJS:OC:post - actor: {CombatantUtils.Label(__instance.OwningMech)} " +
+                    $"autoBrace: {__instance.OwningMech.AutoBrace}  hasFired: {__instance.OwningMech.HasFiredThisRound}  consumesFiring: {__instance.ConsumesFiring}");
             }
         }
 
