@@ -24,17 +24,17 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             int sequenceId = asbMessage.sequenceId;
             AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
 
-            if (attackSequence != null)
-            {
-                Mod.Log.Debug($"Recording attackSequence: {attackSequence.id} for possible hull breaches.");
-                ModState.BreachAttackId = attackSequence.id;
-            }
-            else
+            if (attackSequence == null)
             {
                 Mod.Log.Debug($"AttackSequence not found - created by a mod or CAC watchdog killed it. Skipping!");
                 ModState.BreachAttackId = ModState.NO_ATTACK_SEQUENCE_ID;
             }
-                
+
+            // No chosen target, nothing to damage
+            if (attackSequence.chosenTarget == null) return;
+
+            Mod.Log.Debug($"Recording attackSequence: {attackSequence.id} for possible hull breaches.");
+            ModState.BreachAttackId = attackSequence.id;
         }
     }
     
@@ -59,6 +59,9 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 Mod.Log.Info($"Could not find attack sequence with id: {sequenceId}. CAC may have killed it, or there's an error in processing. Skipping hull breach checks.");
                 return;
             }
+
+            // No chosen target, nothing to damage
+            if (attackSequence.chosenTarget == null) return;
 
             if (ModState.BreachAttackId != attackSequence.id) {
                 Mod.Log.Debug($"Attack sequence ID {attackSequence.id} does not match Hull Breach Attack Id - skipping hull breach resolution.");
