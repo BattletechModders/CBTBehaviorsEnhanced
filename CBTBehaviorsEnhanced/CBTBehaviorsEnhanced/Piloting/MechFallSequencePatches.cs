@@ -25,6 +25,8 @@ namespace CBTBehaviorsEnhanced.Piloting {
         }
     }
 
+    // In TT mechs take damage from falling. In BTG only he pilot takes damage. Create a new attack sequence and apply
+    //   the TT rules for falling damage
     [HarmonyPatch(typeof(MechFallSequence), "OnComplete")]
     public class MechFallSequence_OnComplete {
         public static void Prefix(MechFallSequence __instance) {
@@ -46,11 +48,37 @@ namespace CBTBehaviorsEnhanced.Piloting {
                 locationDamage.Add(damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons);
             }
 
-            Mod.Log.Debug($"Applying falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
+            Mod.Log.Info($"Applying TT damage: {damagePointsTT} => {damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons} damage falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
+
+            AttackDirector.AttackSequence attackSequence = __instance.OwningMech.Combat.AttackDirector.CreateAttackSequence(0, __instance.OwningMech, __instance.OwningMech,
+                __instance.OwningMech.CurrentPosition, __instance.OwningMech.CurrentRotation, 0, new List<Weapon>() { __instance.OwningMech.ImaginaryLaserWeapon }, MeleeAttackType.NotSet, 0, false
+                );
+            WeaponHitInfo hitInfo = new WeaponHitInfo(0, attackSequence.id, 0, 0, __instance.OwningMech.GUID, __instance.OwningMech.GUID, 1,
+                null, null, null, null, null, null, null, new AttackDirection[] { AttackDirection.FromFront }, null, null, null)
+            {
+                attackerId = __instance.OwningMech.GUID,
+                targetId = __instance.OwningMech.GUID,
+                numberOfShots = __instance.OwningMech.ImaginaryLaserWeapon.ShotsWhenFired,
+                stackItemUID = __instance.SequenceGUID,
+                locationRolls = new float[locationDamage.Count],
+                hitLocations = new int[locationDamage.Count],
+                hitPositions = new Vector3[locationDamage.Count],
+                hitQualities = new AttackImpactQuality[locationDamage.Count]
+            };
+            AttackDirection attackDirection = __instance.OwningMech.Combat.HitLocation.GetAttackDirection(__instance.OwningMech.CurrentPosition, __instance.OwningMech);
+
+            int i = 0;
             foreach (int damage in locationDamage) {
                 ArmorLocation location = FallingDamageLocations[__instance.OwningMech.Combat.NetworkRandom.Int(0, FallingDamageLocations.Length)];
-                Mod.Log.Debug($"  {damage} damage to location: {location}");
-                __instance.OwningMech.DEBUG_DamageLocation(location, damage, __instance.OwningMech, DamageType.KnockdownSelf, "FALLING");
+                Mod.Log.Info($"  {damage} damage to location: {location}");
+
+                hitInfo.attackDirections[i] = attackDirection;
+                hitInfo.hitQualities[i] = AttackImpactQuality.Solid;
+                hitInfo.hitPositions[i] = __instance.OwningMech.CurrentPosition;
+
+                __instance.OwningMech.TakeWeaponDamage(hitInfo, (int)location, __instance.OwningMech.ImaginaryLaserWeapon, damage, 0, 0, DamageType.KnockdownSelf);
+
+                i++;
             }
         }
 
