@@ -18,10 +18,23 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
             Mod.Log.Debug("AD:OASB - entered.");
 
-            int sequenceId = ((AttackSequenceBeginMessage)message).sequenceId;
+            AttackSequenceBeginMessage asbMessage = message as AttackSequenceBeginMessage;
+            if (__instance == null || asbMessage == null) return;
+
+            int sequenceId = asbMessage.sequenceId;
             AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
 
-            ModState.BreachAttackId = attackSequence.id;
+            if (attackSequence != null)
+            {
+                Mod.Log.Debug($"Recording attackSequence: {attackSequence.id} for possible hull breaches.");
+                ModState.BreachAttackId = attackSequence.id;
+            }
+            else
+            {
+                Mod.Log.Debug($"AttackSequence not found - created by a mod or CAC watchdog killed it. Skipping!");
+                ModState.BreachAttackId = ModState.NO_ATTACK_SEQUENCE_ID;
+            }
+                
         }
     }
     
@@ -32,17 +45,23 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
             Mod.Log.Debug("AD:OASE - entered.");
 
-            AttackSequenceEndMessage attackSequenceEndMessage = (AttackSequenceEndMessage)message;
+            // Nothing to do
+            if (ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) return;
+
+            AttackSequenceEndMessage attackSequenceEndMessage = message as AttackSequenceEndMessage;
+            
+            if (__instance == null || attackSequenceEndMessage == null) return; 
+
             int sequenceId = attackSequenceEndMessage.sequenceId;
             AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
 
             if (attackSequence == null) {
-                Mod.Log.Error($"ATTACK SEQUENCE FOR ID {sequenceId} IS NULL - SKIPPING!");
+                Mod.Log.Info($"Could not find attack sequence with id: {sequenceId}. CAC may have killed it, or there's an error in processing. Skipping hull breach checks.");
                 return;
             }
 
             if (ModState.BreachAttackId != attackSequence.id) {
-                Mod.Log.Info($"Attack sequence ID {attackSequence.id} does not match Hull Breach Attack Id - skipping hull breach resolution.");
+                Mod.Log.Debug($"Attack sequence ID {attackSequence.id} does not match Hull Breach Attack Id - skipping hull breach resolution.");
                 return;
             }
 
@@ -124,11 +143,11 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                             default:
                                 if (hitLocation == ChassisLocations.CenterTorso) 
                                 { 
-                                    Mod.Log.Info($"  Center Torso hull breach, unit should die!"); 
+                                    Mod.Log.Info($"  Center Torso hull breach, unit should die from damage processing!"); 
                                 }
                                 // Walk the location and disable every component in it
                                 foreach (MechComponent mc in componentsInLocation) {
-                                    Mod.Log.Debug($"  Marking component: {mc.defId} of type: {mc.componentDef.Description.Name} nonfunctional");
+                                    Mod.Log.Info($"  Marking component: {mc.defId} of type: {mc.componentDef.Description.Name} nonfunctional due to hull breach.");
                                     mc.DamageComponent(default(WeaponHitInfo), ComponentDamageLevel.NonFunctional, true);
                                 }
                                 break;
@@ -246,9 +265,9 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static void Postfix(Mech __instance, ChassisLocations location, float damage, WeaponHitInfo hitInfo) {
             Mod.Log.Trace("M:ASSD - entered.");
 
-            if (ModState.BreachCheck == 0f) { return; } // nothing to do
+            if (ModState.BreachCheck == 0f || ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) { return; } // nothing to do
             if (hitInfo.attackSequenceId != ModState.BreachAttackId) {
-                Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
+                Mod.Log.Warn($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
                 return;
             }
             
@@ -268,9 +287,9 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static void Postfix(Turret __instance, BuildingLocation location, float damage, WeaponHitInfo hitInfo) {
             Mod.Log.Trace("T:ASSD - entered.");
 
-            if (ModState.BreachCheck == 0f) { return; } // nothing to do
+            if (ModState.BreachCheck == 0f || ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) { return; } // nothing to do
             if (hitInfo.attackSequenceId != ModState.BreachAttackId) {
-                Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
+                Mod.Log.Warn($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
                 return;
             }
 
@@ -291,9 +310,9 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static void Postfix(Vehicle __instance, VehicleChassisLocations location, float damage, WeaponHitInfo hitInfo) {
             Mod.Log.Trace("V:ASSD - entered.");
 
-            if (ModState.BreachCheck == 0f) { return; } // nothing to do
+            if (ModState.BreachCheck == 0f || ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) { return; } // nothing to do
             if (hitInfo.attackSequenceId != ModState.BreachAttackId) {
-                Mod.Log.Error("INCOHERENT ATTACK SEQUENCE- SKIPPING!");
+                Mod.Log.Warn($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
                 return;
             }
 
