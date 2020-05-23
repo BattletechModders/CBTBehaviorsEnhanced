@@ -27,7 +27,7 @@ namespace CBTBehaviorsEnhanced.Patches {
 
             // Reset any combat state
             ModState.BreachCheck = 0f;
-            ModState.BreachAttackId = 0;
+            ModState.BreachAttackId = ModState.NO_ATTACK_SEQUENCE_ID;
             ModState.BreachHitsMech.Clear();
             ModState.BreachHitsTurret.Clear();
             ModState.BreachHitsVehicle.Clear();
