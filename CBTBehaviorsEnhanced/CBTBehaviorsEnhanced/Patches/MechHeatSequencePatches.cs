@@ -92,7 +92,6 @@ namespace CBTBehaviorsEnhanced.Patches {
                             if (failedFallingCheck)
                             {
                                 Mod.Log.Info("   Pilot check from shutdown failed! Forcing a fall!");
-
                                 string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Fall]).ToString();
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
                                     FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
