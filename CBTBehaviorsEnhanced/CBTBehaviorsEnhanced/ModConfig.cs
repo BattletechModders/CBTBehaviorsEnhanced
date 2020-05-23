@@ -214,6 +214,7 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
         public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
         public const string FT_Shutdown_Fall = "SHUTDOWN_FALL";
+
         public const string FT_Check_Explosion = "EXPLOSION_CHECK";
         public const string FT_Check_Volatile_Explosion = "VOLATILE_EXPLOSION_CHECK";
         public const string FT_Check_Shutdown = "SHUTDOWN_CHECK";
@@ -221,6 +222,10 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Check_Injury = "INJURY_CHECK";
         public const string FT_Check_System_Failure = "SYSTEM_FAILURE_CHECK";
         public const string FT_Check_Fall = "FALLING_CHECK";
+
+        public const string FT_Death_By_Overheat = "PILOT_DEATH_OVERHEAT";
+        public const string FT_Death_By_Falling = "PILOT_DEATH_FALLING";
+
         public const string FT_Melee_Kick = "MELEE_KICK";
         public const string FT_Melee_Charge = "MELEE_CHARGE";
         public const string FT_Melee_DFA = "MELEE_DFA";
@@ -240,6 +245,9 @@ namespace CBTBehaviorsEnhanced {
             { FT_Check_Injury, "Pilot Injury Check" },
             { FT_Check_System_Failure, "System Failure Check" },
             { FT_Check_Fall, "Falling Check" },
+
+            { FT_Death_By_Overheat, "PILOT KILLED BY HEAT" },
+            { FT_Death_By_Falling, "PILOT KILLED BY FALLING" },
 
             { FT_Melee_Kick, "Kick Falling Check" },
             { FT_Melee_Charge, "Charge Falling Check" },

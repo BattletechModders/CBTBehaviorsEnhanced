@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CustomComponents;
 using Localize;
+using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
@@ -68,6 +69,16 @@ namespace CBTBehaviorsEnhanced {
                     {
                         AudioEventManager.PlayAudioEvent("audioeventdef_musictriggers_combat", "friendly_warrior_injured", null, null);
                     }
+                } 
+                else
+                {
+                    mech.FlagForDeath("Pilot Killed", DeathMethod.PilotKilled, DamageType.OverheatSelf, 1, sequenceGUID, "0", false);
+                    string localText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Death_By_Overheat]).ToString();
+
+                    mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(
+                        new ShowActorInfoSequence(mech, new Text(localText, Array.Empty<object>()), FloatieMessage.MessageNature.PilotInjury, true))
+                        );
+                    mech.HandleDeath("0");
                 }
             }
 
