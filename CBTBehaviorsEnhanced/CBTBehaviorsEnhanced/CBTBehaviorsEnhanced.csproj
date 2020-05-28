@@ -42,7 +42,7 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="CustomAmmoCategories, Version=0.0.1.96, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CustomAmmoCategories, Version=0.0.1.131, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
     </Reference>
@@ -77,6 +77,7 @@
     <Reference Include="UnityEngine.TerrainModule">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -86,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
+    <Compile Include="Helper\MeleeHelper.cs" />
     <Compile Include="Helper\QuipHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
     <Compile Include="ModInit.cs" />
@@ -99,14 +101,17 @@
     <Compile Include="Melee\MechDFASequence.cs" />
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
+    <Compile Include="Objects\MeleeAttackDef.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
-    <Compile Include="Patches\CombatDebugHUDPatches.cs" />
+    <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
-    <Compile Include="Patches\CombatHUDHeatPatches.cs" />
+    <Compile Include="Patches\CombatHUD\CombatHUDAttackModSelectorPatches.cs" />
+    <Compile Include="Patches\CombatHUD\CombatHUDHeatPatches.cs" />
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
+    <Compile Include="Patches\Melee\MeleePatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
     <Compile Include="Patches\PilotingPatches.cs" />
     <Compile Include="Patches\TeamPatches.cs" />

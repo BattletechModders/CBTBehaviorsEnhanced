@@ -18,9 +18,6 @@ namespace CBTBehaviorsEnhanced.Patches {
             Traverse combatT = Traverse.Create(__instance).Property("Combat");
             CombatGameState combat = combatT.GetValue<CombatGameState>();
 
-            //Mod.Log.Debug($" == RCI - selectedActor: {CombatantUtils.Label(selectedActor)}" +
-            //    $"  isInterleaved: {combat.TurnDirector.IsInterleaved}  isComplete: {__instance.ActiveState.IsComplete}");
-
             if (__instance.ActiveState.IsComplete && !combat.TurnDirector.IsInterleaved) {
                 __state = true;
             }
