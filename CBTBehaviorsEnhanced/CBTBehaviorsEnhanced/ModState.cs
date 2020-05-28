@@ -9,9 +9,13 @@ namespace CBTBehaviorsEnhanced {
 
         public static CombatGameState Combat = null;
 
-        public static float BreachCheck = 0f;
-        public static int BreachAttackId = NO_ATTACK_SEQUENCE_ID; 
+        // Melee weapon detection state
+        public static Weapon CurrentMeleeWeapon = null;
+        public static MeleeAttackType CurrentMeleeType = MeleeAttackType.NotSet;
 
+        // Breach state
+        public static float BreachCheck = 0f;
+        public static int BreachAttackId = NO_ATTACK_SEQUENCE_ID;
         public static Dictionary<ChassisLocations, int> BreachHitsMech = new Dictionary<ChassisLocations, int>();
         public static Dictionary<BuildingLocation, int> BreachHitsTurret = new Dictionary<BuildingLocation, int>();
         public static Dictionary<VehicleChassisLocations, int> BreachHitsVehicle = new Dictionary<VehicleChassisLocations, int>();
@@ -19,6 +23,9 @@ namespace CBTBehaviorsEnhanced {
         public static void Reset() {
             // Reinitialize state
             Combat = null;
+
+            CurrentMeleeWeapon = null;
+            CurrentMeleeType = MeleeAttackType.NotSet;
 
             BreachCheck = 0f;
             BreachAttackId = NO_ATTACK_SEQUENCE_ID;
