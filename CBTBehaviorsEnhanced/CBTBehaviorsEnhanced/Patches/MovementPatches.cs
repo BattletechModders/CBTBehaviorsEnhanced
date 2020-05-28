@@ -48,8 +48,6 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Log.Trace("CHUDWS:SHC entered");
 
                 AbstractActor actor = __instance.DisplayedWeapon.parent;
-                var _this = Traverse.Create(__instance);
-
                 if (actor.HasMovedThisRound && actor.JumpedLastRound) {
                     Traverse addToolTipDetailT = Traverse.Create(__instance).Method("AddToolTipDetail", "JUMPED SELF", Mod.Config.ToHitSelfJumped);
                     Mod.Log.Trace($"Invoking addToolTipDetail for: JUMPED SELF = {Mod.Config.ToHitSelfJumped}");
@@ -126,13 +124,7 @@ namespace CBTBehaviorsEnhanced {
 
                 // Interleaved - check for visibility to any enemies 
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
-                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0) {
-                        Mod.Log.Debug("AMS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
-                        __instance.owningActor.AutoBrace = false;
-                    } else {
-                        Mod.Log.Debug("AMS:OC TD is not interleaved and no enemies - autobracing ");
-                        __instance.owningActor.AutoBrace = true;
-                    }
+                    __instance.owningActor.AutoBrace = true;                    
                 }
 
                 // Movement - check for damage after a sprint, and if so force a piloting check
@@ -167,14 +159,7 @@ namespace CBTBehaviorsEnhanced {
                 {
                     // We want to auto-brace, and auto-brace requires that consumesFiring = false. So when no enemies are around, don't consume firing so 
                     //   that we can auto-brace
-                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0)
-                    {
-                        __result = true;
-                    }
-                    else
-                    {
-                        __result = false;
-                    }
+                    __result = false;
                 }
             }
         }
@@ -188,15 +173,7 @@ namespace CBTBehaviorsEnhanced {
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
                     // We want to auto-brace, and auto-brace requires that consumesFiring = false. So when no enemies are around, don't consume firing so 
                     //   that we can auto-brace
-                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0)
-                    {
-                        __result = true;
-                    }
-                    else
-                    {
-                        __result = false;
-                    }
-                    
+                    __result = false;
                 }
             }
         }
@@ -209,17 +186,9 @@ namespace CBTBehaviorsEnhanced {
 
                 // Check for visibility to any enemies
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
-                {
-                    if (__instance.owningActor.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count > 0)
-                    {
-                        Mod.Log.Debug("MJS:OC TD is not interleaved but enemies are detected - disabling autobrace. ");
-                        __instance.owningActor.AutoBrace = false;
-                    }
-                    else
-                    {
-                        Mod.Log.Debug("MJS:OC is not interleaved and no enemies - autobracing ");
-                        __instance.owningActor.AutoBrace = true;
-                    }
+                {                
+                    Mod.Log.Debug("MJS:OC is not interleaved and no enemies - autobracing ");
+                    __instance.owningActor.AutoBrace = true;
                 }
 
                 Mod.Log.Trace($"JUMP -- ABILITY_CONSUMES_FIRING: {__instance.AbilityConsumesFiring} / CONSUMES_FIRING: {__instance.ConsumesFiring}");
@@ -239,31 +208,7 @@ namespace CBTBehaviorsEnhanced {
                     }
                 }
             }
-
-            static void Postfix(MechJumpSequence __instance)
-            {
-                Mod.Log.Debug($"MJS:OC:post - actor: {CombatantUtils.Label(__instance.OwningMech)} " +
-                    $"autoBrace: {__instance.OwningMech.AutoBrace}  hasFired: {__instance.OwningMech.HasFiredThisRound}  consumesFiring: {__instance.ConsumesFiring}");
-            }
         }
-
-        //[HarmonyPatch(typeof(Mech), "ApplyBraced")]
-        //public static class Mech_ApplyBraced
-        //{
-        //    public static void Prefix(Mech __instance)
-        //    {
-        //        Mod.Log.Trace($" BRACING UNIT: {CombatantUtils.Label(__instance)}");
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(AbstractActor), "DoneWithActor")]
-        //public static class AbstractActor_DoneWithActor
-        //{
-        //    public static void Prefix(Mech __instance)
-        //    {
-        //        Mod.Log.Trace($" UNIT: {CombatantUtils.Label(__instance)} hasFiredThisRound: {__instance.HasFiredThisRound}  hasSprintedThisRound: {__instance.HasSprintedThisRound}  isAttacking: {__instance.IsAttacking}");
-        //    }
-        //}
 
         // Prevents losing evasion when attacked
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
