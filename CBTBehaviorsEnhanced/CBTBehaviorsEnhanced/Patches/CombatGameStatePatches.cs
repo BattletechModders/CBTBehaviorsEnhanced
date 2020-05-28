@@ -1,11 +1,5 @@
 ﻿using BattleTech;
 using Harmony;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace CBTBehaviorsEnhanced.Patches {
 
@@ -26,11 +20,8 @@ namespace CBTBehaviorsEnhanced.Patches {
             Mod.Log.Trace("CGS:OCGD - entered.");
 
             // Reset any combat state
-            ModState.BreachCheck = 0f;
-            ModState.BreachAttackId = ModState.NO_ATTACK_SEQUENCE_ID;
-            ModState.BreachHitsMech.Clear();
-            ModState.BreachHitsTurret.Clear();
-            ModState.BreachHitsVehicle.Clear();
+            ModState.Reset();
+    
         }
     }
 }
