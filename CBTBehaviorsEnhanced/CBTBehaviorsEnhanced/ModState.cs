@@ -1,5 +1,6 @@
 ﻿
 using BattleTech;
+using BattleTech.UI;
 using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced {
@@ -20,18 +21,31 @@ namespace CBTBehaviorsEnhanced {
         public static Dictionary<BuildingLocation, int> BreachHitsTurret = new Dictionary<BuildingLocation, int>();
         public static Dictionary<VehicleChassisLocations, int> BreachHitsVehicle = new Dictionary<VehicleChassisLocations, int>();
 
+        // UI Elements
+        public static CombatHUDFireButton PunchFB = null;
+        public static CombatHUDFireButton KickFB = null;
+        public static CombatHUDFireButton ChargeFB = null;
+
         public static void Reset() {
             // Reinitialize state
             Combat = null;
 
+            // Melee weapon state
             CurrentMeleeWeapon = null;
             CurrentMeleeType = MeleeAttackType.NotSet;
 
+            // Breach state
             BreachCheck = 0f;
             BreachAttackId = NO_ATTACK_SEQUENCE_ID;
             BreachHitsMech.Clear();
             BreachHitsTurret.Clear();
             BreachHitsVehicle.Clear();
+
+            // UI Elements
+            PunchFB = null;
+            KickFB = null;
+            ChargeFB = null;
+
         }
     }
 

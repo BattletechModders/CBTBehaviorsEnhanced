@@ -26,6 +26,13 @@ namespace CBTBehaviorsEnhanced {
         public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
     }
 
+    public class ModConsts
+    {
+        public const string PunchFB_GO_ID = "cbtbe_punch_button";
+        public const string KickFB_GO_ID = "cbtbe_kick_button";
+        public const string ChargeFB_GO_ID = "cbtbe_charge_button";
+    }
+
     public class ModConfig {
 
         public bool Debug = false;
