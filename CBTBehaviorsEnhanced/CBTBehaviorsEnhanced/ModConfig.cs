@@ -28,9 +28,10 @@ namespace CBTBehaviorsEnhanced {
 
     public class ModConsts
     {
-        public const string PunchFB_GO_ID = "cbtbe_punch_button";
-        public const string KickFB_GO_ID = "cbtbe_kick_button";
+        public const string Container_GO_ID = "cbtbe_melee_container";
         public const string ChargeFB_GO_ID = "cbtbe_charge_button";
+        public const string KickFB_GO_ID = "cbtbe_kick_button";
+        public const string PunchFB_GO_ID = "cbtbe_punch_button";
     }
 
     public class ModConfig {
