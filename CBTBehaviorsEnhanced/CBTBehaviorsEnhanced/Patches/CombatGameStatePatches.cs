@@ -21,7 +21,6 @@ namespace CBTBehaviorsEnhanced.Patches {
 
             // Reset any combat state
             ModState.Reset();
-    
         }
     }
 }

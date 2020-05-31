@@ -1,11 +1,9 @@
 ﻿using BattleTech;
-using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
-using BattleTech.UI.TMProWrapper;
+using CBTBehaviorsEnhanced.Helper;
 using Harmony;
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CBTBehaviorsEnhanced.Patches
@@ -20,13 +18,7 @@ namespace CBTBehaviorsEnhanced.Patches
             CombatHUDFireButton newButton = GameObject.Instantiate<CombatHUDFireButton>(cloneSource);
             newButton.Init(Combat, HUD);
             newButton.gameObject.transform.parent = parent.transform;
-            Mod.Log.Info($"Created {goName} and attached to parent.");
-
-            //Traverse onEnableT = Traverse.Create(newButton).Method("OnEnable");
-            //onEnableT.GetValue();
-
-            //Traverse awakeT = Traverse.Create(newButton).Method("Awake");
-            //awakeT.GetValue();
+            Mod.Log.Trace($"Created {goName} and attached to parent.");
 
             newButton.gameObject.name = goName;
             newButton.gameObject.transform.SetAsFirstSibling();
@@ -52,7 +44,7 @@ namespace CBTBehaviorsEnhanced.Patches
             GameObject sideWedges = newButton.gameObject.transform.Find("confirmFrame_sideWedges (1)").gameObject;
             sideWedges.SetActive(false);
        
-            Mod.Log.Info($"Redid layout for {goName}.");
+            Mod.Log.Trace($"Redid layout for {goName}.");
             return newButton;
         }
 
@@ -60,10 +52,9 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             try
             {
-                Mod.Log.Info($"CREATING TEST COMPONENTS: instance is null? {__instance == null}  instanceGO is null? {__instance?.gameObject == null}");
+                Mod.Log.Trace($"CREATING TEST COMPONENTS: instance is null? {__instance == null}  instanceGO is null? {__instance?.gameObject == null}");
 
                 // Find icPanel_Layout as the parent
-
                 Transform icPanelLayoutTransform = __instance.FireButton.gameObject.transform.parent;
                 GameObject icPanelLayoutGO = icPanelLayoutTransform.gameObject;
                 if (icPanelLayoutGO == null) Mod.Log.Warn("FAILED TO FIND IC_PANEL_LAYOUT!");
@@ -98,7 +89,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 le.preferredHeight = 75f;
                 le.preferredWidth = 500f;
 
-                Mod.Log.Info($"CREATING BUTTONS");
+                Mod.Log.Trace($"CREATING BUTTONS");
                 ModState.PunchFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PunchFB_GO_ID, "PUNCH", Combat, HUD);
                 ModState.KickFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.KickFB_GO_ID, "KICK", Combat, HUD);
                 ModState.ChargeFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.ChargeFB_GO_ID, "CHARGE", Combat, HUD);
@@ -116,13 +107,19 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         public static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, string additionalDetails, bool showHeatWarnings)
         {
-            Mod.Log.Info($"ShowFireButton called with mode: {mode}");
+            Mod.Log.Debug($"ShowFireButton called with mode: {mode}");
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.Reserve)
             {
                 Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
-                if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                MeleeState meleeState = MeleeHelper.GetMeleeState(
+                    ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                    ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
+                    ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
+                    );
+                if (ModState.ChargeFB != null && meleeState.CanPunch) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+
+                if (ModState.KickFB != null && meleeState.CanKick) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PunchFB != null && meleeState.CanCharge) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
             }
             else
             {
@@ -207,68 +204,4 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-
-    [HarmonyPatch(typeof(CombatHUDFireButton), "Highlighted_OnEnter")]
-    [HarmonyPatch(new Type[] { })]
-    static class CombatHUDFireButton_Highlighted_OnEnter
-    {
-        static void Prefix(CombatHUDFireButton __instance)
-        {
-            if (__instance != null
-            //if (__instance != null &&
-            //    __instance.gameObject.name.Equals(ModConsts.ChargeFB_GO_ID) ||
-            //    __instance.gameObject.name.Equals(ModConsts.KickFB_GO_ID) ||
-            //    __instance.gameObject.name.Equals(ModConsts.PunchFB_GO_ID)
-                )
-            {
-                Mod.Log.Info($"CHUDFB - Highlighted-Entered FIRED FOR: {__instance.gameObject.name}");
-
-                //try
-                //{
-                //    Mod.Log.Info($" BlockDOTWeenAnim: {__instance.BlockDOTweenAnimations}");
-                //    Mod.Log.Info($" OnEnabledTweens: {__instance.OnEnabledTweens?.Count}");
-                //    Mod.Log.Info($" OnSelectedTweens: {__instance.OnSelectedTweens?.Count}");
-                //    Mod.Log.Info($" OnHighlightedTweens: {__instance.OnHighlightedTweens?.Count}");
-                //    Mod.Log.Info($" OnPressedTweens: {__instance.OnPressedTweens?.Count}");
-                //    Mod.Log.Info($" OnUnavailableTweens: {__instance.OnUnavailableTweens?.Count}");
-                //    Mod.Log.Info($" OnDisabledTweens: {__instance.OnDisabledTweens?.Count}");
-
-                //}
-                //catch (Exception e)
-                //{
-                //    Mod.Log.Error("Caught an error onHighlight!", e);
-                //    Mod.Log.Error(e.StackTrace);
-                //}
-
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(CombatHUDFireButton), "Highlighted_OnExit")]
-    [HarmonyPatch(new Type[] { })]
-    static class CombatHUDFireButton_Highlighted_OnExit
-    {
-        static void Prefix(CombatHUDFireButton __instance)
-        {
-            Mod.Log.Info($"CHUDFB - Highlighted-Exit FIRED FOR: {__instance.gameObject.name}");
-        }
-    }
-
-    [HarmonyPatch(typeof(CombatHUDFireButton), "OnPointerEnter")]
-    static class CombatHUDFireButton_OnPointerEnter
-    {
-        static void Prefix(CombatHUDFireButton __instance, PointerEventData eventData)
-        {
-            Mod.Log.Info($"CHUDFB - OnPointerEnter FIRED FOR: {__instance.gameObject.name}");
-        }
-    }
-
-    [HarmonyPatch(typeof(CombatHUDFireButton), "OnPointerExit")]
-    static class CombatHUDFireButton_OnPointerExit
-    {
-        static void Prefix(CombatHUDFireButton __instance, PointerEventData eventData)
-        {
-            Mod.Log.Info($"CHUDFB - OnPointerExit FIRED FOR: {__instance.gameObject.name}");
-        }
-    }
 }

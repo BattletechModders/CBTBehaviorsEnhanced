@@ -102,13 +102,14 @@
     <Compile Include="Melee\MechDFASequence.cs" />
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
-    <Compile Include="Objects\MeleeAttackDef.cs" />
+    <Compile Include="Objects\MeleeDefs.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDAttackModSelectorPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDHeatPatches.cs" />
+    <Compile Include="Patches\CombatHUD\CombatHUDPatches.cs" />
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />

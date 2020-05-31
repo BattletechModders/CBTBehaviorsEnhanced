@@ -24,6 +24,16 @@ namespace CBTBehaviorsEnhanced {
         public const string ME_IgnoreDamage = "ignore_damage";
         // This value is a vanilla value
         public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
+
+        // Melee damage modifier stats
+        public const string ChargeDamageMod = "CBTBE_ChargeDamageMod";
+        public const string ChargeDamageMulti = "CBTBE_ChargeDamageMulti";
+        public const string KickDamageMod = "CBTBE_KickDamageMod";
+        public const string KickDamageMulti = "CBTBE_KickDamageMulti";
+        public const string PunchDamageMod = "CBTBE_PunchDamageMod";
+        public const string PunchDamageMulti = "CBTBE_PunchDamageMulti";
+        public const string PunchIsPhysicalWeapon = "CBTBE_PunchIsPhysicalWeapon"; // If true, 
+        public const string PunchLocationTable = "CTBE_PunchLocationTable"; // Allows setting attack type to punch or standard
     }
 
     public class ModConsts
@@ -149,6 +159,13 @@ namespace CBTBehaviorsEnhanced {
         }
         public HeatOptions Heat = new HeatOptions();
 
+
+        public class ChargeMeleeOpts
+        {
+            public int AttackerDamagePer10TonsOfTarget = 5;
+            public int TargetDamagePer10TonsOfAttacker = 5;
+        }
+
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         public class MeleeOptions {
             public float SkillMulti = 0.05f;
@@ -163,7 +180,24 @@ namespace CBTBehaviorsEnhanced {
 
             public bool AllowMeleeFromSprint = true;
 
-            // TODO: Is this even necessary? Just make DFA a high value. public bool ForceFallOnFailedDFA = true;
+            // Prone target modfiier
+            public int ProneTargetAttackModifier = -2;
+
+
+            // 
+            public string HipActuatorCategoryId = "LegHip";
+            public string ShoulderActuatorCategoryId = "ArmShoulder";
+            public Dictionary<string, float> LegActuatorDamageMultiByCategoryId = new Dictionary<string, float>()
+            {
+                { "LegUpperActuator", 0.5f }, { "LegLowerActuator", 0.5f }
+            };
+            public Dictionary<string, float> ArmActuatorDamageMultiByCategoryId = new Dictionary<string, float>()
+            {
+                { "ArmUpperActuator", 0.5f }, { "ArmLowerActuator", 0.5f }
+            };
+
+            public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
+
         }
         public MeleeOptions Melee = new MeleeOptions();
 

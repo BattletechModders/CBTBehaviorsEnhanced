@@ -8,7 +8,9 @@ namespace CBTBehaviorsEnhanced {
 
         public const int NO_ATTACK_SEQUENCE_ID = -1; // Attack sequences are always 0 or positive integers (see AttackDirector:44) Use -1 to signify 'no sequence'
 
+        // HBS CombatGameState 
         public static CombatGameState Combat = null;
+        public static CombatHUD CombatHUD = null;
 
         // Melee weapon detection state
         public static Weapon CurrentMeleeWeapon = null;
@@ -29,6 +31,7 @@ namespace CBTBehaviorsEnhanced {
         public static void Reset() {
             // Reinitialize state
             Combat = null;
+            CombatHUD = null;
 
             // Melee weapon state
             CurrentMeleeWeapon = null;

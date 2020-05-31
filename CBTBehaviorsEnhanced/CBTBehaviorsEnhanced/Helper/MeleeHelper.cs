@@ -1,17 +1,72 @@
 ﻿using BattleTech;
-using CBTBehaviorsEnhanced.Objects;
-using System;
+using CustomComponents;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Helper
 {
     public static class MeleeHelper
     {
+
+		// This assumes you're calling from a place that has already determined that we can reach the target.
+		public static MeleeState GetMeleeState(AbstractActor attacker, Vector3 attackPos, ICombatant target)
+        {
+			if (attacker == null || target == null)
+            {
+				Mod.Log.Warn("Null attacker or target - cannot melee!");
+				return new MeleeState { CanCharge = false, CanKick = false, CanPunch = false };
+			}
+
+			if (attacker is Turret turret)
+			{
+				Mod.Log.Warn("I don't know how a turret does melee!");
+				return new MeleeState { CanCharge = false, CanKick = false, CanPunch = false };
+
+			}
+
+			if (target is BattleTech.Building building)
+            {
+				Mod.Log.Warn("I don't know how to melee a building!");
+				return new MeleeState { CanCharge = false, CanKick = false, CanPunch = false };
+            }
+
+			MeleeState meleeState = new MeleeState();
+			Mod.Log.Info($"Building melee state for attacker: {CombatantUtils.Label(attacker)} against target: {CombatantUtils.Label(target)}");
+			if (attacker is Mech attackerMech)
+            {
+				float distance = (attackPos - target.CurrentPosition).magnitude;
+				Mod.Log.Info($"Attack distance: {distance}m = attackPos: {attackPos} - targetPos: {target.CurrentPosition}");
+
+				// Evaluate our damage state and determine what our total damage should be
+				meleeState.EvaluateDamage(attackerMech);
+
+				// Check if our distance requires a sprint (and thus no punch, kick, etc)
+				float maxWalkSpeed = MechHelper.FinalWalkSpeed(attackerMech);
+				float maxSprintSpeed = MechHelper.FinalRunSpeed(attackerMech);
+				Mod.Log.Info($"Attacker walkSpeed: {maxWalkSpeed}m  sprintSpeed: {maxSprintSpeed}m");
+				if (distance > maxWalkSpeed)
+                {
+					meleeState.CanPunch = false;
+					meleeState.CanKick = false;
+                }
+
+				// If any hips are gone, cannot kick 
+				// If any shoulders are gone, cannot punch from that arm
+				// Add any damage from two working punches directly
+				// If attacker prone, no attacks are allowed
+				// Check elevation levels here; kick only allowed at certain elevations, etc
+
+				// How to handle absolute vs. multiplier modifiers? Let all modifiers apply... damage will remove the effects. Then apply the missing actuator modifiers
+				
+			}
+
+			// TODO: Handle vehicles someday?
+
+			return new MeleeState();
+        }
+
         public static HashSet<MeleeAttackDef> AvailableAttacks(Mech attacker, Vector3 attackPos, ICombatant target)
         {
 			HashSet<MeleeAttackDef> availableAttacks = new HashSet<MeleeAttackDef>();
