@@ -25,24 +25,24 @@ namespace CBTBehaviorsEnhanced
         public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
 
         // Melee damage modifier stats
-        public const string ChargeDamageMod = "CBTBE_ChargeDamageMod";
-        public const string ChargeDamageMulti = "CBTBE_ChargeDamageMulti";
+        public const string ChargeDamageMod = "CBTBE_Charge_Damage_Mod";
+        public const string ChargeDamageMulti = "CBTBE_Charge_Damage_Multi";
 
-        public const string DFAWeaponDamageMod = "CBTBE_DFADamageMod";
-        public const string DFAWeaponDamageMulti = "CBTBE_DFADamageMulti";
+        public const string DFAWeaponDamageMod = "CBTBE_DFA_Damage_Mod";
+        public const string DFAWeaponDamageMulti = "CBTBE_DFA_Damage_Multi";
 
-        public const string KickDamageMod = "CBTBE_KickDamageMod";
-        public const string KickDamageMulti = "CBTBE_KickDamageMulti";
+        public const string KickDamageMod = "CBTBE_Kick_Damage_Mod";
+        public const string KickDamageMulti = "CBTBE_Kick_Damage_Multi";
 
-        public const string PunchDamageMod = "CBTBE_PunchDamageMod";
-        public const string PunchDamageMulti = "CBTBE_PunchDamageMulti";
+        public const string PunchDamageMod = "CBTBE_Punch_Damage_Mod";
+        public const string PunchDamageMulti = "CBTBE_Punch_Damage_Multi";
 
-        public const string PhysicalWeaponDamageMod = "CBTBE_PhysicalDamageMod";
-        public const string PhysicalWeaponDamageMulti = "CBTBE_PhysicalDamageMulti";
+        public const string PhysicalWeaponDamageMod = "CBTBE_Physical_Damage_Mod";
+        public const string PhysicalWeaponDamageMulti = "CBTBE_Physical_Damage_Multi";
 
-        public const string PunchIsPhysicalWeapon = "CBTBE_PunchIsPhysicalWeapon"; // If true, 
-        public const string PhysicalWeaponTable = "CTBE_PhysicalWeaponTable"; // Allows setting attack type to punch or standard
-        public const string PhysicalWeaponDivisor = "CTBE_PhysicalWeaponDivisor"; // Allows setting attack type to punch or standard
+        public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // If true, 
+        public const string PhysicalWeaponTable = "CTBE_Physical_Weapon_Table"; // Allows setting attack type to punch or standard
+        public const string PhysicalWeaponDivisor = "CTBE_Physical_Weapon_Damage_Divisor"; // Allows setting attack type to punch or standard
     }
 
     public class ModConsts

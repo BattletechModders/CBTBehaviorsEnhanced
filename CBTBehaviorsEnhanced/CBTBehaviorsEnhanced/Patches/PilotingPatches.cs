@@ -5,6 +5,7 @@ using System;
 
 namespace CBTBehaviorsEnhanced {
 
+    // TODO: Should use the delta across the entire attack sequence, not just one weapon
     public static class PilotingPatches {
 
         [HarmonyPatch(typeof(Mech), "ResolveWeaponDamage", new Type[] { typeof(WeaponHitInfo), typeof(Weapon), typeof(MeleeAttackType) })]

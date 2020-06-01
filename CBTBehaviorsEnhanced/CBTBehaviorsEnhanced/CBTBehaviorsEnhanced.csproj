@@ -102,9 +102,13 @@
     <Compile Include="Melee\MechDFASequence.cs" />
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
+    <Compile Include="Objects\MechMeleeCondition.cs" />
+    <Compile Include="Objects\ChargeAttackState.cs" />
     <Compile Include="Objects\MeleeDefs.cs" />
+    <Compile Include="Objects\MeleeState.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
+    <Compile Include="Patches\AttackModifierPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDAttackModSelectorPatches.cs" />
@@ -122,7 +126,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModState.cs" />
-    <Compile Include="Properties\ModConstants.cs" />
+    <Compile Include="ModConstants.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

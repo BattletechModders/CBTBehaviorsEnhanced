@@ -1,7 +1,5 @@
 ﻿using BattleTech;
-using CustomComponents;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -90,20 +88,19 @@ namespace CBTBehaviorsEnhanced.Helper
 			return new MeleeState();
         }
 
-        public static HashSet<MeleeAttackDef> AvailableAttacks(Mech attacker, Vector3 attackPos, ICombatant target)
+        public static HashSet<MeleeAttackType> AvailableAttacks(Mech attacker, Vector3 attackPos, ICombatant target)
         {
-			HashSet<MeleeAttackDef> availableAttacks = new HashSet<MeleeAttackDef>();
+			HashSet<MeleeAttackType> availableAttacks = new HashSet<MeleeAttackType>();
 
 			if (target == null) return availableAttacks;
 
 			MeleeAttackHeight validMeleeHeights = GetValidMeleeHeights(attacker, attackPos, target);
 
 			// If prone, or the attack height is ground, the only thing we can do is stomp the target. 
-			// TODO: Validate that our legs are not destroyed. Can't stomp if no legs!
 			// TODO: HBS has vehicles only available as stomp targets. Reinstate that?
 			if (target.IsProne || validMeleeHeights == MeleeAttackHeight.Ground)
             {
-				availableAttacks.Add(new MeleeAttackDef() { Type = MeleeAttackType.Stomp });
+				availableAttacks.Add(MeleeAttackType.Stomp);
 				return availableAttacks;
             }
 
@@ -112,31 +109,27 @@ namespace CBTBehaviorsEnhanced.Helper
 			bool atPunchHeight = (validMeleeHeights & MeleeAttackHeight.High) != MeleeAttackHeight.None;
 			if (atPunchHeight && turret == null)
 			{
-				// TODO: Each arm should check actuators for damage
-				// TODO: Each arm should check for melee weapon
-				// TODO: If melee weapon is enabled, use it
-				// TODO: If melee weapon is disabled, but actuators are present, allow punch
-				if (!attacker.IsLocationDestroyed(ChassisLocations.LeftArm))
+				if (attacker.MechDef.Chassis.PunchesWithLeftArm && !attacker.IsLocationDestroyed(ChassisLocations.LeftArm))
                 {
-					availableAttacks.Add(new MeleeAttackDef() { Type = MeleeAttackType.Punch, Limb = ChassisLocations.LeftArm }); 
+					availableAttacks.Add(MeleeAttackType.Punch); 
                 }
 
-				if (attacker.IsLocationDestroyed(ChassisLocations.RightArm))
+				if (!attacker.MechDef.Chassis.PunchesWithLeftArm && attacker.IsLocationDestroyed(ChassisLocations.RightArm))
 				{
-					availableAttacks.Add(new MeleeAttackDef() { Type = MeleeAttackType.Punch, Limb = ChassisLocations.RightArm });
+					availableAttacks.Add(MeleeAttackType.Punch);
 				}
 			}
 
 			bool atKickHeight = (validMeleeHeights & MeleeAttackHeight.Low) != MeleeAttackHeight.None;
 			if (atKickHeight && !attacker.IsLocationDestroyed(ChassisLocations.LeftLeg) && !attacker.IsLocationDestroyed(ChassisLocations.RightLeg))
 			{
-				availableAttacks.Add(new MeleeAttackDef() { Type = MeleeAttackType.Kick, Limb = ChassisLocations.RightLeg });
+				availableAttacks.Add(MeleeAttackType.Kick);
 			}
 
 			bool atTackleHeight = (validMeleeHeights & MeleeAttackHeight.Medium) != MeleeAttackHeight.None;
 			if (atTackleHeight)
 			{
-				availableAttacks.Add(new MeleeAttackDef() { Type = MeleeAttackType.Tackle });
+				availableAttacks.Add(MeleeAttackType.Tackle);
 			}
 
 			return availableAttacks;

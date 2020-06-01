@@ -144,6 +144,9 @@ namespace CBTBehaviorsEnhanced {
             public float AttackerDamagePerTargetTon = 0.5f;
             public float TargetDamagePerAttackerTon= 0.5f;
 
+            public float AttackerInstabilityPerTargetTon = 0.5f;
+            public float TargetInstabilityPerAttackerTon = 0.5f;
+
             // When an attack does damage, it will be split into N groups of no more than this value 
             public float DamageClusterDivisor = 25.0f;
         }
@@ -335,6 +338,27 @@ namespace CBTBehaviorsEnhanced {
             { CHUDSP_TT_WARN_OVERHEAT_TITLE, "OVERHEATING" },
             { CHUDSP_TT_WARN_OVERHEAT_TEXT, "This unit will suffer penalties, may shutdown or even explode unless heat is reduced past critical levels.\n<i>Hover over the heat bar to see a detailed breakdown.</i>" },
         };
+
+        // Localized strings for the attack descriptions 
+
+        // Labels for weapon tooltips
+        public const string LT_AtkDesc_ComparativeSkill_Piloting = "ATK_MOD_COMPARATIVE_PILOTING";
+
+        // Labels for descriptions
+        public const string LT_AtkDesc_Charge_Desc = "CHARGE_DESC";
+
+        public Dictionary<string, string> LocalizedAttackDescs = new Dictionary<string, string>
+        {
+            { LT_AtkDesc_ComparativeSkill_Piloting, "COMPARATIVE PILOTING" },
+            
+            { LT_AtkDesc_Charge_Desc, "Charge attacks inflict damage and instability on both the attacker and target. " +
+            "Damage randomizes across all locations in 25 damage clusters. " +
+                "<color=#ff0000>Attacker Damage: {0]  Instability: {0}</color>" +
+                "<color=#00ff00>Target Damage: {0]  Instability: {0}</color>"
+            }
+
+        };
+
 
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
