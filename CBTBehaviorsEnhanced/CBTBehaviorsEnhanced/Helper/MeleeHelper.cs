@@ -7,6 +7,29 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Helper
 {
+
+	public static class DamageHelper
+    {
+		public static void ClusterDamage(float totalDamage, float divisor, out float[] clusteredDamage)
+        {
+			List<float> clusters = new List<float>();
+			while (totalDamage > 0)
+			{
+				if (totalDamage > divisor)
+				{
+					clusters.Add(divisor);
+					totalDamage -= divisor;
+				}
+				else
+				{
+					clusters.Add(totalDamage);
+					totalDamage = 0;
+				}
+			}
+			clusteredDamage = clusters.ToArray();
+		}
+    }
+
     public static class MeleeHelper
     {
 
@@ -40,7 +63,7 @@ namespace CBTBehaviorsEnhanced.Helper
 				Mod.Log.Info($"Attack distance: {distance}m = attackPos: {attackPos} - targetPos: {target.CurrentPosition}");
 
 				// Evaluate our damage state and determine what our total damage should be
-				meleeState.EvaluateDamage(attackerMech);
+				meleeState.EvaluateCondition(attackerMech);
 
 				// Check if our distance requires a sprint (and thus no punch, kick, etc)
 				float maxWalkSpeed = MechHelper.FinalWalkSpeed(attackerMech);

@@ -4,46 +4,6 @@ using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced {
     
-    public class ModStats {
-        public const string IgnoreHeatToHitPenalties = "IgnoreHeatToHitPenalties";
-        public const string IgnoreHeatMovementPenalties = "IgnoreHeatMovementPenalties";
-        public const string CanShootAfterSprinting = "CanShootAfterSprinting";
-        public const string MeleeHitPushBackPhases = "MeleeHitPushBackPhases";
-        public const string OverHeatLevel = "OverheatLevel";
-        public const string MaxHeat = "MaxHeat";
-
-        public const string MovementPenalty = "CBTBE_MovePenalty"; // int
-        public const string FiringPenalty = "CBTBE_FirePenalty"; // int
-        // Reduces piloting effects one for one
-        public const string ActuatorDamageMalus = "CBTBE_ActuatorDamage_Malus";  // int
-        // Modifies the base 1.5 multiplier for run from walk speed
-        public const string RunMultiMod = "CBTBE_RunMultiMod"; // float
-        public const string HullBreachImmunity = "CBTBE_HullBreachImmunity";
-
-        // This value is set by the ME DamageIgnore feature - see https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/DamageIgnore/DamageIgnoreHelper.cs
-        public const string ME_IgnoreDamage = "ignore_damage";
-        // This value is a vanilla value
-        public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
-
-        // Melee damage modifier stats
-        public const string ChargeDamageMod = "CBTBE_ChargeDamageMod";
-        public const string ChargeDamageMulti = "CBTBE_ChargeDamageMulti";
-        public const string KickDamageMod = "CBTBE_KickDamageMod";
-        public const string KickDamageMulti = "CBTBE_KickDamageMulti";
-        public const string PunchDamageMod = "CBTBE_PunchDamageMod";
-        public const string PunchDamageMulti = "CBTBE_PunchDamageMulti";
-        public const string PunchIsPhysicalWeapon = "CBTBE_PunchIsPhysicalWeapon"; // If true, 
-        public const string PunchLocationTable = "CTBE_PunchLocationTable"; // Allows setting attack type to punch or standard
-    }
-
-    public class ModConsts
-    {
-        public const string Container_GO_ID = "cbtbe_melee_container";
-        public const string ChargeFB_GO_ID = "cbtbe_charge_button";
-        public const string KickFB_GO_ID = "cbtbe_kick_button";
-        public const string PunchFB_GO_ID = "cbtbe_punch_button";
-    }
-
     public class ModConfig {
 
         public bool Debug = false;
@@ -54,6 +14,9 @@ namespace CBTBehaviorsEnhanced {
 
         // If true, applies special behaviors for DonZappo's abilities
         public static bool dZ_Abilities = false;
+
+        // Movement - should be a +3 per BT Manual pg. 28
+        public int ToHitSelfJumped = 2;
 
         public class FeatureList {
             public bool BiomeBreaches = true;
@@ -100,6 +63,21 @@ namespace CBTBehaviorsEnhanced {
             };
         }
         public QipsConfig Qips = new QipsConfig();
+
+        public class CustomCategoryOpts
+        {
+            public string HipActuatorCategoryId = "LegHip";
+            public string UpperLegActuatorCategoryId = "LegUpperActuator";
+            public string LowerLegActuatorCategoryId = "LegLowerActuator";
+            public string FootActuatorCategoryId = "LegFootActuator";
+
+            public string ShoulderActuatorCategoryId = "ArmShoulder";
+            public string UpperArmActuatorCategoryId = "ArmUpperActuator";
+            public string LowerArmActuatorCategoryId = "ArmLowerActuator";
+            public string HandActuatorCategoryId = "ArmHandActuator";
+
+        }
+        public CustomCategoryOpts CustomCategories = new CustomCategoryOpts();
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
@@ -162,9 +140,37 @@ namespace CBTBehaviorsEnhanced {
 
         public class ChargeMeleeOpts
         {
-            public int AttackerDamagePer10TonsOfTarget = 5;
-            public int TargetDamagePer10TonsOfAttacker = 5;
+            // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
+            public float AttackerDamagePerTargetTon = 0.5f;
+            public float TargetDamagePerAttackerTon= 0.5f;
+
+            // When an attack does damage, it will be split into N groups of no more than this value 
+            public float DamageClusterDivisor = 25.0f;
         }
+
+        // BT Manual pg.37 
+        public class DFAMeleeOpts
+        {
+            // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
+            public float TargetDamagePerAttackerTon = 0.5f;
+            // Multiplies tonnage result
+            public float TargetDamageMultiplier = 3.0f;
+
+        }
+
+        public class KickMeleeOps
+        {
+            // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
+            public float TargetDamagePerAttackerTon = 5;
+        }
+
+        public class PunchMeleeOps
+        {
+            // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
+            public float TargetDamagePerAttackerTon = 0.5f;
+        }
+
+
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         public class MeleeOptions {
@@ -183,18 +189,7 @@ namespace CBTBehaviorsEnhanced {
             // Prone target modfiier
             public int ProneTargetAttackModifier = -2;
 
-
             // 
-            public string HipActuatorCategoryId = "LegHip";
-            public string ShoulderActuatorCategoryId = "ArmShoulder";
-            public Dictionary<string, float> LegActuatorDamageMultiByCategoryId = new Dictionary<string, float>()
-            {
-                { "LegUpperActuator", 0.5f }, { "LegLowerActuator", 0.5f }
-            };
-            public Dictionary<string, float> ArmActuatorDamageMultiByCategoryId = new Dictionary<string, float>()
-            {
-                { "ArmUpperActuator", 0.5f }, { "ArmLowerActuator", 0.5f }
-            };
 
             public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
 
@@ -202,7 +197,8 @@ namespace CBTBehaviorsEnhanced {
         public MeleeOptions Melee = new MeleeOptions();
 
         public class MoveOptions {
-            //  his is set to 40m, because it should 
+            // This is set to 40m, because it should the minimum required to move across one 'hex' no 
+            //   matter the penalties on that hex.
             public float MinimumMove = 40f;
 
             // How much walk distance is removed for each point of heat penalty
@@ -249,9 +245,6 @@ namespace CBTBehaviorsEnhanced {
         }
         public BiomeBreachOptions Breaches = new BiomeBreachOptions();
 
-        // Movement
-        public int ToHitSelfJumped = 2;
-
         // Floatie localization text
         public const string FT_Shutdown_Override = "SHUTDOWN_OVERRIDE_SUCCESS";
         public const string FT_Shutdown_Failed_Overide = "SHUTDOWN_OVERRIDE_FAILED";
@@ -275,6 +268,8 @@ namespace CBTBehaviorsEnhanced {
         public const string FT_Fall_After_Jump = "JUMP_AND_FALL";
         public const string FT_Auto_Fail = "AUTO_FAIL";
         public const string FT_Hull_Breach = "HULL_BREACH";
+
+        // Localized Floaties
         public Dictionary<string, string> LocalizedFloaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
             { FT_Shutdown_Failed_Overide, "Failed Shutdown Override" },
@@ -321,6 +316,7 @@ namespace CBTBehaviorsEnhanced {
         public const string CHUDSP_TT_WARN_OVERHEAT_TITLE = "OVERHEAT_ICON_TITLE";
         public const string CHUDSP_TT_WARN_OVERHEAT_TEXT = "OVERHEAT_ICON_TEXT";
 
+        // Localized tooltips
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
             { CHUD_TT_End_Heat, "Projected Heat: {0} of {1}" },
