@@ -181,37 +181,37 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    [HarmonyPatch(typeof(CombatHUDFireButton), "Update")]
-    [HarmonyPatch(new Type[] { })]
-    static class CombatHUDFireButton_Update
-    {
-        static void Prefix(CombatHUDFireButton __instance)
-        {
+    //[HarmonyPatch(typeof(CombatHUDFireButton), "Update")]
+    //[HarmonyPatch(new Type[] { })]
+    //static class CombatHUDFireButton_Update
+    //{
+    //    static void Prefix(CombatHUDFireButton __instance)
+    //    {
 
-            if (__instance == null || __instance.gameObject == null || !__instance.gameObject.name.StartsWith("cbtbe")) return; // nothing to do
+    //        if (__instance == null || __instance.gameObject == null || !__instance.gameObject.name.StartsWith("cbtbe")) return; // nothing to do
 
-            //Mod.Log.Info($"CHUDFB - Update FIRED FOR: {__instance.gameObject.name} AND FIREMODE: {__instance.CurrentFireMode}");
+    //        //Mod.Log.Info($"CHUDFB - Update FIRED FOR: {__instance.gameObject.name} AND FIREMODE: {__instance.CurrentFireMode}");
 
-            if (__instance.CurrentFireMode == CombatHUDFireButton.FireMode.Engage || __instance.CurrentFireMode == CombatHUDFireButton.FireMode.Reserve)
-            {
-                //__instance.SetState(ButtonState.Enabled, false);
-                //if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
-                //{
-                //    Mod.Log.Info($"UPDATING TYPE: CHARGE");
+    //        if (__instance.CurrentFireMode == CombatHUDFireButton.FireMode.Engage || __instance.CurrentFireMode == CombatHUDFireButton.FireMode.Reserve)
+    //        {
+    //            //__instance.SetState(ButtonState.Enabled, false);
+    //            //if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
+    //            //{
+    //            //    Mod.Log.Info($"UPDATING TYPE: CHARGE");
 
-                //}
-                //else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
-                //{
-                //    Mod.Log.Info($"UPDATING TYPE: KICK");
+    //            //}
+    //            //else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
+    //            //{
+    //            //    Mod.Log.Info($"UPDATING TYPE: KICK");
 
-                //}
-                //else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
-                //{
-                //    Mod.Log.Info($"UPDATING TYPE: PUNCH");
+    //            //}
+    //            //else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
+    //            //{
+    //            //    Mod.Log.Info($"UPDATING TYPE: PUNCH");
 
-                //}
-            }
-        }
-    }
+    //            //}
+    //        }
+    //    }
+    //}
 
 }
