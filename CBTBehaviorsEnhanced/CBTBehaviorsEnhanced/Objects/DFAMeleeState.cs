@@ -52,6 +52,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			if (target.IsProne) return false;
 
 			// No damage check - by rules, you can charge anytime?
+			Mod.Log.Info(" - Attacker can DFA");
 			return true;
 		}
 

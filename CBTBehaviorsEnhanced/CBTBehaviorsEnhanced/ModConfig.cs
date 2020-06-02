@@ -382,7 +382,7 @@ namespace CBTBehaviorsEnhanced {
             { CHUD_FB_CHARGE, "CHARGE" },
             { CHUD_FB_DFA, "DFA" },
             { CHUD_FB_KICK, "KICK" },
-            { CHUD_FB_PHYSICAL_WEAPON, "PHY. WEAP." },
+            { CHUD_FB_PHYSICAL_WEAPON, "PHY. WEAPON" },
             { CHUD_FB_PUNCH, "PUNCH" },
         };
 

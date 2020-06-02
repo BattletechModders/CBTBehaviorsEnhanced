@@ -55,7 +55,7 @@ namespace CBTBehaviorsEnhanced.Objects
             // If no punch - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Punch))
             {
-                Mod.Log.Info("Animations do not include a punch.");
+                Mod.Log.Info("Animations do not include a punch, cannot use physical weapon.");
                 return false;
             }
 
@@ -81,10 +81,11 @@ namespace CBTBehaviorsEnhanced.Objects
             float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
             if (distance > maxWalkSpeed)
             {
-                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
+                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot use physical weapon!");
                 return false;
             }
 
+            Mod.Log.Info(" - Attacker can use physical weapon");
             return true;
         }
 

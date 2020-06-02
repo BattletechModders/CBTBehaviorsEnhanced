@@ -11,7 +11,7 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         static void Postfix(CombatHUD __instance)
         {
-            Mod.Log.Debug("Capturing reference to CombatHUD");
+            Mod.Log.Info("Capturing reference to CombatHUD");
             ModState.CombatHUD = __instance;
         }
     }

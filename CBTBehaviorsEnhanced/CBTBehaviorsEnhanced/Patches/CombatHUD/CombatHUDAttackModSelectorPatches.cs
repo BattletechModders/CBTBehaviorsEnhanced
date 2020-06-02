@@ -110,19 +110,19 @@ namespace CBTBehaviorsEnhanced.Patches
         public static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, string additionalDetails, bool showHeatWarnings)
         {
             Mod.Log.Debug($"ShowFireButton called with mode: {mode}");
-            if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.Reserve)
+            if (mode == CombatHUDFireButton.FireMode.Engage && ModState.CombatHUD.SelectionHandler.ActiveState != null)
             {
                 Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
-                MeleeStates meleeState = MeleeHelper.GetMeleeStates(
+                MeleeStates meleeStates = MeleeHelper.GetMeleeStates(
                     ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                     ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                     );
 
-                if (ModState.ChargeFB != null && meleeState.Charge.IsValid) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.KickFB != null && meleeState.Kick.IsValid) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PhysicalWeaponFB != null && meleeState.PhysicalWeapon.IsValid) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PunchFB != null && meleeState.Punch.IsValid) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.ChargeFB != null && meleeStates.Charge.IsValid) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.KickFB != null && meleeStates.Kick.IsValid) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PhysicalWeaponFB != null && meleeStates.PhysicalWeapon.IsValid) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PunchFB != null && meleeStates.Punch.IsValid) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
             }
             else
             {

@@ -66,6 +66,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
+            Mod.Log.Info(" - Attacker can kick or stomp");
             return true;
         }
 
