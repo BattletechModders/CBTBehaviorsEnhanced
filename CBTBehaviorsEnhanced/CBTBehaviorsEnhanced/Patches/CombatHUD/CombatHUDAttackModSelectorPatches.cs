@@ -13,7 +13,7 @@ namespace CBTBehaviorsEnhanced.Patches
     static class CombatHUDAttackModeSelector_Init
     {
 
-        static CombatHUDFireButton CloneCHUDFireButton(GameObject parent, CombatHUDFireButton cloneSource, string goName, string label, CombatGameState Combat, CombatHUD HUD)
+        static CombatHUDFireButton CloneCHUDFireButton(GameObject parent, CombatHUDFireButton cloneSource, string goName, CombatGameState Combat, CombatHUD HUD)
         {
             CombatHUDFireButton newButton = GameObject.Instantiate<CombatHUDFireButton>(cloneSource);
             newButton.Init(Combat, HUD);
@@ -89,10 +89,12 @@ namespace CBTBehaviorsEnhanced.Patches
                 le.preferredHeight = 75f;
                 le.preferredWidth = 500f;
 
+                // Reverse order, as the first one created is the right-most
                 Mod.Log.Trace($"CREATING BUTTONS");
-                ModState.PunchFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PunchFB_GO_ID, "PUNCH", Combat, HUD);
-                ModState.KickFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.KickFB_GO_ID, "KICK", Combat, HUD);
-                ModState.ChargeFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.ChargeFB_GO_ID, "CHARGE", Combat, HUD);
+                ModState.PunchFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PunchFB_GO_ID, Combat, HUD);
+                ModState.PhysicalWeaponFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PhysicalWeaponFB_GO_ID, Combat, HUD);
+                ModState.KickFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.KickFB_GO_ID, Combat, HUD);
+                ModState.ChargeFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.ChargeFB_GO_ID, Combat, HUD);
             }
             catch (Exception e)
             {
@@ -111,21 +113,23 @@ namespace CBTBehaviorsEnhanced.Patches
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.Reserve)
             {
                 Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
-                MeleeState meleeState = MeleeHelper.GetMeleeState(
+                MeleeStates meleeState = MeleeHelper.GetMeleeStates(
                     ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                     ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                     );
-                if (ModState.ChargeFB != null && meleeState.CanPunch) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
 
-                if (ModState.KickFB != null && meleeState.CanKick) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PunchFB != null && meleeState.CanCharge) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.ChargeFB != null && meleeState.Charge.IsValid) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.KickFB != null && meleeState.Kick.IsValid) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PhysicalWeaponFB != null && meleeState.PhysicalWeapon.IsValid) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PunchFB != null && meleeState.Punch.IsValid) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
             }
             else
             {
                 Mod.Log.Info($"Disabling all CHUD_Fire_Buttons");
                 if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
             }
         }
@@ -141,20 +145,26 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
                 {
-                    Mod.Log.Info($"UPDATING CURRENT FIRE MODE: CHARGE");
+                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_CHARGE]).ToString();
+                    __instance.FireText.SetText(localText, new object[] { });
                     __instance.SetState(ButtonState.Enabled, false);
-                    __instance.FireText.SetText("CHARGE", new object[] { }); 
                 }
                 else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
                 {
-                    Mod.Log.Info($"UPDATING CURRENT FIRE MODE: KICK");
-                    __instance.FireText.SetText("KICK", new object[] { });
+                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_KICK]).ToString();
+                    __instance.FireText.SetText(localText, new object[] { });
+                    __instance.SetState(ButtonState.Enabled, false);
+                }
+                else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
+                {
+                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PHYSICAL_WEAPON]).ToString();
+                    __instance.FireText.SetText(localText, new object[] { });
                     __instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
                 {
-                    Mod.Log.Info($"UPDATING CURRENT FIRE MODE: PUNCH");
-                    __instance.FireText.SetText("PUNCH", new object[] { });
+                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PUNCH]).ToString();
+                    __instance.FireText.SetText(localText, new object[] { });
                     __instance.SetState(ButtonState.Enabled, false);
                 }
             }

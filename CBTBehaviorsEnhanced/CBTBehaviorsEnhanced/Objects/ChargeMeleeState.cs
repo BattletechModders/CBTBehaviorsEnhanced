@@ -31,12 +31,19 @@ namespace CBTBehaviorsEnhanced.Objects
 				int hexesMoved = (int)Math.Ceiling(distance / Mod.Config.Move.MPMetersPerHex);
 				Mod.Log.Info($" - Hexes moved is {hexesMoved} = distance: {distance} / MPMetersPerHex: {Mod.Config.Move.MPMetersPerHex}");
 
-				this.AttackerTable = DamageTable.STANDARD;
-				this.TargetTable = DamageTable.STANDARD;
 				CalculateDamages(attacker, target, hexesMoved);
 				CalculateInstability(attacker, target, hexesMoved);
 				CalculateModifiers(attacker, target);
 				CreateDescriptions(attacker, target);
+
+				// Damage tables 
+				this.AttackerTable = DamageTable.STANDARD;
+				this.TargetTable = DamageTable.STANDARD;
+
+				// Unsteady
+				this.ForceUnsteadyOnAttacker = Mod.Config.Melee.Charge.AttackAppliesUnsteady;
+				this.ForceUnsteadyOnTarget = Mod.Config.Melee.Charge.AttackAppliesUnsteady;
+
 			}
 		}
 

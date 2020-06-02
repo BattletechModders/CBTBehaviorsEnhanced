@@ -1,8 +1,19 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Objects;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CBTBehaviorsEnhanced
 {
+    public class MeleeStates
+    {
+        public ChargeMeleeState Charge;
+        public DFAMeleeState DFA;
+        public KickMeleeState Kick;
+        public PhysicalWeaponMeleeState PhysicalWeapon;
+        public PunchMeleeState Punch;
+    }
+
     public abstract class MeleeState
     {
         public bool IsValid = false;

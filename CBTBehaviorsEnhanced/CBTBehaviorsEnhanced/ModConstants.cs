@@ -25,24 +25,25 @@ namespace CBTBehaviorsEnhanced
         public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
 
         // Melee damage modifier stats
-        public const string ChargeDamageMod = "CBTBE_Charge_Damage_Mod";
-        public const string ChargeDamageMulti = "CBTBE_Charge_Damage_Multi";
+        public const string ChargeDamageMod = "CBTBE_Charge_Damage_Mod"; // int
+        public const string ChargeDamageMulti = "CBTBE_Charge_Damage_Multi"; // float
 
-        public const string DFAWeaponDamageMod = "CBTBE_DFA_Damage_Mod";
-        public const string DFAWeaponDamageMulti = "CBTBE_DFA_Damage_Multi";
+        public const string DFAWeaponDamageMod = "CBTBE_DFA_Damage_Mod"; // int
+        public const string DFAWeaponDamageMulti = "CBTBE_DFA_Damage_Multi"; // float
 
-        public const string KickDamageMod = "CBTBE_Kick_Damage_Mod";
-        public const string KickDamageMulti = "CBTBE_Kick_Damage_Multi";
+        public const string KickDamageMod = "CBTBE_Kick_Damage_Mod"; // int
+        public const string KickDamageMulti = "CBTBE_Kick_Damage_Multi"; // float
 
-        public const string PunchDamageMod = "CBTBE_Punch_Damage_Mod";
-        public const string PunchDamageMulti = "CBTBE_Punch_Damage_Multi";
+        public const string PunchDamageMod = "CBTBE_Punch_Damage_Mod"; // int
+        public const string PunchDamageMulti = "CBTBE_Punch_Damage_Multi"; // float
 
-        public const string PhysicalWeaponDamageMod = "CBTBE_Physical_Damage_Mod";
-        public const string PhysicalWeaponDamageMulti = "CBTBE_Physical_Damage_Multi";
-
-        public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // If true, 
-        public const string PhysicalWeaponTable = "CTBE_Physical_Weapon_Table"; // Allows setting attack type to punch or standard
-        public const string PhysicalWeaponDivisor = "CTBE_Physical_Weapon_Damage_Divisor"; // Allows setting attack type to punch or standard
+        public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
+        public const string PhysicalWeaponDamageMod = "CBTBE_Physical_Damage_Mod"; // int
+        public const string PhysicalWeaponDamageMulti = "CBTBE_Physical_Damage_Multi"; // float
+        public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
+        public const string PhysicalWeaponDamageDivisor = "CBTBE_Physical_Weapon_Damage_Divisor"; // float - how much damage / ton the weapon does
+        public const string PhysicalWeaponInstabilityDivisor = "CBTBE_Physical_Weapon_Instability_Divisor"; // float - how much stab / ton the weapon does
+        public const string PhysicalWeaponAppliesUnsteady = "CBTBE_Physical_Weapon_Applies_Unsteady"; // bool - Allows setting attack type to punch or standard
     }
 
     public class ModConsts

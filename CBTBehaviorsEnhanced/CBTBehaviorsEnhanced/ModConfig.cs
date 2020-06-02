@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced {
         public static bool dZ_Abilities = false;
 
         // Movement - should be a +3 per BT Manual pg. 28
-        public int ToHitSelfJumped = 2;
+        public int ToHitSelfJumped = 3;
 
         public class FeatureList {
             public bool BiomeBreaches = true;
@@ -157,10 +157,10 @@ namespace CBTBehaviorsEnhanced {
         // BT Manual pg.37 
         public class DFAMeleeOpts
         {
-            // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
-            public float TargetDamagePerAttackerTon = 0.5f;
-            // Multiplies tonnage result
-            public float TargetDamageMultiplier = 3.0f;
+            // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton, x3 for DFA
+            public float TargetDamagePerAttackerTon = 1.5f;
+            public float TargetInstabilityPerAttackerTon = 0.5f;
+
 
         }
 
@@ -183,7 +183,12 @@ namespace CBTBehaviorsEnhanced {
 
         public class PhysicalWeaponMeleeOps
         {
+            public int ArmActuatorDamageMalus = -2;
 
+            public float DefaultDamagePerAttackTon = 2;
+            public float DefaultInstabilityPerAttackerTon = 1f;
+
+            public bool DefaultAttackAppliesUnsteady = false;
         }
 
         public class PunchMeleeOps
@@ -348,6 +353,13 @@ namespace CBTBehaviorsEnhanced {
         public const string CHUDSP_TT_WARN_OVERHEAT_TITLE = "OVERHEAT_ICON_TITLE";
         public const string CHUDSP_TT_WARN_OVERHEAT_TEXT = "OVERHEAT_ICON_TEXT";
 
+        // Fire button lables
+        public const string CHUD_FB_CHARGE = "FIRE_BUTTON_CHARGE";
+        public const string CHUD_FB_DFA = "FIRE_BUTTON_DFA";
+        public const string CHUD_FB_KICK = "FIRE_BUTTON_KICK";
+        public const string CHUD_FB_PHYSICAL_WEAPON = "FIRE_BUTTON_PHYSICAL_WEAPON";
+        public const string CHUD_FB_PUNCH = "FIRE_BUTTON_PUNCH";
+
         // Localized tooltips
         public Dictionary<string, string> LocalizedCHUDTooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
@@ -366,6 +378,12 @@ namespace CBTBehaviorsEnhanced {
             { CHUDSP_TT_WARN_SHUTDOWN_TEXT, "This target is easier to hit, and Called Shots can be made against this target. When clicking the restart button, a piloting check will if the BattleMech restarts." },
             { CHUDSP_TT_WARN_OVERHEAT_TITLE, "OVERHEATING" },
             { CHUDSP_TT_WARN_OVERHEAT_TEXT, "This unit will suffer penalties, may shutdown or even explode unless heat is reduced past critical levels.\n<i>Hover over the heat bar to see a detailed breakdown.</i>" },
+
+            { CHUD_FB_CHARGE, "CHARGE" },
+            { CHUD_FB_DFA, "DFA" },
+            { CHUD_FB_KICK, "KICK" },
+            { CHUD_FB_PHYSICAL_WEAPON, "PHY. WEAP." },
+            { CHUD_FB_PUNCH, "PUNCH" },
         };
 
         // Localized strings for the attack descriptions 
@@ -396,12 +414,11 @@ namespace CBTBehaviorsEnhanced {
                 "<color=#00ff00>Target Damage: {0]  Instability: {0}</color>"
             },
             { LT_AtkDesc_Kick_Desc, "Kicks inflict a single hit that strikes the legs of the target. " +
-                "Prone targets received damage on their rear torsos, arms, and legs." +
                 "<color=#ff0000>Damage: {0]  Instability: {0}</color>"
             },
             { LT_AtkDesc_Physical_Weapon_Desc, "Physical weapons inflict damage and instability to " +
                 "the target. Damage is applied in a single hit randomized across all target locations. " +
-                "Some weapons will target punch or kick location" +
+                "Some weapons will target punch or kick locations." +
                 "<color=#ff0000>Damage: {0]  Instability: {0}</color>"
             },
             { LT_AtkDesc_Punch_Desc, "Punches inflict a single hit that strikes " +

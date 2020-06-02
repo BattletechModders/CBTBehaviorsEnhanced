@@ -14,7 +14,6 @@ namespace CBTBehaviorsEnhanced.Objects
         //   * target takes 1 pt. each 10 tons of attacker, rounded up
         //   *   x0.5 damage for each missing upper & lower actuator
         //   * Resolves on punch table
-        //   *   Prone targets resolve on rear
         //   * Requires a shoulder actuator
         //   *   +1 to hit if hand actuator missing
         //   *   +2 to hit if lower arm actuator missing
@@ -23,19 +22,27 @@ namespace CBTBehaviorsEnhanced.Objects
         public PunchMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            this.IsValid = ValidateAttack(target, validAnimations);
+            this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)
             {
-                this.AttackerTable = target.IsProne ? DamageTable.REAR : DamageTable.PUNCH;
 
                 CalculateDamages(attacker, target);
                 CalculateInstability(attacker, target);
                 CalculateModifiers(attacker, target);
                 CreateDescriptions(attacker, target);
+
+                // Damage tables 
+                this.AttackerTable = DamageTable.NONE;
+                this.TargetTable = DamageTable.PUNCH;
+
+                // Unsteady
+                this.ForceUnsteadyOnAttacker = false;
+                this.ForceUnsteadyOnTarget = Mod.Config.Melee.Punch.AttackAppliesUnsteady;
+
             }
         }
 
-        private bool ValidateAttack(AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
             // If we cannot punch - not a valid attack
             if (!validAnimations.Contains(MeleeAttackType.Punch) )
@@ -44,10 +51,19 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            // Damage check - left leg
+            // Damage check - both shoulders damaged invalidate us
             if (!this.AttackerCondition.LeftShoulderIsFunctional && !this.AttackerCondition.RightShoulderIsFunctional)
             {
                 Mod.Log.Info("Both shoulder actuators are damaged. Cannot punch!");
+                return false;
+            }
+
+            // If distance > walkSpeed, disable kick/physical weapon/punch
+            float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
+            float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
+            if (distance > maxWalkSpeed)
+            {
+                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
                 return false;
             }
 
@@ -79,20 +95,20 @@ namespace CBTBehaviorsEnhanced.Objects
                 ).ToString();
             this.AttackModifiers.Add(Mod.Config.Melee.ProneTargetAttackModifier, localText);
 
-            // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
-            int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
-            if (!this.AttackerCondition.LeftHandIsFunctional) leftArmMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
+            // Actuator damage; +1 for arm actuator, +2 to hit for each upper/lower actuator hit
+            int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            if (!this.AttackerCondition.LeftHandIsFunctional) leftArmMalus += Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
 
-            int rightArmMalus = (2 - this.AttackerCondition.RightLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
-            if (!this.AttackerCondition.RightHandIsFunctional) rightArmMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
+            int rightArmMalus = (2 - this.AttackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            if (!this.AttackerCondition.RightHandIsFunctional) rightArmMalus += Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
 
-            int bestLegMalus = leftArmMalus >= rightArmMalus ? leftArmMalus : rightArmMalus;
-            if (bestLegMalus != 0)
+            int bestMalus = leftArmMalus >= rightArmMalus ? leftArmMalus : rightArmMalus;
+            if (bestMalus != 0)
             {
                 localText = new Text(
                     Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Acutator_Damage]
                     ).ToString();
-                this.AttackModifiers.Add(bestLegMalus, localText);
+                this.AttackModifiers.Add(bestMalus, localText);
             }
         }
 
@@ -113,7 +129,7 @@ namespace CBTBehaviorsEnhanced.Objects
             float damageMulti = attacker.StatCollection.ContainsStatistic(ModStats.PunchDamageMulti) ?
                 attacker.StatCollection.GetValue<float>(ModStats.PunchDamageMulti) : 1f;
 
-            // Leg actuator damage
+            // Actuator damage
             float leftReductionMulti = 1f;
             int damagedLeftActuators = 2 - this.AttackerCondition.LeftArmActuatorsCount;
             for (int i = 0; i < damagedLeftActuators; i++) leftReductionMulti += Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
@@ -124,13 +140,13 @@ namespace CBTBehaviorsEnhanced.Objects
             for (int i = 0; i < damagedRightActuators; i++) rightReductionMulti += Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
             Mod.Log.Info($" - Right arm actuator damage is: {rightReductionMulti}");
 
-            float legReductionMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.Log.Info($" - Using arm actuator damage reduction of: {legReductionMulti}");
+            float reductionMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
+            Mod.Log.Info($" - Using arm actuator damage reduction of: {reductionMulti}");
 
             // Roll up final damage
-            float finalTargetDamage = (float)Math.Ceiling((baseTargetDamage + damageMod) * damageMulti * legReductionMulti);
+            float finalTargetDamage = (float)Math.Ceiling((baseTargetDamage + damageMod) * damageMulti * reductionMulti);
             Mod.Log.Info($" - Target finalDamage: {finalTargetDamage} = (baseDamage: {baseTargetDamage} + damageMod: {damageMod}) x " +
-                $"damageMulti: {damageMulti} x legReductionMulti: {legReductionMulti}");
+                $"damageMulti: {damageMulti} x reductionMulti: {reductionMulti}");
 
             // Target damage applies as a single modifier
             this.TargetDamageClusters = new float[] { finalTargetDamage };

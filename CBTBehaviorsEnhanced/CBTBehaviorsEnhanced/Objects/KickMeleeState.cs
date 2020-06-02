@@ -15,7 +15,6 @@ namespace CBTBehaviorsEnhanced.Objects
         //   *   x0.5 damage for each missing leg actuator
         //   * One attack
         //   * Normally resolves on kick table
-        //   * Prone targets resolve on rear 
         //   * -2 to hit base
         //   *   +1 for foot actuator, +2 to hit for each upper/lower actuator hit
         //   *   -2 modifier if target is prone
@@ -23,19 +22,26 @@ namespace CBTBehaviorsEnhanced.Objects
         public KickMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            this.IsValid = ValidateAttack(target, validAnimations);
+            this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)
             {
-                this.AttackerTable = target.IsProne ? DamageTable.REAR : DamageTable.KICK;
 
                 CalculateDamages(attacker, target);
                 CalculateInstability(attacker, target);
                 CalculateModifiers(attacker, target);
                 CreateDescriptions(attacker, target);
+
+                // Damage tables 
+                this.AttackerTable = DamageTable.NONE;
+                this.TargetTable = DamageTable.KICK;
+
+                // Unsteady
+                this.ForceUnsteadyOnAttacker = false;
+                this.ForceUnsteadyOnTarget = Mod.Config.Melee.Kick.AttackAppliesUnsteady;
             }
         }
 
-        private bool ValidateAttack(AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
             // If neither kick (mech) or stomp (vehicle) - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Kick) && !validAnimations.Contains(MeleeAttackType.Stomp))
@@ -48,6 +54,15 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightHipIsFunctional)
             {
                 Mod.Log.Info("One or more hip actuators are damaged. Cannot kick!");
+                return false;
+            }
+
+            // If distance > walkSpeed, disable kick/physical weapon/punch
+            float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
+            float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
+            if (distance > maxWalkSpeed)
+            {
+                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
                 return false;
             }
 

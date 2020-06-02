@@ -19,36 +19,69 @@ namespace CBTBehaviorsEnhanced.Objects
         //   * Requires a shoulder actuator AND hand actuator
         //   *   +2 to hit if lower or upper arm actuator missing
         //   *   -2 modifier if target is prone
-        //   * x0.5 damage for each missing upper & lower actuator
 
         public PhysicalWeaponMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            this.IsValid = ValidateAttack(target, validAnimations);
+            this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)
             {
-                this.AttackerTable = target.IsProne ? DamageTable.REAR : DamageTable.KICK;
 
                 CalculateDamages(attacker, target);
                 CalculateInstability(attacker, target);
                 CalculateModifiers(attacker, target);
                 CreateDescriptions(attacker, target);
+
+                // Damage tables 
+                this.AttackerTable = DamageTable.NONE;
+                this.TargetTable = DamageTable.STANDARD;
+                if (attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponLocationTable))
+                {
+                    string tableName = attacker.StatCollection.GetValue<string>(ModStats.PhysicalWeaponLocationTable).ToUpper();
+                    if (tableName.Equals("KICK")) this.TargetTable = DamageTable.KICK;
+                    else if (tableName.Equals("PUNCH")) this.TargetTable = DamageTable.PUNCH;
+                    else if (tableName.Equals("STANDARD")) this.TargetTable = DamageTable.STANDARD;
+                }
+
+                // Unsteady
+                this.ForceUnsteadyOnAttacker = false;
+                this.ForceUnsteadyOnTarget = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAppliesUnsteady) ? 
+                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponAppliesUnsteady) : Mod.Config.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady;
             }
         }
 
-        private bool ValidateAttack(AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
-            // If neither kick (mech) or stomp (vehicle) - we're not a valid attack.
-            if (!validAnimations.Contains(MeleeAttackType.Kick) && !validAnimations.Contains(MeleeAttackType.Stomp))
+            // If no punch - we're not a valid attack.
+            if (!validAnimations.Contains(MeleeAttackType.Punch))
             {
-                Mod.Log.Info("Animations do not include a kick or stomp, cannot kick.");
+                Mod.Log.Info("Animations do not include a punch.");
                 return false;
             }
 
-            // Damage check - left leg
-            if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightFootIsFunctional)
+            // Damage check - shoulder and hand
+            bool leftArmIsFunctional = this.AttackerCondition.LeftShoulderIsFunctional && this.AttackerCondition.LeftHandIsFunctional;
+            bool rightArmIsFunctional = this.AttackerCondition.RightShoulderIsFunctional && this.AttackerCondition.RightHandIsFunctional;
+            if (!leftArmIsFunctional && !rightArmIsFunctional)
             {
-                Mod.Log.Info("One or more hip actuators are damaged. Cannot kick!");
+                Mod.Log.Info("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
+                return false;
+            }
+
+            // Check that unit has a physical attack
+            if (!attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) || 
+                attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+            {
+                Mod.Log.Info("Unit has no physical weapon by stat; skipping.");
+                return false;
+            }
+
+            // If distance > walkSpeed, disable kick/physical weapon/punch
+            float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
+            float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
+            if (distance > maxWalkSpeed)
+            {
+                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
                 return false;
             }
 
@@ -73,70 +106,50 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
-            // -2 to hit base
-            string localText = new Text(
-                Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_ComparativeSkill_Piloting]
-                ).ToString();
-            this.AttackModifiers.Add(Mod.Config.Melee.Kick.BaseAttackBonus, localText);
 
             // If target is prone, -2 modifier
-            localText = new Text(
+            string localText = new Text(
                 Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Target_Prone]
                 ).ToString();
             this.AttackModifiers.Add(Mod.Config.Melee.ProneTargetAttackModifier, localText);
 
-            // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
-            int leftLegMalus = (2 - this.AttackerCondition.LeftLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
-            if (!this.AttackerCondition.LeftFootIsFunctional) leftLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
+            // +2 to hit for each upper/lower actuator hit
+            int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            int rightArmMalus = (2 - this.AttackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
 
-            int rightLegMalus = (2 - this.AttackerCondition.RightLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
-            if (!this.AttackerCondition.RightFootIsFunctional) rightLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
-
-            int bestLegMalus = leftLegMalus >= rightLegMalus ? leftLegMalus : rightLegMalus;
-            if (bestLegMalus != 0)
+            int bestMalus = leftArmMalus >= rightArmMalus ? leftArmMalus : rightArmMalus;
+            if (bestMalus != 0)
             {
                 localText = new Text(
                     Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Acutator_Damage]
                     ).ToString();
-                this.AttackModifiers.Add(bestLegMalus, localText);
+                this.AttackModifiers.Add(bestMalus, localText);
             }
         }
 
         private void CalculateDamages(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating kick damage for attacker: {CombatantUtils.Label(attacker)} " +
+            Mod.Log.Info($"Calculating physical weapon for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            Mod.Log.Info($" - Attacker tonnage is: {attacker.tonnage}");
+            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponDamageDivisor) ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponDamageDivisor) : 
+                Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackTon;
 
-            float baseTargetDamage = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetDamagePerAttackerTon * attacker.tonnage);
-            Mod.Log.Info($" - Target baseDamage: {Mod.Config.Melee.Kick.TargetDamagePerAttackerTon} x " +
+            float baseTargetDamage = (float)Math.Ceiling(divisor * attacker.tonnage);
+            Mod.Log.Info($" - Target baseDamage: {divisor} x " +
                 $"attacker tonnage: {attacker.tonnage} = {baseTargetDamage}");
 
             // Modifiers
-            float damageMod = attacker.StatCollection.ContainsStatistic(ModStats.KickDamageMod) ?
-                attacker.StatCollection.GetValue<float>(ModStats.KickDamageMod) : 0f;
-            float damageMulti = attacker.StatCollection.ContainsStatistic(ModStats.KickDamageMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.KickDamageMulti) : 1f;
-
-            // Leg actuator damage
-            float leftLegReductionMulti = 1f;
-            int damagedLeftActuators = 2 - this.AttackerCondition.LeftArmActuatorsCount;
-            for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Left leg actuator damage is: {leftLegReductionMulti}");
-
-            float rightLegReductionMulti = 1f;
-            int damagedRightActuators = 2 - this.AttackerCondition.RightLegActuatorsCount;
-            for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Right leg actuator damage is: {rightLegReductionMulti}");
-
-            float legReductionMulti = leftLegReductionMulti >= rightLegReductionMulti ? leftLegReductionMulti : rightLegReductionMulti;
-            Mod.Log.Info($" - Using leg actuator damage reduction of: {legReductionMulti}");
+            float damageMod = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponDamageMod) ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponDamageMod) : 0f;
+            float damageMulti = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponDamageMulti) ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponDamageMulti) : 1f;
 
             // Roll up final damage
-            float finalTargetDamage = (float)Math.Ceiling((baseTargetDamage + damageMod) * damageMulti * legReductionMulti);
+            float finalTargetDamage = (float)Math.Ceiling((baseTargetDamage + damageMod) * damageMulti);
             Mod.Log.Info($" - Target finalDamage: {finalTargetDamage} = (baseDamage: {baseTargetDamage} + damageMod: {damageMod}) x " +
-                $"damageMulti: {damageMulti} x legReductionMulti: {legReductionMulti}");
+                $"damageMulti: {damageMulti}");
 
             // Target damage applies as a single modifier
             this.TargetDamageClusters = new float[] { finalTargetDamage };
@@ -147,8 +160,12 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            this.TargetInstability = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon * attacker.tonnage);
-            Mod.Log.Info($" - Target takes {Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon} instability x " +
+            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponInstabilityDivisor) ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponInstabilityDivisor) :
+                Mod.Config.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon;
+
+            this.TargetInstability = (float)Math.Ceiling(divisor * attacker.tonnage);
+            Mod.Log.Info($" - Target takes {divisor} instability x " +
                 $"target tonnage {attacker.tonnage} = {this.TargetInstability}");
 
         }

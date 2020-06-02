@@ -24,9 +24,10 @@ namespace CBTBehaviorsEnhanced {
         public static Dictionary<VehicleChassisLocations, int> BreachHitsVehicle = new Dictionary<VehicleChassisLocations, int>();
 
         // UI Elements
-        public static CombatHUDFireButton PunchFB = null;
-        public static CombatHUDFireButton KickFB = null;
         public static CombatHUDFireButton ChargeFB = null;
+        public static CombatHUDFireButton KickFB = null;
+        public static CombatHUDFireButton PhysicalWeaponFB = null;
+        public static CombatHUDFireButton PunchFB = null;
 
         public static void Reset() {
             // Reinitialize state
@@ -45,10 +46,10 @@ namespace CBTBehaviorsEnhanced {
             BreachHitsVehicle.Clear();
 
             // UI Elements
-            PunchFB = null;
-            KickFB = null;
             ChargeFB = null;
-
+            KickFB = null;
+            PhysicalWeaponFB = null;
+            PunchFB = null;
         }
     }
 

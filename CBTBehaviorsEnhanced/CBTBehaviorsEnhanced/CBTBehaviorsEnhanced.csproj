@@ -102,6 +102,9 @@
     <Compile Include="Melee\MechDFASequence.cs" />
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
+    <Compile Include="Objects\DFAMeleeState.cs" />
+    <Compile Include="Objects\PhysicalWeaponMeleeState.cs" />
+    <Compile Include="Objects\PunchMeleeState.cs" />
     <Compile Include="Objects\KickMeleeState.cs" />
     <Compile Include="Objects\MechMeleeCondition.cs" />
     <Compile Include="Objects\ChargeMeleeState.cs" />
