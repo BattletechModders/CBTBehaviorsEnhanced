@@ -9,19 +9,22 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Objects
 {
-    public class ChargeMeleeState : MeleeState
+    public class DFAMeleeState : MeleeState
     {
-        // Per BT Manual pg.35,
-        //   * attacker takes 1 pt. each 10 tons of target, rounded up
-        //   * defender takes 1 pt. each 10 tons of attacker * # hexes moved, rounded up
-        //   * Groupings by 5 (25) points
-        //   * Resolves on regular table
-        //   * Prone targets cannot be attacked
-        //   * Attacker makes PSR with +4, target with +2 to avoid falling
-		//	 *   Create instab damage instead
-        //   * Modifier for attack is comparative skill
+		// Per BT Manual pg.36,
+		//   * target takes 1 pt. each 10 tons of attacker, which is then multiplied by 3 and rounded up
+		//   * attacker takes tonnage / 5, rounded up
+		//   * Damage clustered in 5 (25) point groupings for both attacker & defender
+		//   * Target resolves on punch table
+		//   *   Prone targets resolve on rear table
+		//   * Attacker resolves on kick table
+		//   * Comparative attack modifier; difference in attacker and defender is applied to attack
+		//   *  +3 modifier to hit for jumping
+		//   *  +2 to hit if upper or lower leg actuators are hit
+		//   *  -2 modifier if target is prone
+		//   * Attacker makes PSR with +4, target with +2 and fall
 
-        public ChargeMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
+		public DFAMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
             this.IsValid = ValidateAttack(target, validAnimations);

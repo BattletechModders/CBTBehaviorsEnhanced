@@ -149,6 +149,9 @@ namespace CBTBehaviorsEnhanced {
 
             // When an attack does damage, it will be split into N groups of no more than this value 
             public float DamageClusterDivisor = 25.0f;
+
+            // If true, make the attack apply unsteady before applying instability
+            public bool AttackAppliesUnsteady = false;
         }
 
         // BT Manual pg.37 
@@ -163,16 +166,40 @@ namespace CBTBehaviorsEnhanced {
 
         public class KickMeleeOps
         {
+            // The base bonus applied for a kick 
+            public int BaseAttackBonus = -2;
+            public int LegActuatorDamageMalus = -2;
+            public int FootActuatorDamageMalus = -1;
+
             // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
-            public float TargetDamagePerAttackerTon = 5;
+            public float TargetDamagePerAttackerTon = 1;
+            public float TargetInstabilityPerAttackerTon = 0.5f;
+
+            public float LegActuatorDamageReduction = 0.5f;
+
+            // If true, make the attack apply unsteady before applying instability
+            public bool AttackAppliesUnsteady = false;
+        }
+
+        public class PhysicalWeaponMeleeOps
+        {
+
         }
 
         public class PunchMeleeOps
         {
+            public int ArmActuatorDamageMalus = -2;
+            public int HandActuatorDamageMalus = -1;
+
             // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
             public float TargetDamagePerAttackerTon = 0.5f;
-        }
+            public float TargetInstabilityPerAttackerTon = 0.5f;
 
+            public float ArmActuatorDamageReduction = 0.5f;
+
+            // If true, make the attack apply unsteady before applying instability
+            public bool AttackAppliesUnsteady = false;
+        }
 
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
@@ -189,12 +216,14 @@ namespace CBTBehaviorsEnhanced {
 
             public bool AllowMeleeFromSprint = true;
 
-            // Prone target modfiier
+            // Prone target modifier
             public int ProneTargetAttackModifier = -2;
 
-            // 
-
             public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
+            public DFAMeleeOpts DFA = new DFAMeleeOpts();
+            public KickMeleeOps Kick = new KickMeleeOps();
+            public PhysicalWeaponMeleeOps PhysicalWeapon = new PhysicalWeaponMeleeOps();
+            public PunchMeleeOps Punch = new PunchMeleeOps();
 
         }
         public MeleeOptions Melee = new MeleeOptions();
@@ -343,19 +372,44 @@ namespace CBTBehaviorsEnhanced {
 
         // Labels for weapon tooltips
         public const string LT_AtkDesc_ComparativeSkill_Piloting = "ATK_MOD_COMPARATIVE_PILOTING";
+        public const string LT_AtkDesc_Easy_to_Kick = "ATK_MOD_EASY_TO_KICK";
+        public const string LT_AtkDesc_Acutator_Damage = "ATK_MOD_ACTUATOR_DAMAGE";
+        public const string LT_AtkDesc_Target_Prone = "ATK_MOD_TARGET_PRONE";
 
         // Labels for descriptions
         public const string LT_AtkDesc_Charge_Desc = "CHARGE_DESC";
+        public const string LT_AtkDesc_Kick_Desc = "KICK_DESC";
+        public const string LT_AtkDesc_Physical_Weapon_Desc = "PHYSICAL_WEAPON_DESC";
+        public const string LT_AtkDesc_Punch_Desc = "PUNCH_DESC";
 
         public Dictionary<string, string> LocalizedAttackDescs = new Dictionary<string, string>
         {
             { LT_AtkDesc_ComparativeSkill_Piloting, "COMPARATIVE PILOTING" },
-            
-            { LT_AtkDesc_Charge_Desc, "Charge attacks inflict damage and instability on both the attacker and target. " +
-            "Damage randomizes across all locations in 25 damage clusters. " +
+            { LT_AtkDesc_Easy_to_Kick, "EASY TO KICK" },
+            { LT_AtkDesc_Acutator_Damage, "ACTUATOR DAMAGE" },
+            { LT_AtkDesc_Target_Prone, "PRONE MELEE TARGET" },
+
+            { LT_AtkDesc_Charge_Desc, "Charges damage both " +
+                "the attacker and target. Damage is randomized across all locations in 25 " +
+                "point clusters." +
                 "<color=#ff0000>Attacker Damage: {0]  Instability: {0}</color>" +
                 "<color=#00ff00>Target Damage: {0]  Instability: {0}</color>"
-            }
+            },
+            { LT_AtkDesc_Kick_Desc, "Kicks inflict a single hit that strikes the legs of the target. " +
+                "Prone targets received damage on their rear torsos, arms, and legs." +
+                "<color=#ff0000>Damage: {0]  Instability: {0}</color>"
+            },
+            { LT_AtkDesc_Physical_Weapon_Desc, "Physical weapons inflict damage and instability to " +
+                "the target. Damage is applied in a single hit randomized across all target locations. " +
+                "Some weapons will target punch or kick location" +
+                "<color=#ff0000>Damage: {0]  Instability: {0}</color>"
+            },
+            { LT_AtkDesc_Punch_Desc, "Punches inflict a single hit that strikes " +
+                "the arms, torsos, and head of the target." +
+                "<color=#ff0000>Attacker Damage: {0]  Instability: {0}</color>" +
+                "<color=#00ff00>Target Damage: {0]  Instability: {0}</color>"
+            },
+
 
         };
 

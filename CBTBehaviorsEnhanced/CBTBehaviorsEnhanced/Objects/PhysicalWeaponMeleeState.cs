@@ -8,19 +8,20 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Objects
 {
-    public class KickMeleeState : MeleeState
+    public class PhysicalWeaponMeleeState : MeleeState
     {
         // Per BT Manual pg.38,
-        //   * target takes 1 pt. each 5 tons of attacker, rounded up
-        //   *   x0.5 damage for each missing leg actuator
+        //   * target takes 1 pt. each 4-10 tons of attacker, rounded up (varies by weapon)
         //   * One attack
-        //   * Normally resolves on kick table
-        //   * Prone targets resolve on rear 
-        //   * -2 to hit base
-        //   *   +1 for foot actuator, +2 to hit for each upper/lower actuator hit
+        //   * Resolves on main table
+        //   *   Optional - Can resolve on punch table 
+        //   *   Optional - Can resolve on kick table 
+        //   * Requires a shoulder actuator AND hand actuator
+        //   *   +2 to hit if lower or upper arm actuator missing
         //   *   -2 modifier if target is prone
+        //   * x0.5 damage for each missing upper & lower actuator
 
-        public KickMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
+        public PhysicalWeaponMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
             this.IsValid = ValidateAttack(target, validAnimations);
@@ -45,7 +46,7 @@ namespace CBTBehaviorsEnhanced.Objects
             }
 
             // Damage check - left leg
-            if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightHipIsFunctional)
+            if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightFootIsFunctional)
             {
                 Mod.Log.Info("One or more hip actuators are damaged. Cannot kick!");
                 return false;
@@ -120,7 +121,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
             // Leg actuator damage
             float leftLegReductionMulti = 1f;
-            int damagedLeftActuators = 2 - this.AttackerCondition.LeftLegActuatorsCount;
+            int damagedLeftActuators = 2 - this.AttackerCondition.LeftArmActuatorsCount;
             for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
             Mod.Log.Info($" - Left leg actuator damage is: {leftLegReductionMulti}");
 
