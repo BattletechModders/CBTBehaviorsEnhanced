@@ -79,8 +79,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
 				$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 
-			string localText = new Text(Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_ComparativeSkill_Piloting]).ToString();
-			this.AttackModifiers.Add(comparativeSkill, localText);
+			this.AttackModifiers.Add(ModConfig.LT_AtkDesc_ComparativeSkill_Piloting, comparativeSkill);
 		}
 
 		private void CalculateDamages(Mech attacker, AbstractActor target, int hexesMoved)

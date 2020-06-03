@@ -396,6 +396,7 @@ namespace CBTBehaviorsEnhanced {
 
         // Labels for descriptions
         public const string LT_AtkDesc_Charge_Desc = "CHARGE_DESC";
+        public const string LT_AtkDesc_DFA_Desc = "DFA_DESC";
         public const string LT_AtkDesc_Kick_Desc = "KICK_DESC";
         public const string LT_AtkDesc_Physical_Weapon_Desc = "PHYSICAL_WEAPON_DESC";
         public const string LT_AtkDesc_Punch_Desc = "PUNCH_DESC";
@@ -410,21 +411,26 @@ namespace CBTBehaviorsEnhanced {
             { LT_AtkDesc_Charge_Desc, "Charges damage both " +
                 "the attacker and target. Damage is randomized across all locations in 25 " +
                 "point clusters." +
-                "<color=#ff0000>Attacker Damage: {0]  Instability: {0}</color>" +
-                "<color=#00ff00>Target Damage: {0]  Instability: {0}</color>"
+                "<color=#ff0000>Attacker Damage: {0}  Instability: {1}</color>" +
+                "<color=#00ff00>Target Damage: {2}  Instability: {3}</color>"
+            },
+            { LT_AtkDesc_DFA_Desc, "Death-From-Above attacks damage both " +
+                "the attacker and target. Damage is randomized across all locations in 25 " +
+                "point clusters." +
+                "<color=#ff0000>Attacker Damage: {0}  Instability: {1}</color>" +
+                "<color=#00ff00>Target Damage: {2}  Instability: {3}</color>"
             },
             { LT_AtkDesc_Kick_Desc, "Kicks inflict a single hit that strikes the legs of the target. " +
-                "<color=#ff0000>Damage: {0]  Instability: {0}</color>"
+                "<color=#ff0000>Damage: {0}  Instability: {1}</color>"
             },
             { LT_AtkDesc_Physical_Weapon_Desc, "Physical weapons inflict damage and instability to " +
                 "the target. Damage is applied in a single hit randomized across all target locations. " +
                 "Some weapons will target punch or kick locations." +
-                "<color=#ff0000>Damage: {0]  Instability: {0}</color>"
+                "<color=#ff0000>Damage: {0}  Instability: {1}</color>"
             },
             { LT_AtkDesc_Punch_Desc, "Punches inflict a single hit that strikes " +
                 "the arms, torsos, and head of the target." +
-                "<color=#ff0000>Attacker Damage: {0]  Instability: {0}</color>" +
-                "<color=#00ff00>Target Damage: {0]  Instability: {0}</color>"
+                "<color=#ff0000>Damage: {0}  Instability: {1}</color>"
             },
 
 

@@ -33,7 +33,7 @@ namespace CBTBehaviorsEnhanced
         public bool ForceUnsteadyOnTarget;
 
         // The modifiers that display in the tooltip hover. Aggregated to form the final attack modifier
-        public Dictionary<int, string> AttackModifiers = new Dictionary<int, string>();
+        public Dictionary<string, int> AttackModifiers = new Dictionary<string, int>();
 
         // Any notes that should be displayed in the description section of the UI
         public HashSet<string> DescriptionNotes = new HashSet<string>();

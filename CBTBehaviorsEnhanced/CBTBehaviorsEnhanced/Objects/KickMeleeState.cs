@@ -78,7 +78,7 @@ namespace CBTBehaviorsEnhanced.Objects
             string localText = new Text(
                 Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Kick_Desc],
                 new object[] {
-                    sumAttackerDamage, this.AttackerInstability, sumTargetDamage, this.TargetInstability
+                    sumTargetDamage, this.TargetInstability
                 })
                 .ToString();
 
@@ -88,16 +88,10 @@ namespace CBTBehaviorsEnhanced.Objects
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
             // -2 to hit base
-            string localText = new Text(
-                Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_ComparativeSkill_Piloting]
-                ).ToString();
-            this.AttackModifiers.Add(Mod.Config.Melee.Kick.BaseAttackBonus, localText);
+            this.AttackModifiers.Add(ModConfig.LT_AtkDesc_ComparativeSkill_Piloting, Mod.Config.Melee.Kick.BaseAttackBonus);
 
             // If target is prone, -2 modifier
-            localText = new Text(
-                Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Target_Prone]
-                ).ToString();
-            this.AttackModifiers.Add(Mod.Config.Melee.ProneTargetAttackModifier, localText);
+            this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
             int leftLegMalus = (2 - this.AttackerCondition.LeftLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
@@ -109,10 +103,7 @@ namespace CBTBehaviorsEnhanced.Objects
             int bestLegMalus = leftLegMalus >= rightLegMalus ? leftLegMalus : rightLegMalus;
             if (bestLegMalus != 0)
             {
-                localText = new Text(
-                    Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Acutator_Damage]
-                    ).ToString();
-                this.AttackModifiers.Add(bestLegMalus, localText);
+                this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Acutator_Damage, bestLegMalus);
             }
         }
 
