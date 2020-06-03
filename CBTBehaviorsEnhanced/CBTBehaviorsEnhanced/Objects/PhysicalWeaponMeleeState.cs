@@ -85,7 +85,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            Mod.Log.Info(" - Attacker can use physical weapon");
+            Mod.Log.Info("PHYSICAL WEAPON ATTACK validated");
             return true;
         }
 

@@ -64,17 +64,17 @@ namespace CBTBehaviorsEnhanced.Patches
                 vlg.childControlWidth = true;
                 vlg.spacing = 8f;
 
-                GameObject container = new GameObject();
-                container.transform.parent = icPanelLayoutTransform;
-                container.transform.SetSiblingIndex(1); // Move us above the description container
-                container.layer = 5; // everyting else is at this level
-                container.name = ModConsts.Container_GO_ID;
-                if (container == null) Mod.Log.Warn("FAILED TO ADD CONTAINER!");
+                ModState.MeleeAttackContainer = new GameObject();
+                ModState.MeleeAttackContainer.transform.parent = icPanelLayoutTransform;
+                ModState.MeleeAttackContainer.transform.SetSiblingIndex(1); // Move us above the description container
+                ModState.MeleeAttackContainer.layer = 5; // everyting else is at this level
+                ModState.MeleeAttackContainer.name = ModConsts.Container_GO_ID;
+                if (ModState.MeleeAttackContainer == null) Mod.Log.Warn("FAILED TO ADD CONTAINER!");
 
-                RectTransform containerRectTransform = container.AddComponent<RectTransform>();
+                RectTransform containerRectTransform = ModState.MeleeAttackContainer.AddComponent<RectTransform>();
                 containerRectTransform.localScale = Vector3.one;
 
-                HorizontalLayoutGroup hlg = container.AddComponent<HorizontalLayoutGroup>();
+                HorizontalLayoutGroup hlg = ModState.MeleeAttackContainer.AddComponent<HorizontalLayoutGroup>();
                 if (hlg == null) Mod.Log.Warn("FAILED TO CREATE HORIZONTAL GROUP");
                 hlg.childForceExpandHeight = false;
                 hlg.childForceExpandWidth = false;
@@ -84,7 +84,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 hlg.spacing = 16f;
                 hlg.gameObject.SetActive(true);
 
-                LayoutElement le = container.AddComponent<LayoutElement>();
+                LayoutElement le = ModState.MeleeAttackContainer.AddComponent<LayoutElement>();
                 if (le == null) Mod.Log.Warn("FAILED TO ADD LAYOUT ELEMENT");
                 le.preferredHeight = 75f;
                 le.preferredWidth = 500f;
@@ -113,20 +113,26 @@ namespace CBTBehaviorsEnhanced.Patches
             if (mode == CombatHUDFireButton.FireMode.Engage && ModState.CombatHUD.SelectionHandler.ActiveState != null)
             {
                 Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
+                ModState.MeleeAttackContainer.SetActive(true);
                 MeleeStates meleeStates = MeleeHelper.GetMeleeStates(
                     ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                     ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                     );
 
-                if (ModState.ChargeFB != null && meleeStates.Charge.IsValid) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.KickFB != null && meleeStates.Kick.IsValid) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PhysicalWeaponFB != null && meleeStates.PhysicalWeapon.IsValid) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PunchFB != null && meleeStates.Punch.IsValid) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.ChargeFB != null && meleeStates.Charge.IsValid) 
+                    ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.KickFB != null && meleeStates.Kick.IsValid) 
+                    ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PhysicalWeaponFB != null && meleeStates.PhysicalWeapon.IsValid) 
+                    ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.PunchFB != null && meleeStates.Punch.IsValid) 
+                    ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
             }
             else
             {
                 Mod.Log.Info($"Disabling all CHUD_Fire_Buttons");
+                ModState.MeleeAttackContainer.SetActive(false);
                 if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
@@ -147,25 +153,25 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_CHARGE]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    __instance.SetState(ButtonState.Enabled, false);
+                    //__instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_KICK]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    __instance.SetState(ButtonState.Enabled, false);
+                    //__instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PHYSICAL_WEAPON]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    __instance.SetState(ButtonState.Enabled, false);
+                    //__instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PUNCH]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    __instance.SetState(ButtonState.Enabled, false);
+                    //__instance.SetState(ButtonState.Enabled, false);
                 }
             }
         }
@@ -180,38 +186,5 @@ namespace CBTBehaviorsEnhanced.Patches
             Mod.Log.Info($"CHUDFB - OnClick FIRED!");
         }
     }
-
-    //[HarmonyPatch(typeof(CombatHUDFireButton), "Update")]
-    //[HarmonyPatch(new Type[] { })]
-    //static class CombatHUDFireButton_Update
-    //{
-    //    static void Prefix(CombatHUDFireButton __instance)
-    //    {
-
-    //        if (__instance == null || __instance.gameObject == null || !__instance.gameObject.name.StartsWith("cbtbe")) return; // nothing to do
-
-    //        //Mod.Log.Info($"CHUDFB - Update FIRED FOR: {__instance.gameObject.name} AND FIREMODE: {__instance.CurrentFireMode}");
-
-    //        if (__instance.CurrentFireMode == CombatHUDFireButton.FireMode.Engage || __instance.CurrentFireMode == CombatHUDFireButton.FireMode.Reserve)
-    //        {
-    //            //__instance.SetState(ButtonState.Enabled, false);
-    //            //if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
-    //            //{
-    //            //    Mod.Log.Info($"UPDATING TYPE: CHARGE");
-
-    //            //}
-    //            //else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
-    //            //{
-    //            //    Mod.Log.Info($"UPDATING TYPE: KICK");
-
-    //            //}
-    //            //else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
-    //            //{
-    //            //    Mod.Log.Info($"UPDATING TYPE: PUNCH");
-
-    //            //}
-    //        }
-    //    }
-    //}
 
 }

@@ -2,6 +2,7 @@
 using BattleTech;
 using BattleTech.UI;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CBTBehaviorsEnhanced {
     public static class ModState {
@@ -24,6 +25,7 @@ namespace CBTBehaviorsEnhanced {
         public static Dictionary<VehicleChassisLocations, int> BreachHitsVehicle = new Dictionary<VehicleChassisLocations, int>();
 
         // UI Elements
+        public static GameObject MeleeAttackContainer = null;
         public static CombatHUDFireButton ChargeFB = null;
         public static CombatHUDFireButton KickFB = null;
         public static CombatHUDFireButton PhysicalWeaponFB = null;
@@ -46,6 +48,7 @@ namespace CBTBehaviorsEnhanced {
             BreachHitsVehicle.Clear();
 
             // UI Elements
+            MeleeAttackContainer = null;
             ChargeFB = null;
             KickFB = null;
             PhysicalWeaponFB = null;

@@ -25,7 +25,6 @@ namespace CBTBehaviorsEnhanced.Objects
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)
             {
-
                 CalculateDamages(attacker, target);
                 CalculateInstability(attacker, target);
                 CalculateModifiers(attacker, target);
@@ -66,7 +65,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            Mod.Log.Info(" - Attacker can kick or stomp");
+            Mod.Log.Info("KICK ATTACK validated");
             return true;
         }
 
@@ -138,15 +137,15 @@ namespace CBTBehaviorsEnhanced.Objects
             float leftLegReductionMulti = 1f;
             int damagedLeftActuators = 2 - this.AttackerCondition.LeftLegActuatorsCount;
             for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Left leg actuator damage is: {leftLegReductionMulti}");
+            Mod.Log.Info($" - Left leg actuator damage multi is: {leftLegReductionMulti}");
 
             float rightLegReductionMulti = 1f;
             int damagedRightActuators = 2 - this.AttackerCondition.RightLegActuatorsCount;
             for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Right leg actuator damage is: {rightLegReductionMulti}");
+            Mod.Log.Info($" - Right leg actuator damage multi is: {rightLegReductionMulti}");
 
             float legReductionMulti = leftLegReductionMulti >= rightLegReductionMulti ? leftLegReductionMulti : rightLegReductionMulti;
-            Mod.Log.Info($" - Using leg actuator damage reduction of: {legReductionMulti}");
+            Mod.Log.Info($" - Using leg actuator damage multi of: {legReductionMulti}");
 
             // Roll up final damage
             float finalTargetDamage = (float)Math.Ceiling((baseTargetDamage + damageMod) * damageMulti * legReductionMulti);

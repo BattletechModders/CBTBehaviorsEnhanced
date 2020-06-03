@@ -55,7 +55,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			// Charges cannot target prone units
 			if (target.IsProne) return false;
 
-			Mod.Log.Info(" - Attacker can charge or stomp");
+			Mod.Log.Info("CHARGE ATTACK validated");
 			return true;
 		}
 

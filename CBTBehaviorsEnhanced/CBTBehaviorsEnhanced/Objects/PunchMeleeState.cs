@@ -67,7 +67,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            Mod.Log.Info(" - Attacker can punch");
+            Mod.Log.Info("PUNCH ATTACK validated");
             return true;
         }
 
