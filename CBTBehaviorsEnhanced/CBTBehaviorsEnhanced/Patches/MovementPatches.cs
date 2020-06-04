@@ -91,10 +91,10 @@ namespace CBTBehaviorsEnhanced {
                     float checkMod = sourceSkillMulti + damagePenalty;
                     Mod.Log.Debug($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 
-                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModConfig.FT_Fall_After_Run);
+                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Run);
                     if (!sourcePassed) {
                         Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after sprinting with actuator damage, forcing fall.");
-                        MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Run);
+                        MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModText.FT_Fall_After_Run);
                     }
                 }
             }
@@ -157,10 +157,10 @@ namespace CBTBehaviorsEnhanced {
                     float checkMod = sourceSkillMulti + damagePenalty;
                     Mod.Log.Debug($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 
-                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModConfig.FT_Fall_After_Jump);
+                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Jump);
                     if (!sourcePassed) {
                         Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after jumping with actuator damage, forcing fall.");
-                        MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Fall_After_Jump);
+                        MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModText.FT_Fall_After_Jump);
                     }
                 }
             }

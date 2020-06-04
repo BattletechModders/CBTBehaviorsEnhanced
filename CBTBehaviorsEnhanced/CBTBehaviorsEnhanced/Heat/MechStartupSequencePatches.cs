@@ -21,7 +21,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             // Check to see if we should restart automatically
             float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
             int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
-            bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModConfig.FT_Check_Startup);
+            bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
 
             bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, futureHeat, -1, -1, heatCheck);
             if (failedInjuryCheck) Mod.Log.Info("  -- unit did not pass injury check!");
@@ -43,7 +43,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             MechHeatSequence mechHeatSequence = new MechHeatSequence(mech, true, true, "STARTUP");
             doneWithActorSequence.AddChildSequence(mechHeatSequence, mechHeatSequence.MessageIndex);
             
-            QuipHelper.PublishQuip(mech, Mod.Config.Qips.Startup);
+            QuipHelper.PublishQuip(mech, Mod.LocalizedText.Qips.Startup);
 
             InvocationStackSequenceCreated message = new InvocationStackSequenceCreated(doneWithActorSequence, __instance);
             combatGameState.MessageCenter.PublishMessage(message);

@@ -104,15 +104,15 @@ namespace CBTBehaviorsEnhanced.Patches {
                 Mod.Log.Info($" MECH {CombatantUtils.Label(mech)} IS SHUTDOWN, DISPLAYING SHUTDOWN WARNING");
                 methodInfo.Invoke(__instance, new object[] { 
                     LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
-                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
-                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
+                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
+                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
                     __instance.defaultIconScale, false });
             } else if (calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat) {
                 Mod.Log.Info($"DISPLAYING OVERHEAT WARNING FOR MECH {CombatantUtils.Label(mech)} - heat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}");
                 methodInfo.Invoke(__instance, new object[] {
                     LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
-                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
-                    new Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUDSP_TT_WARN_OVERHEAT_TEXT]),
+                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
+                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TEXT]),
                     __instance.defaultIconScale, false });
             }
         }

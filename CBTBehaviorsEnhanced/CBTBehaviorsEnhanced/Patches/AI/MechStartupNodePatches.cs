@@ -29,7 +29,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
                 
                 // Check to see if we will shutdown
-                bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModConfig.FT_Check_Startup);
+                bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
                 Mod.Log.Info($"AI unit {CombatantUtils.Label(mech)} heatCheck: {heatCheck} vs. futureHeat: {futureHeat} => passed: {passedStartupCheck}");
 
                 if (!passedStartupCheck)
@@ -51,7 +51,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck);
                     if (failedVolatileAmmoCheck) Mod.Log.Info("  -- unit did not pass volatile ammo explosion check!");
 
-                    QuipHelper.PublishQuip(mech, Mod.Config.Qips.Startup);
+                    QuipHelper.PublishQuip(mech, Mod.LocalizedText.Qips.Startup);
                 }
                 else
                 {

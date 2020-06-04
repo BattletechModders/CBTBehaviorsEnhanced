@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced {
             if (checkTarget == -1f) {
                 actor.Combat.MessageCenter.PublishMessage(
                     new FloatieMessage(actor.GUID, actor.GUID,
-                    $"{new Text(floatieText).ToString()} {new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Auto_Fail]).ToString()}", 
+                    $"{new Text(floatieText).ToString()} {new Text(Mod.LocalizedText.Floaties[ModText.FT_Auto_Fail]).ToString()}", 
                     FloatieMessage.MessageNature.Neutral)
                     );
                 return false;
@@ -55,7 +55,7 @@ namespace CBTBehaviorsEnhanced {
 
         public static bool ResolvePilotInjuryCheck(Mech mech, int heatToCheck, int rootSequenceGUID, int sequenceGUID, float heatCheck)
         {
-            bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, heatToCheck, mech, heatCheck, ModConfig.FT_Check_Injury);
+            bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, heatToCheck, mech, heatCheck, ModText.FT_Check_Injury);
             Mod.Log.Debug($"  failedInjuryCheck: {failedInjuryCheck}");
             if (failedInjuryCheck)
             {
@@ -73,7 +73,7 @@ namespace CBTBehaviorsEnhanced {
                 else
                 {
                     mech.FlagForDeath("Pilot Killed", DeathMethod.PilotKilled, DamageType.OverheatSelf, 1, sequenceGUID, "0", false);
-                    string localText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Death_By_Overheat]).ToString();
+                    string localText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Death_By_Overheat]).ToString();
 
                     mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(
                         new ShowActorInfoSequence(mech, new Text(localText, Array.Empty<object>()), FloatieMessage.MessageNature.PilotInjury, true))
@@ -87,7 +87,7 @@ namespace CBTBehaviorsEnhanced {
 
         public static bool ResolveSystemFailureCheck(Mech mech, int heatToCheck, int rootSequenceGUID, float heatCheck)
         {
-            bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, heatToCheck, mech, heatCheck, ModConfig.FT_Check_System_Failure);
+            bool failedSystemFailureCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.SystemFailures, heatToCheck, mech, heatCheck, ModText.FT_Check_System_Failure);
             Mod.Log.Debug($"  failedSystemFailureCheck: {failedSystemFailureCheck}");
             if (failedSystemFailureCheck)
             {
@@ -123,7 +123,7 @@ namespace CBTBehaviorsEnhanced {
             AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(mech, false);
             if (mostDamaging != null)
             {
-                failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, heatToCheck, mech, heatCheck, ModConfig.FT_Check_Explosion);
+                failedAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, heatToCheck, mech, heatCheck, ModText.FT_Check_Explosion);
                 Mod.Log.Debug($"  failedAmmoCheck: {failedAmmoCheck}");
                 if (failedAmmoCheck)
                 {
@@ -152,7 +152,7 @@ namespace CBTBehaviorsEnhanced {
             AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(mech, true);
             if (mostDamagingVolatile != null)
             {
-                failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, heatToCheck, mech, heatCheck, ModConfig.FT_Check_Explosion);
+                failedVolatileAmmoCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Explosion, heatToCheck, mech, heatCheck, ModText.FT_Check_Explosion);
                 Mod.Log.Debug($"  failedVolatileAmmoCheck: {failedVolatileAmmoCheck}");
                 if (failedVolatileAmmoCheck)
                 {

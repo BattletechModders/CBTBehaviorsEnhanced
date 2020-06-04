@@ -23,7 +23,7 @@ namespace CBTBehaviorsEnhanced.Heat {
         public new void Init(CombatHUD HUD) {
             CombatHUD = HUD;
 
-            this.Title = new Localize.Text(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Title]));
+            this.Title = new Localize.Text(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Title]));
             this.Description = new Localize.Text($"Heat: 0 / 0");
             this.WarningText = new Localize.Text("");
 
@@ -55,7 +55,7 @@ namespace CBTBehaviorsEnhanced.Heat {
 
             // Future heat
             descSB.Append(new Localize.Text(
-                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_End_Heat], new object[] { calculatedHeat.ThresholdHeat, Mod.Config.Heat.MaxHeat }
+                Mod.LocalizedText.Tooltips[ModText.CHUD_TT_End_Heat], new object[] { calculatedHeat.ThresholdHeat, Mod.Config.Heat.MaxHeat }
             ));
 
             // Heat line
@@ -72,7 +72,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             float sinkCapMulti = displayedMech.DesignMaskHeatMulti(calculatedHeat.IsProjectedHeat);
             string sinkCapMultiColor = sinkCapMulti >= 1f ? "00FF00" : "FF0000";
             descSB.Append(new Localize.Text(
-                Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Heat], new object[] { calculatedHeat.FutureHeat, Mod.Config.Heat.MaxHeat, calculatedHeat.SinkableHeat, calculatedHeat.OverallSinkCapacity, sinkCapMultiColor, sinkCapMulti }
+                Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Heat], new object[] { calculatedHeat.FutureHeat, Mod.Config.Heat.MaxHeat, calculatedHeat.SinkableHeat, calculatedHeat.OverallSinkCapacity, sinkCapMultiColor, sinkCapMulti }
             ));
 
             float threshold = 0f;
@@ -83,11 +83,11 @@ namespace CBTBehaviorsEnhanced.Heat {
             if (threshold != 0f && threshold != -1f) { 
                 Mod.Log.Debug($"Ammo Explosion Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold * 100f }
+                    Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             } else if (threshold == -1f) {
                 Mod.Log.Debug($"Ammo Explosion Guaranteed!");
-                warningSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Explosion_Warning]));
+                warningSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Explosion_Warning]));
             }
 
             // Check Injury
@@ -98,7 +98,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             if (threshold != 0f) {
                 Mod.Log.Debug($"Injury Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold * 100f }
+                    Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             }
 
@@ -110,7 +110,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             if (threshold != 0f) {
                 Mod.Log.Debug($"System Failure Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold * 100f }
+                    Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             }
 
@@ -122,11 +122,11 @@ namespace CBTBehaviorsEnhanced.Heat {
             if (threshold != 0f && threshold != -1f) {
                 Mod.Log.Debug($"Shutdown Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
-                    Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold * 100f }
+                    Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold * 100f }
                 ));
             } else if (threshold == -1f) {
                 Mod.Log.Debug($"Shutdown Guaranteed!");
-                warningSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Shutdown_Warning]));
+                warningSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Shutdown_Warning]));
             }
 
             // Attack modifiers
@@ -136,7 +136,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             }
             if (modifier != 0) {
                 Mod.Log.Debug($"Attack Modifier: +{modifier}");
-                descSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Attack], new object[] { modifier}));
+                descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Attack], new object[] { modifier}));
             }
             modifier = 0;
 
@@ -146,7 +146,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             }
             if (modifier != 0) {
                 Mod.Log.Debug($"Movement Modifier: -{modifier * 30}m");
-                descSB.Append(new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_TT_Move], new object[] { modifier * 30f }));
+                descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Move], new object[] { modifier * 30f }));
             }
 
             base.SetTitleDescAndWarning("Heat", descSB.ToString(), warningSB.ToString());

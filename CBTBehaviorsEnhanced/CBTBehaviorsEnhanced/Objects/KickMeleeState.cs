@@ -74,7 +74,7 @@ namespace CBTBehaviorsEnhanced.Objects
             int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
                 (int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
             string localText = new Text(
-                Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Kick_Desc],
+                Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Kick_Desc],
                 new object[] {
                     sumTargetDamage, this.TargetInstability
                 })
@@ -86,11 +86,11 @@ namespace CBTBehaviorsEnhanced.Objects
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
             // -2 to hit base
-            this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Easy_to_Kick, Mod.Config.Melee.Kick.BaseAttackBonus);
+            this.AttackModifiers.Add(ModText.LT_Label_Easy_to_Kick, Mod.Config.Melee.Kick.BaseAttackBonus);
 
             // If target is prone, -2 modifier
             if (target.IsProne) 
-                this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
+                this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
             int leftLegMalus = (2 - this.AttackerCondition.LeftLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
@@ -102,7 +102,7 @@ namespace CBTBehaviorsEnhanced.Objects
             int bestLegMalus = leftLegMalus >= rightLegMalus ? leftLegMalus : rightLegMalus;
             if (bestLegMalus != 0)
             {
-                this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Acutator_Damage, bestLegMalus);
+                this.AttackModifiers.Add(ModText.LT_Label_Acutator_Damage, bestLegMalus);
             }
         }
 
@@ -151,6 +151,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
+            // TODO: Actuator damage should apply to instab as well
             this.TargetInstability = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon * attacker.tonnage);
             Mod.Log.Info($" - Target takes {Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon} instability x " +
                 $"target tonnage {attacker.tonnage} = {this.TargetInstability}");

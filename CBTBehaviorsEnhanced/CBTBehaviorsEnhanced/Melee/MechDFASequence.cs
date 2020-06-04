@@ -17,19 +17,19 @@ namespace CBTBehaviorsEnhanced.Melee {
 
                 // Check for source falling
                 float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Melee.SkillMulti);
-                bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Melee.MadeDFAFallChance, __instance.OwningMech, sourceSkillMulti, ModConfig.FT_Melee_DFA);
+                bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Melee.MadeDFAFallChance, __instance.OwningMech, sourceSkillMulti, ModText.FT_Melee_DFA);
                 if (!sourcePassed) {
                     Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check from DFA, forcing fall.");
-                    MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Melee_DFA);
+                    MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModText.FT_Melee_DFA);
                 }
 
                 // Check for target falling
                 if (__instance.DFATarget is Mech targetMech) {
                     float targetSkillMulti = targetMech.PilotCheckMod(Mod.Config.Melee.SkillMulti);
-                    bool targetPassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Melee.HitByDFAFallChance, targetMech, targetSkillMulti, ModConfig.FT_Melee_DFA);
+                    bool targetPassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Melee.HitByDFAFallChance, targetMech, targetSkillMulti, ModText.FT_Melee_DFA);
                     if (!targetPassed) {
                         Mod.Log.Info($"Target actor: {CombatantUtils.Label(targetMech)} failed pilot check from DFA, forcing fall.");
-                        MechHelper.AddFallingSequence(targetMech, __instance, ModConfig.FT_Melee_DFA);
+                        MechHelper.AddFallingSequence(targetMech, __instance, ModText.FT_Melee_DFA);
                     }
                 } else {
                     Mod.Log.Debug($"Target {CombatantUtils.Label(__instance.DFATarget)} is not a mech, cannot fall - skipping.");
@@ -39,7 +39,7 @@ namespace CBTBehaviorsEnhanced.Melee {
 
                 // Force the source mech to fall
                 Mod.Log.Info($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed DFA attack, forcing fall.");
-                MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModConfig.FT_Melee_DFA);
+                MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModText.FT_Melee_DFA);
             }
         }
     }

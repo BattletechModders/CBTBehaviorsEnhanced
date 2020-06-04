@@ -66,7 +66,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
 				(int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
 			string localText = new Text(
-				Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Charge_Desc], 
+				Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Charge_Desc], 
 				new object[] { 
 					sumAttackerDamage, this.AttackerInstability, sumTargetDamage, this.TargetInstability 
 				})
@@ -82,7 +82,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
 				$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 
-			this.AttackModifiers.Add(ModConfig.LT_AtkDesc_ComparativeSkill_Piloting, comparativeSkill);
+			this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
 		}
 
 		private void CalculateDamages(Mech attacker, AbstractActor target, int hexesMoved)

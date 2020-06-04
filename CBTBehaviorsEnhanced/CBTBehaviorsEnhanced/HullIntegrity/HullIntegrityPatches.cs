@@ -125,12 +125,12 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsMech[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
                 // Check for failure
-                bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetMech, 0f, Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]);
+                bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetMech, 0f, Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]);
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(targetMech)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
                     Mod.Log.Info($" Mech {CombatantUtils.Label(targetMech)} suffers a hull breach in location: {hitLocation}");
 
-                    string floatieText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]).ToString();
+                    string floatieText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetMech, floatieText, FloatieMessage.MessageNature.Debuff, false);
                     targetMech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
 
@@ -158,7 +158,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     }
                 }
             }
-            if (needsQuip) { QuipHelper.PublishQuip(targetMech, Mod.Config.Qips.Breach); }
+            if (needsQuip) { QuipHelper.PublishQuip(targetMech, Mod.LocalizedText.Qips.Breach); }
         }
 
         // Resolve turret hits - any hull breach kill the unit
@@ -188,12 +188,12 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsTurret[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
                 // Check for failure
-                bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetTurret, 0f, Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]);
+                bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetTurret, 0f, Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]);
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(targetTurret)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
                     Mod.Log.Info($" Turret {CombatantUtils.Label(targetTurret)} suffers a hull breach in location: {hitLocation}");
 
-                    string floatieText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]).ToString();
+                    string floatieText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetTurret, floatieText, FloatieMessage.MessageNature.Debuff, false);
                     targetTurret.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
 
@@ -206,7 +206,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     targetTurret.HandleDeath("0");
                 }
             }
-            if (needsQuip) { QuipHelper.PublishQuip(targetTurret, Mod.Config.Qips.Breach); }
+            if (needsQuip) { QuipHelper.PublishQuip(targetTurret, Mod.LocalizedText.Qips.Breach); }
         }
 
         private static void ResolveVehicleHullBreaches(Vehicle targetVehicle) {
@@ -238,12 +238,12 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 Mod.Log.Debug($" For pass chance: {passChance} with n trials: {ModState.BreachHitsVehicle[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
                 // Check for failure
-                bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetVehicle, 0f, Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]);
+                bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetVehicle, 0f, Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]);
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(targetVehicle)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
                     Mod.Log.Info($" Vehicle {CombatantUtils.Label(targetVehicle)} suffers a hull breach in location: {hitLocation}");
 
-                    string floatieText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Hull_Breach]).ToString();
+                    string floatieText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetVehicle, floatieText, FloatieMessage.MessageNature.Debuff, false);
                     targetVehicle.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
 
@@ -257,7 +257,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     break;
                 }
             }
-            if (needsQuip) { QuipHelper.PublishQuip(targetVehicle, Mod.Config.Qips.Breach); }
+            if (needsQuip) { QuipHelper.PublishQuip(targetVehicle, Mod.LocalizedText.Qips.Breach); }
         }
     }
 

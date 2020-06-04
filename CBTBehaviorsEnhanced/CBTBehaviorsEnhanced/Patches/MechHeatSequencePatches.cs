@@ -69,13 +69,13 @@ namespace CBTBehaviorsEnhanced.Patches {
                 if (!__instance.OwningMech.IsShutDown)
                 {
                     // Resolve Shutdown + Fall
-                    failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModConfig.FT_Check_Shutdown);
+                    failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModText.FT_Check_Shutdown);
                     Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
                     if (failedShutdownCheck)
                     {
                         Mod.Log.Info($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance.OwningMech)}, forcing unit to shutdown");
 
-                        string debuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Failed_Overide]).ToString();
+                        string debuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Shutdown_Failed_Overide]).ToString();
                         sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
                             FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
@@ -87,12 +87,12 @@ namespace CBTBehaviorsEnhanced.Patches {
 
                         if (__instance.OwningMech.IsOrWillBeProne)
                         {
-                            bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModConfig.FT_Check_Fall);
+                            bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModText.FT_Check_Fall);
                             Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
                             if (failedFallingCheck)
                             {
                                 Mod.Log.Info("   Pilot check from shutdown failed! Forcing a fall!");
-                                string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Shutdown_Fall]).ToString();
+                                string fallDebuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Shutdown_Fall]).ToString();
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
                                     FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 

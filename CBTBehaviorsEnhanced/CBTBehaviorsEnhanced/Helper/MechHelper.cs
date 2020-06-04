@@ -131,7 +131,7 @@ namespace CBTBehaviorsEnhanced {
 
             MechFallSequence mechFallSequence = new MechFallSequence(mech, floatieText, new Vector2(0f, -1f));
 
-            string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[floatieText]).ToString();
+            string fallDebuffText = new Text(Mod.LocalizedText.Floaties[floatieText]).ToString();
             MultiSequence showInfoSequence = new ShowActorInfoSequence(mech, fallDebuffText, FloatieMessage.MessageNature.Debuff, false) {
                 RootSequenceGUID = mechFallSequence.SequenceGUID
             };
@@ -148,12 +148,12 @@ namespace CBTBehaviorsEnhanced {
             }
 
             float pilotCheck = target.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
-            bool didCheckPass = CheckHelper.DidCheckPassThreshold(Mod.Config.Piloting.StabilityCheck, target, pilotCheck, ModConfig.FT_Check_Fall);
+            bool didCheckPass = CheckHelper.DidCheckPassThreshold(Mod.Config.Piloting.StabilityCheck, target, pilotCheck, ModText.FT_Check_Fall);
             if (!didCheckPass) {
                 Mod.Log.Debug($"Actor: {CombatantUtils.Label(target)} failed a knockdown check due to instability, starting fall sequence.");
                 target.FlagForKnockdown();
 
-                string fallDebuffText = new Text(Mod.Config.LocalizedFloaties[ModConfig.FT_Check_Fall]).ToString();
+                string fallDebuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Check_Fall]).ToString();
                 target.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(
                     new ShowActorInfoSequence(target, fallDebuffText, FloatieMessage.MessageNature.Debuff, true)
                     ));

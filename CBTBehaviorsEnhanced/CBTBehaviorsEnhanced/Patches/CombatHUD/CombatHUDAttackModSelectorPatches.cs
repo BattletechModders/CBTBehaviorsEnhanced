@@ -159,22 +159,22 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_CHARGE]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_CHARGE]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
                 else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_KICK]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_KICK]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
                 else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PHYSICAL_WEAPON]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_PHYSICAL_WEAPON]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
                 else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PUNCH]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_PUNCH]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
             }

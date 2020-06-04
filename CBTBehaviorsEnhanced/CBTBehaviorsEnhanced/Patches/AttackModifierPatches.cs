@@ -34,7 +34,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     int sumMod = 0;
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
-                        string localText = new Text(Mod.Config.LocalizedAttackDescs[kvp.Key]).ToString();
+                        string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                         Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
                         sumMod += kvp.Value;
                     }
@@ -69,7 +69,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
-                        string localText = new Text(Mod.Config.LocalizedAttackDescs[kvp.Key]).ToString();
+                        string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                         Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
 
                         __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, kvp.Value);
@@ -101,7 +101,7 @@ namespace CBTBehaviorsEnhanced.Patches
             AbstractActor actor = __instance.DisplayedWeapon.parent;
             if (actor.HasMovedThisRound && actor.JumpedLastRound)
             {
-                string localText = new Text(Mod.Config.LocalizedAttackDescs[ModConfig.LT_AtkDesc_Attacker_Jumped]).ToString();
+                string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
                 Mod.Log.Trace($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
                 addToolTipDetailT.GetValue(new object[] { localText, Mod.Config.ToHitSelfJumped });
             }
@@ -113,7 +113,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
-                        string localText = new Text(Mod.Config.LocalizedAttackDescs[kvp.Key]).ToString();
+                        string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                         Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
                         addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
                     }
