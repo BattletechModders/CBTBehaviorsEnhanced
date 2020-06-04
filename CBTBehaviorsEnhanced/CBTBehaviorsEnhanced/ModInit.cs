@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using us.frostraptor.modUtils.logging;
 
@@ -34,14 +35,16 @@ namespace CBTBehaviorsEnhanced {
             Log = new IntraModLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
 
             // Read localization
+            string localizationPath = Path.Combine(ModDir, "./mod_localized_text.json");
             try
             {
-                Mod.LocalizedText = JsonConvert.DeserializeObject<ModText>("mod_localized_text.json");
+                string jsonS = File.ReadAllText(localizationPath);
+                Mod.LocalizedText = JsonConvert.DeserializeObject<ModText>(jsonS);
             }
             catch (Exception e)
             {
                 Mod.LocalizedText = new ModText();
-                Log.Error("Failed to read localized_text.json due to error!", e);
+                Log.Error($"Failed to read localizations from: {localizationPath} due to error!", e);
             }
 
             Assembly asm = Assembly.GetExecutingAssembly();
