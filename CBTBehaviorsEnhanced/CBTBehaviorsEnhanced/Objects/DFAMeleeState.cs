@@ -27,7 +27,8 @@ namespace CBTBehaviorsEnhanced.Objects
 		public DFAMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            this.IsValid = ValidateAttack(target, validAnimations);
+			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
+			this.IsValid = ValidateAttack(target, validAnimations);
 			if (IsValid)
 			{
 				float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
@@ -75,7 +76,7 @@ namespace CBTBehaviorsEnhanced.Objects
 		private void CalculateModifiers(Mech attacker, AbstractActor target)
 		{
 			// Build the comparative skill level
-			int comparativeSkill = attacker.SkillPiloting - target.SkillPiloting;
+			int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
 			Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
 				$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 
