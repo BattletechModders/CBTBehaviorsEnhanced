@@ -133,6 +133,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
 
                 // TODO: Autoselect best option
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.HighestDamageState;
             }
             else
             {
@@ -159,22 +160,22 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_CHARGE]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
                 else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_KICK]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Kick]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
                 else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_PHYSICAL_WEAPON]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
                 else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
                 {
-                    string localText = new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_FB_PUNCH]).ToString();
+                    string localText = new Localize.Text(Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Punch]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
                 }
             }
@@ -187,6 +188,9 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         static bool Prefix(CombatHUDFireButton __instance)
         {
+
+            if (__instance == null || __instance.gameObject == null || ModState.MeleeStates == null) return true;
+
             Mod.Log.Info($"CHUDFB - OnClick FIRED!");
             bool shouldReturn = true;
             CombatHUDAttackModeSelector selector = ModState.CombatHUD.AttackModeSelector;
@@ -224,6 +228,9 @@ namespace CBTBehaviorsEnhanced.Patches
                 Mod.Log.Info("Setting text strings for selected state.");
                 selector.DescriptionText.SetText(description);
                 selector.DescriptionText.ForceMeshUpdate(true);
+
+                // Update the weapon strings
+                ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
             }
 
             return shouldReturn;

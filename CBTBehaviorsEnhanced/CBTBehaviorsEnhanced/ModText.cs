@@ -75,13 +75,6 @@ namespace CBTBehaviorsEnhanced
         public const string CHUDSP_TT_WARN_OVERHEAT_TITLE = "OVERHEAT_ICON_TITLE";
         public const string CHUDSP_TT_WARN_OVERHEAT_TEXT = "OVERHEAT_ICON_TEXT";
 
-        // Fire button lables
-        public const string CHUD_FB_CHARGE = "FIRE_BUTTON_CHARGE";
-        public const string CHUD_FB_DFA = "FIRE_BUTTON_DFA";
-        public const string CHUD_FB_KICK = "FIRE_BUTTON_KICK";
-        public const string CHUD_FB_PHYSICAL_WEAPON = "FIRE_BUTTON_PHYSICAL_WEAPON";
-        public const string CHUD_FB_PUNCH = "FIRE_BUTTON_PUNCH";
-
         // Localized tooltips
         public Dictionary<string, string> Tooltips = new Dictionary<string, string> {
             { CHUD_TT_Title, "HEAT LEVEL" },
@@ -99,13 +92,7 @@ namespace CBTBehaviorsEnhanced
             { CHUDSP_TT_WARN_SHUTDOWN_TITLE, "SHUT DOWN" },
             { CHUDSP_TT_WARN_SHUTDOWN_TEXT, "This target is easier to hit, and Called Shots can be made against this target. When clicking the restart button, a piloting check will if the BattleMech restarts." },
             { CHUDSP_TT_WARN_OVERHEAT_TITLE, "OVERHEATING" },
-            { CHUDSP_TT_WARN_OVERHEAT_TEXT, "This unit will suffer penalties, may shutdown or even explode unless heat is reduced past critical levels.\n<i>Hover over the heat bar to see a detailed breakdown.</i>" },
-
-            { CHUD_FB_CHARGE, "CHARGE" },
-            { CHUD_FB_DFA, "DFA" },
-            { CHUD_FB_KICK, "KICK" },
-            { CHUD_FB_PHYSICAL_WEAPON, "PHY. WEAPON" },
-            { CHUD_FB_PUNCH, "PUNCH" },
+            { CHUDSP_TT_WARN_OVERHEAT_TEXT, "This unit will suffer penalties, may shutdown or even explode unless heat is reduced past critical levels.\n<i>Hover over the heat bar to see a detailed breakdown.</i>" }
         };
 
         // Long-form Attack descriptions
@@ -150,13 +137,37 @@ namespace CBTBehaviorsEnhanced
         public const string LT_Label_Acutator_Damage = "ATK_MOD_ACTUATOR_DAMAGE";
         public const string LT_Label_Target_Prone = "ATK_MOD_TARGET_PRONE";
 
+        public const string LT_Label_Weapon_Hover_Damage = "WEAPON_HOVER_DAMAGE";
+        public const string LT_Label_Weapon_Hover_Instability = "WEAPON_HOVER_INSTABILITY";
+        public const string LT_Label_Weapon_Hover_Heat = "WEAPON_HOVER_HEAT";
+
+        // Fire button lables
+        public const string LT_Label_Melee_Type_Charge = "MELEE_TYPE_CHARGE";
+        public const string LT_Label_Melee_Type_DeathFromAbove = "MELEE_TYPE_DFA";
+        public const string LT_Label_Melee_Type_Kick = "MELEE_TYPE_KICK";
+        public const string LT_Label_Melee_Type_Physical_Weapon = "MELEE_TYPE_PHYSICAL_WEAPON";
+        public const string LT_Label_Melee_Type_Punch = "MELEE_TYPE_PUNCH";
+
         public Dictionary<string, string> Labels = new Dictionary<string, string>
         {
+            // Attack labels
             { LT_Label_Attacker_Jumped, "ATTACKER JUMPED" },
-            { LT_Label_ComparativeSkill_Piloting, "COMPARATIVE PILOTING" },
+            { LT_Label_ComparativeSkill_Piloting, "PILOTING DELTA" },
             { LT_Label_Easy_to_Kick, "EASY TO KICK" },
             { LT_Label_Acutator_Damage, "ACTUATOR DAMAGE" },
             { LT_Label_Target_Prone, "PRONE MELEE TARGET" },
+
+            // Weapon hover labels
+            { LT_Label_Weapon_Hover_Damage, "{0} dmg" },
+            { LT_Label_Weapon_Hover_Instability, "{0} stab" },
+            { LT_Label_Weapon_Hover_Heat, "+{0} heat" },
+
+            // General attack type labels
+            { LT_Label_Melee_Type_Charge, "CHARGE" },
+            { LT_Label_Melee_Type_DeathFromAbove, "DFA" },
+            { LT_Label_Melee_Type_Kick, "KICK" },
+            { LT_Label_Melee_Type_Physical_Weapon, "PHY. WEAPON" },
+            { LT_Label_Melee_Type_Punch, "PUNCH" }
         };
 
         // In-game quips that can be displayed

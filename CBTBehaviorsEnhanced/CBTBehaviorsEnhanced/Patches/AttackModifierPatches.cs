@@ -21,7 +21,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (attacker.HasMovedThisRound && attacker.JumpedLastRound &&
                 // Special trigger for dz's abilities
-                !(ModConfig.dZ_Abilities && attacker.SkillTactics != 10))
+                !(Mod.Config.Features.dZ_Abilities && attacker.SkillTactics != 10))
             {
                 __result = __result + (float)Mod.Config.ToHitSelfJumped;
             }
@@ -135,9 +135,21 @@ namespace CBTBehaviorsEnhanced.Patches
         {
 
             if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
-
             Mod.Log.Trace("CHUDWS:UMW entered");
 
+            if (ModState.MeleeStates.SelectedState == null)
+            {
+                __instance.WeaponText.SetText("UNKNOWN");
+                __instance.DamageText.SetText($"???");
+            }
+            else
+            {
+                string localText = new Text(ModState.MeleeStates.SelectedState.Label).ToString();
+                __instance.WeaponText.SetText(localText);
+                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                __instance.DamageText.SetText($"{totalDamage}");
+
+            }
         }
     }
 
@@ -162,9 +174,9 @@ namespace CBTBehaviorsEnhanced.Patches
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
                         // TODO: Localize
-                        new Text("{0} dmg", targetDamage),
-                        new Text("{0} stab", ModState.MeleeStates.SelectedState.TargetInstability),
-                        new Text("+{0} heat", ___displayedHeat)
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
                     };
                     
                 }

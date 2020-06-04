@@ -10,16 +10,23 @@ namespace CBTBehaviorsEnhanced {
         public bool Trace = false;
 
         public class FeatureList {
+            // If true, hull breaches will be allowed in certain biomes
             public bool BiomeBreaches = true;
+
+            public bool dZ_Abilities = false; // If true, applies special behaviors for DonZappo's abilities
+
+            // If true, evasion won't be removed by attacks
+            public bool PermanentEvasion = true;
+
+            // If true, walk and run speeds will be normalized to MP instead of the HBS speeds.
+            // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
+            public bool SpeedAsMP = false;
+
+            // If true, mechs must make a piloting skill roll (PSR) to restart. On a failure, they remain shutdown.
             public bool StartupChecks = true;
         }
         public FeatureList Features = new FeatureList();
 
-        // If true, will enable evasion 
-        public static bool EnablePermanentEvasion = true;
-
-        // If true, applies special behaviors for DonZappo's abilities
-        public static bool dZ_Abilities = false;
 
         // Movement - should be a +3 per BT Manual pg. 28
         public int ToHitSelfJumped = 3;
@@ -118,8 +125,17 @@ namespace CBTBehaviorsEnhanced {
         public class DFAMeleeOpts
         {
             // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton, x3 for DFA
+            public float AttackerDamagePerTargetTon = 0.5f;
             public float TargetDamagePerAttackerTon = 1.5f;
+
+            public float AttackerInstabilityPerTargetTon = 0.5f;
             public float TargetInstabilityPerAttackerTon = 0.5f;
+
+            // When an attack does damage, it will be split into N groups of no more than this value 
+            public float DamageClusterDivisor = 25.0f;
+
+            // If true, make the attack apply unsteady before applying instability
+            public bool AttackAppliesUnsteady = false;
         }
 
         public class KickMeleeOps
@@ -211,9 +227,7 @@ namespace CBTBehaviorsEnhanced {
             // If you have leg damage and jump, you can fall
             public float FallAfterJumpChance = 0.30f;
 
-            // If true, walk and run speeds will be normalized to MP instead of the HBS speeds.
-            // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
-            public bool SpeedAsMP = false;
+
 
             //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
             //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 
@@ -242,10 +256,66 @@ namespace CBTBehaviorsEnhanced {
 
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
-            Mod.Log.Info($"  DEBUG: {this.Debug} Trace: {this.Trace}");
-            Mod.Log.Info("=== MOVEMENT OPTIONS ===");
+            Mod.Log.Info($"  Debug: {this.Debug} Trace: {this.Trace}");
+            Mod.Log.Info($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  dZ_Abilities: {this.Features.dZ_Abilities}  " +
+                $"PermanentEvasion: {this.Features.PermanentEvasion}  SpeedAsMP: {this.Features.SpeedAsMP}  " +
+                $"StartupChecks: {this.Features.StartupChecks}");
+            Mod.Log.Info($"  ToHitSelfJumped: {this.ToHitSelfJumped}");
+            Mod.Log.Info("");
+
+            Mod.Log.Info("=== CUSTOM CATEGORY OPTIONS ===");
+            Mod.Log.Info($"  ShoulderActuatorCategoryId: '{this.CustomCategories.ShoulderActuatorCategoryId}'  UpperArmActuatorCategoryId: '{this.CustomCategories.UpperArmActuatorCategoryId}'  " +
+                $"LowerArmActuatorCategoryId: '{this.CustomCategories.LowerArmActuatorCategoryId}'  HandActuatorCategoryId: '{this.CustomCategories.HandActuatorCategoryId}'  ");
+            Mod.Log.Info($"  HipActuatorCategoryId: '{this.CustomCategories.HipActuatorCategoryId}'  UpperLegActuatorCategoryId: '{this.CustomCategories.UpperLegActuatorCategoryId}'  " +
+                $"LowerLegActuatorCategoryId: '{this.CustomCategories.LowerLegActuatorCategoryId}'  FootActuatorCategoryId: '{this.CustomCategories.FootActuatorCategoryId}'  ");
+            Mod.Log.Info("");
 
             Mod.Log.Info("=== HEAT OPTIONS ===");
+            Mod.Log.Info("");
+
+            Mod.Log.Info("=== MELEE OPTIONS ===");
+            Mod.Log.Info($"  AllowMeleeFromSprint: {this.Melee.AllowMeleeFromSprint}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}");
+            Mod.Log.Info("  -- CHARGE OPTIONS --");
+            Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
+            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}  AttackAppliesUnsteady: {this.Melee.DFA.AttackAppliesUnsteady}");
+
+            Mod.Log.Info("  -- DFA OPTIONS --");
+            Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.DFA.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
+            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.DFA.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.DFA.DamageClusterDivisor}  AttackAppliesUnsteady: {this.Melee.DFA.AttackAppliesUnsteady}");
+
+            Mod.Log.Info("  -- KICK OPTIONS --");
+            Mod.Log.Info($"  BaseAttackBonus: {this.Melee.Kick.BaseAttackBonus}  LegActuatorDamageMalus: {this.Melee.Kick.LegActuatorDamageMalus}  FootActuatorDamageMalus: {this.Melee.Kick.FootActuatorDamageMalus}");
+            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Kick.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Kick.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info($"  LegActuatorDamageReduction: {this.Melee.Kick.LegActuatorDamageReduction}  AttackAppliesUnsteady: {this.Melee.Kick.AttackAppliesUnsteady}");
+
+            Mod.Log.Info("  -- PHYSICAL WEAPON OPTIONS --");
+            Mod.Log.Info($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
+            Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}  DefaultAttackAppliesUnsteady: {this.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady}");
+
+            Mod.Log.Info("  -- PUNCH OPTIONS --");
+            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Punch.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Punch.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.Punch.ArmActuatorDamageMalus}  HandActuatorDamageMalus: {this.Melee.Punch.HandActuatorDamageMalus}");
+            Mod.Log.Info($"  ArmActuatorDamageReduction: {this.Melee.Punch.ArmActuatorDamageReduction}  AttackAppliesUnsteady: {this.Melee.Punch.AttackAppliesUnsteady}");
+            Mod.Log.Info("");
+
+            Mod.Log.Info("=== MOVE OPTIONS ===");
+            Mod.Log.Info($"  MinimumMove: {this.Move.MinimumMove}m  HeatMovePenalty: {this.Move.HeatMovePenalty}m  RunMulti: x{this.Move.RunMulti}  SkillMulti: x{this.Move.SkillMulti}");
+            Mod.Log.Info($"  FallAfterChances =>   Jump: {this.Move.FallAfterJumpChance}  Run: {this.Move.FallAfterRunChance}");
+            Mod.Log.Info($"  MPMetersPerHex: {this.Move.MPMetersPerHex}m");
+            Mod.Log.Info("");
+
+            Mod.Log.Info("=== PILOTING OPTIONS ===");
+            Mod.Log.Info($"  SkillMulti: x{this.Piloting.SkillMulti}  StabilityCheck: {this.Piloting.StabilityCheck}");
+            Mod.Log.Info($"  DFAReductionMulti: x{this.Piloting.DFAReductionMulti}  FallingDamagePerTenTons: {this.Piloting.FallingDamagePerTenTons}");
+            Mod.Log.Info("");
+
+            Mod.Log.Info("=== BREACHES OPTIONS ===");
+            Mod.Log.Info($"  ThinAtmoCheck: {this.Breaches.ThinAtmoCheck}  VacuumCheck: {this.Breaches.VacuumCheck}");
+            Mod.Log.Info("");
+
+
 
             Mod.Log.Info("=== MOD CONFIG END ===");
         }

@@ -22,6 +22,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public KickMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
+            this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Kick];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)
             {
