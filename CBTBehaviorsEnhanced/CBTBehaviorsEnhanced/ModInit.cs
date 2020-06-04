@@ -15,12 +15,14 @@ namespace CBTBehaviorsEnhanced {
         public static IntraModLogger Log;
         public static string ModDir;
         public static ModConfig Config;
+        public static ModText LocalizedText;
 
         public static readonly Random Random = new Random();
 
         public static void Init(string modDirectory, string settingsJSON) {
             ModDir = modDirectory; 
 
+            // Read the config
             Exception settingsE = null;
             try {
                 Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsJSON);
@@ -30,6 +32,17 @@ namespace CBTBehaviorsEnhanced {
             }
 
             Log = new IntraModLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
+
+            // Read localization
+            try
+            {
+                Mod.LocalizedText = JsonConvert.DeserializeObject<ModText>("mod_localized_text.json");
+            }
+            catch (Exception e)
+            {
+                Mod.LocalizedText = new ModText();
+                Log.Error("Failed to read localized_text.json due to error!", e);
+            }
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);

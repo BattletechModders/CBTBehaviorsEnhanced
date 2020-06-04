@@ -14,8 +14,9 @@ namespace CBTBehaviorsEnhanced {
         public static CombatHUD CombatHUD = null;
 
         // Melee weapon detection state
-        public static Weapon CurrentMeleeWeapon = null;
-        public static MeleeAttackType CurrentMeleeType = MeleeAttackType.NotSet;
+        public static Weapon MeleeWeapon = null;
+        public static MeleeAttackType MeleeType = MeleeAttackType.NotSet;
+        public static MeleeStates MeleeStates = null;
 
         // Breach state
         public static float BreachCheck = 0f;
@@ -37,8 +38,9 @@ namespace CBTBehaviorsEnhanced {
             CombatHUD = null;
 
             // Melee weapon state
-            CurrentMeleeWeapon = null;
-            CurrentMeleeType = MeleeAttackType.NotSet;
+            MeleeWeapon = null;
+            MeleeType = MeleeAttackType.NotSet;
+            MeleeStates = null;
 
             // Breach state
             BreachCheck = 0f;
