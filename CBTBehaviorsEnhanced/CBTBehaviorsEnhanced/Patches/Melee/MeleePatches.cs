@@ -30,14 +30,14 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
         static void Prefix(MechMeleeSequence __instance)
         {
             Mod.Log.Info($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon}");
-            ModState.CurrentMeleeType = __instance.selectedMeleeType;
-            ModState.CurrentMeleeWeapon = __instance.OwningMech.MeleeWeapon;
+            ModState.MeleeType = __instance.selectedMeleeType;
+            ModState.MeleeWeapon = __instance.OwningMech.MeleeWeapon;
         }
 
         static void Postfix(MechMeleeSequence __instance)
         {
-            ModState.CurrentMeleeType = MeleeAttackType.NotSet;
-            ModState.CurrentMeleeWeapon = null;
+            ModState.MeleeType = MeleeAttackType.NotSet;
+            ModState.MeleeWeapon = null;
         }
     }
 
@@ -47,16 +47,16 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
         static void Postfix(HitLocation __instance, AttackDirection from, bool log, ref Dictionary<ArmorLocation, int> __result)
         {
             // If this attack isn't a melee attack, abort
-            if (ModState.CurrentMeleeType == MeleeAttackType.NotSet || ModState.CurrentMeleeWeapon == null) return;
+            if (ModState.MeleeType == MeleeAttackType.NotSet || ModState.MeleeWeapon == null) return;
 
-            if (ModState.CurrentMeleeType == MeleeAttackType.Kick)
+            if (ModState.MeleeType == MeleeAttackType.Kick)
             {
                 Mod.Log.Info($"Attack was a kick, using kick dictionary.");
                 __result.Clear();
                 __result.Add(ArmorLocation.LeftLeg, 50);
                 __result.Add(ArmorLocation.RightLeg, 50);
             }
-            else if (ModState.CurrentMeleeType == MeleeAttackType.Punch || ModState.CurrentMeleeType == MeleeAttackType.DFA)
+            else if (ModState.MeleeType == MeleeAttackType.Punch || ModState.MeleeType == MeleeAttackType.DFA)
             {
                 __result.Clear();
                 Mod.Log.Info($"Attack was a Punch or DFA, using punch dictionary.");

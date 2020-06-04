@@ -91,8 +91,6 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            int sumAttackerDamage = this.AttackerDamageClusters.Count() > 0 ?
-                (int)Math.Ceiling(this.AttackerDamageClusters.Sum()) : 0;
             int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
                 (int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
             string localText = new Text(

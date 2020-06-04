@@ -1,8 +1,10 @@
 ﻿using BattleTech;
 using BattleTech.UI;
+using BattleTech.WeaponFilters;
 using CBTBehaviorsEnhanced.Helper;
 using Harmony;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -114,20 +116,23 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(true);
-                MeleeStates meleeStates = MeleeHelper.GetMeleeStates(
+
+                ModState.MeleeStates = MeleeHelper.GetMeleeStates(
                     ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                     ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                     );
 
-                if (ModState.ChargeFB != null && meleeStates.Charge.IsValid) 
+                if (ModState.ChargeFB != null && ModState.MeleeStates.Charge.IsValid) 
                     ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.KickFB != null && meleeStates.Kick.IsValid) 
+                if (ModState.KickFB != null && ModState.MeleeStates.Kick.IsValid) 
                     ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PhysicalWeaponFB != null && meleeStates.PhysicalWeapon.IsValid) 
+                if (ModState.PhysicalWeaponFB != null && ModState.MeleeStates.PhysicalWeapon.IsValid) 
                     ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PunchFB != null && meleeStates.Punch.IsValid) 
+                if (ModState.PunchFB != null && ModState.MeleeStates.Punch.IsValid) 
                     ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+
+                // TODO: Autoselect best option
             }
             else
             {
@@ -137,6 +142,9 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+
+                // Resetting state so it's not accidently reused
+                ModState.MeleeStates = null;
             }
         }
     }
@@ -153,25 +161,21 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_CHARGE]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    //__instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_KICK]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    //__instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PHYSICAL_WEAPON]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    //__instance.SetState(ButtonState.Enabled, false);
                 }
                 else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
                 {
                     string localText = new Localize.Text(Mod.Config.LocalizedCHUDTooltips[ModConfig.CHUD_FB_PUNCH]).ToString();
                     __instance.FireText.SetText(localText, new object[] { });
-                    //__instance.SetState(ButtonState.Enabled, false);
                 }
             }
         }
@@ -181,9 +185,48 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(new Type[] { })]
     static class CombatHUDFireButton_OnClick
     {
-        static void Prefix(CombatHUDFireButton __instance)
+        static bool Prefix(CombatHUDFireButton __instance)
         {
             Mod.Log.Info($"CHUDFB - OnClick FIRED!");
+            bool shouldReturn = true;
+            CombatHUDAttackModeSelector selector = ModState.CombatHUD.AttackModeSelector;
+            if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
+            {
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.Charge;
+                shouldReturn = false;
+            }
+            else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
+            {
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.Kick;
+                shouldReturn = false;
+            }
+            else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
+            {
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.PhysicalWeapon;
+                shouldReturn = false;
+            }
+            else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
+            {
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.Punch;
+                shouldReturn = false;
+            }
+
+            if (ModState.MeleeStates.SelectedState != null)
+            {
+                Mod.Log.Info("Enabling description container");
+                selector.DescriptionContainer.SetActive(true);
+                selector.DescriptionContainer.gameObject.SetActive(true);
+
+                HashSet<string> descriptonNotes = ModState.MeleeStates.SelectedState.DescriptionNotes;
+                string description = String.Join(", ", descriptonNotes);
+                Mod.Log.Info($"Aggregate description is: {description}");
+
+                Mod.Log.Info("Setting text strings for selected state.");
+                selector.DescriptionText.SetText(description);
+                selector.DescriptionText.ForceMeshUpdate(true);
+            }
+
+            return shouldReturn;
         }
     }
 

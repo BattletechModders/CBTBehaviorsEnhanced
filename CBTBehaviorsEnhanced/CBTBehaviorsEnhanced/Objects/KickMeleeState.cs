@@ -71,8 +71,6 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            int sumAttackerDamage = this.AttackerDamageClusters.Count() > 0 ?
-                (int)Math.Ceiling(this.AttackerDamageClusters.Sum()) : 0;
             int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
                 (int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
             string localText = new Text(
@@ -88,10 +86,11 @@ namespace CBTBehaviorsEnhanced.Objects
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
             // -2 to hit base
-            this.AttackModifiers.Add(ModConfig.LT_AtkDesc_ComparativeSkill_Piloting, Mod.Config.Melee.Kick.BaseAttackBonus);
+            this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Easy_to_Kick, Mod.Config.Melee.Kick.BaseAttackBonus);
 
             // If target is prone, -2 modifier
-            this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
+            if (target.IsProne) 
+                this.AttackModifiers.Add(ModConfig.LT_AtkDesc_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
             int leftLegMalus = (2 - this.AttackerCondition.LeftLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
@@ -127,12 +126,12 @@ namespace CBTBehaviorsEnhanced.Objects
             // Leg actuator damage
             float leftLegReductionMulti = 1f;
             int damagedLeftActuators = 2 - this.AttackerCondition.LeftLegActuatorsCount;
-            for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
+            for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
             Mod.Log.Info($" - Left leg actuator damage multi is: {leftLegReductionMulti}");
 
             float rightLegReductionMulti = 1f;
             int damagedRightActuators = 2 - this.AttackerCondition.RightLegActuatorsCount;
-            for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti += Mod.Config.Melee.Kick.LegActuatorDamageReduction;
+            for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
             Mod.Log.Info($" - Right leg actuator damage multi is: {rightLegReductionMulti}");
 
             float legReductionMulti = leftLegReductionMulti >= rightLegReductionMulti ? leftLegReductionMulti : rightLegReductionMulti;

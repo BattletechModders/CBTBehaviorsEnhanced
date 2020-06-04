@@ -1,7 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Objects;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CBTBehaviorsEnhanced
 {
@@ -12,6 +11,8 @@ namespace CBTBehaviorsEnhanced
         public KickMeleeState Kick;
         public PhysicalWeaponMeleeState PhysicalWeapon;
         public PunchMeleeState Punch;
+
+        public MeleeState SelectedState;
     }
 
     public abstract class MeleeState
@@ -23,8 +24,8 @@ namespace CBTBehaviorsEnhanced
 
         protected MechMeleeCondition AttackerCondition { get; private set; }
 
-        public float[] AttackerDamageClusters;
-        public float[] TargetDamageClusters;
+        public float[] AttackerDamageClusters = new float[] { };
+        public float[] TargetDamageClusters = new float[] { };
 
         public float AttackerInstability;
         public float TargetInstability;

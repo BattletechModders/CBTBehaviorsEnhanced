@@ -73,8 +73,6 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            int sumAttackerDamage = this.AttackerDamageClusters.Count() > 0 ?
-                (int)Math.Ceiling(this.AttackerDamageClusters.Sum()) : 0;
             int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
                 (int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
             string localText = new Text(
@@ -127,12 +125,12 @@ namespace CBTBehaviorsEnhanced.Objects
             // Actuator damage
             float leftReductionMulti = 1f;
             int damagedLeftActuators = 2 - this.AttackerCondition.LeftArmActuatorsCount;
-            for (int i = 0; i < damagedLeftActuators; i++) leftReductionMulti += Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
+            for (int i = 0; i < damagedLeftActuators; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
             Mod.Log.Info($" - Left arm actuator damage is: {leftReductionMulti}");
 
             float rightReductionMulti = 1f;
             int damagedRightActuators = 2 - this.AttackerCondition.RightArmActuatorsCount;
-            for (int i = 0; i < damagedRightActuators; i++) rightReductionMulti += Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
+            for (int i = 0; i < damagedRightActuators; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
             Mod.Log.Info($" - Right arm actuator damage is: {rightReductionMulti}");
 
             float reductionMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;

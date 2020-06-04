@@ -64,6 +64,9 @@ namespace CBTBehaviorsEnhanced.Melee {
                     Mod.Log.Debug($" Charge attack by {CombatantUtils.Label(__instance.OwningMech)} vs. {CombatantUtils.Label(__instance.MeleeTarget)} failed.");
                 }
             }
+
+            // Reset melee state
+            ModState.MeleeStates = null;
         }
     }
 }
