@@ -185,13 +185,8 @@ namespace CBTBehaviorsEnhanced {
         public class MeleeOptions {
             public float SkillMulti = 0.05f;
 
-            public float MadeChargeFallChance = 0.60f;
             public float MadeDFAFallChance = 0.90f;
-            public float MissedKickFallChance = 0.30f;
-
-            public float HitByChargeFallChance = 0.60f;
             public float HitByDFAFallChance = 0.60f;
-            public float HitByKickFallChance = 0.30f;
 
             public bool AllowMeleeFromSprint = true;
 
@@ -226,8 +221,6 @@ namespace CBTBehaviorsEnhanced {
 
             // If you have leg damage and jump, you can fall
             public float FallAfterJumpChance = 0.30f;
-
-
 
             //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
             //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 

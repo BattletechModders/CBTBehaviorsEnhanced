@@ -81,7 +81,6 @@ namespace CBTBehaviorsEnhanced.Objects
             string localText = new Text(
                 Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Kick_Desc],
                 new object[] {
-                    sumTargetDamage, this.TargetInstability
                 })
                 .ToString();
 

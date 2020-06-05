@@ -7,20 +7,20 @@ namespace CBTBehaviorsEnhanced.Helper
 {
     public static class AttackHelper
     {
-        public static void CreateImaginaryAttack(Mech attacker, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters)
+        public static void CreateImaginaryAttack(Mech attacker, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters, MeleeAttackType attackType)
         {
             AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(0, attacker, target, 
-                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attacker.ImaginaryLaserWeapon }, 
-                MeleeAttackType.NotSet, 0, false
+                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attackType == MeleeAttackType.DFA ? attacker.DFAWeapon : attacker.MeleeWeapon }, 
+                attackType, 0, false
                 );
 
-            AttackDirection[] attackDirections = new AttackDirection[] { };
+            AttackDirection[] attackDirections = new AttackDirection[damageClusters.Length];
             WeaponHitInfo hitInfo = new WeaponHitInfo(0, attackSequence.id, 0, 0, attacker.GUID, target.GUID, 1,
                 null, null, null, null, null, null, null, attackDirections, null, null, null)
             {
                 attackerId = attacker.GUID,
                 targetId = target.GUID,
-                numberOfShots = attacker.ImaginaryLaserWeapon.ShotsWhenFired,
+                numberOfShots = damageClusters.Length,
                 stackItemUID = weaponHitInfoStackItemUID,
                 locationRolls = new float[damageClusters.Length],
                 hitLocations = new int[damageClusters.Length],
@@ -29,6 +29,7 @@ namespace CBTBehaviorsEnhanced.Helper
             };
             
             AttackDirection attackDirection = attacker.Combat.HitLocation.GetAttackDirection(attacker, target);
+            Mod.Log.Info($"  Attack direction is: {attackDirection}");
 
             int i = 0;
             foreach (int damage in damageClusters)
