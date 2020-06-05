@@ -27,6 +27,7 @@ namespace CBTBehaviorsEnhanced
                 {
                     if (state != null)
                     {
+                        // TODO: Include attack modifiers for EV style calculaion
                         float typeDamage = state.TargetDamageClusters.Sum();
                         if (typeDamage > selectedDamage)
                         {
@@ -67,6 +68,9 @@ namespace CBTBehaviorsEnhanced
 
         // The display label to use
         public string Label = "UNKNOWN";
+
+        // What animation to use
+        public MeleeAttackType AttackAnimation = MeleeAttackType.NotSet;
 
         public MeleeState(Mech attacker)
         {

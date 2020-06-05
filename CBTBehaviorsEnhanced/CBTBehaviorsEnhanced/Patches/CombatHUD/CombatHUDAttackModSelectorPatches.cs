@@ -134,6 +134,8 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 // TODO: Autoselect best option
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.HighestDamageState;
+
+                // TODO: Update weapon damage instead?
             }
             else
             {
@@ -228,9 +230,12 @@ namespace CBTBehaviorsEnhanced.Patches
                 Mod.Log.Info("Setting text strings for selected state.");
                 selector.DescriptionText.SetText(description);
                 selector.DescriptionText.ForceMeshUpdate(true);
+                
+                // TODO: Update weapon damage instead?
 
                 // Update the weapon strings
                 ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
+
             }
 
             return shouldReturn;

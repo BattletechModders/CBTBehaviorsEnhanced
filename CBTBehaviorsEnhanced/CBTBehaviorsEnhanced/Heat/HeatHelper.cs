@@ -72,7 +72,7 @@ namespace CBTBehaviorsEnhanced {
                                 foreach (DesignMaskDef cellDesignMaskDef in cell?.cell?.mapMetaData?.designMaskDefs?.Values) {
                                     Mod.Log.Trace($"    checking designMask for stickyEffects.");
                                     if (cellDesignMaskDef.stickyEffect != null && cellDesignMaskDef.stickyEffect?.statisticData != null &&
-                                        cellDesignMaskDef.stickyEffect.statisticData.statName == ModStats.VAN_HeatSinkCapacity) {
+                                        cellDesignMaskDef.stickyEffect.statisticData.statName == ModStats.HBS_HeatSinkCapacity) {
                                         Mod.Log.Trace($"      found stickyEffects.");
                                         stickyModifier = Single.Parse(cellDesignMaskDef.stickyEffect.statisticData.modValue);
                                     }

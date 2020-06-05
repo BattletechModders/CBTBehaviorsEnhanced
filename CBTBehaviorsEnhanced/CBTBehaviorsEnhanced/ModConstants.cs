@@ -21,8 +21,12 @@ namespace CBTBehaviorsEnhanced
 
         // This value is set by the ME DamageIgnore feature - see https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/DamageIgnore/DamageIgnoreHelper.cs
         public const string ME_IgnoreDamage = "ignore_damage";
-        // This value is a vanilla value
-        public const string VAN_HeatSinkCapacity = "HeatSinkCapacity";
+
+        // HBS Values
+        public const string HBS_HeatSinkCapacity = "HeatSinkCapacity";
+        public const string HBS_Weapon_DamagePerShot = "DamagePerShot";
+        public const string HBS_Weapon_Instability = "Instability";
+
 
         // Melee damage modifier stats
         public const string ChargeDamageMod = "CBTBE_Charge_Damage_Mod"; // int

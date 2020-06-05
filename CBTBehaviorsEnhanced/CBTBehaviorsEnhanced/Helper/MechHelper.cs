@@ -56,7 +56,7 @@ namespace CBTBehaviorsEnhanced {
         public static float FinalWalkSpeed(Mech mech) {
             //Mod.Log.Debug($"Actor:{CombatantUtils.Label(mech)} has walk: {mech.WalkSpeed}  isLegged: {mech.IsLegged}  heat: {mech.CurrentHeat}");
 
-            if (Mod.Config.Move.SpeedAsMP)
+            if (Mod.Config.Features.SpeedAsMP)
             {
                 // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
                 if (mech.IsLegged)
@@ -92,7 +92,7 @@ namespace CBTBehaviorsEnhanced {
             }
             Mod.Log.Trace($" Using a final run multiplier of x{runMulti} (from base: {Mod.Config.Move.RunMulti})");
 
-            if (Mod.Config.Move.SpeedAsMP)
+            if (Mod.Config.Features.SpeedAsMP)
             {
                 // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
                 if (mech.IsLegged)

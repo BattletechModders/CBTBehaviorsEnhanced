@@ -1,7 +1,9 @@
 ﻿using BattleTech;
 using Harmony;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches.Melee
 {
@@ -10,34 +12,22 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
     {
         static void Postfix(MeleeRules __instance, Mech attacker, Vector3 attackPosition, ICombatant target, float rnd, ref MeleeAttackType __result)
         {
-            float scale = 0f;
-            List<MeleeRules.MeleeWeight> validMeleeAttackTypes = __instance.GetValidMeleeAttackTypes(attacker, attackPosition, target, out scale);
-            foreach (MeleeRules.MeleeWeight weight in validMeleeAttackTypes)
+            //float scale = 0f;
+            //List<MeleeRules.MeleeWeight> validMeleeAttackTypes = __instance.GetValidMeleeAttackTypes(attacker, attackPosition, target, out scale);
+            //foreach (MeleeRules.MeleeWeight weight in validMeleeAttackTypes)
+            //{
+            //    if (weight.attackType == MeleeAttackType.Punch)
+            //    {
+            //        __result = MeleeAttackType.Punch;
+            //        return;
+            //    }
+            //}
+
+            if (ModState.MeleeStates?.SelectedState != null)
             {
-                if (weight.attackType == MeleeAttackType.Punch)
-                {
-                    __result = MeleeAttackType.Punch;
-                    return;
-                }
+                Mod.Log.Info($"SETTING RANDOM MELEE ATTACK TO: {ModState.MeleeStates.SelectedState.AttackAnimation}");
+                __result = ModState.MeleeStates.SelectedState.AttackAnimation;
             }
-        }
-    }
-
-    [HarmonyPatch(typeof(MechMeleeSequence), "BuildMeleeDirectorSequence")]
-    [HarmonyBefore("io.mission.modrepuation")]
-    static class MechMeleeSequence_BuildMeleeDirectorSequence
-    {
-        static void Prefix(MechMeleeSequence __instance)
-        {
-            Mod.Log.Info($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon}");
-            ModState.MeleeType = __instance.selectedMeleeType;
-            ModState.MeleeWeapon = __instance.OwningMech.MeleeWeapon;
-        }
-
-        static void Postfix(MechMeleeSequence __instance)
-        {
-            ModState.MeleeType = MeleeAttackType.NotSet;
-            ModState.MeleeWeapon = null;
         }
     }
 

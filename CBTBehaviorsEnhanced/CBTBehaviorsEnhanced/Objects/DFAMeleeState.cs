@@ -41,6 +41,9 @@ namespace CBTBehaviorsEnhanced.Objects
 				CalculateInstability(attacker, target, hexesMoved);
 				CalculateModifiers(attacker, target);
 				CreateDescriptions(attacker, target);
+
+				// Set the animation type
+				this.AttackAnimation = MeleeAttackType.DFA;
 			}
 		}
 

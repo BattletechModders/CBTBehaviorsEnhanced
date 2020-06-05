@@ -9,6 +9,28 @@ using UnityEngine;
 
 namespace CBTBehaviorsEnhanced.Patches
 {
+    [HarmonyPatch(typeof(ToHit), "GetAllMeleeModifiers")]
+    public static class ToHit_GetAllMeleeModifiers
+    {
+        private static void Postfix(ToHit __instance, ref float __result, Mech attacker, ICombatant target, Vector3 targetPosition, MeleeAttackType meleeAttackType)
+        {
+            Mod.Log.Trace("TH:GAMM entered");
+
+            if (__instance == null || ModState.MeleeStates?.SelectedState == null) return;
+
+            int sumMod = 0;
+            foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
+            {
+                string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
+                Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
+                sumMod += kvp.Value;
+            }
+
+            __result += (float)sumMod;            
+            
+        }
+    }
+
     [HarmonyPatch(typeof(ToHit), "GetAllModifiers")]
     public static class ToHit_GetAllModifiers
     {
@@ -23,28 +45,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 // Special trigger for dz's abilities
                 !(Mod.Config.Features.dZ_Abilities && attacker.SkillTactics != 10))
             {
-                __result = __result + (float)Mod.Config.ToHitSelfJumped;
-            }
-
-            // Check melee patches
-            if (ModState.MeleeStates != null && weapon.Type == WeaponType.Melee)
-            {
-                if (weapon.WeaponSubType == WeaponSubType.Melee)
-                {
-                    int sumMod = 0;
-                    foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
-                    {
-                        string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                        Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
-                        sumMod += kvp.Value;
-                    }
-
-                    __result = __result + (float)sumMod;
-                }   
-                else if (weapon.WeaponSubType == WeaponSubType.DFA)
-                {
-                    // TODO: DFA - should work under above code?
-                }
+                __result += (float)Mod.Config.ToHitSelfJumped;
             }
         }
     }
@@ -65,20 +66,15 @@ namespace CBTBehaviorsEnhanced.Patches
             // Check melee patches
             if (ModState.MeleeStates != null && weapon.Type == WeaponType.Melee)
             {
-                if (weapon.WeaponSubType == WeaponSubType.Melee)
+ 
+                foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                 {
-                    foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
-                    {
-                        string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                        Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
+                    string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
+                    Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
 
-                        __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, kvp.Value);
-                    }
+                    __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, kvp.Value);
                 }
-                else if (weapon.WeaponSubType == WeaponSubType.DFA)
-                {
-                    // TODO: DFA - should work under above code?
-                }
+
             }
         }
     }

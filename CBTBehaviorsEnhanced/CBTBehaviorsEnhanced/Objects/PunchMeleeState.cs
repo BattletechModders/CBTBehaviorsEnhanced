@@ -40,6 +40,8 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.ForceUnsteadyOnAttacker = false;
                 this.ForceUnsteadyOnTarget = Mod.Config.Melee.Punch.AttackAppliesUnsteady;
 
+                // Set the animation type
+                this.AttackAnimation = MeleeAttackType.Punch;
             }
         }
 

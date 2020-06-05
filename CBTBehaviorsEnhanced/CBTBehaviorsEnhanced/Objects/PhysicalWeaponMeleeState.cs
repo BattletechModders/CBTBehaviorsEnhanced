@@ -48,6 +48,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.ForceUnsteadyOnAttacker = false;
                 this.ForceUnsteadyOnTarget = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAppliesUnsteady) ? 
                     attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponAppliesUnsteady) : Mod.Config.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady;
+
+                // Set the animation type
+                this.AttackAnimation = MeleeAttackType.Punch;
             }
         }
 

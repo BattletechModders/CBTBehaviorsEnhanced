@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
+    <Compile Include="Helper\AttackHelper.cs" />
     <Compile Include="Helper\MeleeHelper.cs" />
     <Compile Include="Helper\QuipHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
@@ -122,7 +123,7 @@
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
-    <Compile Include="Patches\Melee\MeleePatches.cs" />
+    <Compile Include="Melee\MeleePatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
     <Compile Include="Patches\PilotingPatches.cs" />
     <Compile Include="Patches\TeamPatches.cs" />

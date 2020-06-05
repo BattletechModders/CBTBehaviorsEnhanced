@@ -45,6 +45,9 @@ namespace CBTBehaviorsEnhanced.Objects
 				this.ForceUnsteadyOnAttacker = Mod.Config.Melee.Charge.AttackAppliesUnsteady;
 				this.ForceUnsteadyOnTarget = Mod.Config.Melee.Charge.AttackAppliesUnsteady;
 
+				// Set the animation type
+				if (target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;
+				else this.AttackAnimation = MeleeAttackType.Tackle;
 			}
 		}
 
