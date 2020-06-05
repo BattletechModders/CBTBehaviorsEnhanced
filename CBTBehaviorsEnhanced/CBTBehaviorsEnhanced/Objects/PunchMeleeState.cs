@@ -81,7 +81,6 @@ namespace CBTBehaviorsEnhanced.Objects
             string localText = new Text(
                 Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Punch_Desc],
                 new object[] {
-                    sumTargetDamage, this.TargetInstability
                 })
                 .ToString();
 
@@ -92,7 +91,7 @@ namespace CBTBehaviorsEnhanced.Objects
         {
  
             // If target is prone, -2 modifier
-            this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
+            if (target.IsProne) this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for arm actuator, +2 to hit for each upper/lower actuator hit
             int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
