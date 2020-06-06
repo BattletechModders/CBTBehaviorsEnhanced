@@ -67,8 +67,6 @@ namespace CBTBehaviorsEnhanced.Objects
         {
 			int sumAttackerDamage = this.AttackerDamageClusters.Count() > 0 ?
 				(int)Math.Ceiling(this.AttackerDamageClusters.Sum()) : 0;
-			int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
-				(int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
 			string localText = new Text(
 				Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Charge_Desc], 
 				new object[] { 

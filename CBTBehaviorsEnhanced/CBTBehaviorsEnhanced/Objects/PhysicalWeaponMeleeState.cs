@@ -2,7 +2,6 @@
 using Localize;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -58,7 +57,7 @@ namespace CBTBehaviorsEnhanced.Objects
         {
             // Check that unit has a physical attack
             if (!attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
-                attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+                !attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
             {
                 Mod.Log.Info("Unit has no physical weapon by stat; skipping.");
                 return false;

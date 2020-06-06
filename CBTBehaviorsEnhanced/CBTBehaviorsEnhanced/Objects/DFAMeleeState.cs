@@ -28,7 +28,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
-			this.IsValid = ValidateAttack(target, validAnimations);
+			this.IsValid = ValidateAttack(attacker, target, validAnimations);
 			if (IsValid)
 			{
 				this.AttackerTable = DamageTable.KICK;
@@ -44,13 +44,25 @@ namespace CBTBehaviorsEnhanced.Objects
 			}
 		}
 
-        private bool ValidateAttack(AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
-            // If neither tackle (mech) or stomp (vehicle) - we're not a valid attack.
-            if (!validAnimations.Contains(MeleeAttackType.DFA)) return false;
+
+			// Animations will never include DFA, as that's only for selecting a random attack. Assume the UI has done the checking
+			//  to allow or prevent a DFA attack
+			if (!attacker.CanDFA)
+			{
+				Mod.Log.Info($"Attacker unable to DFA due to damage or inability.");
+				return false;
+			}
+
+			if (!attacker.CanDFATargetFromPosition(target, attacker.CurrentPosition))
+			{
+				Mod.Log.Info($"Attacker unable to DFA target from their position.");
+				return false;
+			}
 
 			// No damage check - by rules, you can DFA?
-			Mod.Log.Info(" - Attacker can DFA");
+			Mod.Log.Info("DFA ATTACK validated");
 			return true;
 		}
 

@@ -24,11 +24,11 @@ namespace CBTBehaviorsEnhanced.Melee {
             {
                 ModState.MeleeType = ModState.MeleeStates.SelectedState.AttackAnimation;
 
-                // Modify the owning mech melee weapon to do the 'first' hit
+                // Modify the owning mech melee weapon to do the 'first' hit - but apply stab damage later
                 float targetDamage = ModState.MeleeStates.SelectedState?.TargetDamageClusters?.Length > 0 ?
                     ModState.MeleeStates.SelectedState.TargetDamageClusters[0] : 0;
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
-                ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, ModState.MeleeStates.SelectedState.TargetInstability);
+                ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
                 Mod.Log.Info($"For {CombatantUtils.Label(__instance.OwningMech)} set melee weapon damage: {targetDamage}  and instability: {ModState.MeleeStates.SelectedState.TargetInstability}");
             }
         }

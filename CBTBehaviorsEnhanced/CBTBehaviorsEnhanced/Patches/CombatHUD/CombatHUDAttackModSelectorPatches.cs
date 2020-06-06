@@ -123,13 +123,15 @@ namespace CBTBehaviorsEnhanced.Patches
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
             {
-                if (ModState.MeleeStates == null)
+                if (ModState.MeleeStates == null  || ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos != ModState.MeleePreviewPos)
                 {
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(
                         ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                         ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                         ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                         );
+                    ModState.MeleePreviewPos = ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
+                    Mod.Log.Info($"Updated melee state for position: {ModState.MeleePreviewPos}");
                 }
             }
             else

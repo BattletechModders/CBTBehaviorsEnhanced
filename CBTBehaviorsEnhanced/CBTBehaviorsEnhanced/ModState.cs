@@ -17,6 +17,8 @@ namespace CBTBehaviorsEnhanced {
         public static Weapon MeleeWeapon = null;
         public static MeleeAttackType MeleeType = MeleeAttackType.NotSet;
         public static MeleeStates MeleeStates = null;
+        public static Vector3 MeleePreviewPos = Vector3.one;
+        public static float CachedDFASelfDamage = 0f; 
 
         // Breach state
         public static float BreachCheck = 0f;
@@ -41,6 +43,8 @@ namespace CBTBehaviorsEnhanced {
             MeleeWeapon = null;
             MeleeType = MeleeAttackType.NotSet;
             MeleeStates = null;
+            MeleePreviewPos = Vector3.one;
+            CachedDFASelfDamage = 0f;
 
             // Breach state
             BreachCheck = 0f;
