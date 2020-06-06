@@ -124,8 +124,6 @@ Charge attacks inflict damage and instability on both the attacker and target, a
 
 The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). They vary between attacker and target, allowing mod authors great flexibility in designing attacks.
 
-Damage is applied to the attacker and target as a series of clusters. The size of each cluster is determined by the *DamageClusterDivisor* in `mod.json`. Each cluster is resolved on the standard damage table for the target, as per a normal attack. 
-
 *Damage Inputs*
 
 | Input     | Attacker Source Value                                        | Target Source Value                                          |
@@ -142,6 +140,8 @@ Damage is applied to the attacker and target as a series of clusters. The size o
 | **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
 
 *HexesMoved* is calculated as the magnitude of the distance between the Attacker and Target's current position as vectors. This is then divided by the *Move.MPMetersPerHex* configuration value in `mod.json`. Because this value is a vector magnitude, it may result in more or less hexes of movement than you might expect, due to elevation changes or similar. 
+
+Damage is applied to the attacker and target as a series of clusters. The size of each cluster is determined by the *DamageClusterDivisor* in `mod.json`. Each cluster is resolved on the standard damage table for the target, as per a normal attack. 
 
 **Validations**: Before a charge can be made, several validation checks must be passed. If these checks pass, the charge is treated as invalid and can't be selected by either player or AI.
 
@@ -162,29 +162,34 @@ Loreum ipsumn
 
 Kick attacks inflict damage and instability on the target only. The calculation for damage and instability is the same, and follow this formula:
 
-`finalDamage = RoundUP( (raw + mod) * multi)`
+`finalDamage = RoundUP( (raw + mod) * multi * actuatorMulti)`
 
-The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). They vary between attacker and target, allowing mod authors great flexibility in designing attacks.
-
-Damage is applied to the attacker and target as a series of clusters. The size of each cluster is determined by the *DamageClusterDivisor* in `mod.json`. Each cluster is resolved on the standard damage table for the target, as per a normal attack. 
+The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). 
 
 *Damage Inputs*
 
-| Input     | Attacker Source Value                                        | Target Source Value                                          |
-| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
-| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+| Input     | Target Source Value                                          |
+| --------- | ------------------------------------------------------------ |
+| **raw**   | *mod.json* -> `Melee.Kick.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Kick_Target_Damage_Mod`                |
+| **multi** | *statistic* -> `CBTBE_Kick_Target_Damage_Multi`              |
 
 *Instability Inputs*
 
-| Input     | Attacker Source Value                                        | Target Source Value                                          |
-| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
-| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+| Input     | Target Source Value                                          |
+| --------- | ------------------------------------------------------------ |
+| **raw**   | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Kick_Target_Instability_Mod`           |
+| **multi** | *statistic* -> `CBTBE_Kick_Target_Instability_Multi`         |
 
-*HexesMoved* is calculated as the magnitude of the distance between the Attacker and Target's current position as vectors. This is then divided by the *Move.MPMetersPerHex* configuration value in `mod.json`. Because this value is a vector magnitude, it may result in more or less hexes of movement than you might expect, due to elevation changes or similar. 
+*ActuatorMulti* is determined from the missing or damaged upper and lower leg actuators. 
+
+Damage is applied to the target as single hit that is randomized between the legs only. The distribution of these hit locations is as follows:
+
+| Location  | Chance to Hit |
+| --------- | ------------- |
+| Left Leg  | 50%           |
+| Right Leg | 50%           |
 
 **Validations**: Before a charge can be made, several validation checks must be passed. If these checks pass, the charge is treated as invalid and can't be selected by either player or AI.
 
@@ -196,6 +201,46 @@ Damage is applied to the attacker and target as a series of clusters. The size o
 * **Comparative Skill** is the difference between the attacker and target's *Piloting* skill rating. This is applied as a flat modifier, so an attacker with Piloting 7 versus a target with Piloting 4 would add a -3 to hit. An attacker with Piloting 2 versus a target with piloting 6 would suffer a +4 to hit.
 
 **Forced Unsteady**: If the `Melee.Charge.AttackAppliesUnsteady` value (in `mod.json`) is set to true, both the attacker and target will gain the **Unsteady** state if the attack hits. If the attack misses, only the attacker will receive the **Unsteady** state. Unsteady is required before an attack will create a knockdown.
+
+### Melee Statistics Reference
+
+All statistics used in melee values are listed below. See the relevant section for more details on their use.
+
+| Statistic Name | Type | Notes |
+| -------------- | ---- | ----- |
+| CBTBE_Charge_Attacker_Damage_Mod | ||
+| CBTBE_Charge_Attacker_Damage_Multi | ||
+| CBTBE_Charge_Attacker_Instability_Mod | ||
+| CBTBE_Charge_Attacker_Instability_Multi | ||
+| CBTBE_Charge_Target_Damage_Mod | ||
+| CBTBE_Charge_Target_Damage_Multi | ||
+| CBTBE_Charge_Target_Instability_Mod | ||
+| CBTBE_Charge_Target_Instability_Multi | ||
+| CBTBE_DFA_Attacker_Damage_Mod | ||
+| CBTBE_DFA_Attacker_Damage_Multi | ||
+| CBTBE_DFA_Attacker_Instability_Mod | ||
+| CBTBE_DFA_Attacker_Instability_Multi | ||
+| CBTBE_DFA_Target_Damage_Mod | ||
+| CBTBE_DFA_Target_Damage_Multi | ||
+| CBTBE_DFA_Target_Instability_Mod | ||
+| CBTBE_DFA_Target_Instability_Multi | ||
+| CBTBE_Kick_Target_Damage_Mod | ||
+| CBTBE_Kick_Target_Damage_Multi | ||
+| CBTBE_Kick_Target_Instability_Mod | ||
+| CBTBE_Kick_Target_Instability_Multi | ||
+| CBTBE_Punch_Target_Damage_Mod | ||
+| CBTBE_Punch_Target_Damage_Multi | ||
+| CBTBE_Punch_Target_Instability_Mod | ||
+| CBTBE_Punch_Target_Instability_Multi | ||
+| CBTBE_Punch_Is_Physical_Weapon | ||
+| CBTBE_Physical_Weapon_Applies_Unsteady_To_Target | ||
+| CBTBE_Physical_Weapon_Location_Table | ||
+| CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor | ||
+| CBTBE_Physical_Weapon_Target_Damage_Mod | ||
+| CBTBE_Physical_Target_Damage_Multi | ||
+| CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor | ||
+| CBTBE_Physical_Weapon_Target_Instability_Mod | ||
+| CBTBE_Physical_Weapon_Target_Instability_Multi | ||
 
 ### Physical Weapon Attacks
 

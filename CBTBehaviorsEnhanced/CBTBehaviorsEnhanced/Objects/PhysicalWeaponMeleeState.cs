@@ -22,7 +22,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public PhysicalWeaponMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
+            this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)
             {
@@ -107,7 +107,8 @@ namespace CBTBehaviorsEnhanced.Objects
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
             // If target is prone, -2 modifier
-            this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
+            if (target.IsProne)
+                this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // +2 to hit for each upper/lower actuator hit
             int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
