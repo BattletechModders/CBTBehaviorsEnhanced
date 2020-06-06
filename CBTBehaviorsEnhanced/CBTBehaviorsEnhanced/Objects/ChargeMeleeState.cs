@@ -24,6 +24,8 @@ namespace CBTBehaviorsEnhanced.Objects
         public ChargeMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
+			Mod.Log.Info($"Buliding CHARGE state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge];
             this.IsValid = ValidateAttack(target, validAnimations);
 			if (IsValid)

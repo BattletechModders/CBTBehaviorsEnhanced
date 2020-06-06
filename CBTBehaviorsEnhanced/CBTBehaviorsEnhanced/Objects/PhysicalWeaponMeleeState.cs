@@ -22,6 +22,8 @@ namespace CBTBehaviorsEnhanced.Objects
         public PhysicalWeaponMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
+            Mod.Log.Info($"Buliding PHYSICAL WEAPON state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
             if (IsValid)

@@ -27,8 +27,10 @@ namespace CBTBehaviorsEnhanced.Objects
 		public DFAMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
+			Mod.Log.Info($"Buliding DFA state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
-			this.IsValid = ValidateAttack(attacker, target, validAnimations);
+			this.IsValid = ValidateAttack(attacker, target);
 			if (IsValid)
 			{
 				this.AttackerTable = DamageTable.KICK;
@@ -44,9 +46,8 @@ namespace CBTBehaviorsEnhanced.Objects
 			}
 		}
 
-        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target)
         {
-
 			// Animations will never include DFA, as that's only for selecting a random attack. Assume the UI has done the checking
 			//  to allow or prevent a DFA attack
 			if (!attacker.CanDFA)

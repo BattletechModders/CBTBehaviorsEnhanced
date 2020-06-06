@@ -189,9 +189,6 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
-
-                // Resetting state so it's not accidently reused
-                ModState.MeleeStates = null;
             }
 
             // Handle the DFA button here

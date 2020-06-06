@@ -110,7 +110,6 @@
     <Compile Include="Objects\KickMeleeState.cs" />
     <Compile Include="Objects\MechMeleeCondition.cs" />
     <Compile Include="Objects\ChargeMeleeState.cs" />
-    <Compile Include="Objects\MeleeDefs.cs" />
     <Compile Include="Objects\MeleeState.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />

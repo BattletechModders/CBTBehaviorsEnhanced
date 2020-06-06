@@ -135,9 +135,9 @@ The inputs for these values differ based upon configuration values (exposed thro
 
 | Input     | Attacker Source Value                                        | Target Source Value                                          |
 | --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
-| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+| **raw**   | *mod.json* -> `Melee.Charge.AttackerInstabilityPerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetInstabilityPerAttackerTon` * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Instability_Mod`       | *statistic* -> `CBTBE_Charge_Target_Instability_Mod`         |
+| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Instability_Multi`     | *statistic* -> `CBTBE_Charge_Target_Instability_Multi`       |
 
 *HexesMoved* is calculated as the magnitude of the distance between the Attacker and Target's current position as vectors. This is then divided by the *Move.MPMetersPerHex* configuration value in `mod.json`. Because this value is a vector magnitude, it may result in more or less hexes of movement than you might expect, due to elevation changes or similar. 
 
@@ -178,7 +178,7 @@ The inputs for these values differ based upon configuration values (exposed thro
 
 | Input     | Target Source Value                                          |
 | --------- | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **raw**   | *mod.json* -> `Melee.Kick.TargetInstabilityPerAttackerTon`  * attacker tonnage |
 | **mod**   | *statistic* -> `CBTBE_Kick_Target_Instability_Mod`           |
 | **multi** | *statistic* -> `CBTBE_Kick_Target_Instability_Multi`         |
 
@@ -202,45 +202,63 @@ Damage is applied to the target as single hit that is randomized between the leg
 
 **Forced Unsteady**: If the `Melee.Charge.AttackAppliesUnsteady` value (in `mod.json`) is set to true, both the attacker and target will gain the **Unsteady** state if the attack hits. If the attack misses, only the attacker will receive the **Unsteady** state. Unsteady is required before an attack will create a knockdown.
 
+### Custom Components Reference
+
+Several melee attacks reduce damage or have increased penalties if a BattleMech's actuators are damaged. 
+
+| MechEngineer Category Id | Notes                         |
+| ------------------------ | ----------------------------- |
+| LegHip                   | The Mech's hip actuators      |
+| ArmShoulder              | The Mech's shoulder actuators |
+
+
+
+
+
 ### Melee Statistics Reference
 
 All statistics used in melee values are listed below. See the relevant section for more details on their use.
 
 | Statistic Name | Type | Notes |
 | -------------- | ---- | ----- |
-| CBTBE_Charge_Attacker_Damage_Mod | ||
-| CBTBE_Charge_Attacker_Damage_Multi | ||
-| CBTBE_Charge_Attacker_Instability_Mod | ||
-| CBTBE_Charge_Attacker_Instability_Multi | ||
-| CBTBE_Charge_Target_Damage_Mod | ||
-| CBTBE_Charge_Target_Damage_Multi | ||
-| CBTBE_Charge_Target_Instability_Mod | ||
-| CBTBE_Charge_Target_Instability_Multi | ||
-| CBTBE_DFA_Attacker_Damage_Mod | ||
-| CBTBE_DFA_Attacker_Damage_Multi | ||
-| CBTBE_DFA_Attacker_Instability_Mod | ||
-| CBTBE_DFA_Attacker_Instability_Multi | ||
-| CBTBE_DFA_Target_Damage_Mod | ||
-| CBTBE_DFA_Target_Damage_Multi | ||
-| CBTBE_DFA_Target_Instability_Mod | ||
-| CBTBE_DFA_Target_Instability_Multi | ||
-| CBTBE_Kick_Target_Damage_Mod | ||
-| CBTBE_Kick_Target_Damage_Multi | ||
-| CBTBE_Kick_Target_Instability_Mod | ||
-| CBTBE_Kick_Target_Instability_Multi | ||
-| CBTBE_Punch_Target_Damage_Mod | ||
-| CBTBE_Punch_Target_Damage_Multi | ||
-| CBTBE_Punch_Target_Instability_Mod | ||
-| CBTBE_Punch_Target_Instability_Multi | ||
-| CBTBE_Punch_Is_Physical_Weapon | ||
-| CBTBE_Physical_Weapon_Applies_Unsteady_To_Target | ||
-| CBTBE_Physical_Weapon_Location_Table | ||
-| CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor | ||
-| CBTBE_Physical_Weapon_Target_Damage_Mod | ||
-| CBTBE_Physical_Target_Damage_Multi | ||
-| CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor | ||
-| CBTBE_Physical_Weapon_Target_Instability_Mod | ||
-| CBTBE_Physical_Weapon_Target_Instability_Multi | ||
+| **CHARGE STATISTICS** |  |  |
+| CBTBE_Charge_Attacker_Damage_Mod | System.Int32 ||
+| CBTBE_Charge_Attacker_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_Charge_Attacker_Instability_Mod | System.Int32 ||
+| CBTBE_Charge_Attacker_Instability_Multi | System.Single |value must be >= 0|
+| CBTBE_Charge_Target_Damage_Mod | System.Int32 ||
+| CBTBE_Charge_Target_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_Charge_Target_Instability_Mod | System.Int32 ||
+| CBTBE_Charge_Target_Instability_Multi | System.Single |value must be >= 0|
+| **DEATH FROM ABOVE STATISTICS** |  ||
+| CBTBE_DFA_Attacker_Damage_Mod | System.Int32 ||
+| CBTBE_DFA_Attacker_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_DFA_Attacker_Instability_Mod | System.Int32 ||
+| CBTBE_DFA_Attacker_Instability_Multi | System.Single |value must be >= 0|
+| CBTBE_DFA_Target_Damage_Mod | System.Int32 ||
+| CBTBE_DFA_Target_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_DFA_Target_Instability_Mod | System.Int32 ||
+| CBTBE_DFA_Target_Instability_Multi | System.Single |value must be >= 0|
+| **KICK STATISTICS** |  ||
+| CBTBE_Kick_Target_Damage_Mod | System.Int32 ||
+| CBTBE_Kick_Target_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_Kick_Target_Instability_Mod | System.Int32 ||
+| CBTBE_Kick_Target_Instability_Multi | System.Single |value must be >= 0|
+| **PUNCH STATISTICS** |  ||
+| CBTBE_Punch_Target_Damage_Mod | System.Int32 ||
+| CBTBE_Punch_Target_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_Punch_Target_Instability_Mod | System.Int32 ||
+| CBTBE_Punch_Target_Instability_Multi | System.Single |value must be >= 0|
+| **PHYSICAL WEAPON STATISTICS** |  ||
+| CBTBE_Punch_Is_Physical_Weapon | System.Boolean ||
+| CBTBE_Physical_Weapon_Applies_Unsteady_To_Target | System.Boolean ||
+| CBTBE_Physical_Weapon_Location_Table | System.String |value must be one of PUNCH, KICK, STANDARD|
+| CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor | System.Single |value must be > 0|
+| CBTBE_Physical_Weapon_Target_Damage_Mod | System.Int32 ||
+| CBTBE_Physical_Target_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor | System.Single |value must be > 0|
+| CBTBE_Physical_Weapon_Target_Instability_Mod | System.Int32 ||
+| CBTBE_Physical_Weapon_Target_Instability_Multi | System.Single |value must be >= 0|
 
 ### Physical Weapon Attacks
 
@@ -334,3 +352,4 @@ This calculation can be further modified by a per-unit statistic. Any mech can b
 * TODO: Select melee style
 * TODO: Punches should roll on punch table, kicks on kick table, etc
 * ERROR: Problems in interleaved mode if you hit "OK" before everyone is done moving.
+* ERROR: Heat calculations assume heat > 150. Why is heat > 150? Cap any heat at 150, period.
