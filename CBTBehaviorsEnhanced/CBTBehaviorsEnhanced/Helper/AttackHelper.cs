@@ -49,7 +49,7 @@ namespace CBTBehaviorsEnhanced.Helper
                 }
                 else if (target is Vehicle vehicle)
                 {
-                    VehicleChassisLocations location = 
+                    VehicleChassisLocations location =
                         ModState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
                     Mod.Log.Info($"  {damage} damage to location: {location}");
@@ -66,6 +66,9 @@ namespace CBTBehaviorsEnhanced.Helper
 
                 i++;
             }
+
+            // Cleanup after myself
+            target.Combat.AttackDirector.RemoveAttackSequence(attackSequence);
         }
 
     }

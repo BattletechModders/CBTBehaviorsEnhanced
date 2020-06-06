@@ -104,6 +104,107 @@ Difficulty percentage is configurable in the mod.json file.
 * TODO: Allow selection of melee type
 * Allows moving to different melee positions (duplicate of MeleeMover by Morphyum)
 
+Melee has been revamped in CBTBE to allow player selection of melee types, as well as various other small tweaks. Players can choose between the following types of melee attacks:
+
+* **Charge** attacks do greater damage and instability the further the attacker moves,  and can be performed at sprint range. However the attacker also takes damage and instability from the attack. Damage for both the attacker and target are grouped into 25 point clusters and randomly distributed using the standard hit tables. Charges are treated as stomps against target vehicles.
+* **Death From Above** apply damage to the target's arms, torsos, and head. The attacker's legs are damaged, and both models take *significant* instability damage and are likely to end up *unsteady*.
+* **Kick** attacks are easy to land, and apply all their damage to a single, randomly selected leg. The target takes instability damage and will be made *unsteady*. If the attack missed, the attacker instead is made *unsteady*.
+* **Physical Weapon** attacks apply damage and instability to the target based upon their specific characteristics. A sword may apply more damage, while a mace may apply more instability. Physical weapons can choose to use the standard, kick, or punch tables to resolve their attacks. 
+* **Punch** attacks do less damage than kicks, but strike the arms, torsos, and head of the target. There are no effects if a punch misses it's target.
+
+Each of these attacks have various statistics that can modify their damage, and unique configuration details. Those are covered in the sections below. 
+
+The AI will always choose to use the most powerful melee attack they have. Attacks that inflict unsteady will be prioritized when the target has evasion pips, but otherwise the attack with the greatest expected target damage will be selected. This can result in the AI tripping or killing itself.
+
+### Charge Attacks
+
+Charge attacks inflict damage and instability on both the attacker and target, and those values are increased by the number of *hexes* (not meters!) between the target and attacker. The calculation for damage and instability is the same, and follow this formula:
+
+`finalDamage = RoundUP( (raw + mod) * multi * hexesMoved)`
+
+The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). They vary between attacker and target, allowing mod authors great flexibility in designing attacks.
+
+Damage is applied to the attacker and target as a series of clusters. The size of each cluster is determined by the *DamageClusterDivisor* in `mod.json`. Each cluster is resolved on the standard damage table for the target, as per a normal attack. 
+
+*Damage Inputs*
+
+| Input     | Attacker Source Value                                        | Target Source Value                                          |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
+| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+*Instability Inputs*
+
+| Input     | Attacker Source Value                                        | Target Source Value                                          |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
+| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+
+*HexesMoved* is calculated as the magnitude of the distance between the Attacker and Target's current position as vectors. This is then divided by the *Move.MPMetersPerHex* configuration value in `mod.json`. Because this value is a vector magnitude, it may result in more or less hexes of movement than you might expect, due to elevation changes or similar. 
+
+**Validations**: Before a charge can be made, several validation checks must be passed. If these checks pass, the charge is treated as invalid and can't be selected by either player or AI.
+
+* The target position must allow either *Tackle* or *Stomp* animations. These are generally allowed if the attacker midpoint is somewhere between the top and bottom of the target. 
+* The target cannot be **prone** 
+
+**Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
+
+* **Comparative Skill** is the difference between the attacker and target's *Piloting* skill rating. This is applied as a flat modifier, so an attacker with Piloting 7 versus a target with Piloting 4 would add a -3 to hit. An attacker with Piloting 2 versus a target with piloting 6 would suffer a +4 to hit.
+
+**Forced Unsteady**: If the `Melee.Charge.AttackAppliesUnsteady` value (in `mod.json`) is set to true, both the attacker and target will gain the **Unsteady** state if the attack hits. If the attack misses, only the attacker will receive the **Unsteady** state. Unsteady is required before an attack will create a knockdown.
+
+### Death From Above Attacks
+
+Loreum ipsumn
+
+### Kick Attacks
+
+Kick attacks inflict damage and instability on the target only. The calculation for damage and instability is the same, and follow this formula:
+
+`finalDamage = RoundUP( (raw + mod) * multi)`
+
+The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). They vary between attacker and target, allowing mod authors great flexibility in designing attacks.
+
+Damage is applied to the attacker and target as a series of clusters. The size of each cluster is determined by the *DamageClusterDivisor* in `mod.json`. Each cluster is resolved on the standard damage table for the target, as per a normal attack. 
+
+*Damage Inputs*
+
+| Input     | Attacker Source Value                                        | Target Source Value                                          |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
+| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+
+*Instability Inputs*
+
+| Input     | Attacker Source Value                                        | Target Source Value                                          |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
+| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
+| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
+
+*HexesMoved* is calculated as the magnitude of the distance between the Attacker and Target's current position as vectors. This is then divided by the *Move.MPMetersPerHex* configuration value in `mod.json`. Because this value is a vector magnitude, it may result in more or less hexes of movement than you might expect, due to elevation changes or similar. 
+
+**Validations**: Before a charge can be made, several validation checks must be passed. If these checks pass, the charge is treated as invalid and can't be selected by either player or AI.
+
+* The target position must allow either *Tackle* or *Stomp* animations. These are generally allowed if the attacker midpoint is somewhere between the top and bottom of the target. 
+* The target cannot be **prone** 
+
+**Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
+
+* **Comparative Skill** is the difference between the attacker and target's *Piloting* skill rating. This is applied as a flat modifier, so an attacker with Piloting 7 versus a target with Piloting 4 would add a -3 to hit. An attacker with Piloting 2 versus a target with piloting 6 would suffer a +4 to hit.
+
+**Forced Unsteady**: If the `Melee.Charge.AttackAppliesUnsteady` value (in `mod.json`) is set to true, both the attacker and target will gain the **Unsteady** state if the attack hits. If the attack misses, only the attacker will receive the **Unsteady** state. Unsteady is required before an attack will create a knockdown.
+
+### Physical Weapon Attacks
+
+Loreum ipsum
+
+### Punch Attacks
+
+Loreum ipsum
+
 ## Classic Movement
 
 CBT Movement is an attempt to bring Classic BattleTech Tabletop movement rules flavor into HBS's BATTLETECH game. Features include:

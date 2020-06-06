@@ -34,10 +34,10 @@ namespace CBTBehaviorsEnhanced
         public const string ChargeAttackerInstabilityMod = "CBTBE_Charge_Attacker_Instability_Mod"; // int
         public const string ChargeAttackerInstabilityMulti = "CBTBE_Charge_Attacker_Instability_Multi"; // float
 
-        public const string ChargeTargetDamageMod = "CBTBE_Charge_Damage_Mod"; // int
-        public const string ChargeTargetDamageMulti = "CBTBE_Charge_Damage_Multi"; // float
-        public const string ChargeTargetInstabilityMod = "CBTBE_Charge_Instability_Mod"; // int
-        public const string ChargeTargetInstabilityMulti = "CBTBE_Charge_Instability_Multi"; // float
+        public const string ChargeTargetDamageMod = "CBTBE_Charge_Target_Damage_Mod"; // int
+        public const string ChargeTargetDamageMulti = "CBTBE_Charge_Target_Damage_Multi"; // float
+        public const string ChargeTargetInstabilityMod = "CBTBE_Charge_Target_Instability_Mod"; // int
+        public const string ChargeTargetInstabilityMulti = "CBTBE_Charge_Target_Instability_Multi"; // float
 
         public const string DeathFromAboveAttackerDamageMod = "CBTBE_DFA_Attacker_Damage_Mod"; // int
         public const string DeathFromAboveAttackerDamageMulti = "CBTBE_DFA_Attacker_Damage_Multi"; // float

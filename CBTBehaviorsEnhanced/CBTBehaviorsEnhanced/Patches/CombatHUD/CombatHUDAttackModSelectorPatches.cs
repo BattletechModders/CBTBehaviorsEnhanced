@@ -109,7 +109,7 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(CombatHUDAttackModeSelector), "ShowFireButton")]
     static class CombatHUDAttackModeSelector_ShowFireButton
     {
-        public static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, string additionalDetails, bool showHeatWarnings)
+        public static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, ref string additionalDetails, bool showHeatWarnings)
         {
             if (ModState.CombatHUD.SelectionHandler.ActiveState == null)
             {
@@ -197,21 +197,14 @@ namespace CBTBehaviorsEnhanced.Patches
             // Handle the DFA button here
             if (mode == CombatHUDFireButton.FireMode.DFA)
             {
-                Mod.Log.Info("Enabling description container for DFA");
-                __instance.DescriptionContainer.SetActive(true);
-                __instance.DescriptionContainer.gameObject.SetActive(true);
-
                 HashSet<string> descriptonNotes = ModState.MeleeStates.DFA.DescriptionNotes;
-                string description = String.Join(", ", descriptonNotes);
-                Mod.Log.Info($"Aggregate description is: {description}");
-
-                __instance.DescriptionText.SetText(description);
-                __instance.DescriptionText.ForceMeshUpdate(true);
+                additionalDetails = String.Join(", ", descriptonNotes);
+                Mod.Log.Info($"Aggregate description is: {additionalDetails}");
 
                 // TODO: Update weapon damage instead?
 
                 // Update the weapon strings
-                ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
+                //ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
 
             }
         }
