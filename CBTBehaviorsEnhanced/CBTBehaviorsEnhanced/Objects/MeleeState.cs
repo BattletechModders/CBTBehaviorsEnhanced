@@ -15,30 +15,30 @@ namespace CBTBehaviorsEnhanced
 
         public MeleeState SelectedState;
 
-        public MeleeState HighestDamageState
+        public MeleeState GetHighestTargetDamageState(bool includeDFA = false)
         {
-            get
-            {
-                MeleeState selectedState = null;
-                float selectedDamage = 0;
+            MeleeState selectedState = null;
+            float selectedDamage = 0;
 
-                List<MeleeState> allStates = new List<MeleeState> { Charge, DFA, Kick, PhysicalWeapon, Punch };
-                foreach (MeleeState state in allStates)
+            // Do not use DFA here, because it's selected differently in UI.
+            List<MeleeState> allStates = new List<MeleeState> { Charge, Kick, PhysicalWeapon, Punch };
+            if (includeDFA) allStates.Add(DFA);
+
+            foreach (MeleeState state in allStates)
+            {
+                if (state != null)
                 {
-                    if (state != null)
+                    // TODO: Include attack modifiers for EV style calculaion
+                    float typeDamage = state.TargetDamageClusters.Sum();
+                    if (typeDamage > selectedDamage)
                     {
-                        // TODO: Include attack modifiers for EV style calculaion
-                        float typeDamage = state.TargetDamageClusters.Sum();
-                        if (typeDamage > selectedDamage)
-                        {
-                            selectedDamage = typeDamage;
-                            selectedState = state;
-                        }
+                        selectedDamage = typeDamage;
+                        selectedState = state;
                     }
                 }
-
-                return selectedState;
             }
+
+            return selectedState;
         }
     }
 

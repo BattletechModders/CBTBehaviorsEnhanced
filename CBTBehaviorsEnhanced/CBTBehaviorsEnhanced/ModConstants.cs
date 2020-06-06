@@ -29,25 +29,48 @@ namespace CBTBehaviorsEnhanced
 
 
         // Melee damage modifier stats
-        public const string ChargeDamageMod = "CBTBE_Charge_Damage_Mod"; // int
-        public const string ChargeDamageMulti = "CBTBE_Charge_Damage_Multi"; // float
+        public const string ChargeAttackerDamageMod = "CBTBE_Charge_Attacker_Damage_Mod"; // int
+        public const string ChargeAttackerDamageMulti = "CBTBE_Charge_Attacker_Damage_Multi"; // float
+        public const string ChargeAttackerInstabilityMod = "CBTBE_Charge_Attacker_Instability_Mod"; // int
+        public const string ChargeAttackerInstabilityMulti = "CBTBE_Charge_Attacker_Instability_Multi"; // float
 
-        public const string DFAWeaponDamageMod = "CBTBE_DFA_Damage_Mod"; // int
-        public const string DFAWeaponDamageMulti = "CBTBE_DFA_Damage_Multi"; // float
+        public const string ChargeTargetDamageMod = "CBTBE_Charge_Damage_Mod"; // int
+        public const string ChargeTargetDamageMulti = "CBTBE_Charge_Damage_Multi"; // float
+        public const string ChargeTargetInstabilityMod = "CBTBE_Charge_Instability_Mod"; // int
+        public const string ChargeTargetInstabilityMulti = "CBTBE_Charge_Instability_Multi"; // float
 
-        public const string KickDamageMod = "CBTBE_Kick_Damage_Mod"; // int
-        public const string KickDamageMulti = "CBTBE_Kick_Damage_Multi"; // float
+        public const string DeathFromAboveAttackerDamageMod = "CBTBE_DFA_Attacker_Damage_Mod"; // int
+        public const string DeathFromAboveAttackerDamageMulti = "CBTBE_DFA_Attacker_Damage_Multi"; // float
+        public const string DeathFromAboveAttackerInstabilityMod = "CBTBE_DFA_Attacker_Instability_Mod"; // int
+        public const string DeathFromAboveAttackerInstabilityMulti = "CBTBE_DFA_Attacker_Instability_Multi"; // float
 
-        public const string PunchDamageMod = "CBTBE_Punch_Damage_Mod"; // int
-        public const string PunchDamageMulti = "CBTBE_Punch_Damage_Multi"; // float
+        public const string DeathFromAboveTargetDamageMod = "CBTBE_DFA_Target_Damage_Mod"; // int
+        public const string DeathFromAboveTargetDamageMulti = "CBTBE_DFA_Target_Damage_Multi"; // float
+        public const string DeathFromAboveTargetInstabilityMod = "CBTBE_DFA_Target_Instability_Mod"; // int
+        public const string DeathFromAboveTargetInstabilityMulti = "CBTBE_DFA_Target_Instability_Multi"; // float
+
+        public const string KickTargetDamageMod = "CBTBE_Kick_Target_Damage_Mod"; // int
+        public const string KickTargetDamageMulti = "CBTBE_Kick_Target_Damage_Multi"; // float
+        public const string KickTargetInstabilityMod = "CBTBE_Kick_Target_Instability_Mod"; // int
+        public const string KickTargetInstabilityMulti = "CBTBE_Kick_Target_Instability_Multi"; // float
+
+        public const string PunchTargetDamageMod = "CBTBE_Punch_Target_Damage_Mod"; // int
+        public const string PunchTargetDamageMulti = "CBTBE_Punch_Target_Damage_Multi"; // float
+        public const string PunchTargetInstabilityMod = "CBTBE_Punch_Target_Instability_Mod"; // int
+        public const string PunchTargetInstabilityMulti = "CBTBE_Punch_Target_Instability_Multi"; // float
 
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
-        public const string PhysicalWeaponDamageMod = "CBTBE_Physical_Damage_Mod"; // int
-        public const string PhysicalWeaponDamageMulti = "CBTBE_Physical_Damage_Multi"; // float
+        public const string PhysicalWeaponAppliesUnsteadyToTarget = "CBTBE_Physical_Weapon_Applies_Unsteady_To_Target"; // bool - Allows setting attack type to punch or standard
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
-        public const string PhysicalWeaponDamageDivisor = "CBTBE_Physical_Weapon_Damage_Divisor"; // float - how much damage / ton the weapon does
-        public const string PhysicalWeaponInstabilityDivisor = "CBTBE_Physical_Weapon_Instability_Divisor"; // float - how much stab / ton the weapon does
-        public const string PhysicalWeaponAppliesUnsteady = "CBTBE_Physical_Weapon_Applies_Unsteady"; // bool - Allows setting attack type to punch or standard
+
+        public const string PhysicalWeaponTargetDamageTonnageDivisor = "CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor"; // float - how much damage / ton the weapon does
+        public const string PhysicalWeaponTargetDamageMod = "CBTBE_Physical_Weapon_Target_Damage_Mod"; // int
+        public const string PhysicalWeaponTargetDamageMulti = "CBTBE_Physical_Target_Damage_Multi"; // float
+
+        public const string PhysicalWeaponTargetInstabilityTonnageDivisor = "CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor"; // float - how much stab / ton the weapon does
+        public const string PhysicalWeaponTargetInstabilityMod = "CBTBE_Physical_Weapon_Target_Instability_Mod"; // int
+        public const string PhysicalWeaponTargetInstabilityMulti = "CBTBE_Physical_Weapon_Target_Instability_Multi"; // float
+
     }
 
     public class ModConsts

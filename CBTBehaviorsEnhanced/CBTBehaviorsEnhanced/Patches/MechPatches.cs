@@ -22,6 +22,49 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<float>(ModStats.RunMultiMod, 0f);
             __instance.StatCollection.AddStatistic<bool>(ModStats.HullBreachImmunity, true);
 
+            // Setup melee stats
+            __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackerDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.ChargeAttackerDamageMulti, 1f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackerInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.ChargeAttackerInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.ChargeTargetDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetDamageMulti, 1f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.ChargeTargetInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveAttackerDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveAttackerDamageMulti, 1f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveAttackerInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveAttackerInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveTargetDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetDamageMulti, 1f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveTargetInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.KickTargetDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetDamageMulti, 1f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.KickTargetInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetDamageMulti, 1f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PunchIsPhysicalWeapon, false);
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponAppliesUnsteadyToTarget, false);
+            __instance.StatCollection.AddStatistic<string>(ModStats.PhysicalWeaponLocationTable, "");
+
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor, 0f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetDamageMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamageMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor, 0f);
+            __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetInstabilityMod, 0);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstabilityMulti, 1f);
+
             // Override the heat and shutdown levels
             List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();
             int overheatThreshold = sortedKeys.First();
@@ -33,6 +76,7 @@ namespace CBTBehaviorsEnhanced.Patches {
             // Disable default heat penalties
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatToHitPenalties, false);
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatMovementPenalties, false);
+
         }
     }
 

@@ -46,8 +46,8 @@ namespace CBTBehaviorsEnhanced.Objects
 
                 // Unsteady
                 this.ForceUnsteadyOnAttacker = false;
-                this.ForceUnsteadyOnTarget = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAppliesUnsteady) ? 
-                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponAppliesUnsteady) : Mod.Config.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady;
+                this.ForceUnsteadyOnTarget = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAppliesUnsteadyToTarget) ? 
+                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponAppliesUnsteadyToTarget) : Mod.Config.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady;
 
                 // Set the animation type
                 this.AttackAnimation = MeleeAttackType.Punch;
@@ -56,6 +56,14 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
+            // Check that unit has a physical attack
+            if (!attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
+                attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+            {
+                Mod.Log.Info("Unit has no physical weapon by stat; skipping.");
+                return false;
+            }
+
             // If no punch - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Punch))
             {
@@ -69,14 +77,6 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!leftArmIsFunctional && !rightArmIsFunctional)
             {
                 Mod.Log.Info("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
-                return false;
-            }
-
-            // Check that unit has a physical attack
-            if (!attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) || 
-                attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
-            {
-                Mod.Log.Info("Unit has no physical weapon by stat; skipping.");
                 return false;
             }
 
@@ -95,8 +95,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            int sumTargetDamage = this.TargetDamageClusters.Count() > 0 ?
-                (int)Math.Ceiling(this.TargetDamageClusters.Sum()) : 0;
+
             string localText = new Text(
                 Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Physical_Weapon_Desc],
                 new object[] {
@@ -124,45 +123,57 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CalculateDamages(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating physical weapon for attacker: {CombatantUtils.Label(attacker)} " +
+            Mod.Log.Info($"Calculating PHYSICAL WEAPON damage for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponDamageDivisor) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponDamageDivisor) : 
+            // 0 is a signal that there's no divisor
+            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageTonnageDivisor) && 
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor) > 0 ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor) : 
                 Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackTon;
 
-            float baseTargetDamage = (float)Math.Ceiling(divisor * attacker.tonnage);
-            Mod.Log.Info($" - Target baseDamage: {divisor} x " +
-                $"attacker tonnage: {attacker.tonnage} = {baseTargetDamage}");
+            float raw = (float)Math.Ceiling(divisor * attacker.tonnage);
+            Mod.Log.Info($" - divisor: {divisor} x attacker tonnage: {attacker.tonnage} = raw: {raw}");
 
             // Modifiers
-            float damageMod = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponDamageMod) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponDamageMod) : 0f;
-            float damageMulti = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponDamageMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponDamageMulti) : 1f;
+            float mod = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMod) ?
+                attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponTargetDamageMod) : 0f;
+            float multi = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMulti) ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageMulti) : 1f;
 
             // Roll up final damage
-            float finalTargetDamage = (float)Math.Ceiling((baseTargetDamage + damageMod) * damageMulti);
-            Mod.Log.Info($" - Target finalDamage: {finalTargetDamage} = (baseDamage: {baseTargetDamage} + damageMod: {damageMod}) x " +
-                $"damageMulti: {damageMulti}");
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             // Target damage applies as a single modifier
-            this.TargetDamageClusters = new float[] { finalTargetDamage };
+            this.TargetDamageClusters = new float[] { final };
         }
 
         private void CalculateInstability(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating instability for attacker: {CombatantUtils.Label(attacker)} " +
+            Mod.Log.Info($"Calculating PHYSICAL WEAPON instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponInstabilityDivisor) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponInstabilityDivisor) :
+            // 0 is a signal that there's no divisor
+            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor) &&
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor) > 0 ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor) :
                 Mod.Config.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon;
 
-            this.TargetInstability = (float)Math.Ceiling(divisor * attacker.tonnage);
-            Mod.Log.Info($" - Target takes {divisor} instability x " +
-                $"target tonnage {attacker.tonnage} = {this.TargetInstability}");
+            float raw = (float)Math.Ceiling(divisor * attacker.tonnage);
+            Mod.Log.Info($" - divisor: {divisor} x attacker tonnage: {attacker.tonnage} = raw: {raw}");
 
+            // Modifiers
+            float mod = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMod) ?
+                attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponTargetInstabilityMod) : 0f;
+            float multi = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMulti) ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityMulti) : 1f;
+
+            // Roll up final damage
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            
+            this.TargetInstability = final;
         }
     }
 }

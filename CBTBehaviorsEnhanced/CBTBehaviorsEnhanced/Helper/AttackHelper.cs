@@ -10,7 +10,7 @@ namespace CBTBehaviorsEnhanced.Helper
         public static void CreateImaginaryAttack(Mech attacker, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters, MeleeAttackType attackType)
         {
             AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(0, attacker, target, 
-                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attackType == MeleeAttackType.DFA ? attacker.DFAWeapon : attacker.MeleeWeapon }, 
+                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attacker.ImaginaryLaserWeapon }, 
                 attackType, 0, false
                 );
 

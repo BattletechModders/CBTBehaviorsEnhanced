@@ -92,6 +92,7 @@
     <Compile Include="Helper\MeleeHelper.cs" />
     <Compile Include="Helper\QuipHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
+    <Compile Include="Melee\MechDFASequencePatches.cs" />
     <Compile Include="ModInit.cs" />
     <Compile Include="Components\VolatileAmmo.cs" />
     <Compile Include="Extensions\MechExtensions.cs" />
@@ -100,7 +101,6 @@
     <Compile Include="Heat\MechEmergencyShutdownSequence.cs" />
     <Compile Include="Helper\CheckHelper.cs" />
     <Compile Include="Helper\MechHelper.cs" />
-    <Compile Include="Melee\MechDFASequence.cs" />
     <Compile Include="Melee\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
     <Compile Include="ModText.cs" />

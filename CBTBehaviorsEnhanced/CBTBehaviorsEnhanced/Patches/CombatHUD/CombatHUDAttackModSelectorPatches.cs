@@ -111,29 +111,71 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         public static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, string additionalDetails, bool showHeatWarnings)
         {
-            Mod.Log.Debug($"ShowFireButton called with mode: {mode}");
-            if (mode == CombatHUDFireButton.FireMode.Engage && ModState.CombatHUD.SelectionHandler.ActiveState != null)
+            if (ModState.CombatHUD.SelectionHandler.ActiveState == null)
+            {
+                Mod.Log.Info($"Disabling all CHUD_Fire_Buttons");
+                ModState.MeleeAttackContainer.SetActive(false);
+                return;
+            }
+
+            Mod.Log.Info($"ShowFireButton called with mode: {mode}");
+
+            // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
+            if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
+            {
+                if (ModState.MeleeStates == null)
+                {
+                    ModState.MeleeStates = MeleeHelper.GetMeleeStates(
+                        ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                        ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
+                        ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
+                        );
+                }
+            }
+            else
+            {
+                ModState.MeleeStates = null;
+            }
+            
+            if (mode == CombatHUDFireButton.FireMode.Engage)
             {
                 Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(true);
 
-                ModState.MeleeStates = MeleeHelper.GetMeleeStates(
-                    ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
-                    ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
-                    ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
-                    );
+                if (ModState.ChargeFB != null)
+                {
+                    if (ModState.MeleeStates.Charge.IsValid)
+                        ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                    else
+                        ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                }
 
-                if (ModState.ChargeFB != null && ModState.MeleeStates.Charge.IsValid) 
-                    ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.KickFB != null && ModState.MeleeStates.Kick.IsValid) 
-                    ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PhysicalWeaponFB != null && ModState.MeleeStates.PhysicalWeapon.IsValid) 
-                    ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
-                if (ModState.PunchFB != null && ModState.MeleeStates.Punch.IsValid) 
-                    ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                if (ModState.KickFB != null)
+                {
+                    if (ModState.MeleeStates.Kick.IsValid)
+                        ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                    else
+                        ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                }
+
+                if (ModState.PhysicalWeaponFB != null)
+                {
+                    if (ModState.MeleeStates.PhysicalWeapon.IsValid)
+                        ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                    else
+                        ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                }
+
+                if (ModState.PunchFB != null)
+                {
+                    if (ModState.MeleeStates.Punch.IsValid)
+                        ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.Engage;
+                    else
+                        ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                }
 
                 // TODO: Autoselect best option
-                ModState.MeleeStates.SelectedState = ModState.MeleeStates.HighestDamageState;
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.GetHighestTargetDamageState();
 
                 // TODO: Update weapon damage instead?
             }
@@ -149,13 +191,34 @@ namespace CBTBehaviorsEnhanced.Patches
                 // Resetting state so it's not accidently reused
                 ModState.MeleeStates = null;
             }
+
+            // Handle the DFA button here
+            if (mode == CombatHUDFireButton.FireMode.DFA)
+            {
+                Mod.Log.Info("Enabling description container for DFA");
+                __instance.DescriptionContainer.SetActive(true);
+                __instance.DescriptionContainer.gameObject.SetActive(true);
+
+                HashSet<string> descriptonNotes = ModState.MeleeStates.DFA.DescriptionNotes;
+                string description = String.Join(", ", descriptonNotes);
+                Mod.Log.Info($"Aggregate description is: {description}");
+
+                __instance.DescriptionText.SetText(description);
+                __instance.DescriptionText.ForceMeshUpdate(true);
+
+                // TODO: Update weapon damage instead?
+
+                // Update the weapon strings
+                ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
+
+            }
         }
     }
 
     [HarmonyPatch(typeof(CombatHUDFireButton), "CurrentFireMode", MethodType.Setter)]
     static class CombatHUDFireButton_CurrentFireMode_Setter
     {
-        static void Postfix(CombatHUDFireButton __instance)
+        static void Postfix(CombatHUDFireButton __instance, CombatHUDFireButton.FireMode value)
         {
 
             if (__instance.gameObject != null)
@@ -219,7 +282,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (ModState.MeleeStates.SelectedState != null)
             {
-                Mod.Log.Info("Enabling description container");
+                Mod.Log.Info("Enabling description container for melee attack");
                 selector.DescriptionContainer.SetActive(true);
                 selector.DescriptionContainer.gameObject.SetActive(true);
 
@@ -227,7 +290,6 @@ namespace CBTBehaviorsEnhanced.Patches
                 string description = String.Join(", ", descriptonNotes);
                 Mod.Log.Info($"Aggregate description is: {description}");
 
-                Mod.Log.Info("Setting text strings for selected state.");
                 selector.DescriptionText.SetText(description);
                 selector.DescriptionText.ForceMeshUpdate(true);
                 

@@ -9,22 +9,23 @@ using us.frostraptor.modUtils;
 namespace CBTBehaviorsEnhanced.Melee {
 
 
-    [HarmonyPatch(typeof(MechMeleeSequence), "BuildMeleeDirectorSequence")]
+    [HarmonyPatch(typeof(MechDFASequence), "BuildMeleeDirectorSequence")]
     [HarmonyBefore("io.mission.modrepuation")]
-    static class MechMeleeSequence_BuildMeleeDirectorSequence
+    static class MechDFASequence_BuildMeleeDirectorSequence
     {
-        static void Prefix(MechMeleeSequence __instance)
+        static void Prefix(MechDFASequence __instance)
         {
             // TODO: If this happens before the above... need to grab the selected melee type from state
-            Mod.Log.Info($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon}");
-            ModState.MeleeWeapon = __instance.OwningMech.MeleeWeapon;
-            ModState.MeleeType = __instance.selectedMeleeType;
+            Mod.Log.Info($"Setting current melee type to: {MeleeAttackType.DFA} and weapon to: {__instance.OwningMech.DFAWeapon}");
+            ModState.MeleeWeapon = __instance.OwningMech.DFAWeapon;
+            ModState.MeleeType = MeleeAttackType.DFA;
 
             if (ModState.MeleeStates?.SelectedState != null)
             {
+                // Selected state *BETTER* be DFA here
                 ModState.MeleeType = ModState.MeleeStates.SelectedState.AttackAnimation;
 
-                // Modify the owning mech melee weapon to do the 'first' hit
+                // Modify the owning mech DFA melee weapon to do the 'first' hit
                 float targetDamage = ModState.MeleeStates.SelectedState?.TargetDamageClusters?.Length > 0 ?
                     ModState.MeleeStates.SelectedState.TargetDamageClusters[0] : 0;
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
@@ -35,16 +36,17 @@ namespace CBTBehaviorsEnhanced.Melee {
     }
 
 
-    [HarmonyPatch(typeof(MechMeleeSequence), "OnMeleeComplete")]
+    [HarmonyPatch(typeof(MechDFASequence), "OnMeleeComplete")]
     [HarmonyBefore("io.mission.modrepuation")]
-    static class MechMeleeSequence_OnMeleeComplete
+    static class MechDFASequence_OnMeleeComplete
     {
-        static void Prefix(MechMeleeSequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
+        static void Prefix(MechDFASequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
         {
             Mod.Log.Trace("MMS:OMC entered.");
 
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
-            Mod.Log.Info($"== Resolving cluster damage, instability, and unsteady on melee attacker: {CombatantUtils.Label(__instance.OwningMech)} and target: {CombatantUtils.Label(__instance.MeleeTarget)}.");
+            Mod.Log.Info($"== Resolving cluster damage, instability, and unsteady on melee attacker: {CombatantUtils.Label(__instance.OwningMech)} and " +
+                $"target: {CombatantUtils.Label(__instance.DFATarget)}.");
             if (attackCompleteMessage.stackItemUID == ___meleeSequence.SequenceGUID && ModState.MeleeStates?.SelectedState != null)
             {
                 if (!__instance.OwningMech.IsOrWillBeProne)
@@ -69,12 +71,26 @@ namespace CBTBehaviorsEnhanced.Melee {
                     {
                         Mod.Log.Info($" -- Applying {ModState.MeleeStates.SelectedState.AttackerDamageClusters.Sum()} damage to attacker as {ModState.MeleeStates.SelectedState.AttackerDamageClusters.Length} clusters.");
                         AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.OwningMech, __instance.SequenceGUID,
-                            ModState.MeleeStates.SelectedState.AttackerDamageClusters, ModState.MeleeStates.SelectedState.AttackAnimation);
+                            ModState.MeleeStates.SelectedState.AttackerDamageClusters, MeleeAttackType.Kick);
                     }
                 }
 
                 // Target stability and unsteady - only applies to mech targets
-                if (__instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
+                bool targetWasHit = false;
+                foreach (AttackDirector.AttackSequence attackSequence in ___meleeSequence.directorSequences)
+                {
+                    if (!attackSequence.attackCompletelyMissed)
+                    {
+                        targetWasHit = true;
+                        Mod.Log.Info($" -- AttackSequence: {attackSequence.stackItemUID} hit the target.");
+                    }
+                    else
+                    {
+                        Mod.Log.Info($" -- AttackSequence: {attackSequence.stackItemUID} missed the target.");
+                    }
+                }
+
+                if (targetWasHit && __instance.DFATarget is Mech targetMech && !targetMech.IsProne)
                 {
                     if (ModState.MeleeStates.SelectedState.ForceUnsteadyOnTarget)
                     {
@@ -89,13 +105,13 @@ namespace CBTBehaviorsEnhanced.Melee {
                 }
 
                 // Target cluster damage - first attack was applied through melee weapon
-                if (ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1 && !__instance.MeleeTarget.IsDead)
+                if (targetWasHit && ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1 && !__instance.DFATarget.IsDead)
                 {
                     // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
                     float[] clusterDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.SubArray(1, ModState.MeleeStates.SelectedState.TargetDamageClusters.Length);
                     Mod.Log.Info($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
-                    AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.MeleeTarget, __instance.SequenceGUID, clusterDamage, 
-                        ModState.MeleeStates.SelectedState.AttackAnimation);
+                    AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.DFATarget, __instance.SequenceGUID, clusterDamage,
+                        MeleeAttackType.DFA);
                 }
 
                 Mod.Log.Info($"== Done.");
@@ -106,11 +122,11 @@ namespace CBTBehaviorsEnhanced.Melee {
         }
     }
 
-    [HarmonyPatch(typeof(MechMeleeSequence), "CompleteOrders")]
+    [HarmonyPatch(typeof(MechDFASequence), "CompleteOrders")]
     [HarmonyBefore("io.mission.modrepuation")]
-    static class MechMeleeSequence_CompleteOrders
+    static class MechDFASequence_CompleteOrders
     {
-        static void Postfix(MechMeleeSequence __instance)
+        static void Postfix(MechDFASequence __instance)
         {
             Mod.Log.Trace("MMS:CO - entered.");
 
@@ -120,7 +136,6 @@ namespace CBTBehaviorsEnhanced.Melee {
                 __instance.OwningMech.CheckForInstability();
                 __instance.OwningMech.HandleKnockdown(__instance.RootSequenceGUID, __instance.owningActor.GUID, Vector2.one, null);
             }
-
 
             // Invalidate our melee state as we're done
             ModState.MeleeStates = null;

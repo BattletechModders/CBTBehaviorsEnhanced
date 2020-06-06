@@ -183,10 +183,6 @@ namespace CBTBehaviorsEnhanced {
 
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         public class MeleeOptions {
-            public float SkillMulti = 0.05f;
-
-            public float MadeDFAFallChance = 0.90f;
-            public float HitByDFAFallChance = 0.60f;
 
             public bool AllowMeleeFromSprint = true;
 
