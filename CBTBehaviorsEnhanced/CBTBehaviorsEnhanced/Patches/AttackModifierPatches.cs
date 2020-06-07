@@ -31,6 +31,19 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
+    // Always return a zero for DFA modifiers; we'll handle it with our custom modifiers
+    [HarmonyPatch(typeof(ToHit), "GetDFAModifier")]
+    public static class ToHit_GetDFAModifier
+    {
+        private static void Postfix(ToHit __instance, ref float __result)
+        {
+            Mod.Log.Trace("TH:GDFAM entered");
+
+            __result = 0;
+
+        }
+    }
+
     [HarmonyPatch(typeof(ToHit), "GetAllModifiers")]
     public static class ToHit_GetAllModifiers
     {
@@ -60,7 +73,8 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (attacker.HasMovedThisRound && attacker.JumpedLastRound)
             {
-                __result = string.Format("{0}JUMPED {1:+#;-#}; ", __result, Mod.Config.ToHitSelfJumped);
+                string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
+                __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, Mod.Config.ToHitSelfJumped);
             }
 
             // Check melee patches
@@ -105,7 +119,8 @@ namespace CBTBehaviorsEnhanced.Patches
             // Check melee patches
             if (ModState.MeleeStates != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
-                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
+                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
+                    ___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
@@ -113,10 +128,6 @@ namespace CBTBehaviorsEnhanced.Patches
                         Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
                         addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
                     }
-                }
-                else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
-                {
-                    // TODO: DFA - should work under above code?
                 }
             }
         }
@@ -164,22 +175,28 @@ namespace CBTBehaviorsEnhanced.Patches
             // Check melee patches
             if (ModState.MeleeStates != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
-                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
+                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
+                    ___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
-                        // TODO: Localize
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
                     };
                     
                 }
-                else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
-                {
-                    // TODO: DFA - should work under above code?
-                }
+                //else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
+                //{
+                //    float targetDamage = ModState.MeleeStates.DFA.TargetDamageClusters.Sum();
+                //    __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
+                //    {
+                //        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
+                //        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
+                //        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
+                //    };
+                //}
             }
         }
     }

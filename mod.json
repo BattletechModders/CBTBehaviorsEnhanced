@@ -56,34 +56,38 @@
                 "AttackerInstabilityPerTargetTon" : 0.5,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "DamageClusterDivisor" : 25.0,
-                "AttackAppliesUnsteady" : false
+                "AttackAppliesUnsteady" : true
             },
 
             "DFA" : {
+                "AttackerDamagePerTargetTon" : 1.5,
                 "TargetDamagePerAttackerTon" : 1.5,
-                "TargetInstabilityPerAttackerTon" : 0.5
+                "AttackerInstabilityPerTargetTon" : 0.5,
+                "TargetInstabilityPerAttackerTon" : 0.5,
+                "DamageClusterDivisor" : 25.0,
+                "AttackAppliesUnsteady" : true
             },
 
             "Kick" : {
                 "BaseAttackBonus" : -2,
-                "LegActuatorDamageMalus" : -2,
-                "FootActuatorDamageMalus" : -1,
+                "LegActuatorDamageMalus" : 2,
+                "FootActuatorDamageMalus" : 1,
                 "TargetDamagePerAttackerTon" : 1,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "LegActuatorDamageReduction" : 0.5,
-                "AttackAppliesUnsteady" : false
+                "AttackAppliesUnsteady" : true
             },
 
             "PhysicalWeapon" : {
-                "ArmActuatorDamageMalus" : -2,
+                "ArmActuatorDamageMalus" : 2,
                 "DefaultDamagePerAttackTon" : 2,
                 "DefaultInstabilityPerAttackerTon" : 1,
-                "DefaultAttackAppliesUnsteady" : false
+                "DefaultAttackAppliesUnsteady" : true
             },
 
             "Punch" : {
-                "ArmActuatorDamageMalus" : -2,
-                "HandActuatorDamageMalus" : -1,
+                "ArmActuatorDamageMalus" : 2,
+                "HandActuatorDamageMalus" : 1,
                 "TargetDamagePerAttackerTon" : 0.5,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "ArmActuatorDamageReduction" : 0.5,
@@ -91,16 +95,7 @@
             },
 
             "AllowMeleeFromSprint" : true,
-            "ProneTargetAttackModifier" : -2,
-
-            "SkillMulti" : 0.05,
-            "MadeChargeFallChance" : 0.60,
-            "MadeDFAFallChance" : 0.90,
-            "MissedKickFallChance" : 0.30,
-            "HitByChargeFallChance" : 0.60,
-            "HitByDFAFallChance" : 0.60,
-            "HitByKickFallChance" : 0.30
-
+            "ProneTargetAttackModifier" : -2
         },
         
         "Move" : {

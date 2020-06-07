@@ -27,7 +27,7 @@ namespace CBTBehaviorsEnhanced.Objects
 		public DFAMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-			Mod.Log.Info($"Buliding DFA state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+			Mod.Log.Info($"Building DFA state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
 
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
 			this.IsValid = ValidateAttack(attacker, target);

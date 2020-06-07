@@ -44,15 +44,15 @@
 
     "AttackDescriptions" : {
         "CHARGE_DESC" : 
-            "Charges damage both the attacker and target. Damage is randomized across all locations in 25 point clusters. <color=#ff0000>Attacker Damage: {0}  Instability: {1}</color><color=#00ff00>Target Damage: {2}  Instability: {3}</color>" ,
+            "Charges damage both the attacker and target. Damage is randomized across all locations in 25 point clusters. <color=#ff0000>Attacker takes {0} damage and {1} instability.</color>" ,
         "DFA_DESC" : 
-            "Death-From-Above attacks damage both the attacker and target. Damage is randomized across all locations in 25 point clusters. <color=#ff0000>Attacker Damage: {0}  Instability: {1}</color>\n<color=#00ff00>Target Damage: {2}  Instability: {3}</color>",
+            "Death-From-Above attacks damage both the attacker and target. Damage is delivered as 25 point clusters randomized to the target arms, torsos, and head and attacker legs. <color=#ff0000>Attacker takes {0} damage and {1} instability.</color>",
         "KICK_DESC" :
-            "Kicks inflict a single hit that strikes the legs of the target.  <color=#ff0000>Damage: {0}  Instability: {1}</color>",
+            "Kicks inflict a single hit that strikes the legs of the target.",
         "PHYSICAL_WEAPON_DESC" :
-            "Physical weapons inflict damage and instability to the target. Damage is applied in a single hit randomized across all target locations.  Some weapons will target punch or kick locations. <color=#ff0000>Damage: {0}  Instability: {1}</color>",
+            "Physical weapons inflict a single hit whose location can vary. See the weapon details.",
         "PUNCH_DESC" :
-            "Punches inflict a single hit that strikes the arms, torsos, and head of the target. <color=#ff0000>Damage: {0}  Instability: {1}</color>"
+            "Punches inflict a single hit that strikes the arms, torsos, and head of the target. "
     },
 
     "Labels" : {

@@ -65,7 +65,7 @@ namespace CBTBehaviorsEnhanced
 
         public const string PhysicalWeaponTargetDamageTonnageDivisor = "CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor"; // float - how much damage / ton the weapon does
         public const string PhysicalWeaponTargetDamageMod = "CBTBE_Physical_Weapon_Target_Damage_Mod"; // int
-        public const string PhysicalWeaponTargetDamageMulti = "CBTBE_Physical_Target_Damage_Multi"; // float
+        public const string PhysicalWeaponTargetDamageMulti = "CBTBE_Physical_Weapon_Target_Damage_Multi"; // float
 
         public const string PhysicalWeaponTargetInstabilityTonnageDivisor = "CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor"; // float - how much stab / ton the weapon does
         public const string PhysicalWeaponTargetInstabilityMod = "CBTBE_Physical_Weapon_Target_Instability_Mod"; // int

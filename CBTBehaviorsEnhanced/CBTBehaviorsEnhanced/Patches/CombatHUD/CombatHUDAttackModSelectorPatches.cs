@@ -248,7 +248,15 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || __instance.gameObject == null || ModState.MeleeStates == null) return true;
 
-            Mod.Log.Info($"CHUDFB - OnClick FIRED!");
+            Mod.Log.Info($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}!");
+
+            // Set the melee state so we can pick it up later.
+            if (__instance.CurrentFireMode == CombatHUDFireButton.FireMode.DFA && ModState.MeleeStates != null)
+            {
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.DFA;
+                return true;
+            }
+
             bool shouldReturn = true;
             CombatHUDAttackModeSelector selector = ModState.CombatHUD.AttackModeSelector;
             if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
@@ -289,7 +297,6 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 // Update the weapon strings
                 ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
-
             }
 
             return shouldReturn;
