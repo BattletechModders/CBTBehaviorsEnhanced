@@ -133,9 +133,12 @@ namespace CBTBehaviorsEnhanced
         // Labels for weapon tooltips
         public const string LT_Label_Acutator_Damage = "ATK_MOD_ACTUATOR_DAMAGE";
         public const string LT_Label_Attacker_Jumped = "ATK_MOD_ATTACKER_JUMPED";
+        public const string LT_Label_Charge_Attack_Mod = "ATK_MOD_CHARGE_MOD";
         public const string LT_Label_ComparativeSkill_Piloting = "ATK_MOD_COMPARATIVE_PILOTING";
         public const string LT_Label_Easy_to_Kick = "ATK_MOD_EASY_TO_KICK";
-        public const string LT_Label_Physical_Weapon_Attack_Mod = "ATK_MOD_PHYS_WEP_ATK_MOD";
+        public const string LT_Label_Kick_Attack_Mod = "ATK_MOD_KICK_MOD";
+        public const string LT_Label_Punch_Attack_Mod = "ATK_MOD_PUNCH_MOD";
+        public const string LT_Label_Physical_Weapon_Attack_Mod = "ATK_MOD_PHYS_WEP_MOD";
         public const string LT_Label_Target_Prone = "ATK_MOD_TARGET_PRONE";
 
         public const string LT_Label_Weapon_Hover_Damage = "WEAPON_HOVER_DAMAGE";
@@ -154,9 +157,12 @@ namespace CBTBehaviorsEnhanced
             // Attack labels
             { LT_Label_Acutator_Damage, "ACTUATOR DAMAGE" },
             { LT_Label_Attacker_Jumped, "ATTACKER JUMPED" },
+            { LT_Label_Charge_Attack_Mod, "CHARGE MOD" },
             { LT_Label_ComparativeSkill_Piloting, "PILOTING DELTA" },
             { LT_Label_Easy_to_Kick, "EASY TO KICK" },
-            { LT_Label_Physical_Weapon_Attack_Mod, "WEAPON MODIFIER" },
+            { LT_Label_Kick_Attack_Mod, "KICK MOD" },
+            { LT_Label_Punch_Attack_Mod, "PUNCH MOD" },
+            { LT_Label_Physical_Weapon_Attack_Mod, "P.WEAP MOD" },
             { LT_Label_Target_Prone, "PRONE MELEE TARGET" },
 
             // Weapon hover labels

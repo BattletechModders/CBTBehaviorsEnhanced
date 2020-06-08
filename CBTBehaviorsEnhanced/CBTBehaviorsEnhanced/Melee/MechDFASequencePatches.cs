@@ -32,8 +32,13 @@ namespace CBTBehaviorsEnhanced.Melee {
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
                 Mod.Log.Info($"For {CombatantUtils.Label(__instance.OwningMech)} set melee weapon damage: {targetDamage}  and instability: {ModState.MeleeStates.SelectedState.TargetInstability}");
 
+                // Cache the attacker's original DFASelfDamage value and set it to zero, so we can apply our own damage
+                ModState.OriginalDFASelfDamage = __instance.OwningMech.StatCollection.GetValue<float>(ModStats.HBS_DFA_Self_Damage);
+                __instance.OwningMech.StatCollection.Set<float>(ModStats.HBS_DFA_Self_Damage, 0f);
+                __instance.OwningMech.StatCollection.Set<bool>(ModStats.HBS_DFA_Causes_Self_Unsteady, false);
+
                 // Make sure we use the target's damage table
-                ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.TargetTable;
+                ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.TargetTable;                
             }
         }
     }
@@ -128,9 +133,14 @@ namespace CBTBehaviorsEnhanced.Melee {
                 Mod.Log.Info($"== Done.");
             }
 
+            // Restore the attacker's DFA damage
+            __instance.OwningMech.StatCollection.Set<float>(ModStats.HBS_DFA_Self_Damage, ModState.OriginalDFASelfDamage);
+            __instance.OwningMech.StatCollection.Set<bool>(ModStats.HBS_DFA_Causes_Self_Unsteady, true);
+
             // Reset melee state
             ModState.MeleeStates = null;
             ModState.ForceDamageTable = DamageTable.NONE;
+            ModState.OriginalDFASelfDamage = 0f;
         }
     }
 

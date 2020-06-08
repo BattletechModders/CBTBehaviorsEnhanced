@@ -23,6 +23,8 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<bool>(ModStats.HullBreachImmunity, true);
 
             // Setup melee stats
+            __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackMod, 0);
+
             __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackerDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.ChargeAttackerDamageMulti, 1f);
             __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackerInstabilityMod, 0);
@@ -32,6 +34,8 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetDamageMulti, 1f);
             __instance.StatCollection.AddStatistic<int>(ModStats.ChargeTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveAttackMod, 0);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveAttackerDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveAttackerDamageMulti, 1f);
@@ -43,10 +47,14 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetInstabilityMulti, 1f);
 
+            __instance.StatCollection.AddStatistic<int>(ModStats.KickAttackMod, 0);
+
             __instance.StatCollection.AddStatistic<int>(ModStats.KickTargetDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetDamageMulti, 1f);
             __instance.StatCollection.AddStatistic<int>(ModStats.KickTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<int>(ModStats.PunchAttackMod, 0);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetDamageMulti, 1f);

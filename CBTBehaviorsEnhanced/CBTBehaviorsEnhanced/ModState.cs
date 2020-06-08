@@ -20,6 +20,7 @@ namespace CBTBehaviorsEnhanced {
         public static Vector3 MeleePreviewPos = Vector3.one;
         public static float CachedDFASelfDamage = 0f;
         public static DamageTable ForceDamageTable = DamageTable.NONE;
+        public static float OriginalDFASelfDamage = 0f;
 
         // Breach state
         public static float BreachCheck = 0f;
@@ -47,6 +48,7 @@ namespace CBTBehaviorsEnhanced {
             MeleePreviewPos = Vector3.one;
             CachedDFASelfDamage = 0f;
             ForceDamageTable = DamageTable.NONE;
+            OriginalDFASelfDamage = 0f;
 
             // Breach state
             BreachCheck = 0f;

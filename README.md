@@ -95,14 +95,7 @@ Difficulty percentage is configurable in the mod.json file.
 
 ## Classic Melee
 
-* On a kick, make a piloting check or fall down (source)
-* On a missed kick, make a piloting check or fall down
-* On a DFA attack, make a piloting check or fall down (source and target)
-* On a missed DFA attack, automatically fall down
-* On a charge attack, make a piloting check or fall down (source and target)
 * Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
-* TODO: Allow selection of melee type
-* Allows moving to different melee positions (duplicate of MeleeMover by Morphyum)
 
 Melee has been revamped in CBTBE to allow player selection of melee types, as well as various other small tweaks. Players can choose between the following types of melee attacks:
 
@@ -115,6 +108,8 @@ Melee has been revamped in CBTBE to allow player selection of melee types, as we
 Each of these attacks have various statistics that can modify their damage, and unique configuration details. Those are covered in the sections below. 
 
 The AI will always choose to use the most powerful melee attack they have. Attacks that inflict unsteady will be prioritized when the target has evasion pips, but otherwise the attack with the greatest expected target damage will be selected. This can result in the AI tripping or killing itself.
+
+This mod incorporates the functionality of Mophyum's [Melee Mover](https://github.com/morphyum/meleemover/). This allows units to use sprint movement for melee, and allows them to move while engaged in combat. 
 
 ### Charge Attacks
 
@@ -395,6 +390,8 @@ All statistics used in melee values are listed below. See the relevant section f
 | Statistic Name | Type | Notes |
 | -------------- | ---- | ----- |
 | **CHARGE STATISTICS** |  |  |
+| CBTBE_Charge_Attack_Mod | System.Int32 |  |
+|  | | |
 | CBTBE_Charge_Attacker_Damage_Mod | System.Int32 ||
 | CBTBE_Charge_Attacker_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Charge_Attacker_Instability_Mod | System.Int32 ||
@@ -406,6 +403,8 @@ All statistics used in melee values are listed below. See the relevant section f
 | CBTBE_Charge_Target_Instability_Multi | System.Single |value must be >= 0|
 |  |  ||
 | **DEATH FROM ABOVE STATISTICS** |  ||
+| CBTBE_DFA_Attack_Mod | System.Int32 ||
+|  | ||
 | CBTBE_DFA_Attacker_Damage_Mod | System.Int32 ||
 | CBTBE_DFA_Attacker_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_DFA_Attacker_Instability_Mod | System.Int32 ||
@@ -417,12 +416,16 @@ All statistics used in melee values are listed below. See the relevant section f
 | CBTBE_DFA_Target_Instability_Multi | System.Single |value must be >= 0|
 |  |  ||
 | **KICK STATISTICS** |  ||
+| CBTBE_Kick_Attack_Mod | System.Int32 ||
+|  | ||
 | CBTBE_Kick_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Kick_Target_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Kick_Target_Instability_Mod | System.Int32 ||
 | CBTBE_Kick_Target_Instability_Multi | System.Single |value must be >= 0|
 |  |  ||
 | **PUNCH STATISTICS** |  ||
+| CBTBE_Punch_Attack_Mod | System.Int32 ||
+|  | ||
 | CBTBE_Punch_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Punch_Target_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Punch_Target_Instability_Mod | System.Int32 ||
@@ -444,8 +447,6 @@ All statistics used in melee values are listed below. See the relevant section f
 | CBTBE_Physical_Weapon_Target_Instability_Per_Attacker_Ton | System.Single |value must be > 0|
 | CBTBE_Physical_Weapon_Target_Instability_Mod | System.Int32 ||
 | CBTBE_Physical_Weapon_Target_Instability_Multi | System.Single |value must be >= 0|
-
-
 
 ## Classic Movement
 

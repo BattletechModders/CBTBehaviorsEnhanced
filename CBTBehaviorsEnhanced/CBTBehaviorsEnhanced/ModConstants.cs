@@ -26,9 +26,13 @@ namespace CBTBehaviorsEnhanced
         public const string HBS_HeatSinkCapacity = "HeatSinkCapacity";
         public const string HBS_Weapon_DamagePerShot = "DamagePerShot";
         public const string HBS_Weapon_Instability = "Instability";
+        public const string HBS_DFA_Self_Damage = "DFASelfDamage";
+        public const string HBS_DFA_Causes_Self_Unsteady = "DFACausesSelfUnsteady";
 
 
         // Melee damage modifier stats
+        public const string ChargeAttackMod = "CBTBE_Charge_Attack_Mod"; // int - a straight modifier to the attack roll
+
         public const string ChargeAttackerDamageMod = "CBTBE_Charge_Attacker_Damage_Mod"; // int
         public const string ChargeAttackerDamageMulti = "CBTBE_Charge_Attacker_Damage_Multi"; // float
         public const string ChargeAttackerInstabilityMod = "CBTBE_Charge_Attacker_Instability_Mod"; // int
@@ -38,6 +42,8 @@ namespace CBTBehaviorsEnhanced
         public const string ChargeTargetDamageMulti = "CBTBE_Charge_Target_Damage_Multi"; // float
         public const string ChargeTargetInstabilityMod = "CBTBE_Charge_Target_Instability_Mod"; // int
         public const string ChargeTargetInstabilityMulti = "CBTBE_Charge_Target_Instability_Multi"; // float
+
+        public const string DeathFromAboveAttackMod = "CBTBE_DFA_Attack_Mod"; // int - a straight modifier to the attack roll
 
         public const string DeathFromAboveAttackerDamageMod = "CBTBE_DFA_Attacker_Damage_Mod"; // int
         public const string DeathFromAboveAttackerDamageMulti = "CBTBE_DFA_Attacker_Damage_Multi"; // float
@@ -49,10 +55,14 @@ namespace CBTBehaviorsEnhanced
         public const string DeathFromAboveTargetInstabilityMod = "CBTBE_DFA_Target_Instability_Mod"; // int
         public const string DeathFromAboveTargetInstabilityMulti = "CBTBE_DFA_Target_Instability_Multi"; // float
 
+        public const string KickAttackMod = "CBTBE_Kick_Attack_Mod"; // int - a straight modifier to the attack roll
+
         public const string KickTargetDamageMod = "CBTBE_Kick_Target_Damage_Mod"; // int
         public const string KickTargetDamageMulti = "CBTBE_Kick_Target_Damage_Multi"; // float
         public const string KickTargetInstabilityMod = "CBTBE_Kick_Target_Instability_Mod"; // int
         public const string KickTargetInstabilityMulti = "CBTBE_Kick_Target_Instability_Multi"; // float
+
+        public const string PunchAttackMod = "CBTBE_Punch_Attack_Mod"; // int - a straight modifier to the attack roll
 
         public const string PunchTargetDamageMod = "CBTBE_Punch_Target_Damage_Mod"; // int
         public const string PunchTargetDamageMulti = "CBTBE_Punch_Target_Damage_Multi"; // float
