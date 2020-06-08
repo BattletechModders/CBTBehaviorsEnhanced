@@ -120,39 +120,44 @@ The AI will always choose to use the most powerful melee attack they have. Attac
 
 Charge attacks inflict damage and instability on both the attacker and target, and those values are increased by the number of *hexes* (not meters!) between the target and attacker. The calculation for damage and instability is the same, and follow this formula:
 
-`finalDamage = RoundUP( (raw + mod) * multi * hexesMoved)`
+`finalDamage = RoundUP( ( (raw * attacker/target tonnage) + mod) * multi * hexesMoved)`
 
 The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). They vary between attacker and target, allowing mod authors great flexibility in designing attacks.
 
-*Damage Inputs*
+*Attacker Inputs*
 
-| Input     | Attacker Source Value                                        | Target Source Value                                          |
-| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Charge.AttackerDamagePerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetDamagePerAttackerTon`  * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Damage_Mod`            | *statistic* -> `CBTBE_Charge_Target_Damage_Mod`              |
-| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Damage_Multi`          | *statistic* -> `CBTBE_Charge_Target_Damage_Multi`            |
-*Instability Inputs*
+| Input     | Source    | Damage Value                     | Instability Value                       |
+| --------- | --------- | ----------------------------------------- | ----------------------------------------- |
+| **raw**   | mod.json  | `Melee.Charge.AttackerDamagePerTargetTon` | `Melee.Charge.AttackerInstabilityPerTargetTon` |
+| **mod**   | statistic | `CBTBE_Charge_Attacker_Damage_Mod`        | `CBTBE_Charge_Attacker_Instability_Mod` |
+| **multi** | statistic | `CBTBE_Charge_Attacker_Damage_Mult`      |`CBTBE_Charge_Attacker_Instability_Multi`|
 
-| Input     | Attacker Source Value                                        | Target Source Value                                          |
-| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Charge.AttackerInstabilityPerTargetTon` * target tonnage | *mod.json* -> `Melee.Charge.TargetInstabilityPerAttackerTon` * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Charge_Attacker_Instability_Mod`       | *statistic* -> `CBTBE_Charge_Target_Instability_Mod`         |
-| **multi** | *statistic* -> `CBTBE_Charge_Attacker_Instability_Multi`     | *statistic* -> `CBTBE_Charge_Target_Instability_Multi`       |
+*Target Inputs*
+
+| Input     | Source    | Damage Value                     | Instability Value                       |
+| --------- | --------- | ----------------------------------------- | ----------------------------------------- |
+| **raw**   | mod.json  | `Melee.Charge.TargetDamagePerAttackerTon` | `Melee.Charge.TargetInstabilityPerAttackerTon` |
+| **mod**   | statistic | `CBTBE_Charge_Target_Damage_Mod`        | `CBTBE_Charge_Target_Instability_Mod` |
+| **multi** | statistic | `CBTBE_Charge_Target_Damage_Mult`      |`CBTBE_Charge_Target_Instability_Multi`|
 
 *HexesMoved* is calculated as the magnitude of the distance between the Attacker and Target's current position as vectors. This is then divided by the *Move.MPMetersPerHex* configuration value in `mod.json`. Because this value is a vector magnitude, it may result in more or less hexes of movement than you might expect, due to elevation changes or similar. 
 
 Damage is applied to the attacker and target as a series of clusters. The size of each cluster is determined by the *DamageClusterDivisor* in `mod.json`. Each cluster is resolved on the standard damage table for the target, as per a normal attack. 
 
-**Validations**: Before a charge can be made, several validation checks must be passed. If these checks pass, the charge is treated as invalid and can't be selected by either player or AI.
+**Validations**: Before an attack can be made, several validation checks must be passed. If all of these checks do not pass, the attack is invalid and can't be selected by either player or AI.
 
 * The target position must allow either *Tackle* or *Stomp* animations. These are generally allowed if the attacker midpoint is somewhere between the top and bottom of the target. 
 * The target cannot be **prone** 
 
 **Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
 
-* **Comparative Skill** is the difference between the attacker and target's *Piloting* skill rating. This is applied as a flat modifier, so an attacker with Piloting 7 versus a target with Piloting 4 would add a -3 to hit. An attacker with Piloting 2 versus a target with piloting 6 would suffer a +4 to hit.
+* **Comparative Skill** is the difference between the attacker and target's *Piloting* skill rating. This is applied as a flat modifier, so an attacker with Piloting 7 versus a target with Piloting 4 would add a -3 to hit bonus. An attacker with Piloting 2 versus a target with piloting 6 would suffer a +4 to hit penalty. 
 
-**Forced Unsteady**: If the `Melee.Charge.AttackAppliesUnsteady` value (in `mod.json`) is set to true, both the attacker and target will gain the **Unsteady** state if the attack hits. If the attack misses, only the attacker will receive the **Unsteady** state. Unsteady is required before an attack will create a knockdown.
+**Unsteady**: Attacks can apply the *Unsteady* state to a unit, dumping it's evasion pips and allowing it to be knocked down when it takes instability. There are three settings in the *Melee.Charge* portion of `mod.json` controlling when units gain unsteady:
+
+* **UnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* kick
+* **UnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* kick
+* **UnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* kick
 
 ### Death From Above Attacks
 
@@ -162,58 +167,226 @@ Loreum ipsumn
 
 Kick attacks inflict damage and instability on the target only. The calculation for damage and instability is the same, and follow this formula:
 
-`finalDamage = RoundUP( (raw + mod) * multi * actuatorMulti)`
+`finalDamage = RoundUP( ( (raw * attacker tonnage) + mod) * multi * actuatorMulti)`
+
+The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). 
+
+| Input     | Source    | Damage Values                           | Instability Values                           |
+| --------- | --------- | --------------------------------------- | -------------------------------------------- |
+| **raw**   | mod.json  | `Melee.Kick.TargetDamagePerAttackerTon` | `Melee.Kick.TargetInstabilityPerAttackerTon` |
+| **mod**   | statistic | `CBTBE_Kick_Target_Damage_Mod`          | `CBTBE_Kick_Target_Instability_Mod`          |
+| **multi** | statistic | `CBTBE_Kick_Target_Damage_Multi`        | `CBTBE_Kick_Target_Instability_Multi`        |
+
+*ActuatorMulti* is determined from the missing or damaged upper and lower leg actuators. For each damaged *LegUpperActuator* or  *LegLowerActuator* on the attacker, the target gains an attack penalty and a damage reduction. These values are set in `mod.json` as *Melee.Kick.LegActuatorDamageMalus* (default value: +2) and *Melee.Kick.LegActuatorDamageReduction* (default value: 0.5) respectively. Damage reduction is multiplicative, so if both leg actuators are damaged, the kick only does 25% of it's base damage (0.5 * 0.5 = 0.25 * base damage).
+
+Damage is applied to the target as single hit that is randomized between the legs only. The distribution of these hit locations is provided below in the **Damage Table Reference**. 
+
+**Validations**: Before an attack can be made, several validation checks must be passed. If all of these checks do not pass, the attack is invalid and can't be selected by either player or AI.
+
+* The target position must allow either *Tackle* or *Stomp* animations. These are generally allowed if the attacker midpoint is somewhere between the top and bottom of the target. 
+* Both hip actuators must be undamaged
+* The distance between attacker and target must be within the walk speed of the attacker
+
+**Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
+
+* **Easy to Kick** as per TT rules, Kicks are easy to deliver. They gain a flat attack bonus, defined in `mod.json` in the *Melee.Kick.BaseAttackBonus* setting, which defaults to -2. 
+* **Leg Actuator Damage** is applied if the Upper or Lower leg actuators are damaged. The penalty is set in `mod.json` in the *Melee.Kick.LegActuatorDamageMalus* setting, and defaults to +2. This value is additive, so if both actuators are damaged the total modifier will be +4.
+* **Foot Actuator Damage** is applied if the Foot actuator is damaged. The penalty is set in `mod.json` in the *Melee.Kick.FootActuatorDamageMalus* settings, which defaults to +1. 
+* **Prone Target** is applied when the target is a mech, and they have been knocked down. The attacker gains a bonus defined in the *Melee.ProneTargetAttackModifier* configuration of `mod.json`. This defaults to -2.
+
+**Unsteady**: Attacks can apply the *Unsteady* state to a unit, dumping it's evasion pips and allowing it to be knocked down when it takes instability. There are three settings in the Melee.Kick portion of `mod.json` controlling when units gain unsteady:
+
+* **UnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* hit
+* **UnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* hit
+* **UnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* hit
+
+### Physical Weapon Attacks
+
+Physical attacks inflict damage and instability on the target only. The calculation for damage and instability is the same, and follow this formula:
+
+`finalDamage = RoundUP( ( (raw * attacker tonnage) + mod) * multi)`
+
+The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). 
+
+
+| Input     | Source    | Damage Value                                           | Instability Value                                           |
+| --------- | --------- | ------------------------------------------------------ | ----------------------------------------------------------- |
+| **raw**   | mod.json  | `Melee.PhysicalWeapon.DefaultDamagePerAttackerTon`     | `Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon`     |
+|           | statistic | `CBTBE_Physical_Weapon_Target_Damage_Per_Attacker_Ton` | `CBTBE_Physical_Weapon_Target_Instability_Per_Attacker_Ton` |
+| **mod**   | statistic | `CBTBE_Physical_Weapon_Target_Damage_Mod`              | `CBTBE_Physical_Weapon_Target_Instability_Mod`              |
+| **multi** | statistic | `CBTBE_Physical_Weapon_Target_Damage_Multi`            | `CBTBE_Physical_Weapon_Target_Instability_Multi`            |
+
+:information_source: Default values are used when per-unit statistics are not present. 
+
+Damage is applied to the target as single hit that is randomized between the arms, torsos, and head of the target. The distribution of these hit locations is provided below in the **Damage Table Reference** (see below) and typically uses the Standard table. The *CBTBE_Physical_Weapon_Location_Table* may be set to one of PUNCH, KICK, or STANDARD to indicate that an alternative table should be used.
+
+**Animations**: HBS implemented weapon attacks as a unit's punch animation. When they determine if a Punch animation can be used, they validate that the 'punching' arm is available. The punching arm is defined in the *chassisDef* as the `PunchesWithLeftArm` field. If true, and the unit's left arm has been completely destroyed, it can no longer perform the punch animation. This will prevent it from performing attacks that rely upon the punch animation (punch, physical weapons).
+
+**Validations**: Before an attack can be made, several validation checks must be passed. If all of these checks do not pass, the attack is invalid and can't be selected by either player or AI.
+
+* The unit must have a physical weapon, as denoted by the `CBTBE_Punch_Is_Physical_Weapon` statistic being set to true.
+* The target position must allow the *Punch* animation. This is generally allowed if the attacker midpoint no lower than the target midpoint and the attacker's top point is no higher than the target's highest point. This is required as HBS animations for physical weapons use the punch animation (see above)
+* At least one arm needs a functional Shoulder Actuator *and* a functional Hand actuator
+* The distance between attacker and target must be within the walk speed of the attacker
+
+**Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
+
+* **Arm Actuator Damage** is applied if the Upper or Lower arm actuators are damaged. The penalty is set in `mod.json` in the *Melee.Punch.ArmActuatorDamageMalus* setting, and defaults to +2. This value is additive, so if both actuators are damaged the total modifier will be +4.
+* **Prone Target** is applied when the target is a mech, and they have been knocked down. The attacker gains a bonus defined in the *Melee.ProneTargetAttackModifier* configuration of `mod.json`. This defaults to -2.
+* **Attack Modifier** is applied is the `CBTBE_Physical_Weapon_Attack_Mod` statistic is set on the attacking unit. 
+
+**Unsteady**: Attacks can apply the *Unsteady* state to a unit, dumping it's evasion pips and allowing it to be knocked down when it takes instability. There are three settings in the *Melee.Punch* portion of `mod.json` controlling when units gain unsteady:
+
+* **DefaultUnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* hit
+  * The statistic *CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit* override this behavior on a unit by unit basis.
+* **DefaultUnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* hit
+  * The statistic *CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss* overrides this behavior on a unit by unit basis.
+* **DefaultUnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* hit
+  * The statistic *CBTBE_Physical_Weapon_Unsteady_Target_On_Hit* overrides this behavior on a unit by unit basis.
+
+### Punch Attacks
+
+Punch attacks inflict damage and instability on the target only. The calculation for damage and instability is the same, and follow this formula:
+
+`finalDamage = RoundUP( ( (raw * attacker tonnage) + mod) * multi * actuatorMulti)`
 
 The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). 
 
 *Damage Inputs*
 
-| Input     | Target Source Value                                          |
-| --------- | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Kick.TargetDamagePerAttackerTon`  * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Kick_Target_Damage_Mod`                |
-| **multi** | *statistic* -> `CBTBE_Kick_Target_Damage_Multi`              |
+| Input     | Source    | Damage Values                            | Instability Values                            |
+| --------- | --------- | ---------------------------------------- | --------------------------------------------- |
+| **raw**   | mod.json  | `Melee.Punch.TargetDamagePerAttackerTon` | `Melee.Punch.TargetInstabilityPerAttackerTon` |
+| **mod**   | statistic | `CBTBE_Punch_Target_Damage_Mod`          | `CBTBE_Punch_Target_Instability_Mod`          |
+| **multi** | statistic | `CBTBE_Punch_Target_Damage_Multi`        | `CBTBE_Punch_Target_Instability_Multi`        |
 
-*Instability Inputs*
+*ActuatorMulti* is determined from the missing or damaged upper and lower arm actuators. For each damaged *ArmUpperActuator* or  *ArmLowerActuator* on the attacker, the target gains an attack penalty and a damage reduction. These values are set in `mod.json` as *Melee.Punch.ArmActuatorDamageMalus* (default value: +2) and *Melee.Punch.ArmActuatorDamageReduction* (default value: 0.5) respectively. Damage reduction is multiplicative, so if both leg actuators are damaged, the kick only does 25% of it's base damage (0.5 * 0.5 = 0.25 * base damage).
 
-| Input     | Target Source Value                                          |
-| --------- | ------------------------------------------------------------ |
-| **raw**   | *mod.json* -> `Melee.Kick.TargetInstabilityPerAttackerTon`  * attacker tonnage |
-| **mod**   | *statistic* -> `CBTBE_Kick_Target_Instability_Mod`           |
-| **multi** | *statistic* -> `CBTBE_Kick_Target_Instability_Multi`         |
+Damage is applied to the target as single hit that is randomized between the arms, torsos, and head of the target. The distribution of these hit locations is provided below in the **Damage Table Reference** (see below). 
 
-*ActuatorMulti* is determined from the missing or damaged upper and lower leg actuators. 
+**Animations**: HBS implemented weapon attacks as a unit's punch animation. When they determine if a Punch animation can be used, they validate that the 'punching' arm is available. The punching arm is defined in the *chassisDef* as the `PunchesWithLeftArm` field. If true, and the unit's left arm has been completely destroyed, it can no longer perform the punch animation. This will prevent it from performing attacks that rely upon the punch animation (punch, physical weapons).
 
-Damage is applied to the target as single hit that is randomized between the legs only. The distribution of these hit locations is as follows:
+**Validations**: Before an attack can be made, several validation checks must be passed. If all of these checks do not pass, the attack is invalid and can't be selected by either player or AI.
+
+* The target position must allow the *Punch* animation. This is generally allowed if the attacker midpoint no lower than the target midpoint and the attacker's top point is no higher than the target's highest point.
+* At least one arm needs a functional Shoulder Actuator
+* The distance between attacker and target must be within the walk speed of the attacker
+
+**Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
+
+* **Arm Actuator Damage** is applied if the Upper or Lower arm actuators are damaged. The penalty is set in `mod.json` in the *Melee.Punch.ArmActuatorDamageMalus* setting, and defaults to +2. This value is additive, so if both actuators are damaged the total modifier will be +4.
+* **Hand Actuator Damage** is applied if the Hand actuator is damaged. The penalty is set in `mod.json` in the *Melee.Punch.HandActuatorDamageMalus* settings, which defaults to +1. 
+* **Prone Target** is applied when the target is a mech, and they have been knocked down. The attacker gains a bonus defined in the *Melee.ProneTargetAttackModifier* configuration of `mod.json`. This defaults to -2.
+
+**Unsteady**: Attacks can apply the *Unsteady* state to a unit, dumping it's evasion pips and allowing it to be knocked down when it takes instability. There are three settings in the *Melee.Punch* portion of `mod.json` controlling when units gain unsteady:
+
+* **UnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* hit
+* **UnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* hit
+* **UnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* hit
+
+### Custom Components Reference
+
+Several melee attacks reduce damage or have increased penalties if a BattleMech's actuators are damaged. This mod uses [Custom Components](https://github.com/battletechmodders/customcomponents/) categories to identity installed equipment as one of these category types. This mapping is defined in `mod.json` in the *CustomCategories* block. The following values are the common category ids shared by RogueTech and BattleTech Advanced 3062. If your modpack uses a different set of values you'll need to update the mappings to allow detection of that equipment.
+
+| MechEngineer Category Id | Notes                                                        |
+| ------------------------ | ------------------------------------------------------------ |
+| LegHip                   | A mech must have undamaged hip actuators to kick.            |
+| LegUpperActuator         | A damaged leg actuator adds a +2 penalty to kicks attacks. It also reduces kick damage by 50%, with multiple modifiers being cumulative. |
+| LegLowerActuator         | A damaged leg actuator adds a +2 penalty to kicks attacks. It also reduces kick damage by 50%, with multiple modifiers being cumulative. |
+| LegFootActuator          |                                                              |
+| ArmShoulder              | A mech must have undamaged shoulder actuators to punch or make physical weapon attacks. |
+| ArmUpperActuator         | A damaged arm actuator adds a +2 penalty to punches and physical weapon attacks. It also reduces punch damage by 50%, with multiple modifiers being cumulative. |
+| ArmLowerActuator         | A damaged arm actuator adds a +2 penalty to punches and physical weapon attacks. It also reduces punch damage by 50%, with multiple modifiers being cumulative. |
+| ArmHandActuator          | A mech must have undamaged hand actuators to make physical weapon attacks. Damaged hand actuators reduce punch accuracy by +1. |
+
+### Damage Table Reference
+
+Some attacks use a non-standard attack table. These are provided below for your convenience.
+
+#### Kick Table
 
 | Location  | Chance to Hit |
 | --------- | ------------- |
 | Left Leg  | 50%           |
 | Right Leg | 50%           |
 
-**Validations**: Before a charge can be made, several validation checks must be passed. If these checks pass, the charge is treated as invalid and can't be selected by either player or AI.
+#### Punch Table
+| Attack Direction | Location     | Chance to Hit |
+| ---------------- | ------------ | ------------- |
+| Front            | Left Arm     | 17%           |
+|                  | Left Torso   | 17%           |
+|                  | Center Torso | 16%           |
+|                  | Right Torso  | 17%           |
+|                  | Right Arm    | 17%           |
+|                  | Head         | 16%           |
+| |  |  |
+| Rear             | Left Arm     | 17%           |
+|                  | Left Rear Torso   | 17%           |
+|                  | Center Rear Torso | 16%           |
+|                  | Right Rear Torso  | 17%           |
+|                  | Right Arm    | 17%           |
+|                  | Head         | 16%           |
+| |  |  |
+| Left             | Left Arm     | 34%           |
+|                  | Left Torso   | 34%           |
+|                  | Center Torso | 16%           |
+|                  | Head         | 16%           |
+| |  |  |
+| Right            | Right Arm    | 34%           |
+|                  | Right Torso  | 34%           |
+|                  | Center Torso | 16%           |
+|                  | Head         | 16%           |
 
-* The target position must allow either *Tackle* or *Stomp* animations. These are generally allowed if the attacker midpoint is somewhere between the top and bottom of the target. 
-* The target cannot be **prone** 
+#### Standard Tables
 
-**Modifiers**: Charge attacks apply a handful of modifiers, in addition to the positional ones (side attack, rear attack, etc) normally added to attacks.
-
-* **Comparative Skill** is the difference between the attacker and target's *Piloting* skill rating. This is applied as a flat modifier, so an attacker with Piloting 7 versus a target with Piloting 4 would add a -3 to hit. An attacker with Piloting 2 versus a target with piloting 6 would suffer a +4 to hit.
-
-**Forced Unsteady**: If the `Melee.Charge.AttackAppliesUnsteady` value (in `mod.json`) is set to true, both the attacker and target will gain the **Unsteady** state if the attack hits. If the attack misses, only the attacker will receive the **Unsteady** state. Unsteady is required before an attack will create a knockdown.
-
-### Custom Components Reference
-
-Several melee attacks reduce damage or have increased penalties if a BattleMech's actuators are damaged. 
-
-| MechEngineer Category Id | Notes                         |
-| ------------------------ | ----------------------------- |
-| LegHip                   | The Mech's hip actuators      |
-| ArmShoulder              | The Mech's shoulder actuators |
-
-
-
-
+These are defined in `StreamingAssets\data\constants\CombatGameConstants.json`. Individual modpacks may have overwritten these values. 
+| Attack Direction | Location     | Chance to Hit |
+| ---------------- | ------------ | ------------- |
+| Front            | Left Leg     | 8%          |
+|                  | Left Arm     | 10%          |
+|                  | Left Torso   | 14%          |
+|                  | Center Torso | 16%           |
+|                  | Right Torso  | 14%          |
+|                  | Right Arm    | 10%          |
+|                  | Right Leg    | 8%          |
+|                  | Head         | 1%           |
+| |  |  |
+| Rear             | Left Leg     | 5%          |
+|                  | Left Arm     | 4%          |
+|                  | Left Torso   | 14%          |
+|                  | Center Torso | 16%           |
+|                  | Right Torso  | 14%          |
+|                  | Right Arm    | 4%          |
+|                  | Right Leg    | 5%          |
+|                  | Head         | 0%           |
+| |  |  |
+| Prone            | Left Leg     | 8%          |
+|                  | Left Arm     | 8%          |
+|                  | Left Torso   | 16%          |
+|                  | Center Torso | 32%           |
+|                  | Right Torso  | 16%          |
+|                  | Right Arm    | 8%          |
+|                  | Right Leg    | 8%          |
+|                  | Head         | 1%           |
+| |  |  |
+| Left             | Left Leg     | 28%          |
+|                  | Left Arm     | 28%          |
+|                  | Left Torso   | 28%          |
+|                  | Center Torso | 4%           |
+|                  | Right Torso  | 0%          |
+|                  | Right Arm    | 0%          |
+|                  | Right Leg    | 0%          |
+|                  | Head         | 1%           |
+| |  |  |
+| Right            | Left Leg     | 0%          |
+|                  | Left Arm     | 0%          |
+|                  | Left Torso   | 0%          |
+|                  | Center Torso | 4%           |
+|                  | Right Torso  | 28%          |
+|                  | Right Arm    | 28%          |
+|                  | Right Leg    | 28%          |
+|                  | Head         | 1%           |
+| |  |  |
 
 ### Melee Statistics Reference
 
@@ -226,49 +399,53 @@ All statistics used in melee values are listed below. See the relevant section f
 | CBTBE_Charge_Attacker_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Charge_Attacker_Instability_Mod | System.Int32 ||
 | CBTBE_Charge_Attacker_Instability_Multi | System.Single |value must be >= 0|
+|  |  ||
 | CBTBE_Charge_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Charge_Target_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Charge_Target_Instability_Mod | System.Int32 ||
 | CBTBE_Charge_Target_Instability_Multi | System.Single |value must be >= 0|
+|  |  ||
 | **DEATH FROM ABOVE STATISTICS** |  ||
 | CBTBE_DFA_Attacker_Damage_Mod | System.Int32 ||
 | CBTBE_DFA_Attacker_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_DFA_Attacker_Instability_Mod | System.Int32 ||
 | CBTBE_DFA_Attacker_Instability_Multi | System.Single |value must be >= 0|
+|  |  ||
 | CBTBE_DFA_Target_Damage_Mod | System.Int32 ||
 | CBTBE_DFA_Target_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_DFA_Target_Instability_Mod | System.Int32 ||
 | CBTBE_DFA_Target_Instability_Multi | System.Single |value must be >= 0|
+|  |  ||
 | **KICK STATISTICS** |  ||
 | CBTBE_Kick_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Kick_Target_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Kick_Target_Instability_Mod | System.Int32 ||
 | CBTBE_Kick_Target_Instability_Multi | System.Single |value must be >= 0|
+|  |  ||
 | **PUNCH STATISTICS** |  ||
 | CBTBE_Punch_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Punch_Target_Damage_Multi | System.Single |value must be >= 0|
 | CBTBE_Punch_Target_Instability_Mod | System.Int32 ||
 | CBTBE_Punch_Target_Instability_Multi | System.Single |value must be >= 0|
+|  |  ||
 | **PHYSICAL WEAPON STATISTICS** |  ||
 | CBTBE_Punch_Is_Physical_Weapon | System.Boolean ||
 | CBTBE_Physical_Weapon_Location_Table | System.String |value must be one of PUNCH, KICK, STANDARD|
+| CBTBE_Physical_Weapon_Attack_Mod | System.Int32 ||
+|  |  ||
 | CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit | System.Boolean ||
 | CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss | System.Boolean ||
 | CBTBE_Physical_Weapon_Unsteady_Target_On_Hit | System.Boolean ||
-| CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor | System.Single |value must be > 0|
+|  |                ||
+| CBTBE_Physical_Weapon_Target_Damage_Per_Attacker_Ton | System.Single |value must be > 0|
 | CBTBE_Physical_Weapon_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Physical_Target_Damage_Multi | System.Single |value must be >= 0|
-| CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor | System.Single |value must be > 0|
+|  |  ||
+| CBTBE_Physical_Weapon_Target_Instability_Per_Attacker_Ton | System.Single |value must be > 0|
 | CBTBE_Physical_Weapon_Target_Instability_Mod | System.Int32 ||
 | CBTBE_Physical_Weapon_Target_Instability_Multi | System.Single |value must be >= 0|
 
-### Physical Weapon Attacks
 
-Loreum ipsum
-
-### Punch Attacks
-
-Loreum ipsum
 
 ## Classic Movement
 
