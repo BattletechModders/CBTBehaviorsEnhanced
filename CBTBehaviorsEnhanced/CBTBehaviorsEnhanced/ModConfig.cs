@@ -146,8 +146,8 @@ namespace CBTBehaviorsEnhanced {
         {
             // The base bonus applied for a kick 
             public int BaseAttackBonus = -2;
-            public int LegActuatorDamageMalus = -2;
-            public int FootActuatorDamageMalus = -1;
+            public int LegActuatorDamageMalus = 2;
+            public int FootActuatorDamageMalus = 1;
 
             // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
             public float TargetDamagePerAttackerTon = 1;
@@ -163,9 +163,9 @@ namespace CBTBehaviorsEnhanced {
 
         public class PhysicalWeaponMeleeOps
         {
-            public int ArmActuatorDamageMalus = -2;
+            public int ArmActuatorDamageMalus = 2;
 
-            public float DefaultDamagePerAttackTon = 2;
+            public float DefaultDamagePerAttackerTon = 2;
             public float DefaultInstabilityPerAttackerTon = 1f;
 
             public bool DefaultUnsteadyAttackerOnHit = false;
@@ -175,8 +175,8 @@ namespace CBTBehaviorsEnhanced {
 
         public class PunchMeleeOps
         {
-            public int ArmActuatorDamageMalus = -2;
-            public int HandActuatorDamageMalus = -1;
+            public int ArmActuatorDamageMalus = 2;
+            public int HandActuatorDamageMalus = 1;
 
             // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
             public float TargetDamagePerAttackerTon = 0.5f;
@@ -293,7 +293,7 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Kick.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Kick.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Kick.UnsteadyTargetOnHit}");
 
             Mod.Log.Info("  -- PHYSICAL WEAPON OPTIONS --");
-            Mod.Log.Info($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
+            Mod.Log.Info($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
             Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}");
             Mod.Log.Info($"  Unsteady Default => AttackerOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit}");
 

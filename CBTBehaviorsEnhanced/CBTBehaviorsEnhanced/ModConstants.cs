@@ -61,16 +61,17 @@ namespace CBTBehaviorsEnhanced
 
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
+        public const string PhysicalWeaponAttackMod = "CBTBE_Physical_Weapon_Attack_Mod"; // int - a straight modifier to the attack roll
 
         public const string PhysicalWeaponUnsteadyAttackerOnHit = "CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit"; // bool - if true, attacker will be unsteady on a hit
         public const string PhysicalWeaponUnsteadyAttackerOnMiss = "CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss"; // bool - if true, attacker will be unsteady on a miss
         public const string PhysicalWeaponUnsteadyTargetOnHit = "CBTBE_Physical_Weapon_Unsteady_Target_On_Hit"; // bool - if true, target will be made unsteady by a hit
 
-        public const string PhysicalWeaponTargetDamageTonnageDivisor = "CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor"; // float - how much damage / ton the weapon does
-        public const string PhysicalWeaponTargetDamageMod = "CBTBE_Physical_Weapon_Target_Damage_Mod"; // int
-        public const string PhysicalWeaponTargetDamageMulti = "CBTBE_Physical_Weapon_Target_Damage_Multi"; // float
+        public const string PhysicalWeaponTargetDamage = "CBTBE_Physical_Weapon_Target_Damage_Per_Attacker_Ton"; // float - how much damage * attacker ton the weapon does
+        public const string PhysicalWeaponTargetDamageMod = "CBTBE_Physical_Weapon_Target_Damage_Mod"; // int - flat modifier to damage
+        public const string PhysicalWeaponTargetDamageMulti = "CBTBE_Physical_Weapon_Target_Damage_Multi"; // float - multiplier of base damage + damageMod
 
-        public const string PhysicalWeaponTargetInstabilityTonnageDivisor = "CBTBE_Physical_Weapon_Target_Instability_Tonnage_Divisor"; // float - how much stab / ton the weapon does
+        public const string PhysicalWeaponTargetInstability = "CBTBE_Physical_Weapon_Target_Instability_Per_Attacker_Ton"; // float - how much stab / ton the weapon does
         public const string PhysicalWeaponTargetInstabilityMod = "CBTBE_Physical_Weapon_Target_Instability_Mod"; // int
         public const string PhysicalWeaponTargetInstabilityMulti = "CBTBE_Physical_Weapon_Target_Instability_Multi"; // float
 

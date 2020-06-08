@@ -55,16 +55,17 @@ namespace CBTBehaviorsEnhanced.Patches {
 
             __instance.StatCollection.AddStatistic<bool>(ModStats.PunchIsPhysicalWeapon, false);
             __instance.StatCollection.AddStatistic<string>(ModStats.PhysicalWeaponLocationTable, "");
+            __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponAttackMod, 0);
 
             __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit, false);
             __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss, false);
             __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit, false);
 
-            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor, 0f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamage, 0f);
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamageMulti, 1f);
 
-            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor, 0f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstability, 0f);
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstabilityMulti, 1f);
 

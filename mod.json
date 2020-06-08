@@ -86,7 +86,7 @@
 
             "PhysicalWeapon" : {
                 "ArmActuatorDamageMalus" : 2,
-                "DefaultDamagePerAttackTon" : 2,
+                "DefaultDamagePerAttackerTon" : 2,
                 "DefaultInstabilityPerAttackerTon" : 1,
                 "DefaultUnsteadyAttackerOnHit" : true,
                 "DefaultUnsteadyAttackerOnMiss" : true,

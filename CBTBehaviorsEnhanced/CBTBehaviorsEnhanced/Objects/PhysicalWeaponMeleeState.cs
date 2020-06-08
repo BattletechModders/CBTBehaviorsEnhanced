@@ -129,6 +129,13 @@ namespace CBTBehaviorsEnhanced.Objects
             {
                 this.AttackModifiers.Add(ModText.LT_Label_Acutator_Damage, bestMalus);
             }
+
+            // Check for attack modifier statistic
+            if (attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAttackMod) &&
+                attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponAttackMod) != 0)
+            {
+                this.AttackModifiers.Add(ModText.LT_Label_Physical_Weapon_Attack_Mod, attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponAttackMod));
+            }
         }
 
         private void CalculateDamages(Mech attacker, AbstractActor target)
@@ -137,10 +144,10 @@ namespace CBTBehaviorsEnhanced.Objects
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             // 0 is a signal that there's no divisor
-            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageTonnageDivisor) && 
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor) > 0 ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor) : 
-                Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackTon;
+            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamage) && 
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamage) > 0 ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamage) : 
+                Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon;
 
             float raw = (float)Math.Ceiling(divisor * attacker.tonnage);
             Mod.Log.Info($" - divisor: {divisor} x attacker tonnage: {attacker.tonnage} = raw: {raw}");
@@ -165,9 +172,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             // 0 is a signal that there's no divisor
-            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor) &&
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor) > 0 ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityTonnageDivisor) :
+            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstability) &&
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstability) > 0 ?
+                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstability) :
                 Mod.Config.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon;
 
             float raw = (float)Math.Ceiling(divisor * attacker.tonnage);
