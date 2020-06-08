@@ -60,8 +60,11 @@ namespace CBTBehaviorsEnhanced
         public const string PunchTargetInstabilityMulti = "CBTBE_Punch_Target_Instability_Multi"; // float
 
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
-        public const string PhysicalWeaponAppliesUnsteadyToTarget = "CBTBE_Physical_Weapon_Applies_Unsteady_To_Target"; // bool - Allows setting attack type to punch or standard
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
+
+        public const string PhysicalWeaponUnsteadyAttackerOnHit = "CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit"; // bool - if true, attacker will be unsteady on a hit
+        public const string PhysicalWeaponUnsteadyAttackerOnMiss = "CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss"; // bool - if true, attacker will be unsteady on a miss
+        public const string PhysicalWeaponUnsteadyTargetOnHit = "CBTBE_Physical_Weapon_Unsteady_Target_On_Hit"; // bool - if true, target will be made unsteady by a hit
 
         public const string PhysicalWeaponTargetDamageTonnageDivisor = "CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor"; // float - how much damage / ton the weapon does
         public const string PhysicalWeaponTargetDamageMod = "CBTBE_Physical_Weapon_Target_Damage_Mod"; // int

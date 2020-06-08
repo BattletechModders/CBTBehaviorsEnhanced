@@ -1,41 +1,44 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using Harmony;
+using HBS;
 using Localize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace CBTBehaviorsEnhanced.Patches
 {
     [HarmonyPatch(typeof(ToHit), "GetAllMeleeModifiers")]
-    public static class ToHit_GetAllMeleeModifiers
+    static class ToHit_GetAllMeleeModifiers
     {
-        private static void Postfix(ToHit __instance, ref float __result, Mech attacker, ICombatant target, Vector3 targetPosition, MeleeAttackType meleeAttackType)
+        static void Postfix(ToHit __instance, ref float __result, Mech attacker, ICombatant target, Vector3 targetPosition, MeleeAttackType meleeAttackType)
         {
             Mod.Log.Trace("TH:GAMM entered");
 
             if (__instance == null || ModState.MeleeStates?.SelectedState == null) return;
 
+            Mod.Log.Info("Adding CBTBE modifiers to tohit total");
             int sumMod = 0;
             foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
             {
                 string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
+                Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}, adding to sum modifier");
                 sumMod += kvp.Value;
             }
 
-            __result += (float)sumMod;            
-            
+            __result += (float)sumMod;
+
         }
     }
 
     // Always return a zero for DFA modifiers; we'll handle it with our custom modifiers
     [HarmonyPatch(typeof(ToHit), "GetDFAModifier")]
-    public static class ToHit_GetDFAModifier
+    static class ToHit_GetDFAModifier
     {
-        private static void Postfix(ToHit __instance, ref float __result)
+        static void Postfix(ToHit __instance, ref float __result)
         {
             Mod.Log.Trace("TH:GDFAM entered");
 
@@ -45,9 +48,9 @@ namespace CBTBehaviorsEnhanced.Patches
     }
 
     [HarmonyPatch(typeof(ToHit), "GetAllModifiers")]
-    public static class ToHit_GetAllModifiers
+    static class ToHit_GetAllModifiers
     {
-        private static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker, Weapon weapon, ICombatant target,
+        static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker, Weapon weapon, ICombatant target,
             Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot)
         {
             Mod.Log.Trace("TH:GAM entered");
@@ -64,9 +67,9 @@ namespace CBTBehaviorsEnhanced.Patches
     }
 
     [HarmonyPatch(typeof(ToHit), "GetAllModifiersDescription")]
-    public static class ToHit_GetAllModifiersDescription
+    static class ToHit_GetAllModifiersDescription
     {
-        private static void Postfix(ToHit __instance, ref string __result, AbstractActor attacker, Weapon weapon, ICombatant target,
+        static void Postfix(ToHit __instance, ref string __result, AbstractActor attacker, Weapon weapon, ICombatant target,
             Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot)
         {
             Mod.Log.Trace("TH:GAMD entered");
@@ -80,11 +83,11 @@ namespace CBTBehaviorsEnhanced.Patches
             // Check melee patches
             if (ModState.MeleeStates != null && weapon.Type == WeaponType.Melee)
             {
- 
+
                 foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                 {
                     string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                    Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
+                    Mod.Log.Info($" - Found attack modifier for desc: {localText} = {kvp.Value}");
 
                     __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, kvp.Value);
                 }
@@ -93,12 +96,12 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    // Update the hover text in the case of a modifier
-    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "SetHitChance", new Type[] { typeof(ICombatant) })]
-    public static class CombatHUDWeaponSlot_SetHitChance
+    //Update the hover text in the case of a modifier
+   [HarmonyPatch(typeof(CombatHUDWeaponSlot), "SetHitChance", new Type[] { typeof(ICombatant) })]
+    static class CombatHUDWeaponSlot_SetHitChance
     {
 
-        private static void Postfix(CombatHUDWeaponSlot __instance, ICombatant target, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Postfix(CombatHUDWeaponSlot __instance, ICombatant target, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null || target == null) return;
@@ -134,11 +137,11 @@ namespace CBTBehaviorsEnhanced.Patches
     }
 
     [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateMeleeWeapon")]
-    [HarmonyPatch(new Type[] {})]
-    public static class CombatHUDWeaponSlot_UpdateMeleeWeapon
+    [HarmonyPatch(new Type[] { })]
+    static class CombatHUDWeaponSlot_UpdateMeleeWeapon
     {
 
-        private static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
             if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
@@ -152,8 +155,38 @@ namespace CBTBehaviorsEnhanced.Patches
             else
             {
                 string localText = new Text(ModState.MeleeStates.SelectedState.Label).ToString();
-                __instance.WeaponText.SetText(localText);
                 float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                Mod.Log.Info($"Setting Melee Weapon to label: {localText} and damage: {totalDamage}");
+                __instance.WeaponText.SetText(localText);
+                __instance.DamageText.SetText($"{totalDamage}");
+
+            }
+        }
+    }
+
+
+    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateDFAWeapon")]
+    [HarmonyPatch(new Type[] { })]
+    static class CombatHUDWeaponSlot_UpdateDFAWeapon
+    {
+
+        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        {
+
+            if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
+            Mod.Log.Trace("CHUDWS:UDFAW entered");
+
+            if (ModState.MeleeStates.SelectedState == null)
+            {
+                __instance.WeaponText.SetText("UNKNOWN");
+                __instance.DamageText.SetText($"???");
+            }
+            else
+            {
+                string localText = new Text(ModState.MeleeStates.SelectedState.Label).ToString();
+                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                Mod.Log.Info($"Setting DFA Weapon to label: {localText} and damage: {totalDamage}");
+                __instance.WeaponText.SetText(localText);
                 __instance.DamageText.SetText($"{totalDamage}");
 
             }
@@ -162,11 +195,14 @@ namespace CBTBehaviorsEnhanced.Patches
 
     [HarmonyPatch(typeof(CombatHUDWeaponSlot), "GenerateToolTipStrings")]
     [HarmonyPatch(new Type[] { })]
-    public static class CombatHUDWeaponSlot_GenerateToolTipStrings
+    static class CombatHUDWeaponSlot_GenerateToolTipStrings
     {
 
-        private static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, int ___displayedHeat)
+        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, int ___displayedHeat)
         {
+
+            if (___displayedWeapon == null) Mod.Log.Warn("EMPTY WEAPON IN GENERATE TOOL TIPS");
+            else Mod.Log.Info($"GENERATING TOOLTIPS FOR WEAPON: {___displayedWeapon.UIName}");
 
             if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
 
@@ -175,29 +211,49 @@ namespace CBTBehaviorsEnhanced.Patches
             // Check melee patches
             if (ModState.MeleeStates != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
-                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
-                    ___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
+                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                    Mod.Log.Info($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                        $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
+                        $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
                     };
-                    
+                } else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
+                {
+                    float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                    Mod.Log.Info($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                        $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
+                        $"heat: {___displayedHeat}");
+                    __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
+                    {
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
+                    };
+
                 }
-                //else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
-                //{
-                //    float targetDamage = ModState.MeleeStates.DFA.TargetDamageClusters.Sum();
-                //    __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
-                //    {
-                //        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
-                //        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
-                //        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
-                //    };
-                //}
             }
         }
     }
+
+    [HarmonyPatch(typeof(CombatHUDTooltipHoverElement), "OnPointerEnter")]
+    [HarmonyPatch(new Type[] { typeof(PointerEventData) } )]
+    static class CombatHUDTooltipHoverElement_OnPointerEnter
+    {
+
+        static void Prefix(CombatHUDTooltipHoverElement __instance)
+        {
+            Mod.Log.Info($"CHUDTHE - entered!");
+            Mod.Log.Info($"  BasicStrings: '{__instance.BasicString?.ToString()}'");
+            Mod.Log.Info($"  ExtraStrings count: '{__instance.ExtraStrings.Count}'");
+            Mod.Log.Info($"  ToggleUINode: '{LazySingletonBehavior<UIManager>.Instance.ToggleUINode}'");
+            Mod.Log.Info($"  ActiveInHierachy: {__instance.gameObject.activeInHierarchy}");
+        }
+    }
+
 }

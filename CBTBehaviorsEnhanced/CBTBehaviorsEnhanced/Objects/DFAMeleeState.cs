@@ -33,13 +33,19 @@ namespace CBTBehaviorsEnhanced.Objects
 			this.IsValid = ValidateAttack(attacker, target);
 			if (IsValid)
 			{
-				this.AttackerTable = DamageTable.KICK;
-				this.TargetTable = target.IsProne ? DamageTable.REAR : DamageTable.PUNCH;
-
 				CalculateDamages(attacker, target);
 				CalculateInstability(attacker, target);
 				CalculateModifiers(attacker, target);
 				CreateDescriptions(attacker, target);
+
+				// Damage tables
+				this.AttackerTable = DamageTable.KICK;
+				this.TargetTable = target.IsProne ? DamageTable.REAR : DamageTable.PUNCH;
+
+				// Unsteady
+				this.UnsteadyAttackerOnHit = Mod.Config.Melee.DFA.UnsteadyAttackerOnHit;
+				this.UnsteadyAttackerOnMiss = Mod.Config.Melee.DFA.UnsteadyAttackerOnMiss;
+				this.UnsteadyTargetOnHit = Mod.Config.Melee.DFA.UnsteadyTargetOnHit;
 
 				// Set the animation type
 				this.AttackAnimation = MeleeAttackType.DFA;

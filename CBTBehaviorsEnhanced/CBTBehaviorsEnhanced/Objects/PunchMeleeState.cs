@@ -39,8 +39,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.TargetTable = DamageTable.PUNCH;
 
                 // Unsteady
-                this.ForceUnsteadyOnAttacker = false;
-                this.ForceUnsteadyOnTarget = Mod.Config.Melee.Punch.AttackAppliesUnsteady;
+                this.UnsteadyAttackerOnHit = Mod.Config.Melee.Punch.UnsteadyAttackerOnHit;
+                this.UnsteadyAttackerOnMiss = Mod.Config.Melee.Punch.UnsteadyAttackerOnMiss;
+                this.UnsteadyTargetOnHit = Mod.Config.Melee.Punch.UnsteadyTargetOnHit;
 
                 // Set the animation type
                 this.AttackAnimation = MeleeAttackType.Punch;

@@ -56,7 +56,9 @@
                 "AttackerInstabilityPerTargetTon" : 0.5,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "DamageClusterDivisor" : 25.0,
-                "AttackAppliesUnsteady" : true
+                "UnsteadyAttackerOnHit" : true,
+                "UnsteadyAttackerOnMiss" : true,
+                "UnsteadyTargetOnHit" : true,
             },
 
             "DFA" : {
@@ -65,7 +67,9 @@
                 "AttackerInstabilityPerTargetTon" : 0.5,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "DamageClusterDivisor" : 25.0,
-                "AttackAppliesUnsteady" : true
+                "UnsteadyAttackerOnHit" : true,
+                "UnsteadyAttackerOnMiss" : true,
+                "UnsteadyTargetOnHit" : true,
             },
 
             "Kick" : {
@@ -75,14 +79,18 @@
                 "TargetDamagePerAttackerTon" : 1,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "LegActuatorDamageReduction" : 0.5,
-                "AttackAppliesUnsteady" : true
+                "UnsteadyAttackerOnHit" : true,
+                "UnsteadyAttackerOnMiss" : true,
+                "UnsteadyTargetOnHit" : true,
             },
 
             "PhysicalWeapon" : {
                 "ArmActuatorDamageMalus" : 2,
                 "DefaultDamagePerAttackTon" : 2,
                 "DefaultInstabilityPerAttackerTon" : 1,
-                "DefaultAttackAppliesUnsteady" : true
+                "DefaultUnsteadyAttackerOnHit" : true,
+                "DefaultUnsteadyAttackerOnMiss" : true,
+                "DefaultUnsteadyTargetOnHit" : true,
             },
 
             "Punch" : {
@@ -91,7 +99,9 @@
                 "TargetDamagePerAttackerTon" : 0.5,
                 "TargetInstabilityPerAttackerTon" : 0.5,
                 "ArmActuatorDamageReduction" : 0.5,
-                "AttackAppliesUnsteady" : false
+                "UnsteadyAttackerOnHit" : true,
+                "UnsteadyAttackerOnMiss" : true,
+                "UnsteadyTargetOnHit" : true,
             },
 
             "AllowMeleeFromSprint" : true,

@@ -57,8 +57,9 @@ namespace CBTBehaviorsEnhanced
         public float AttackerInstability;
         public float TargetInstability;
 
-        public bool ForceUnsteadyOnAttacker;
-        public bool ForceUnsteadyOnTarget;
+        public bool UnsteadyAttackerOnHit = false;
+        public bool UnsteadyAttackerOnMiss = false;
+        public bool UnsteadyTargetOnHit = false;
 
         // The modifiers that display in the tooltip hover. Aggregated to form the final attack modifier
         public Dictionary<string, int> AttackModifiers = new Dictionary<string, int>();

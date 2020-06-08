@@ -38,8 +38,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.TargetTable = DamageTable.KICK;
 
                 // Unsteady
-                this.ForceUnsteadyOnAttacker = false;
-                this.ForceUnsteadyOnTarget = Mod.Config.Melee.Kick.AttackAppliesUnsteady;
+                this.UnsteadyAttackerOnHit = Mod.Config.Melee.Kick.UnsteadyAttackerOnHit;
+                this.UnsteadyAttackerOnMiss = Mod.Config.Melee.Kick.UnsteadyAttackerOnMiss;
+                this.UnsteadyTargetOnHit = Mod.Config.Melee.Kick.UnsteadyTargetOnHit;
 
                 // Set the animation type
                 if (target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;

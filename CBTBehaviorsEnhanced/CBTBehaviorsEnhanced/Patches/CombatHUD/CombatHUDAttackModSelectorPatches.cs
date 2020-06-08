@@ -198,11 +198,8 @@ namespace CBTBehaviorsEnhanced.Patches
                 additionalDetails = String.Join(", ", descriptonNotes);
                 Mod.Log.Info($"Aggregate description is: {additionalDetails}");
 
-                // TODO: Update weapon damage instead?
-
-                // Update the weapon strings
-                //ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
-
+                // Select state here as a click will validate 
+                ModState.MeleeStates.SelectedState = ModState.MeleeStates.DFA;
             }
         }
     }
@@ -249,13 +246,6 @@ namespace CBTBehaviorsEnhanced.Patches
             if (__instance == null || __instance.gameObject == null || ModState.MeleeStates == null) return true;
 
             Mod.Log.Info($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}!");
-
-            // Set the melee state so we can pick it up later.
-            if (__instance.CurrentFireMode == CombatHUDFireButton.FireMode.DFA && ModState.MeleeStates != null)
-            {
-                ModState.MeleeStates.SelectedState = ModState.MeleeStates.DFA;
-                return true;
-            }
 
             bool shouldReturn = true;
             CombatHUDAttackModeSelector selector = ModState.CombatHUD.AttackModeSelector;

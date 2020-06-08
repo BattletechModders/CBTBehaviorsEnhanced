@@ -46,9 +46,17 @@ namespace CBTBehaviorsEnhanced.Objects
                 }
 
                 // Unsteady
-                this.ForceUnsteadyOnAttacker = false;
-                this.ForceUnsteadyOnTarget = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAppliesUnsteadyToTarget) ? 
-                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponAppliesUnsteadyToTarget) : Mod.Config.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady;
+                this.UnsteadyAttackerOnHit = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) ?
+                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) : 
+                    Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit;
+
+                this.UnsteadyAttackerOnMiss = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) ?
+                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) :
+                    Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss;
+
+                this.UnsteadyTargetOnHit = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
+                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit) :
+                    Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit;
 
                 // Set the animation type
                 this.AttackAnimation = MeleeAttackType.Punch;

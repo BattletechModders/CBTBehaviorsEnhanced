@@ -251,8 +251,10 @@ All statistics used in melee values are listed below. See the relevant section f
 | CBTBE_Punch_Target_Instability_Multi | System.Single |value must be >= 0|
 | **PHYSICAL WEAPON STATISTICS** |  ||
 | CBTBE_Punch_Is_Physical_Weapon | System.Boolean ||
-| CBTBE_Physical_Weapon_Applies_Unsteady_To_Target | System.Boolean ||
 | CBTBE_Physical_Weapon_Location_Table | System.String |value must be one of PUNCH, KICK, STANDARD|
+| CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit | System.Boolean ||
+| CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss | System.Boolean ||
+| CBTBE_Physical_Weapon_Unsteady_Target_On_Hit | System.Boolean ||
 | CBTBE_Physical_Weapon_Target_Damage_Tonnage_Divisor | System.Single |value must be > 0|
 | CBTBE_Physical_Weapon_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Physical_Target_Damage_Multi | System.Single |value must be >= 0|

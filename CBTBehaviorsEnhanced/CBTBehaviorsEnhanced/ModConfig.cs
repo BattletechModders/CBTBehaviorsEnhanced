@@ -118,7 +118,9 @@ namespace CBTBehaviorsEnhanced {
             public float DamageClusterDivisor = 25.0f;
 
             // If true, make the attack apply unsteady before applying instability
-            public bool AttackAppliesUnsteady = false;
+            public bool UnsteadyAttackerOnHit = false;
+            public bool UnsteadyAttackerOnMiss = false;
+            public bool UnsteadyTargetOnHit = false;
         }
 
         // BT Manual pg.37 
@@ -135,7 +137,9 @@ namespace CBTBehaviorsEnhanced {
             public float DamageClusterDivisor = 25.0f;
 
             // If true, make the attack apply unsteady before applying instability
-            public bool AttackAppliesUnsteady = false;
+            public bool UnsteadyAttackerOnHit = false;
+            public bool UnsteadyAttackerOnMiss = false;
+            public bool UnsteadyTargetOnHit = false;
         }
 
         public class KickMeleeOps
@@ -152,7 +156,9 @@ namespace CBTBehaviorsEnhanced {
             public float LegActuatorDamageReduction = 0.5f;
 
             // If true, make the attack apply unsteady before applying instability
-            public bool AttackAppliesUnsteady = false;
+            public bool UnsteadyAttackerOnHit = false;
+            public bool UnsteadyAttackerOnMiss = false;
+            public bool UnsteadyTargetOnHit = false;
         }
 
         public class PhysicalWeaponMeleeOps
@@ -162,7 +168,9 @@ namespace CBTBehaviorsEnhanced {
             public float DefaultDamagePerAttackTon = 2;
             public float DefaultInstabilityPerAttackerTon = 1f;
 
-            public bool DefaultAttackAppliesUnsteady = false;
+            public bool DefaultUnsteadyAttackerOnHit = false;
+            public bool DefaultUnsteadyAttackerOnMiss = false;
+            public bool DefaultUnsteadyTargetOnHit = false;
         }
 
         public class PunchMeleeOps
@@ -177,7 +185,9 @@ namespace CBTBehaviorsEnhanced {
             public float ArmActuatorDamageReduction = 0.5f;
 
             // If true, make the attack apply unsteady before applying instability
-            public bool AttackAppliesUnsteady = false;
+            public bool UnsteadyAttackerOnHit = false;
+            public bool UnsteadyAttackerOnMiss = false;
+            public bool UnsteadyTargetOnHit = false;
         }
 
 
@@ -267,26 +277,31 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info("  -- CHARGE OPTIONS --");
             Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
             Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}  AttackAppliesUnsteady: {this.Melee.DFA.AttackAppliesUnsteady}");
+            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}");
+            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Charge.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Charge.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Charge.UnsteadyTargetOnHit}");
 
             Mod.Log.Info("  -- DFA OPTIONS --");
             Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.DFA.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
             Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.DFA.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.DFA.DamageClusterDivisor}  AttackAppliesUnsteady: {this.Melee.DFA.AttackAppliesUnsteady}");
+            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.DFA.DamageClusterDivisor}");
+            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.DFA.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.DFA.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.DFA.UnsteadyTargetOnHit}");
 
             Mod.Log.Info("  -- KICK OPTIONS --");
             Mod.Log.Info($"  BaseAttackBonus: {this.Melee.Kick.BaseAttackBonus}  LegActuatorDamageMalus: {this.Melee.Kick.LegActuatorDamageMalus}  FootActuatorDamageMalus: {this.Melee.Kick.FootActuatorDamageMalus}");
             Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Kick.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Kick.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  LegActuatorDamageReduction: {this.Melee.Kick.LegActuatorDamageReduction}  AttackAppliesUnsteady: {this.Melee.Kick.AttackAppliesUnsteady}");
+            Mod.Log.Info($"  LegActuatorDamageReduction: {this.Melee.Kick.LegActuatorDamageReduction}");
+            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Kick.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Kick.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Kick.UnsteadyTargetOnHit}");
 
             Mod.Log.Info("  -- PHYSICAL WEAPON OPTIONS --");
             Mod.Log.Info($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}  DefaultAttackAppliesUnsteady: {this.Melee.PhysicalWeapon.DefaultAttackAppliesUnsteady}");
+            Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}");
+            Mod.Log.Info($"  Unsteady Default => AttackerOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit}");
 
             Mod.Log.Info("  -- PUNCH OPTIONS --");
             Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Punch.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Punch.TargetInstabilityPerAttackerTon}");
             Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.Punch.ArmActuatorDamageMalus}  HandActuatorDamageMalus: {this.Melee.Punch.HandActuatorDamageMalus}");
-            Mod.Log.Info($"  ArmActuatorDamageReduction: {this.Melee.Punch.ArmActuatorDamageReduction}  AttackAppliesUnsteady: {this.Melee.Punch.AttackAppliesUnsteady}");
+            Mod.Log.Info($"  ArmActuatorDamageReduction: {this.Melee.Punch.ArmActuatorDamageReduction}");
+            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Punch.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Punch.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Punch.UnsteadyTargetOnHit}");
             Mod.Log.Info("");
 
             Mod.Log.Info("=== MOVE OPTIONS ===");

@@ -1,55 +1,23 @@
 ﻿using BattleTech;
 using Harmony;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches.Melee
 {
-    [HarmonyPatch(typeof(MeleeRules), "SelectRandomMeleeAttack")]
-    static class MeleeRules_SelectRandomMeleeAttack
-    {
-        static void Postfix(MeleeRules __instance, Mech attacker, Vector3 attackPosition, ICombatant target, float rnd, ref MeleeAttackType __result)
-        {
-            //float scale = 0f;
-            //List<MeleeRules.MeleeWeight> validMeleeAttackTypes = __instance.GetValidMeleeAttackTypes(attacker, attackPosition, target, out scale);
-            //foreach (MeleeRules.MeleeWeight weight in validMeleeAttackTypes)
-            //{
-            //    if (weight.attackType == MeleeAttackType.Punch)
-            //    {
-            //        __result = MeleeAttackType.Punch;
-            //        return;
-            //    }
-            //}
-
-            if (ModState.MeleeStates?.SelectedState != null)
-            {
-                Mod.Log.Info($"SETTING RANDOM MELEE ATTACK TO: {ModState.MeleeStates.SelectedState.AttackAnimation}");
-                __result = ModState.MeleeStates.SelectedState.AttackAnimation;
-            }
-        }
-    }
 
     [HarmonyPatch(typeof(HitLocation), "GetMechHitTable")]
     static class HitLocation_GetMechHitTable
     {
-        static void Postfix(HitLocation __instance, AttackDirection from, bool log, ref Dictionary<ArmorLocation, int> __result)
+        static void Postfix(AttackDirection from, ref Dictionary<ArmorLocation, int> __result)
         {
             // If this attack isn't a melee attack, abort
-            if (ModState.MeleeType == MeleeAttackType.NotSet || ModState.MeleeWeapon == null) return;
+            if (ModState.MeleeType == MeleeAttackType.NotSet || ModState.MeleeWeapon == null ||
+                ModState.ForceDamageTable == DamageTable.NONE || ModState.ForceDamageTable == DamageTable.STANDARD) return;
 
-            if (ModState.MeleeType == MeleeAttackType.Kick)
+            if (ModState.ForceDamageTable == DamageTable.PUNCH)
             {
-                Mod.Log.Info($"Attack was a kick, using kick dictionary.");
+                Mod.Log.Info($"Attack will use the PUNCH damage table");
                 __result.Clear();
-                __result.Add(ArmorLocation.LeftLeg, 50);
-                __result.Add(ArmorLocation.RightLeg, 50);
-            }
-            else if (ModState.MeleeType == MeleeAttackType.Punch || ModState.MeleeType == MeleeAttackType.DFA)
-            {
-                __result.Clear();
-                Mod.Log.Info($"Attack was a Punch or DFA, using punch dictionary.");
                 if (from == AttackDirection.FromLeft)
                 {
                     __result.Add(ArmorLocation.LeftTorso, 34); // 2 locations
@@ -82,8 +50,14 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                     __result.Add(ArmorLocation.RightArm, 17);
                     __result.Add(ArmorLocation.Head, 16);
                 }
-            }            
-
+            }
+            else if (ModState.ForceDamageTable == DamageTable.KICK)
+            {
+                Mod.Log.Info($"Attack will use the KICK damage table.");
+                __result.Clear();
+                __result.Add(ArmorLocation.LeftLeg, 50);
+                __result.Add(ArmorLocation.RightLeg, 50);
+            }
         }
     }
 

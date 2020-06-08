@@ -54,8 +54,11 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetInstabilityMulti, 1f);
 
             __instance.StatCollection.AddStatistic<bool>(ModStats.PunchIsPhysicalWeapon, false);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponAppliesUnsteadyToTarget, false);
             __instance.StatCollection.AddStatistic<string>(ModStats.PhysicalWeaponLocationTable, "");
+
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit, false);
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss, false);
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit, false);
 
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamageTonnageDivisor, 0f);
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetDamageMod, 0);
