@@ -7,7 +7,7 @@ namespace CBTBehaviorsEnhanced.Patches {
     public static class CombatGameState_OnCombatGameDestroyed {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
-        public static void Postfix(CombatGameState __instance) {
+        public static void Postfix() {
             Mod.Log.Trace("CGS:OCGD - entered.");
 
             // Reset any combat state
