@@ -3,6 +3,7 @@ using BattleTech.UI;
 using BattleTech.WeaponFilters;
 using CBTBehaviorsEnhanced.Helper;
 using Harmony;
+using IRBTModUtils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -111,7 +112,7 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         public static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, ref string additionalDetails, bool showHeatWarnings)
         {
-            if (ModState.CombatHUD.SelectionHandler.ActiveState == null)
+            if (SharedState.CombatHUD.SelectionHandler.ActiveState == null)
             {
                 Mod.Log.Info($"Disabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(false);
@@ -123,14 +124,14 @@ namespace CBTBehaviorsEnhanced.Patches
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
             {
-                if (ModState.MeleeStates == null  || ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos != ModState.MeleePreviewPos)
+                if (ModState.MeleeStates == null  || SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos != ModState.MeleePreviewPos)
                 {
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(
-                        ModState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
-                        ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
-                        ModState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                         );
-                    ModState.MeleePreviewPos = ModState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
+                    ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
                     Mod.Log.Info($"Updated melee state for position: {ModState.MeleePreviewPos}");
                 }
             }
@@ -254,7 +255,7 @@ namespace CBTBehaviorsEnhanced.Patches
             Mod.Log.Info($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}!");
 
             bool shouldReturn = true;
-            CombatHUDAttackModeSelector selector = ModState.CombatHUD.AttackModeSelector;
+            CombatHUDAttackModeSelector selector = SharedState.CombatHUD.AttackModeSelector;
             if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
             {
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.Charge;
@@ -288,11 +289,11 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 selector.DescriptionText.SetText(description);
                 selector.DescriptionText.ForceMeshUpdate(true);
-                
+
                 // TODO: Update weapon damage instead?
 
                 // Update the weapon strings
-                ModState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
+                SharedState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
             }
 
             return shouldReturn;

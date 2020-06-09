@@ -49,9 +49,9 @@
     <Reference Include="CustomComponents">
       <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\CustomComponents\CustomComponents.dll</HintPath>
     </Reference>
-    <Reference Include="IRBTModUtils, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IRBTModUtils, Version=1.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\BATTLETECH\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
     </Reference>
     <Reference Include="MechEngineer">
       <HintPath>D:\Users\Bradley T. Burcar\Source\Repos\XLRP\Build\XLRP\1.8\XLRP-Complete\MechEngineer\MechEngineer.dll</HintPath>
@@ -120,7 +120,6 @@
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDAttackModSelectorPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDHeatPatches.cs" />
-    <Compile Include="Patches\CombatHUD\CombatHUDPatches.cs" />
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
