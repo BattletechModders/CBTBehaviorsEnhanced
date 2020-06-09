@@ -179,7 +179,13 @@ namespace CBTBehaviorsEnhanced.Patches
                 // TODO: Autoselect best option
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.GetHighestTargetDamageState();
 
-                // TODO: Update weapon damage instead?
+                // Final check - if everything is disabled, disable the button
+                if (!ModState.MeleeStates.Charge.IsValid && !ModState.MeleeStates.Kick.IsValid && 
+                    !ModState.MeleeStates.PhysicalWeapon.IsValid && !ModState.MeleeStates.Punch.IsValid)
+                {
+                    Mod.Log.Info("NO VALID MELEE ATTACKS, DISABLING!");
+                    __instance.FireButton.SetState(ButtonState.Unavailable);
+                }
             }
             else
             {
