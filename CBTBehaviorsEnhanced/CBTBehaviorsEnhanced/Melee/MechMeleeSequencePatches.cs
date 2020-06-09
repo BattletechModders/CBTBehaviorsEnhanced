@@ -45,7 +45,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechMeleeSequence __instance)
         {
-            if (ModState.MeleeStates.SelectedState.AttackerInstability != 0)
+            if (ModState.MeleeStates?.SelectedState != null && ModState.MeleeStates.SelectedState.AttackerInstability != 0)
             {
                 Mod.Log.Info($" -- Adding {ModState.MeleeStates.SelectedState.AttackerInstability} absolute instability to attacker.");
                 __instance.OwningMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.AttackerInstability, StabilityChangeSource.Attack, "-1");
