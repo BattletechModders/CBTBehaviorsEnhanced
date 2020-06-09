@@ -65,9 +65,10 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<string>(ModStats.PhysicalWeaponLocationTable, "");
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponAttackMod, 0);
 
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit, false);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss, false);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit, false);
+            // Don't initialize these so their presence can signify the choice
+            //__instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit, false);
+            //__instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss, false);
+            //__instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit, false);
 
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamage, 0f);
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetDamageMod, 0);
