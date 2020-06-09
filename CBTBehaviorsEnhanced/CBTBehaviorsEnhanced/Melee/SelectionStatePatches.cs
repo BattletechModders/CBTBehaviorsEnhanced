@@ -1,12 +1,13 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using Harmony;
+using IRBTModUtils;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Melee
 {
-
+    // Update instability preview
     [HarmonyPatch(typeof(SelectionStateJump), "ProjectedStabilityForState", MethodType.Getter)]
     static class SelectionStateJump_ProjectedStabilityForState_Getter
     {
@@ -26,6 +27,7 @@ namespace CBTBehaviorsEnhanced.Melee
         }
     }
 
+    // Update instability preview
     [HarmonyPatch(typeof(SelectionStateMove), "ProjectedStabilityForState", MethodType.Getter)]
     static class SelectionStateMove_ProjectedStabilityForState_Getter
     {
@@ -51,4 +53,5 @@ namespace CBTBehaviorsEnhanced.Melee
             }
         }
     }
+
 }

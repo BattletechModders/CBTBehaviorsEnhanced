@@ -37,6 +37,21 @@ namespace CBTBehaviorsEnhanced.Melee {
         }
     }
 
+    // Apply the attacker's instability before they move. They will naturally dump some stability
+    //   due to movement, so adding here ensures it gets calculated properly
+    [HarmonyPatch(typeof(MechMeleeSequence), "ExecuteMove")]
+    [HarmonyBefore("io.mission.modrepuation")]
+    static class MechMeleeSequence_ExecuteMove
+    {
+        static void Prefix(MechMeleeSequence __instance)
+        {
+            if (ModState.MeleeStates.SelectedState.AttackerInstability != 0)
+            {
+                Mod.Log.Info($" -- Adding {ModState.MeleeStates.SelectedState.AttackerInstability} absolute instability to attacker.");
+                __instance.OwningMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.AttackerInstability, StabilityChangeSource.Attack, "-1");
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(MechMeleeSequence), "OnMeleeComplete")]
     [HarmonyBefore("io.mission.modrepuation")]
@@ -73,12 +88,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                     { 
                         Mod.Log.Info(" -- Forcing attacker to become unsteady from attack!");
                         __instance.OwningMech.ApplyUnsteady();
-                    }
-                    if (ModState.MeleeStates.SelectedState.AttackerInstability != 0)
-                    {
-                        Mod.Log.Info($" -- Adding {ModState.MeleeStates.SelectedState.AttackerInstability} absolute instability to attacker.");
-                        __instance.OwningMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.AttackerInstability, StabilityChangeSource.Attack, "-1");
-                    }
+                    }            
                 }
 
                 // Attacker cluster damage
@@ -98,15 +108,17 @@ namespace CBTBehaviorsEnhanced.Melee {
                 // Target stability and unsteady - only applies to mech targets
                 if (__instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
                 {
-                    if (ModState.MeleeStates.SelectedState.UnsteadyTargetOnHit)
-                    {
-                        Mod.Log.Info(" -- Forcing target to become unsteady from attack!");
-                        targetMech.ApplyUnsteady();
-                    }
+
                     if (ModState.MeleeStates.SelectedState.TargetInstability != 0)
                     {
                         Mod.Log.Info($" -- Adding {ModState.MeleeStates.SelectedState.TargetInstability} absolute instability to target.");
                         targetMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.TargetInstability, StabilityChangeSource.Attack, "-1");
+                    }
+
+                    if (ModState.MeleeStates.SelectedState.UnsteadyTargetOnHit)
+                    {
+                        Mod.Log.Info(" -- Forcing target to become unsteady from attack!");
+                        targetMech.ApplyUnsteady();
                     }
                 }
 
