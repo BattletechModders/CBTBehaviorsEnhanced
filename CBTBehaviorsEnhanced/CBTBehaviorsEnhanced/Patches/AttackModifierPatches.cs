@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace CBTBehaviorsEnhanced.Patches
 {
@@ -26,7 +25,7 @@ namespace CBTBehaviorsEnhanced.Patches
             foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
             {
                 string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}, adding to sum modifier");
+                Mod.Log.Debug($" - Found attack modifier: {localText} = {kvp.Value}, adding to sum modifier");
                 sumMod += kvp.Value;
             }
 
@@ -122,12 +121,12 @@ namespace CBTBehaviorsEnhanced.Patches
                 SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump))
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
-                Mod.Log.Trace($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
+                Mod.Log.Debug($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
                 addToolTipDetailT.GetValue(new object[] { localText, Mod.Config.ToHitSelfJumped });
             }
 
             // Check melee patches
-            if (ModState.MeleeStates != null && ___displayedWeapon.Type == WeaponType.Melee)
+            if (ModState.MeleeStates?.SelectedState != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
                     ___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
@@ -135,7 +134,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                        Mod.Log.Info($" - Found attack modifier: {localText} = {kvp.Value}");
+                        Mod.Log.Debug($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
                         addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
                     }
                 }
@@ -162,11 +161,18 @@ namespace CBTBehaviorsEnhanced.Patches
             else
             {
                 string localText = new Text(ModState.MeleeStates.SelectedState.Label).ToString();
-                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                Mod.Log.Info($"Setting Melee Weapon to label: {localText} and damage: {totalDamage}");
                 __instance.WeaponText.SetText(localText);
-                __instance.DamageText.SetText($"{totalDamage}");
 
+                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                if (ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1)
+                {
+                    int avgDamage = (int)Math.Floor(totalDamage / ModState.MeleeStates.SelectedState.TargetDamageClusters.Length);
+                    __instance.DamageText.SetText($"{avgDamage} <size=80%>(x{ModState.MeleeStates.SelectedState.TargetDamageClusters.Length})");
+                }
+                else
+                {
+                    __instance.DamageText.SetText($"{totalDamage}");
+                }
             }
         }
     }
@@ -191,11 +197,18 @@ namespace CBTBehaviorsEnhanced.Patches
             else
             {
                 string localText = new Text(ModState.MeleeStates.SelectedState.Label).ToString();
-                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                Mod.Log.Info($"Setting DFA Weapon to label: {localText} and damage: {totalDamage}");
                 __instance.WeaponText.SetText(localText);
-                __instance.DamageText.SetText($"{totalDamage}");
 
+                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                if (ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1)
+                {
+                    int avgDamage = (int) Math.Floor(totalDamage / ModState.MeleeStates.SelectedState.TargetDamageClusters.Length);
+                    __instance.DamageText.SetText($"{avgDamage} <size=80%>(x{ModState.MeleeStates.SelectedState.TargetDamageClusters.Length})");
+                }
+                else
+                {
+                    __instance.DamageText.SetText($"{totalDamage}");
+                }
             }
         }
     }
