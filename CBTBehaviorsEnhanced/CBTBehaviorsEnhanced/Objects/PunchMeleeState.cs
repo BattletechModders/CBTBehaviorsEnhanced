@@ -5,6 +5,7 @@ using Localize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -148,11 +149,19 @@ namespace CBTBehaviorsEnhanced.Objects
 
             // Roll up final damage
             float final = (float)Math.Ceiling((raw + mod) * multi * reductionMulti);
-            Mod.Log.Info($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x " +
+            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x reductionMulti: {reductionMulti}");
 
             // Target damage applies as a single modifier
             this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.PunchExtraHitsCount, ModStats.PunchExtraHitsAverageDamage);
+            StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
+            foreach (float cluster in this.TargetDamageClusters)
+            {
+                sb.Append(cluster);
+                sb.Append(", ");
+            }
+            Mod.Log.Info(sb.ToString());
+
         }
 
         private void CalculateInstability(Mech attacker, AbstractActor target)
