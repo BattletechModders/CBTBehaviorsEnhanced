@@ -93,6 +93,7 @@
     <Compile Include="Helper\QuipHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
     <Compile Include="Melee\MechDFASequencePatches.cs" />
+    <Compile Include="Melee\SelectionStatePatches.cs" />
     <Compile Include="Melee\ToHitPatches.cs" />
     <Compile Include="ModInit.cs" />
     <Compile Include="Components\VolatileAmmo.cs" />
