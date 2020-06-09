@@ -1,6 +1,5 @@
 ﻿using BattleTech;
 using BattleTech.UI;
-using BattleTech.WeaponFilters;
 using CBTBehaviorsEnhanced.Helper;
 using Harmony;
 using IRBTModUtils;

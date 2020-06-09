@@ -58,7 +58,6 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || weapon == null) return;
 
-            Mod.Log.Info("GETTING ALL MODS");
             if (
                 (attacker.HasMovedThisRound && attacker.JumpedLastRound) ||
                 (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
@@ -209,9 +208,6 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, int ___displayedHeat)
         {
 
-            if (___displayedWeapon == null) Mod.Log.Warn("EMPTY WEAPON IN GENERATE TOOL TIPS");
-            else Mod.Log.Info($"GENERATING TOOLTIPS FOR WEAPON: {___displayedWeapon.UIName}");
-
             if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
 
             Mod.Log.Trace("CHUDWS:GTTS entered");
@@ -222,7 +218,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                    Mod.Log.Info($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.Log.Trace($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
@@ -234,7 +230,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 } else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                    Mod.Log.Info($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.Log.Trace($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
@@ -249,19 +245,19 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    [HarmonyPatch(typeof(CombatHUDTooltipHoverElement), "OnPointerEnter")]
-    [HarmonyPatch(new Type[] { typeof(PointerEventData) } )]
-    static class CombatHUDTooltipHoverElement_OnPointerEnter
-    {
+    //[HarmonyPatch(typeof(CombatHUDTooltipHoverElement), "OnPointerEnter")]
+    //[HarmonyPatch(new Type[] { typeof(PointerEventData) } )]
+    //static class CombatHUDTooltipHoverElement_OnPointerEnter
+    //{
 
-        static void Prefix(CombatHUDTooltipHoverElement __instance)
-        {
-            Mod.Log.Info($"CHUDTHE - entered!");
-            Mod.Log.Info($"  BasicStrings: '{__instance.BasicString?.ToString()}'");
-            Mod.Log.Info($"  ExtraStrings count: '{__instance.ExtraStrings.Count}'");
-            Mod.Log.Info($"  ToggleUINode: '{LazySingletonBehavior<UIManager>.Instance.ToggleUINode}'");
-            Mod.Log.Info($"  ActiveInHierachy: {__instance.gameObject.activeInHierarchy}");
-        }
-    }
+    //    static void Prefix(CombatHUDTooltipHoverElement __instance)
+    //    {
+    //        Mod.Log.Info($"CHUDTHE - entered!");
+    //        Mod.Log.Info($"  BasicStrings: '{__instance.BasicString?.ToString()}'");
+    //        Mod.Log.Info($"  ExtraStrings count: '{__instance.ExtraStrings.Count}'");
+    //        Mod.Log.Info($"  ToggleUINode: '{LazySingletonBehavior<UIManager>.Instance.ToggleUINode}'");
+    //        Mod.Log.Info($"  ActiveInHierachy: {__instance.gameObject.activeInHierarchy}");
+    //    }
+    //}
 
 }
