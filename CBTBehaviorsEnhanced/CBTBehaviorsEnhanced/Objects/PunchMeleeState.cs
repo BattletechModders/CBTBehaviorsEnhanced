@@ -25,7 +25,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public PunchMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            Mod.Log.Info($"Building PUNCH state for attacker: {attacker.CommonId()} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+            Mod.Log.Info($"Building PUNCH state for attacker: {attacker.DistinctId()} @ attackPos: {attackPos} vs. target: {target.DistinctId()}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Punch];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);

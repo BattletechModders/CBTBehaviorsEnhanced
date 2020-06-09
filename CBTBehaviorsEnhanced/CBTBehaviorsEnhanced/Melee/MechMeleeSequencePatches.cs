@@ -106,7 +106,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 }
 
                 // Target stability and unsteady - only applies to mech targets
-                if (__instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
+                if (targetWasHit && __instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
                 {
 
                     if (ModState.MeleeStates.SelectedState.TargetInstability != 0)
@@ -123,7 +123,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 }
 
                 // Target cluster damage - first attack was applied through melee weapon
-                if (ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1 && !__instance.MeleeTarget.IsDead)
+                if (targetWasHit && ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1 && !__instance.MeleeTarget.IsDead)
                 {
                     // Make sure we use the targets's damage table
                     ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.TargetTable;
