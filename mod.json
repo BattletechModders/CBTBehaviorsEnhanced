@@ -16,7 +16,6 @@
 
         "Features" : {
             "BiomeBreaches" : true,
-            "dz_Abilities" : false,
             "PermanentEvasion" : true,
             "StartupChecks" : true
         },

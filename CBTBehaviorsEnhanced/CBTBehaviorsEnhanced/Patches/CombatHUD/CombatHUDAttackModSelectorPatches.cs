@@ -184,7 +184,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     !ModState.MeleeStates.PhysicalWeapon.IsValid && !ModState.MeleeStates.Punch.IsValid)
                 {
                     Mod.Log.Info("NO VALID MELEE ATTACKS, DISABLING!");
-                    __instance.FireButton.SetState(ButtonState.Unavailable);
+                    __instance.FireButton.SetState(ButtonState.Disabled);
                 }
             }
             else
