@@ -109,6 +109,14 @@ namespace CBTBehaviorsEnhanced.Objects
             {
                 this.AttackModifiers.Add(ModText.LT_Label_Acutator_Damage, bestLegMalus);
             }
+
+            // Check for attack modifier statistic
+            if (attacker.StatCollection.ContainsStatistic(ModStats.KickAttackMod) &&
+                attacker.StatCollection.GetValue<int>(ModStats.KickAttackMod) != 0)
+            {
+                this.AttackModifiers.Add(ModText.LT_Label_Kick_Attack_Mod, attacker.StatCollection.GetValue<int>(ModStats.KickAttackMod));
+            }
+
         }
 
         private void CalculateDamages(Mech attacker, AbstractActor target)

@@ -88,6 +88,13 @@ namespace CBTBehaviorsEnhanced.Objects
 				$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 
 			this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
+
+			// Check for attack modifier statistic
+			if (attacker.StatCollection.ContainsStatistic(ModStats.ChargeAttackMod) &&
+				attacker.StatCollection.GetValue<int>(ModStats.ChargeAttackMod) != 0)
+			{
+				this.AttackModifiers.Add(ModText.LT_Label_Charge_Attack_Mod, attacker.StatCollection.GetValue<int>(ModStats.ChargeAttackMod));
+			}
 		}
 
 		private void CalculateDamages(Mech attacker, AbstractActor target, int hexesMoved)
