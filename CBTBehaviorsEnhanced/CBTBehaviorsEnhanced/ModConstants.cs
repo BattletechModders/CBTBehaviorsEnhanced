@@ -56,6 +56,8 @@ namespace CBTBehaviorsEnhanced
         public const string DeathFromAboveTargetInstabilityMulti = "CBTBE_DFA_Target_Instability_Multi"; // float
 
         public const string KickAttackMod = "CBTBE_Kick_Attack_Mod"; // int - a straight modifier to the attack roll
+        public const string KickExtraHitsCount = "CBTBE_Kick_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
+        public const string KickExtraHitsAverageDamage = "CBTBE_Kick_Extra_Hits_Average_Damage"; // bool - if true, and there is more than 1 hit, the total damage will be averaged across all hits
 
         public const string KickTargetDamageMod = "CBTBE_Kick_Target_Damage_Mod"; // int
         public const string KickTargetDamageMulti = "CBTBE_Kick_Target_Damage_Multi"; // float
@@ -63,6 +65,8 @@ namespace CBTBehaviorsEnhanced
         public const string KickTargetInstabilityMulti = "CBTBE_Kick_Target_Instability_Multi"; // float
 
         public const string PunchAttackMod = "CBTBE_Punch_Attack_Mod"; // int - a straight modifier to the attack roll
+        public const string PunchExtraHitsCount = "CBTBE_Punch_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
+        public const string PunchExtraHitsAverageDamage = "CBTBE_Punch_Extra_Hits_Average_Damage"; // bool - if true, and there is more than 1 hit, the total damage will be averaged across all hits
 
         public const string PunchTargetDamageMod = "CBTBE_Punch_Target_Damage_Mod"; // int
         public const string PunchTargetDamageMulti = "CBTBE_Punch_Target_Damage_Multi"; // float
@@ -72,6 +76,8 @@ namespace CBTBehaviorsEnhanced
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
         public const string PhysicalWeaponAttackMod = "CBTBE_Physical_Weapon_Attack_Mod"; // int - a straight modifier to the attack roll
+        public const string PhysicalWeaponExtraHitsCount = "CBTBE_Physical_Weapon_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
+        public const string PhysicalWeaponExtraHitsAverageDamage = "CBTBE_Physical_Weapon_Extra_Hits_Average_Damage"; // bool - if true, and there is more than 1 hit, the total damage will be averaged across all hits
 
         public const string PhysicalWeaponUnsteadyAttackerOnHit = "CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit"; // bool - if true, attacker will be unsteady on a hit
         public const string PhysicalWeaponUnsteadyAttackerOnMiss = "CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss"; // bool - if true, attacker will be unsteady on a miss

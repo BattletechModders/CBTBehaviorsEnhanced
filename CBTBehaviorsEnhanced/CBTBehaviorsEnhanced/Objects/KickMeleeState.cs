@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Helper;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -153,8 +154,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x actuatorMulti: {actuatorMulti}");
 
-            // Target damage applies as a single modifier
-            this.TargetDamageClusters = new float[] { final };
+            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.KickExtraHitsCount, ModStats.KickExtraHitsAverageDamage);
         }
 
         private void CalculateInstability(Mech attacker, AbstractActor target)
