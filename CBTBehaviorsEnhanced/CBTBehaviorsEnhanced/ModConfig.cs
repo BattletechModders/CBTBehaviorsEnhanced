@@ -13,8 +13,6 @@ namespace CBTBehaviorsEnhanced {
             // If true, hull breaches will be allowed in certain biomes
             public bool BiomeBreaches = true;
 
-            public bool dZ_Abilities = false; // If true, applies special behaviors for DonZappo's abilities
-
             // If true, evasion won't be removed by attacks
             public bool PermanentEvasion = true;
 
@@ -26,7 +24,6 @@ namespace CBTBehaviorsEnhanced {
             public bool StartupChecks = true;
         }
         public FeatureList Features = new FeatureList();
-
 
         // Movement - should be a +3 per BT Manual pg. 28
         public int ToHitSelfJumped = 3;
@@ -256,7 +253,7 @@ namespace CBTBehaviorsEnhanced {
         public void LogConfig() {
             Mod.Log.Info("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info($"  Debug: {this.Debug} Trace: {this.Trace}");
-            Mod.Log.Info($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  dZ_Abilities: {this.Features.dZ_Abilities}  " +
+            Mod.Log.Info($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  " +
                 $"PermanentEvasion: {this.Features.PermanentEvasion}  SpeedAsMP: {this.Features.SpeedAsMP}  " +
                 $"StartupChecks: {this.Features.StartupChecks}");
             Mod.Log.Info($"  ToHitSelfJumped: {this.ToHitSelfJumped}");
