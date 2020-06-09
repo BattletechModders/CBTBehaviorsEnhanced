@@ -1,4 +1,6 @@
 ﻿using BattleTech;
+using IRBTModUtils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -44,14 +46,14 @@ namespace CBTBehaviorsEnhanced.Helper
                 if (target is Mech mech)
                 {
                     ArmorLocation location =
-                        ModState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
+                        SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
                     Mod.Log.Info($"  {damage} damage to location: {location}");
                 }
                 else if (target is Vehicle vehicle)
                 {
                     VehicleChassisLocations location =
-                        ModState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
+                        SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
                     Mod.Log.Info($"  {damage} damage to location: {location}");
                 }
@@ -72,5 +74,44 @@ namespace CBTBehaviorsEnhanced.Helper
             target.Combat.AttackDirector.RemoveAttackSequence(attackSequence);
         }
 
+        public static float[] CreateDamageClustersWithExtraAttacks(AbstractActor attacker, float totalDamage,
+       string extraHitsCountStat, string extraHitsAverageDamageStat)
+        {
+            float[] damageClusters = new float[] { };
+
+            // Check for extra strikes
+            if (attacker.StatCollection.ContainsStatistic(extraHitsCountStat) &&
+                attacker.StatCollection.GetValue<float>(extraHitsCountStat) > 0)
+            {
+                // Round down to allow fractional extra attacks
+                int extraAttacks = (int)Math.Floor(attacker.StatCollection.GetValue<float>(extraHitsCountStat));
+                if (extraAttacks > 0)
+                {
+                    // Check for damage split
+                    if (attacker.StatCollection.ContainsStatistic(extraHitsAverageDamageStat) &&
+                        attacker.StatCollection.GetValue<bool>(extraHitsAverageDamageStat))
+                    {
+                        // Divide the damage into N hits, using the extra attacks + 1 as divisor
+                        float averaged = (float)Math.Floor(totalDamage / (extraAttacks + 1));
+                        Mod.Log.Info($"Adding {extraAttacks + 1 } clusters of {averaged} damage averaged from {totalDamage} damage.");
+                        damageClusters = Enumerable.Repeat(averaged, extraAttacks + 1).ToArray();
+                    }
+                    else
+                    {
+                        // Each extra attack adds a new strike
+                        Mod.Log.Info($"Adding {extraAttacks + 1 } clusters of {totalDamage} damage.");
+                        damageClusters = Enumerable.Repeat(totalDamage, extraAttacks + 1).ToArray();
+                    }
+                }
+            }
+            else
+            {
+                // Target damage applies as a single attack
+                damageClusters = new float[] { totalDamage };
+            }
+
+            return damageClusters;
+        }
     }
+
 }
