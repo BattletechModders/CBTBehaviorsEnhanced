@@ -2,6 +2,7 @@
 using BattleTech.UI;
 using Harmony;
 using HBS;
+using IRBTModUtils;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -57,9 +58,12 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || weapon == null) return;
 
-            if (attacker.HasMovedThisRound && attacker.JumpedLastRound &&
-                // Special trigger for dz's abilities
-                !(Mod.Config.Features.dZ_Abilities && attacker.SkillTactics != 10))
+            Mod.Log.Info("GETTING ALL MODS");
+            if (
+                (attacker.HasMovedThisRound && attacker.JumpedLastRound) ||
+                (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
+                SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump)
+                )
             {
                 __result += (float)Mod.Config.ToHitSelfJumped;
             }
@@ -74,7 +78,9 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             Mod.Log.Trace("TH:GAMD entered");
 
-            if (attacker.HasMovedThisRound && attacker.JumpedLastRound)
+            if (attacker.HasMovedThisRound && attacker.JumpedLastRound ||
+                (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
+                SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump))
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
                 __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, Mod.Config.ToHitSelfJumped);
@@ -112,7 +118,9 @@ namespace CBTBehaviorsEnhanced.Patches
                 .Method("AddToolTipDetail", new Type[] { typeof(string), typeof(int) });
 
             AbstractActor actor = __instance.DisplayedWeapon.parent;
-            if (actor.HasMovedThisRound && actor.JumpedLastRound)
+            if (actor.HasMovedThisRound && actor.JumpedLastRound ||
+                (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
+                SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump))
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
                 Mod.Log.Trace($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
