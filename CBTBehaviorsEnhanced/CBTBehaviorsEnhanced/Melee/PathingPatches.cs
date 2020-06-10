@@ -29,8 +29,8 @@ namespace CBTBehaviorsEnhanced.Melee {
             PathNodeGrid sprintingGrid = sprintingGridT.GetValue<PathNodeGrid>();
 
             // Calculate all possible nodes
-            List<PathNode> pathNodesForPoints = Pathing.GetPathNodesForPoints(target.Combat.HexGrid.GetAdjacentPointsOnGrid(target.CurrentPosition), 
-                Mod.Config.Melee.AllowMeleeFromSprint ? sprintingGrid : walkingGrid);
+            List<PathNode> pathNodesForPoints = Pathing.GetPathNodesForPoints(
+                target.Combat.HexGrid.GetAdjacentPointsOnGrid(target.CurrentPosition), sprintingGrid);
 
             // Remove any that have blockers, or are beyond the max vertical offset
             for (int i = pathNodesForPoints.Count - 1; i >= 0; i--) {
@@ -78,11 +78,9 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(typeof(Pathing), "getGrid")]
     public static class Pathing_getGrid {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-            if (Mod.Config.Melee.AllowMeleeFromSprint) {
-                MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-                MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-                instructions = instructions.MethodReplacer(miold, minew);
-            }
+            MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+            instructions = instructions.MethodReplacer(miold, minew);
             return instructions;
         }
     }
@@ -91,11 +89,9 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(typeof(Pathing), "SetMeleeTarget")]
     public static class Pathing_SetMeleeTarget {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-            if (Mod.Config.Melee.AllowMeleeFromSprint) {
-                MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-                MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-                instructions = instructions.MethodReplacer(miold, minew);
-            }
+            MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+            instructions = instructions.MethodReplacer(miold, minew);
             return instructions;
         }
     }
