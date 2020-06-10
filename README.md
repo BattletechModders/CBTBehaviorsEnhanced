@@ -418,7 +418,6 @@ All statistics used in melee values are listed below. See the relevant section f
 | **KICK STATISTICS** |  ||
 | CBTBE_Kick_Attack_Mod | System.Int32 ||
 | CBTBE_Kick_Extra_Hits_Count | System.Single ||
-| CBTBE_Kick_Extra_Hits_Average_Damage | System.Boolean ||
 | | ||
 | CBTBE_Kick_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Kick_Target_Damage_Multi | System.Single |value must be >= 0|
@@ -428,7 +427,6 @@ All statistics used in melee values are listed below. See the relevant section f
 | **PUNCH STATISTICS** |  ||
 | CBTBE_Punch_Attack_Mod | System.Int32 ||
 | CBTBE_Punch_Extra_Hits_Count | System.Single ||
-| CBTBE_Punch_Extra_Hits_Average_Damage | System.Boolean ||
 |  | ||
 | CBTBE_Punch_Target_Damage_Mod | System.Int32 ||
 | CBTBE_Punch_Target_Damage_Multi | System.Single |value must be >= 0|
@@ -440,7 +438,6 @@ All statistics used in melee values are listed below. See the relevant section f
 | CBTBE_Physical_Weapon_Location_Table | System.String |value must be one of PUNCH, KICK, STANDARD|
 | CBTBE_Physical_Weapon_Attack_Mod | System.Int32 ||
 | CBTBE_Physical_Weapon_Extra_Hits_Count | System.Single ||
-| CBTBE_Physical_Weapon_Extra_Hits_Average_Damage | System.Boolean ||
 |  |  ||
 | CBTBE_Physical_Weapon_Unsteady_Attacker_On_Hit | System.Boolean ||
 | CBTBE_Physical_Weapon_Unsteady_Attacker_On_Miss | System.Boolean ||
