@@ -75,7 +75,7 @@ namespace CBTBehaviorsEnhanced.Helper
         }
 
         public static float[] CreateDamageClustersWithExtraAttacks(AbstractActor attacker, float totalDamage,
-       string extraHitsCountStat, string extraHitsAverageDamageStat)
+       string extraHitsCountStat)
         {
             float[] damageClusters = new float[] { };
 
@@ -88,8 +88,7 @@ namespace CBTBehaviorsEnhanced.Helper
                 if (extraAttacks > 0)
                 {
                     // Check for damage split
-                    if (attacker.StatCollection.ContainsStatistic(extraHitsAverageDamageStat) &&
-                        attacker.StatCollection.GetValue<bool>(extraHitsAverageDamageStat))
+                    if (Mod.Config.Melee.ExtraHitsAverageAllDamage)
                     {
                         // Divide the damage into N hits, using the extra attacks + 1 as divisor
                         float averaged = (float)Math.Floor(totalDamage / (extraAttacks + 1));

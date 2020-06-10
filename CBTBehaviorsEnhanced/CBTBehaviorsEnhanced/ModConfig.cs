@@ -191,7 +191,8 @@ namespace CBTBehaviorsEnhanced {
         // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
         public class MeleeOptions {
 
-            public bool AllowMeleeFromSprint = true;
+            // If true, all hits will average the base damage.
+            public bool ExtraHitsAverageAllDamage = false;
 
             // Prone target modifier
             public int ProneTargetAttackModifier = -2;
@@ -270,7 +271,7 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info("");
 
             Mod.Log.Info("=== MELEE OPTIONS ===");
-            Mod.Log.Info($"  AllowMeleeFromSprint: {this.Melee.AllowMeleeFromSprint}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}");
+            Mod.Log.Info($"  ExtraHitsAverageAllDamage: {this.Melee.ExtraHitsAverageAllDamage}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}");
             Mod.Log.Info("  -- CHARGE OPTIONS --");
             Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
             Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");

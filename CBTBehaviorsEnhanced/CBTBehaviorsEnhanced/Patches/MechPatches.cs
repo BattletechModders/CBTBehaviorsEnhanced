@@ -48,9 +48,7 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetInstabilityMulti, 1f);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.KickAttackMod, 0);
-
             __instance.StatCollection.AddStatistic<float>(ModStats.KickExtraHitsCount, 0f);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.KickExtraHitsAverageDamage, false);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.KickTargetDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetDamageMulti, 1f);
@@ -58,9 +56,7 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetInstabilityMulti, 1f);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchAttackMod, 0);
-
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchExtraHitsCount, 0f);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PunchExtraHitsAverageDamage, false);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetDamageMulti, 1f);
@@ -72,8 +68,6 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponAttackMod, 0);
 
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponExtraHitsCount, 0f);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponExtraHitsAverageDamage, false);
-
 
             // Don't initialize these so their presence can signify the choice
             //__instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit, false);

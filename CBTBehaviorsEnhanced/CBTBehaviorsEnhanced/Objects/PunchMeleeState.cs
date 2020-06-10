@@ -153,7 +153,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 $"multi: {multi} x reductionMulti: {reductionMulti}");
 
             // Target damage applies as a single modifier
-            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.PunchExtraHitsCount, ModStats.PunchExtraHitsAverageDamage);
+            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.PunchExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
             foreach (float cluster in this.TargetDamageClusters)
             {
