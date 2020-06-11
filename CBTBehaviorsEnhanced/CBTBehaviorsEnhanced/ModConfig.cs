@@ -101,6 +101,16 @@ namespace CBTBehaviorsEnhanced {
         }
         public HeatOptions Heat = new HeatOptions();
 
+        public class AIMeleeOpts
+        {
+            // Bonus virtual damage - applied to an attack for stripping evasion
+            public float EvasionPipRemovedUtility = 0f;
+
+            // Bonus virtual damage - add CT armor + structure, multiplied by this value, as virtual damage
+            public float PilotInjuryMultiUtility = 1.0f;
+
+        }
+
 
         public class ChargeMeleeOpts
         {
@@ -197,6 +207,7 @@ namespace CBTBehaviorsEnhanced {
             // Prone target modifier
             public int ProneTargetAttackModifier = -2;
 
+            public AIMeleeOpts AI = new AIMeleeOpts();
             public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
             public DFAMeleeOpts DFA = new DFAMeleeOpts();
             public KickMeleeOps Kick = new KickMeleeOps();

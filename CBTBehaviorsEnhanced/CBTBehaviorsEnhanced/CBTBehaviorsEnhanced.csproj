@@ -114,6 +114,7 @@
     <Compile Include="Objects\ChargeMeleeState.cs" />
     <Compile Include="Objects\MeleeState.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
+    <Compile Include="Patches\AI\AIUtilPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
     <Compile Include="Patches\AttackModifierPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />

@@ -22,7 +22,7 @@ namespace CBTBehaviorsEnhanced
 
             // Do not use DFA here, because it's selected differently in UI.
             List<MeleeState> allStates = new List<MeleeState> { Charge, Kick, PhysicalWeapon, Punch };
-            if (includeDFA) allStates.Add(DFA);
+            if (includeDFA && DFA != null) allStates.Add(DFA);
 
             foreach (MeleeState state in allStates)
             {
@@ -38,6 +38,7 @@ namespace CBTBehaviorsEnhanced
                 }
             }
 
+            Mod.Log.Info($"Selected state of type: {selectedState?.Label} as most damaging.");
             return selectedState;
         }
     }

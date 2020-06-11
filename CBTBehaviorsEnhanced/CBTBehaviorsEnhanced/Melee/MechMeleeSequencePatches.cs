@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.Melee {
         static void Prefix(MechMeleeSequence __instance)
         {
             // TODO: If this happens before the above... need to grab the selected melee type from state
-            Mod.Log.Info($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon}");
+            Mod.Log.Info($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon.UIName}");
             ModState.MeleeWeapon = __instance.OwningMech.MeleeWeapon;
             ModState.MeleeType = __instance.selectedMeleeType;
 

@@ -85,7 +85,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
 
             // Check melee patches
-            if (ModState.MeleeStates != null && weapon.Type == WeaponType.Melee)
+            if (ModState.MeleeStates?.SelectedState != null && weapon.Type == WeaponType.Melee)
             {
 
                 foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
@@ -226,7 +226,7 @@ namespace CBTBehaviorsEnhanced.Patches
             Mod.Log.Trace("CHUDWS:GTTS entered");
 
             // Check melee patches
-            if (ModState.MeleeStates != null && ___displayedWeapon.Type == WeaponType.Melee)
+            if (ModState.MeleeStates?.SelectedState != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {

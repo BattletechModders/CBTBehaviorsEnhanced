@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.Melee {
         static void Prefix(MechDFASequence __instance)
         {
             // TODO: If this happens before the above... need to grab the selected melee type from state
-            Mod.Log.Info($"Setting current melee type to: {MeleeAttackType.DFA} and weapon to: {__instance.OwningMech.DFAWeapon}");
+            Mod.Log.Info($"Setting current melee type to: {MeleeAttackType.DFA} and weapon to: {__instance.OwningMech.DFAWeapon.UIName}");
             ModState.MeleeWeapon = __instance.OwningMech.DFAWeapon;
             ModState.MeleeType = MeleeAttackType.DFA;
 
