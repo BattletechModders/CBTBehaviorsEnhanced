@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CustAmmoCategories;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -10,6 +11,57 @@ namespace CBTBehaviorsEnhanced.Helper
 {
     public static class AttackHelper
     {
+
+        private static void ShowDamageFloatie(Mech mech, ArmorLocation location, float damage,
+            string sourceGUID)
+        {
+            if (mech != null && mech.GameRep != null)
+            {
+                Vector3 vector = mech.GameRep.GetHitPosition((int)location) + UnityEngine.Random.insideUnitSphere * 5f;
+                FloatieMessage.MessageNature nature = mech.GetCurrentArmor(location) > 0f ?
+                    FloatieMessage.MessageNature.ArmorDamage : FloatieMessage.MessageNature.StructureDamage;
+
+                FloatieMessage message = new FloatieMessage(sourceGUID, mech.GUID, $"{damage}", 
+                    SharedState.Combat.Constants.CombatUIConstants.floatieSizeMedium, nature,
+                    vector.x, vector.y, vector.z);
+
+                SharedState.Combat.MessageCenter.PublishMessage(message);
+            }
+        }
+        private static void ShowDamageFloatie(Turret turret, float damage, string sourceGUID)
+        {
+            if (turret != null && turret.GameRep != null)
+            {
+                Vector3 vector = turret.GameRep.GetHitPosition((int)BuildingLocation.Structure) + UnityEngine.Random.insideUnitSphere * 5f;
+                FloatieMessage.MessageNature nature = turret.GetCurrentArmor(BuildingLocation.Structure) > 0f ?
+                    FloatieMessage.MessageNature.ArmorDamage : FloatieMessage.MessageNature.StructureDamage;
+
+                FloatieMessage message = new FloatieMessage(sourceGUID, turret.GUID, $"{damage}",
+                    SharedState.Combat.Constants.CombatUIConstants.floatieSizeMedium, nature,
+                    vector.x, vector.y, vector.z);
+
+                SharedState.Combat.MessageCenter.PublishMessage(message);
+            }
+        }
+
+        private static void ShowDamageFloatie(Vehicle vehicle, VehicleChassisLocations location, float damage, string sourceGUID)
+        {
+            if (vehicle != null && vehicle.GameRep != null)
+            {
+                Vector3 vector = vehicle.GameRep.GetHitPosition((int)location) + UnityEngine.Random.insideUnitSphere * 5f;
+                FloatieMessage.MessageNature nature = vehicle.GetCurrentArmor(location) > 0f ?
+                    FloatieMessage.MessageNature.ArmorDamage : FloatieMessage.MessageNature.StructureDamage;
+
+                FloatieMessage message = new FloatieMessage(sourceGUID, vehicle.GUID, $"{damage}",
+                    SharedState.Combat.Constants.CombatUIConstants.floatieSizeMedium, nature,
+                    vector.x, vector.y, vector.z);
+
+                SharedState.Combat.MessageCenter.PublishMessage(message);
+            }
+        }
+
+
+
         public static void CreateImaginaryAttack(Mech attacker, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters, 
             DamageType damageType, MeleeAttackType attackType)
         {
@@ -50,6 +102,8 @@ namespace CBTBehaviorsEnhanced.Helper
                         SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
                     Mod.Log.Info($"  {damage} damage to location: {location}");
+
+                    ShowDamageFloatie(mech, location, damage, hitInfo.attackerId);
                 }
                 else if (target is Vehicle vehicle)
                 {
@@ -57,16 +111,22 @@ namespace CBTBehaviorsEnhanced.Helper
                         SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
                     Mod.Log.Info($"  {damage} damage to location: {location}");
+
+                    ShowDamageFloatie(vehicle, location, damage, hitInfo.attackerId);
                 }
                 else if (target is Turret turret)
                 {
                     BuildingLocation location = BuildingLocation.Structure;
                     hitInfo.hitLocations[i] = (int)BuildingLocation.Structure;
                     Mod.Log.Info($"  {damage} damage to location: {location}");
+
+                    ShowDamageFloatie(turret, damage, hitInfo.attackerId);
                 }
 
                 // Make the target take weapon damage
                 target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], attacker.ImaginaryLaserWeapon, damage, 0, 0, damageType);
+
+                
 
                 i++;
             }
