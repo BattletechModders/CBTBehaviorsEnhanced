@@ -178,10 +178,12 @@ namespace CBTBehaviorsEnhanced {
             int tempHeat = mech.TempHeat;
 
             int futureHeat = Math.Max(0, currentHeat + tempHeat + projectedHeat + cacTerrainHeat);
+            if (futureHeat > Mod.Config.Heat.MaxHeat) futureHeat = Mod.Config.Heat.MaxHeat;
             Mod.Log.Trace($"  currentHeat: {currentHeat} + tempHeat: {tempHeat} + projectedHeat: {projectedHeat} + cacTerrainheat: {cacTerrainHeat} + sinkableHeat: {sinkableHeat}" +
                 $"  =  futureHeat: {futureHeat}");
 
             int thresholdHeat = Math.Max(0, futureHeat + sinkableHeat);
+            if (thresholdHeat > Mod.Config.Heat.MaxHeat) thresholdHeat = Mod.Config.Heat.MaxHeat;
             Mod.Log.Trace($"Threshold heat: {thresholdHeat} = futureHeat: {futureHeat} + sinkableHeat: {sinkableHeat}");
 
             return new CalculatedHeat {

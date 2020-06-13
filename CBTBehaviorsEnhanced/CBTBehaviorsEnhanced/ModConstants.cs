@@ -32,6 +32,7 @@ namespace CBTBehaviorsEnhanced
         public const string HBS_DFA_Causes_Self_Unsteady = "DFACausesSelfUnsteady";
         public const string HBS_Received_Instability_Multi = "ReceivedInstabilityMultiplier";
         public const string HBS_Ignore_Pilot_Injuries = "IgnorePilotInjuries";
+        public const string HBS_Mech_Current_Heat = "CurrentHeat";
 
         // Melee damage modifier stats
         public const string ChargeAttackMod = "CBTBE_Charge_Attack_Mod"; // int - a straight modifier to the attack roll

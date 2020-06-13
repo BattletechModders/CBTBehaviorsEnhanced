@@ -4,6 +4,7 @@ using Harmony;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches {
@@ -11,7 +12,9 @@ namespace CBTBehaviorsEnhanced.Patches {
     // Initialize statistics. InitEffectStats is invoked in the middle of the InitStats function, before effects are applied.
     [HarmonyPatch(typeof(Mech), "InitEffectStats")]
     [HarmonyAfter("MechEngineer.Features.Engine")]
-    public static class Mech_InitEffectStats {
+    public static class Mech_InitEffectStats
+    {
+
         public static void Postfix(Mech __instance) {
             Mod.Log.Trace("M:I entered.");
 
@@ -94,9 +97,13 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatToHitPenalties, false);
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatMovementPenalties, false);
 
+            // Add a clamp for heat
+            __instance.StatCollection.SetValidator<int>(ModStats.HBS_Mech_Current_Heat, StatValidators.CurrentHeatClampValidator<int>);
+
         }
     }
 
+    // TODO: This is redundant since we've replaced DFASelfDamage, I think? Just remove?
     // Mitigate DFA self damage based upon piloting skill
     [HarmonyPatch(typeof(Mech), "TakeWeaponDamage")]
     public static class Mech_TakeWeaponDamage {
