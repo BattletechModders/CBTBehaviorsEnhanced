@@ -100,7 +100,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 }
 
                 // Attacker cluster damage
-                if (!__instance.OwningMech.IsDead)
+                if (targetWasHit && !__instance.OwningMech.IsDead)
                 {
                     // Make sure we use the attackers's damage table
                     ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.AttackerTable;
