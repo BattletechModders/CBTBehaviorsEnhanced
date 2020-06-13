@@ -104,7 +104,8 @@ namespace CBTBehaviorsEnhanced.Patches {
                             }
                             else
                             {
-                                Mod.Log.Info($"Pilot check to avoid falling passed.");
+                                Mod.Log.Info($"Pilot check to avoid falling passed. Applying unstead to unit.");
+                                __instance.OwningMech.ApplyUnsteady();
                             }
                         }
                         else
