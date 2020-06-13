@@ -528,11 +528,12 @@ This calculation can be further modified by a per-unit statistic. Any mech can b
 
 ## NOTES TODO ERRORS
 
-* TODO: If you are shutdown, you auto-fail Piloting checks. Reflect this in Classic Piloting
 * TODO: One destroyed leg means movement of 1 MP, no running, gains a +5 PSR modifier, jumping requires a PSR
 * Heat Modifiers are applied dynamically; this means you can fire, raise your heat, and suddenly not be able to move. This should be fixed, but requires some state management.
 * Disable `MechEngineer.Features.MoveMultiplierStat` - it will be completely ignored by the revamped heat-based movement logic
-* TODO: Select melee style
-* TODO: Punches should roll on punch table, kicks on kick table, etc
 * ERROR: Problems in interleaved mode if you hit "OK" before everyone is done moving.
+* ERROR: If mech does not move (just braces) it doesn't generate a heat sequence. Fix.
 * ERROR: Heat calculations assume heat > 150. Why is heat > 150? Cap any heat at 150, period.
+* TODO: AI should select most favorable melee attack
+  * Check for head damage that a punch would eliminate
+  * Check for leg damage that would result in a falldown
