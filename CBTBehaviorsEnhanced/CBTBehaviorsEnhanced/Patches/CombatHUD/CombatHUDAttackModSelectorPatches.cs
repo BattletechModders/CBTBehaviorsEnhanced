@@ -113,12 +113,12 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             if (SharedState.CombatHUD.SelectionHandler.ActiveState == null)
             {
-                Mod.Log.Info($"Disabling all CHUD_Fire_Buttons");
+                Mod.Log.Trace($"Disabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(false);
                 return;
             }
 
-            Mod.Log.Info($"ShowFireButton called with mode: {mode}");
+            Mod.Log.Trace($"ShowFireButton called with mode: {mode}");
 
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
@@ -131,7 +131,7 @@ namespace CBTBehaviorsEnhanced.Patches
                         SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                         );
                     ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
-                    Mod.Log.Info($"Updated melee state for position: {ModState.MeleePreviewPos}");
+                    Mod.Log.Debug($"Updated melee state for position: {ModState.MeleePreviewPos}");
                 }
             }
             else
@@ -141,7 +141,7 @@ namespace CBTBehaviorsEnhanced.Patches
             
             if (mode == CombatHUDFireButton.FireMode.Engage)
             {
-                Mod.Log.Info($"Enabling all CHUD_Fire_Buttons");
+                Mod.Log.Trace($"Enabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(true);
 
                 if (ModState.ChargeFB != null)
@@ -183,13 +183,13 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (!ModState.MeleeStates.Charge.IsValid && !ModState.MeleeStates.Kick.IsValid && 
                     !ModState.MeleeStates.PhysicalWeapon.IsValid && !ModState.MeleeStates.Punch.IsValid)
                 {
-                    Mod.Log.Info("NO VALID MELEE ATTACKS, DISABLING!");
+                    Mod.Log.Debug("NO VALID MELEE ATTACKS, DISABLING!");
                     __instance.FireButton.SetState(ButtonState.Disabled);
                 }
             }
             else
             {
-                Mod.Log.Info($"Disabling all CHUD_Fire_Buttons");
+                Mod.Log.Trace($"Disabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(false);
                 if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
@@ -251,7 +251,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || __instance.gameObject == null || ModState.MeleeStates == null) return true;
 
-            Mod.Log.Info($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}!");
+            Mod.Log.Trace($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}!");
 
             bool shouldReturn = true;
             CombatHUDAttackModeSelector selector = SharedState.CombatHUD.AttackModeSelector;
@@ -278,13 +278,13 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (ModState.MeleeStates.SelectedState != null)
             {
-                Mod.Log.Info("Enabling description container for melee attack");
+                Mod.Log.Debug("Enabling description container for melee attack");
                 selector.DescriptionContainer.SetActive(true);
                 selector.DescriptionContainer.gameObject.SetActive(true);
 
                 HashSet<string> descriptonNotes = ModState.MeleeStates.SelectedState.DescriptionNotes;
                 string description = String.Join(", ", descriptonNotes);
-                Mod.Log.Info($"Aggregate description is: {description}");
+                Mod.Log.Debug($"Aggregate description is: {description}");
 
                 selector.DescriptionText.SetText(description);
                 selector.DescriptionText.ForceMeshUpdate(true);
