@@ -25,6 +25,26 @@ namespace CBTBehaviorsEnhanced.Patches {
     }
 
 
+    [HarmonyPatch(typeof(CombatHUDHeatDisplay), "Init")]
+    [HarmonyPatch(new Type[] { typeof(float) } )]
+    public static class CombatHUDHeatDisplay_Init
+    {
+        public static void Postfix(CombatHUDHeatDisplay __instance)
+        {
+            Mod.Log.Trace("CHUDHD:I - entered.");
+            if (__instance.DisplayedActor != null && __instance.DisplayedActor is Mech displayedMech)
+            {
+                Traverse origWidthT = Traverse.Create(__instance).Property("origWidth");
+                float origWidth = origWidthT.GetValue<float>();
+
+                Traverse rectTransformT = Traverse.Create(__instance).Property("rectTransform");
+                RectTransform rectTransform = rectTransformT.GetValue<RectTransform>();
+
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, origWidth);
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(CombatHUDHeatDisplay), "DangerLevel", MethodType.Getter)]
     public static class CombatHUDHeatDisplay_DangerLevel_Getter {
         public static void Postfix(CombatHUDHeatDisplay __instance, ref float __result) {

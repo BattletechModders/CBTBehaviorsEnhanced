@@ -104,7 +104,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 }
                 else
                 {
-                    Mod.Log.Info($"Attack is not melee {modifyAttack}, or melee state is invalid or null. I assume the normal AI will prevent action.");
+                    Mod.Log.Debug($"Attack is not melee {modifyAttack}, or melee state is invalid or null. I assume the normal AI will prevent action.");
                 }
             }
             catch (Exception e)

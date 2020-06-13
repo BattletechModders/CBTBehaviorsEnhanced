@@ -30,7 +30,8 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 
                 // Check to see if we will shutdown
                 bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
-                Mod.Log.Info($"AI unit {CombatantUtils.Label(mech)} heatCheck: {heatCheck} vs. futureHeat: {futureHeat} => passed: {passedStartupCheck}");
+                Mod.Log.Info($"AI unit {CombatantUtils.Label(mech)} heatCheck: {heatCheck} vs. futureHeat: {futureHeat} " +
+                    $"(from currentHeat: {mech.CurrentHeat} - sinking: {mech.AdjustedHeatsinkCapacity}) => passed: {passedStartupCheck}");
 
                 if (!passedStartupCheck)
                 {
