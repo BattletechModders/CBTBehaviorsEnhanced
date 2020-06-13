@@ -22,6 +22,8 @@ namespace CBTBehaviorsEnhanced
 		public int RightArmActuatorsCount = 0;
 		public bool RightHandIsFunctional = false;
 
+		private Mech Attacker;
+
 		public MechMeleeCondition(Mech attacker)
         {
 			Mod.Log.Debug($"Building possible attacks from current attacker damage state:");
@@ -41,6 +43,44 @@ namespace CBTBehaviorsEnhanced
 						break;
 				}
 			}
+
+			Attacker = attacker;
+		}
+
+		public bool CanKick()
+        {
+			// Can't kick with damaged hip actuators
+			if (!LeftHipIsFunctional || !RightHipIsFunctional) return false;
+			
+			return true;
+		}
+
+		public bool CanUsePhysicalAttack()
+        {
+			// Check that unit has a physical attack
+			if (!Attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
+				!Attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+			{
+				return false;
+			}
+
+			// Damage check - shoulder and hand
+			bool leftArmIsFunctional = LeftShoulderIsFunctional && LeftHandIsFunctional;
+			bool rightArmIsFunctional = RightShoulderIsFunctional && RightHandIsFunctional;
+			if (!leftArmIsFunctional && !rightArmIsFunctional)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		public bool CanPunch()
+        {
+			// Can't punch with damaged shoulders
+			if (!LeftShoulderIsFunctional && !RightShoulderIsFunctional) return false;
+
+			return true;
 		}
 
 		private void EvaluateLegComponent(MechComponent mc)

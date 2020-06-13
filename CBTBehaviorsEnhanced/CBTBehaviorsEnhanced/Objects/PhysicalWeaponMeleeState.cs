@@ -1,7 +1,7 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using Localize;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -145,27 +145,10 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating PHYSICAL WEAPON damage for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            // 0 is a signal that there's no divisor
-            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamage) && 
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamage) > 0 ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamage) : 
-                Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon;
-
-            float raw = (float)Math.Ceiling(divisor * attacker.tonnage);
-            Mod.Log.Info($" - divisor: {divisor} x attacker tonnage: {attacker.tonnage} = raw: {raw}");
-
-            // Modifiers
-            float mod = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMod) ?
-                attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponTargetDamageMod) : 0f;
-            float multi = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageMulti) : 1f;
-
-            // Roll up final damage
-            float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            float damage = attacker.PhysicalWeaponDamage(this.AttackerCondition);
 
             // Target damage applies as a single modifier
-            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.PhysicalWeaponExtraHitsCount);
+            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.PhysicalWeaponExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
             foreach (float cluster in this.TargetDamageClusters)
             {
@@ -181,26 +164,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating PHYSICAL WEAPON instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            // 0 is a signal that there's no divisor
-            float divisor = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstability) &&
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstability) > 0 ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstability) :
-                Mod.Config.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon;
-
-            float raw = (float)Math.Ceiling(divisor * attacker.tonnage);
-            Mod.Log.Info($" - divisor: {divisor} x attacker tonnage: {attacker.tonnage} = raw: {raw}");
-
-            // Modifiers
-            float mod = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMod) ?
-                attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponTargetInstabilityMod) : 0f;
-            float multi = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityMulti) : 1f;
-
-            // Roll up final damage
-            float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
-            
-            this.TargetInstability = final;
+            this.TargetInstability = attacker.PhysicalWeaponInstability(this.AttackerCondition);
         }
     }
 }

@@ -94,7 +94,7 @@
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
     <Compile Include="Melee\MechDFASequencePatches.cs" />
     <Compile Include="Melee\SelectionStatePatches.cs" />
-    <Compile Include="Melee\ToHitPatches.cs" />
+    <Compile Include="Melee\HitLocationPatches.cs" />
     <Compile Include="ModInit.cs" />
     <Compile Include="Components\VolatileAmmo.cs" />
     <Compile Include="Extensions\MechExtensions.cs" />
@@ -117,11 +117,12 @@
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
-    <Compile Include="Patches\AttackModifierPatches.cs" />
+    <Compile Include="Patches\ToHitPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
-    <Compile Include="Patches\CombatHUD\CombatHUDAttackModSelectorPatches.cs" />
+    <Compile Include="Patches\CombatHUD\CombatHUDAttackModeSelectorPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDHeatPatches.cs" />
+    <Compile Include="Patches\CombatHUD\CombatHUDWeaponSlotPatches.cs" />
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
     <Compile Include="Patches\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />

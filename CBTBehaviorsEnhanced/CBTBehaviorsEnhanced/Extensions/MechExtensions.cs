@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using System;
+using System.Runtime.CompilerServices;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Extensions {
@@ -40,6 +41,267 @@ namespace CBTBehaviorsEnhanced.Extensions {
             float checkMod = adjustedSkill * multi;
             Mod.Log.Debug($"  CheckMod: {checkMod} = adjustedSkill: {adjustedSkill} * multi: {multi}");
             return checkMod;
+        }
+
+        public static float DFAAttackerDamage(this Mech mech, float targetTonnage)
+        {
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetDamagePerAttackerTon * targetTonnage);
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetDamageMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.DeathFromAboveTargetDamageMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetDamageMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetDamageMulti) : 1f;
+
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Attacker damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+
+            return final;
+        }
+
+        public static float DFATargetDamage(this Mech mech)
+        {
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetDamagePerAttackerTon * mech.tonnage);
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetDamageMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.DeathFromAboveTargetDamageMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetDamageMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetDamageMulti) : 1f;
+
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+
+            return final;
+        }
+
+        public static float DFAAttackerInstability(this Mech mech, float targetTonnage)
+        {
+            // Resolve attacker instability
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.AttackerInstabilityPerTargetTon * targetTonnage);
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveAttackerInstabilityMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.DeathFromAboveAttackerInstabilityMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveAttackerInstabilityMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveAttackerInstabilityMulti) : 1f;
+
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Attacker instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+
+            return final;
+        }
+
+        public static float DFATargetInstability(this Mech mech)
+        {
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetInstabilityPerAttackerTon * mech.tonnage);
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetInstabilityMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.DeathFromAboveTargetInstabilityMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetInstabilityMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetInstabilityMulti) : 1f;
+
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+
+            return final;
+        }
+
+        public static float KickDamage(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            if (!attackerCondition.CanKick()) return 0;
+
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetDamagePerAttackerTon * mech.tonnage);
+            Mod.Log.Info($"KICK baseDamage: {Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon} x " +
+                $"mech tonnage: {mech.tonnage} = {raw}");
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.KickTargetDamageMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.KickTargetDamageMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.KickTargetDamageMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.KickTargetDamageMulti) : 1f;
+
+            // Leg actuator damage
+            float leftLegReductionMulti = 1f;
+            int damagedLeftActuators = 2 - attackerCondition.LeftLegActuatorsCount;
+            for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
+            Mod.Log.Info($" - Left leg actuator damage multi is: {leftLegReductionMulti}");
+
+            float rightLegReductionMulti = 1f;
+            int damagedRightActuators = 2 - attackerCondition.RightLegActuatorsCount;
+            for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
+            Mod.Log.Info($" - Right leg actuator damage multi is: {rightLegReductionMulti}");
+
+            float actuatorMulti = leftLegReductionMulti >= rightLegReductionMulti ? leftLegReductionMulti : rightLegReductionMulti;
+            Mod.Log.Info($" - Using leg actuator damage multi of: {actuatorMulti}");
+
+            // Roll up final damage
+            float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
+            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
+                $"multi: {multi} x actuatorMulti: {actuatorMulti}");
+
+            return final;
+        }
+
+        public static float KickInstability(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            if (!attackerCondition.CanKick()) return 0;
+
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon * mech.tonnage);
+            Mod.Log.Info($"KICK baseStability: {Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon} x " +
+                $"attacker tonnage: {mech.tonnage} = {raw}");
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.KickTargetInstabilityMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.KickTargetInstabilityMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.KickTargetInstabilityMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.KickTargetInstabilityMulti) : 1f;
+
+            // Leg actuator damage
+            float leftReductionMulti = 1f;
+            int damagedLeftCount = 2 - attackerCondition.LeftLegActuatorsCount;
+            for (int i = 0; i < damagedLeftCount; i++) leftReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
+            Mod.Log.Info($" - Left actuator damage multi is: {leftReductionMulti}");
+
+            float rightReductionMulti = 1f;
+            int damagedRight = 2 - attackerCondition.RightLegActuatorsCount;
+            for (int i = 0; i < damagedRight; i++) rightReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
+            Mod.Log.Info($" - Right actuator damage multi is: {rightReductionMulti}");
+
+            float actuatorMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
+            Mod.Log.Info($" - Using actuator damage multi of: {actuatorMulti}");
+
+            // Roll up instability
+            float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
+            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
+                $"multi: {multi} x actuatorMulti: {actuatorMulti}");
+            
+            return final;
+        }
+
+        public static float PhysicalWeaponDamage(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            if (!attackerCondition.CanUsePhysicalAttack()) return 0;
+
+            // 0 is a signal that there's no divisor
+            float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamage) &&
+                mech.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamage) > 0 ?
+                mech.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamage) :
+                Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon;
+
+            float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
+            Mod.Log.Info($"PHYSICAL WEAPON damage => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.PhysicalWeaponTargetDamageMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetDamageMulti) : 1f;
+
+            // Roll up final damage
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+
+            return final;
+        }
+
+        public static float PhysicalWeaponInstability(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            if (!attackerCondition.CanUsePhysicalAttack()) return 0;
+
+            // 0 is a signal that there's no divisor
+            float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstability) &&
+                mech.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstability) > 0 ?
+                mech.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstability) :
+                Mod.Config.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon;
+
+            float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
+            Mod.Log.Info($"PHYSICAL WEAPON instability => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.PhysicalWeaponTargetInstabilityMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.PhysicalWeaponTargetInstabilityMulti) : 1f;
+
+            // Roll up final damage
+            float final = (float)Math.Ceiling((raw + mod) * multi);
+            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+
+            return final;
+        }
+
+        public static float PunchDamage(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            if (!attackerCondition.CanPunch()) return 0;
+
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Punch.TargetDamagePerAttackerTon * mech.tonnage);
+            Mod.Log.Info($"PUNCH baseDamage: {Mod.Config.Melee.Punch.TargetDamagePerAttackerTon} x " +
+                $"attacker tonnage: {mech.tonnage} = {raw}");
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetDamageMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.PunchTargetDamageMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetDamageMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.PunchTargetDamageMulti) : 1f;
+
+            // Actuator damage
+            float leftReductionMulti = 1f;
+            int damagedLeftActuators = 2 - attackerCondition.LeftArmActuatorsCount;
+            for (int i = 0; i < damagedLeftActuators; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
+            Mod.Log.Info($" - Left arm actuator damage is: {leftReductionMulti}");
+
+            float rightReductionMulti = 1f;
+            int damagedRightActuators = 2 - attackerCondition.RightArmActuatorsCount;
+            for (int i = 0; i < damagedRightActuators; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
+            Mod.Log.Info($" - Right arm actuator damage is: {rightReductionMulti}");
+
+            float reductionMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
+            Mod.Log.Info($" - Using arm actuator damage reduction of: {reductionMulti}");
+
+            // Roll up final damage
+            float final = (float)Math.Ceiling((raw + mod) * multi * reductionMulti);
+            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
+                $"multi: {multi} x reductionMulti: {reductionMulti}");
+
+            return final;
+        }
+
+        public static float PunchInstability(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            if (!attackerCondition.CanPunch()) return 0;
+
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon * mech.tonnage);
+            Mod.Log.Info($"PUNCH baseStability: {Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon} x " +
+                $"attacker tonnage: {mech.tonnage} = {raw}");
+
+            // Modifiers
+            float mod = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetInstabilityMod) ?
+                mech.StatCollection.GetValue<int>(ModStats.PunchTargetInstabilityMod) : 0f;
+            float multi = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetInstabilityMulti) ?
+                mech.StatCollection.GetValue<float>(ModStats.PunchTargetInstabilityMulti) : 1f;
+
+            // Leg actuator damage
+            float leftReductionMulti = 1f;
+            int damagedLeftCount = 2 - attackerCondition.LeftArmActuatorsCount;
+            for (int i = 0; i < damagedLeftCount; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
+            Mod.Log.Info($" - Left actuator damage multi is: {leftReductionMulti}");
+
+            float rightReductionMulti = 1f;
+            int damagedRightCount = 2 - attackerCondition.RightArmActuatorsCount;
+            for (int i = 0; i < damagedRightCount; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
+            Mod.Log.Info($" - Right actuator damage multi is: {rightReductionMulti}");
+
+            float actuatorMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
+            Mod.Log.Info($" - Using actuator damage multi of: {actuatorMulti}");
+
+            // Roll up instability
+            float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
+            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
+                $"multi: {multi} x actuatorMulti: {actuatorMulti}");
+
+            return final;
         }
 
     }

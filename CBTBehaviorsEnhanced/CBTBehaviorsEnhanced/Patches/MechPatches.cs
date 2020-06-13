@@ -4,7 +4,6 @@ using Harmony;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches {
@@ -144,6 +143,9 @@ namespace CBTBehaviorsEnhanced.Patches {
 
             Mod.Log.Debug($"Actor: {__instance.DisplayName}_{__instance.GetPilot().Name} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
+
+            // Invalidate any melee state the actor may have set
+            ModState.MeleeStates = null;
         }
     }
 
@@ -198,25 +200,6 @@ namespace CBTBehaviorsEnhanced.Patches {
         }
     }
 
-    // TODO: Memoize this; its invoked multiple times
-    // Apply an attack modifier for shooting when overheated
-    [HarmonyPatch(typeof(ToHit), "GetHeatModifier")]
-    public static class ToHit_GetHeatModifier {
-        public static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker) {
-            Mod.Log.Trace("TH:GHM entered.");
-            if (attacker is Mech mech && mech.IsOverheated) {
 
-                float penalty = 0f;
-                foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
-                    if (mech.CurrentHeat >= kvp.Key) {
-                        penalty = kvp.Value;
-                    }
-                }
-
-                Mod.Log.Trace($"  AttackPenalty: {penalty:+0;-#} from heat: {mech.CurrentHeat} for actor: {CombatantUtils.Label(attacker)}");
-                __result = penalty;
-            }
-        }
-    }
 
 }

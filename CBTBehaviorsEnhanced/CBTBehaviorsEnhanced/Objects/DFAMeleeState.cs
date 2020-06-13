@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using Localize;
 using System;
@@ -113,34 +114,13 @@ namespace CBTBehaviorsEnhanced.Objects
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
 			Mod.Log.Info($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
 
-			// Calculate attacker damage
-			float attackerRaw = (float)Math.Ceiling(Mod.Config.Melee.DFA.AttackerDamagePerTargetTon * targetTonnage);
-
-			// Modifiers
-			float attackerMod = attacker.StatCollection.ContainsStatistic(ModStats.DeathFromAboveAttackerDamageMod) ?
-				attacker.StatCollection.GetValue<int>(ModStats.DeathFromAboveAttackerDamageMod) : 0f;
-			float attackerMulti = attacker.StatCollection.ContainsStatistic(ModStats.DeathFromAboveAttackerDamageMulti) ?
-				attacker.StatCollection.GetValue<float>(ModStats.DeathFromAboveAttackerDamageMulti) : 1f;
-			float attackerFinal = (float)Math.Ceiling((attackerRaw + attackerMod) * attackerMulti);
-			Mod.Log.Info($" - Attacker damage => final: {attackerFinal} = (raw: {attackerRaw} + mod: {attackerMod}) x multi: {attackerMulti}");
-
 			// split attacker damage into clusters
-			DamageHelper.ClusterDamage(attackerRaw, Mod.Config.Melee.DFA.DamageClusterDivisor, out this.AttackerDamageClusters);
-
-			// Resolve target damage
-			float targetRaw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetDamagePerAttackerTon * attacker.tonnage);
-
-			// Modifiers
-			float targetMod = attacker.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetDamageMod) ?
-				attacker.StatCollection.GetValue<int>(ModStats.DeathFromAboveTargetDamageMod) : 0f;
-			float targetMulti = attacker.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetDamageMulti) ?
-				attacker.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetDamageMulti) : 1f;
-
-			float targetFinal = (float)Math.Ceiling((targetRaw + targetMod) * targetMulti);
-			Mod.Log.Info($" - Target damage => final: {targetFinal} = (raw: {targetRaw} + mod: {targetMod}) x multi: {targetMulti}");
+			float attackerDamage = attacker.DFAAttackerDamage(targetTonnage);
+			DamageHelper.ClusterDamage(attackerDamage, Mod.Config.Melee.DFA.DamageClusterDivisor, out this.AttackerDamageClusters);
 
 			// split target damage into clusters
-			DamageHelper.ClusterDamage(targetFinal, Mod.Config.Melee.DFA.DamageClusterDivisor, out this.TargetDamageClusters);
+			float targetDamage = attacker.DFATargetDamage();
+			DamageHelper.ClusterDamage(targetDamage, Mod.Config.Melee.DFA.DamageClusterDivisor, out this.TargetDamageClusters);
 		}
 
 		private void CalculateInstability(Mech attacker, AbstractActor target)
@@ -153,32 +133,8 @@ namespace CBTBehaviorsEnhanced.Objects
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
 			Mod.Log.Info($" - Target tonnage is: {targetTonnage}");
 
-			// Resolve attacker instability
-			float attackerRaw = (float)Math.Ceiling(Mod.Config.Melee.DFA.AttackerInstabilityPerTargetTon * targetTonnage);
-
-			// Modifiers
-			float attackerMod = attacker.StatCollection.ContainsStatistic(ModStats.DeathFromAboveAttackerInstabilityMod) ?
-				attacker.StatCollection.GetValue<int>(ModStats.DeathFromAboveAttackerInstabilityMod) : 0f;
-			float attackerMulti = attacker.StatCollection.ContainsStatistic(ModStats.DeathFromAboveAttackerInstabilityMulti) ?
-				attacker.StatCollection.GetValue<float>(ModStats.DeathFromAboveAttackerInstabilityMulti) : 1f;
-
-			float attackerFinal = (float)Math.Ceiling((attackerRaw + attackerMod) * attackerMulti);
-			Mod.Log.Info($" - Attacker instability => final: {attackerFinal} = (raw: {attackerRaw} + mod: {attackerMod}) x multi: {attackerMulti}");
-			this.AttackerInstability = attackerFinal;
-
-			// Resolve target instability
-			float targetRaw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetInstabilityPerAttackerTon * targetTonnage);
-
-			// Modifiers
-			float targetMod = target.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetInstabilityMod) ?
-				target.StatCollection.GetValue<int>(ModStats.DeathFromAboveTargetInstabilityMod) : 0f;
-			float targetMulti = target.StatCollection.ContainsStatistic(ModStats.DeathFromAboveTargetInstabilityMulti) ?
-				target.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetInstabilityMulti) : 1f;
-
-			float targetFinal = (float)Math.Ceiling((targetRaw + targetMod) * targetMulti);
-			Mod.Log.Info($" - target instability => final: {targetFinal} = (raw: {targetRaw} + mod: {targetMod}) x multi: {targetMulti}");
-			this.TargetInstability = targetFinal;
-
+			this.AttackerInstability = attacker.DFAAttackerInstability(targetTonnage);
+			this.TargetInstability = attacker.DFATargetInstability();
 		}
 	}
 }

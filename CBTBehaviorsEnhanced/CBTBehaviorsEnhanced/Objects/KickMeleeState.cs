@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using Localize;
 using System;
@@ -126,36 +127,9 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating KICK damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetDamagePerAttackerTon * attacker.tonnage);
-            Mod.Log.Info($" - Target baseDamage: {Mod.Config.Melee.Kick.TargetDamagePerAttackerTon} x " +
-                $"attacker tonnage: {attacker.tonnage} = {raw}");
+            float damage = attacker.KickDamage(this.AttackerCondition);
 
-            // Modifiers
-            float mod = attacker.StatCollection.ContainsStatistic(ModStats.KickTargetDamageMod) ?
-                attacker.StatCollection.GetValue<int>(ModStats.KickTargetDamageMod) : 0f;
-            float multi = attacker.StatCollection.ContainsStatistic(ModStats.KickTargetDamageMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.KickTargetDamageMulti) : 1f;
-
-            // Leg actuator damage
-            float leftLegReductionMulti = 1f;
-            int damagedLeftActuators = 2 - this.AttackerCondition.LeftLegActuatorsCount;
-            for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Left leg actuator damage multi is: {leftLegReductionMulti}");
-
-            float rightLegReductionMulti = 1f;
-            int damagedRightActuators = 2 - this.AttackerCondition.RightLegActuatorsCount;
-            for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Right leg actuator damage multi is: {rightLegReductionMulti}");
-
-            float actuatorMulti = leftLegReductionMulti >= rightLegReductionMulti ? leftLegReductionMulti : rightLegReductionMulti;
-            Mod.Log.Info($" - Using leg actuator damage multi of: {actuatorMulti}");
-
-            // Roll up final damage
-            float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
-            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
-                $"multi: {multi} x actuatorMulti: {actuatorMulti}");
-
-            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.KickExtraHitsCount);
+            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.KickExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
             foreach (float cluster in this.TargetDamageClusters)
             {
@@ -170,34 +144,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating KICK instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon * attacker.tonnage);
-
-            // Modifiers
-            float mod = attacker.StatCollection.ContainsStatistic(ModStats.KickTargetInstabilityMod) ?
-                attacker.StatCollection.GetValue<int>(ModStats.KickTargetInstabilityMod) : 0f;
-            float multi = attacker.StatCollection.ContainsStatistic(ModStats.KickTargetInstabilityMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.KickTargetInstabilityMulti) : 1f;
-
-            // Leg actuator damage
-            float leftReductionMulti = 1f;
-            int damagedLeftCount = 2 - this.AttackerCondition.LeftLegActuatorsCount;
-            for (int i = 0; i < damagedLeftCount; i++) leftReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Left actuator damage multi is: {leftReductionMulti}");
-
-            float rightReductionMulti = 1f;
-            int damagedRight = 2 - this.AttackerCondition.RightLegActuatorsCount;
-            for (int i = 0; i < damagedRight; i++) rightReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.Log.Info($" - Right actuator damage multi is: {rightReductionMulti}");
-
-            float actuatorMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.Log.Info($" - Using actuator damage multi of: {actuatorMulti}");
-
-            // Roll up instability
-            float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
-            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
-                $"multi: {multi} x actuatorMulti: {actuatorMulti}");
-
-            this.TargetInstability = final;
+            this.TargetInstability = attacker.KickInstability(this.AttackerCondition);
         }
     }
 }

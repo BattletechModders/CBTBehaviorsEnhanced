@@ -1,10 +1,9 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using IRBTModUtils.Extension;
 using Localize;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
@@ -47,16 +46,16 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.UnsteadyTargetOnHit = Mod.Config.Melee.Punch.UnsteadyTargetOnHit;
 
                 // Set the animation type
-                this.AttackAnimation = MeleeAttackType.Punch;
+                this.AttackAnimation = validAnimations.Contains(MeleeAttackType.Punch) ? MeleeAttackType.Punch : MeleeAttackType.Tackle;
             }
         }
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
             // If we cannot punch - not a valid attack
-            if (!validAnimations.Contains(MeleeAttackType.Punch) )
+            if (!validAnimations.Contains(MeleeAttackType.Punch) && !(validAnimations.Contains(MeleeAttackType.Tackle)))
             {
-                Mod.Log.Info("Animations do not include a punch, attacker cannot punch!");
+                Mod.Log.Info("Animations do not include a punch or tackle, attacker cannot punch!");
                 return false;
             }
 
@@ -123,37 +122,10 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating PUNCH damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Punch.TargetDamagePerAttackerTon * attacker.tonnage);
-            Mod.Log.Info($" - Target baseDamage: {Mod.Config.Melee.Punch.TargetDamagePerAttackerTon} x " +
-                $"attacker tonnage: {attacker.tonnage} = {raw}");
-
-            // Modifiers
-            float mod = attacker.StatCollection.ContainsStatistic(ModStats.PunchTargetDamageMod) ?
-                attacker.StatCollection.GetValue<int>(ModStats.PunchTargetDamageMod) : 0f;
-            float multi = attacker.StatCollection.ContainsStatistic(ModStats.PunchTargetDamageMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PunchTargetDamageMulti) : 1f;
-
-            // Actuator damage
-            float leftReductionMulti = 1f;
-            int damagedLeftActuators = 2 - this.AttackerCondition.LeftArmActuatorsCount;
-            for (int i = 0; i < damagedLeftActuators; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.Log.Info($" - Left arm actuator damage is: {leftReductionMulti}");
-
-            float rightReductionMulti = 1f;
-            int damagedRightActuators = 2 - this.AttackerCondition.RightArmActuatorsCount;
-            for (int i = 0; i < damagedRightActuators; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.Log.Info($" - Right arm actuator damage is: {rightReductionMulti}");
-
-            float reductionMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.Log.Info($" - Using arm actuator damage reduction of: {reductionMulti}");
-
-            // Roll up final damage
-            float final = (float)Math.Ceiling((raw + mod) * multi * reductionMulti);
-            Mod.Log.Info($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
-                $"multi: {multi} x reductionMulti: {reductionMulti}");
+            float damage = attacker.PunchDamage(this.AttackerCondition);
 
             // Target damage applies as a single modifier
-            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, final, ModStats.PunchExtraHitsCount);
+            this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.PunchExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
             foreach (float cluster in this.TargetDamageClusters)
             {
@@ -169,34 +141,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.Log.Info($"Calculating PUNCH instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon * attacker.tonnage);
-
-            // Modifiers
-            float mod = attacker.StatCollection.ContainsStatistic(ModStats.PunchTargetInstabilityMod) ?
-                attacker.StatCollection.GetValue<int>(ModStats.PunchTargetInstabilityMod) : 0f;
-            float multi = attacker.StatCollection.ContainsStatistic(ModStats.PunchTargetInstabilityMulti) ?
-                attacker.StatCollection.GetValue<float>(ModStats.PunchTargetInstabilityMulti) : 1f;
-
-            // Leg actuator damage
-            float leftReductionMulti = 1f;
-            int damagedLeftCount = 2 - this.AttackerCondition.LeftArmActuatorsCount;
-            for (int i = 0; i < damagedLeftCount; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.Log.Info($" - Left actuator damage multi is: {leftReductionMulti}");
-
-            float rightReductionMulti = 1f;
-            int damagedRightCount = 2 - this.AttackerCondition.RightArmActuatorsCount;
-            for (int i = 0; i < damagedRightCount; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.Log.Info($" - Right actuator damage multi is: {rightReductionMulti}");
-
-            float actuatorMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.Log.Info($" - Using actuator damage multi of: {actuatorMulti}");
-
-            // Roll up instability
-            float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
-            Mod.Log.Info($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
-                $"multi: {multi} x actuatorMulti: {actuatorMulti}");
-
-            this.TargetInstability = final;
+            this.TargetInstability = attacker.PunchInstability(this.AttackerCondition);
 
         }
     }

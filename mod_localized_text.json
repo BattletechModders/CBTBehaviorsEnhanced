@@ -75,6 +75,10 @@
         "MELEE_TYPE_KICK" : "KICK" ,
         "MELEE_TYPE_PHYSICAL_WEAPON" : "PHY. WEAPON" ,
         "MELEE_TYPE_PUNCH" : "PUNCH" ,
+
+        "WEAPON_PANEL_MELEE_WEAPON" : "MELEE - {0}",
+        "WEAPON_PANEL_MELEE_NO_ATTACK_TYPE" : "(w/p/k)",
+        "WEAPON_PANEL_MELEE_NO_ATTACK_TYPE_DAMAGE" : "{0} / {1} / {2}"
     },
 
     "Quips": {

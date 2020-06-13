@@ -145,12 +145,17 @@ namespace CBTBehaviorsEnhanced
         public const string LT_Label_Weapon_Hover_Instability = "WEAPON_HOVER_INSTABILITY";
         public const string LT_Label_Weapon_Hover_Heat = "WEAPON_HOVER_HEAT";
 
-        // Fire button lables
+        // Fire button labels
         public const string LT_Label_Melee_Type_Charge = "MELEE_TYPE_CHARGE";
         public const string LT_Label_Melee_Type_DeathFromAbove = "MELEE_TYPE_DFA";
         public const string LT_Label_Melee_Type_Kick = "MELEE_TYPE_KICK";
         public const string LT_Label_Melee_Type_Physical_Weapon = "MELEE_TYPE_PHYSICAL_WEAPON";
         public const string LT_Label_Melee_Type_Punch = "MELEE_TYPE_PUNCH";
+
+        // Labels for melee and dfa weapons in the weapons panel
+        public const string LT_Label_Weapon_Panel_Melee_Weapon = "WEAPON_PANEL_MELEE_WEAPON";
+        public const string LT_Label_Weapon_Panel_Melee_No_Attack_Type = "WEAPON_PANEL_MELEE_NO_ATTACK_TYPE";
+        public const string LT_Label_Weapon_Panel_Melee_No_Attack_Type_Damage = "WEAPON_PANEL_MELEE_NO_ATTACK_TYPE_DAMAGE";
 
         public Dictionary<string, string> Labels = new Dictionary<string, string>
         {
@@ -175,7 +180,13 @@ namespace CBTBehaviorsEnhanced
             { LT_Label_Melee_Type_DeathFromAbove, "DFA" },
             { LT_Label_Melee_Type_Kick, "KICK" },
             { LT_Label_Melee_Type_Physical_Weapon, "PHY. WEAPON" },
-            { LT_Label_Melee_Type_Punch, "PUNCH" }
+            { LT_Label_Melee_Type_Punch, "PUNCH" },
+
+            // Weapon panel labels
+            { LT_Label_Weapon_Panel_Melee_Weapon, "MELEE - {0}" },
+            { LT_Label_Weapon_Panel_Melee_No_Attack_Type, "(w/p/k)" },
+            { LT_Label_Weapon_Panel_Melee_No_Attack_Type_Damage, "{0} / {1} / {2}" }
+
         };
 
         // In-game quips that can be displayed

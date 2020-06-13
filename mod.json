@@ -1,7 +1,7 @@
 {
     "Name": "CBTBehaviorsEnhanced",
     "Enabled": true,
-    "Version": "0.5.0",
+    "Version": "0.5.3",
     "Description": "Provides TableTop like behaviors for heat, movement, and more",
     "Author": "FrostRaptor",
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
