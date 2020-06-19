@@ -174,6 +174,7 @@ namespace CBTBehaviorsEnhanced.Melee {
             // Invalidate our melee state as we're done
             ModState.MeleeStates = null;
             ModState.MeleeType = MeleeAttackType.NotSet;
+            ModState.ForceDamageTable = DamageTable.NONE;
             ModState.MeleeWeapon = null;
         }
     }

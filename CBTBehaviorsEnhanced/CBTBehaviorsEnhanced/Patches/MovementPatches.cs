@@ -1,11 +1,8 @@
 ﻿
 using BattleTech;
-using BattleTech.UI;
 using CBTBehaviorsEnhanced.Extensions;
 using Harmony;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced {

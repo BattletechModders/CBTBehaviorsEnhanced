@@ -95,8 +95,6 @@ Difficulty percentage is configurable in the mod.json file.
 
 ## Classic Melee
 
-* Mitigate DFA self damage based upon piloting (reduce damage by 5% per level by default)
-
 Melee has been revamped in CBTBE to allow player selection of melee types, as well as various other small tweaks. Players can choose between the following types of melee attacks:
 
 * **Charge** attacks do greater damage and instability the further the attacker moves,  and can be performed at sprint range. However the attacker also takes damage and instability from the attack. Damage for both the attacker and target are grouped into 25 point clusters and randomly distributed using the standard hit tables. Charges are treated as stomps against target vehicles.
@@ -150,9 +148,9 @@ Damage is applied to the attacker and target as a series of clusters. The size o
 
 **Unsteady**: Attacks can apply the *Unsteady* state to a unit, dumping it's evasion pips and allowing it to be knocked down when it takes instability. There are three settings in the *Melee.Charge* portion of `mod.json` controlling when units gain unsteady:
 
-* **UnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* kick
-* **UnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* kick
-* **UnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* kick
+* **UnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* charge
+* **UnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* charge
+* **UnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* charge
 
 ### Death From Above Attacks
 
@@ -528,7 +526,6 @@ This calculation can be further modified by a per-unit statistic. Any mech can b
 
 ## NOTES TODO ERRORS
 
-* TODO: One destroyed leg means movement of 1 MP, no running, gains a +5 PSR modifier, jumping requires a PSR
 * Heat Modifiers are applied dynamically; this means you can fire, raise your heat, and suddenly not be able to move. This should be fixed, but requires some state management.
 * Disable `MechEngineer.Features.MoveMultiplierStat` - it will be completely ignored by the revamped heat-based movement logic
 * ERROR: Problems in interleaved mode if you hit "OK" before everyone is done moving.
