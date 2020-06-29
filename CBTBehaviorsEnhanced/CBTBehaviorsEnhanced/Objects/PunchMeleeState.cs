@@ -124,7 +124,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
             float damage = attacker.PunchDamage(this.AttackerCondition);
 
-            // Target damage applies as a single modifier
+            // Target damage applies as a single hit
             this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.PunchExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
             foreach (float cluster in this.TargetDamageClusters)
