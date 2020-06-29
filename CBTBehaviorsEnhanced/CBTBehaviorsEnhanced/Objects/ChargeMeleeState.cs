@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using Localize;
 using System;
@@ -24,10 +25,10 @@ namespace CBTBehaviorsEnhanced.Objects
         public ChargeMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-			Mod.Log.Info($"Buliding CHARGE state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+			Mod.Log.Info($"Building CHARGE state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
 
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge];
-            this.IsValid = ValidateAttack(target, validAnimations);
+            this.IsValid = ValidateAttack(attacker, target, validAnimations);
 			if (IsValid)
 			{
 				float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
@@ -54,13 +55,29 @@ namespace CBTBehaviorsEnhanced.Objects
 			}
 		}
 
-        private bool ValidateAttack(AbstractActor target, HashSet<MeleeAttackType> validAnimations)
-        {
-            // If neither tackle (mech) or stomp (vehicle) - we're not a valid attack.
-            if (!validAnimations.Contains(MeleeAttackType.Tackle) && !validAnimations.Contains(MeleeAttackType.Stomp)) return false;
+		private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+		{
+			// If neither tackle (mech) or stomp (vehicle) - we're not a valid attack.
+			if (!validAnimations.Contains(MeleeAttackType.Tackle) && !validAnimations.Contains(MeleeAttackType.Stomp))
+			{
+				Mod.Log.Info("Animations do not include a tackle or stomp, attacker cannot charge!");
+				return false;
+			}
+
+			// If attacker is unsteady - cannot charge
+			if (attacker.IsUnsteady)
+			{
+				Mod.Log.Info($"Attacker unable to charge target while unsteady.");
+				return false;
+			}
 
 			// Charges cannot target prone units
-			if (target.IsProne) return false;
+			if (target.IsProne)
+			{
+				Mod.Log.Info($"Attacker unable to charge prone target");
+				return false;
+			}
+
 
 			Mod.Log.Info("CHARGE ATTACK validated");
 			return true;
@@ -108,33 +125,12 @@ namespace CBTBehaviorsEnhanced.Objects
 			Mod.Log.Info($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
 
 			// Calculate attacker damage
-			float attackerRaw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerDamagePerTargetTon * targetTonnage);
-
-			// Modifiers
-			float attackerMod = attacker.StatCollection.ContainsStatistic(ModStats.ChargeAttackerDamageMod) ?
-				attacker.StatCollection.GetValue<int>(ModStats.ChargeAttackerDamageMod) : 0f;
-			float attackerMulti = attacker.StatCollection.ContainsStatistic(ModStats.ChargeAttackerDamageMulti) ?
-				attacker.StatCollection.GetValue<float>(ModStats.ChargeAttackerDamageMulti) : 1f;
-			float attackerFinal = (float)Math.Ceiling((attackerRaw + attackerMod) * attackerMulti);
-			Mod.Log.Info($" - Attacker damage => final: {attackerFinal} = (raw: {attackerRaw} + mod: {attackerMod}) x multi: {attackerMulti}");
-
-			// split attacker damage into clusters
-			DamageHelper.ClusterDamage(attackerRaw, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.AttackerDamageClusters);
+			float attackerDamage = attacker.ChargeAttackerDamage(targetTonnage);
+			DamageHelper.ClusterDamage(attackerDamage, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.AttackerDamageClusters);
 
 			// Resolve target damage - include movement!
-			float targetRaw = (float)Math.Ceiling(Mod.Config.Melee.Charge.TargetDamagePerAttackerTon * attacker.tonnage * hexesMoved);
-
-			// Modifiers
-			float targetMod = attacker.StatCollection.ContainsStatistic(ModStats.ChargeTargetDamageMod) ?
-				attacker.StatCollection.GetValue<int>(ModStats.ChargeTargetDamageMod) : 0f;
-			float targetMulti = attacker.StatCollection.ContainsStatistic(ModStats.ChargeTargetDamageMulti) ?
-				attacker.StatCollection.GetValue<float>(ModStats.ChargeTargetDamageMulti) : 1f;
-
-			float targetFinal = (float)Math.Ceiling((targetRaw + targetMod) * targetMulti);
-			Mod.Log.Info($" - Target damage => final: {targetFinal} = (raw: {targetRaw} + mod: {targetMod}) x multi: {targetMulti}");
-
-			// split target damage into clusters
-			DamageHelper.ClusterDamage(targetFinal, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.TargetDamageClusters);
+			float targetDamage = attacker.ChargeTargetDamage(hexesMoved);
+			DamageHelper.ClusterDamage(targetDamage, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.TargetDamageClusters);
 		}
 
 		private void CalculateInstability(Mech attacker, AbstractActor target, int hexesMoved)
@@ -148,30 +144,12 @@ namespace CBTBehaviorsEnhanced.Objects
 			Mod.Log.Info($" - Target tonnage is: {targetTonnage}");
 
 			// Resolve attacker instability
-			float attackerRaw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon * targetTonnage * hexesMoved);
-
-			// Modifiers
-			float attackerMod = attacker.StatCollection.ContainsStatistic(ModStats.ChargeAttackerInstabilityMod) ?
-				attacker.StatCollection.GetValue<int>(ModStats.ChargeAttackerInstabilityMod) : 0f;
-			float attackerMulti = attacker.StatCollection.ContainsStatistic(ModStats.ChargeAttackerInstabilityMulti) ?
-				attacker.StatCollection.GetValue<float>(ModStats.ChargeAttackerInstabilityMulti) : 1f;
-
-			float attackerFinal = (float)Math.Ceiling((attackerRaw + attackerMod) * attackerMulti);
-			Mod.Log.Info($" - Attacker instability => final: {attackerFinal} = (raw: {attackerRaw} + mod: {attackerMod}) x multi: {attackerMulti}");
-			this.AttackerInstability = attackerFinal;
+			float attackerInstab = attacker.ChargeAttackerInstability(targetTonnage, hexesMoved);
+			this.AttackerInstability = attackerInstab;
 
 			// Resolve target instability
-			float targetRaw = (float)Math.Ceiling(Mod.Config.Melee.Charge.TargetInstabilityPerAttackerTon * targetTonnage * hexesMoved);
-
-			// Modifiers
-			float targetMod = target.StatCollection.ContainsStatistic(ModStats.ChargeTargetInstabilityMod) ?
-				target.StatCollection.GetValue<int>(ModStats.ChargeTargetInstabilityMod) : 0f;
-			float targetMulti = target.StatCollection.ContainsStatistic(ModStats.ChargeTargetInstabilityMulti) ?
-				target.StatCollection.GetValue<float>(ModStats.ChargeTargetInstabilityMulti) : 1f;
-
-			float targetFinal = (float)Math.Ceiling((targetRaw + targetMod) * targetMulti);
-			Mod.Log.Info($" - target instability => final: {targetFinal} = (raw: {targetRaw} + mod: {targetMod}) x multi: {targetMulti}");
-			this.TargetInstability = targetFinal;
+			float targetInstab = attacker.ChargeTargetInstability(targetTonnage, hexesMoved);
+			this.TargetInstability = targetInstab;
 
 		}
 	}
