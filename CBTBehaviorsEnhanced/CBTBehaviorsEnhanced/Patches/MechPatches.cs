@@ -96,9 +96,6 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatToHitPenalties, false);
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatMovementPenalties, false);
 
-            // Add a clamp for heat
-            __instance.StatCollection.SetValidator<int>(ModStats.HBS_Mech_Current_Heat, StatValidators.CurrentHeatClampValidator<int>);
-
         }
     }
 

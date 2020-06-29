@@ -113,7 +113,6 @@
     <Compile Include="Objects\MechMeleeCondition.cs" />
     <Compile Include="Objects\ChargeMeleeState.cs" />
     <Compile Include="Objects\MeleeState.cs" />
-    <Compile Include="Objects\StatValidators.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
@@ -124,7 +123,7 @@
     <Compile Include="Patches\CombatHUD\CombatHUDHeatPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDWeaponSlotPatches.cs" />
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
-    <Compile Include="Patches\MechHeatSequencePatches.cs" />
+    <Compile Include="Heat\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="Melee\MeleeRulesPatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />
