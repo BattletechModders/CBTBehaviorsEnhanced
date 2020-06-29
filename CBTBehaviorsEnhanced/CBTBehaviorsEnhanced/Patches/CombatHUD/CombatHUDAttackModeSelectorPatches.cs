@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using CBTBehaviorsEnhanced.Helper;
+using CustomAmmoCategoriesLog;
 using Harmony;
 using IRBTModUtils;
 using System;
@@ -178,10 +179,19 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 // TODO: Autoselect best option
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.GetHighestTargetDamageState();
+                if (ModState.MeleeStates.SelectedState != null)
+                {
+                    Mod.Log.Info($"Autoselecting state of type: '{ModState.MeleeStates.SelectedState?.Label}' as most damaging.");
+                }
+                else
+                {
+                    Mod.Log.Info("No highest damaging state - no melee options!");
+                }
 
                 // Final check - if everything is disabled, disable the button
-                if (!ModState.MeleeStates.Charge.IsValid && !ModState.MeleeStates.Kick.IsValid && 
-                    !ModState.MeleeStates.PhysicalWeapon.IsValid && !ModState.MeleeStates.Punch.IsValid)
+                if (ModState.MeleeStates.SelectedState == null && 
+                    (!ModState.MeleeStates.Charge.IsValid && !ModState.MeleeStates.Kick.IsValid && 
+                    !ModState.MeleeStates.PhysicalWeapon.IsValid && !ModState.MeleeStates.Punch.IsValid))
                 {
                     Mod.Log.Debug("NO VALID MELEE ATTACKS, DISABLING!");
                     __instance.FireButton.SetState(ButtonState.Disabled);

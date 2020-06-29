@@ -38,7 +38,6 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
                     ModState.MeleeStates.SelectedState = ModState.MeleeStates.GetHighestTargetDamageState();
                     
-                    meleeState = ModState.MeleeStates.SelectedState;
                     meleeWeapon = attackingMech.MeleeWeapon;
                     modifyAttack = true;
                     Mod.Log.Info($"Will modify {attackingMech.DistinctId()}'s melee attack damage for utility");
@@ -49,11 +48,19 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     // Create melee options
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
                     ModState.MeleeStates.SelectedState = ModState.MeleeStates.DFA;
-                    
-                    meleeState = ModState.MeleeStates.SelectedState;
+                
                     meleeWeapon = attackingMech.DFAWeapon;
                     modifyAttack = true;
                     Mod.Log.Info($"Will modify {attackingMech.DistinctId()}'s DFA attack damage for utility");
+                }
+
+                meleeState = ModState.MeleeStates.SelectedState;
+                if (modifyAttack && meleeState == null || !meleeState.IsValid)
+                {
+                    Mod.Log.Info($"Failed to find a valid melee state, marking melee weapons as 1 damage.");
+                    meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, 0);
+                    meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
+                    return;
                 }
 
                 if (modifyAttack && meleeState != null && meleeState.IsValid)

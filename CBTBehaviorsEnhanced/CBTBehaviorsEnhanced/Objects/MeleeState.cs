@@ -38,7 +38,6 @@ namespace CBTBehaviorsEnhanced
                 }
             }
 
-            Mod.Log.Info($"Selected state of type: {selectedState?.Label} as most damaging.");
             return selectedState;
         }
     }
