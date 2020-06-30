@@ -61,6 +61,8 @@ namespace CBTBehaviorsEnhanced
         public bool UnsteadyAttackerOnMiss = false;
         public bool UnsteadyTargetOnHit = false;
 
+        public bool UsePilotingDelta = true;
+
         // The modifiers that display in the tooltip hover. Aggregated to form the final attack modifier
         public Dictionary<string, int> AttackModifiers = new Dictionary<string, int>();
 

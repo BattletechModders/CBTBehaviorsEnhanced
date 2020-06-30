@@ -128,6 +128,10 @@ namespace CBTBehaviorsEnhanced {
             public bool UnsteadyAttackerOnHit = false;
             public bool UnsteadyAttackerOnMiss = false;
             public bool UnsteadyTargetOnHit = false;
+
+            // If true use the delta of the piloting skills between the attacker and target for
+            // a bonus/penalty
+            public bool UsePilotingDelta = true;
         }
 
         // BT Manual pg.37 
@@ -147,6 +151,10 @@ namespace CBTBehaviorsEnhanced {
             public bool UnsteadyAttackerOnHit = false;
             public bool UnsteadyAttackerOnMiss = false;
             public bool UnsteadyTargetOnHit = false;
+
+            // If true use the delta of the piloting skills between the attacker and target for
+            // a bonus/penalty
+            public bool UsePilotingDelta = true;
         }
 
         public class KickMeleeOps

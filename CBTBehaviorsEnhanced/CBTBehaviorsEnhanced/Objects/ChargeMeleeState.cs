@@ -35,6 +35,8 @@ namespace CBTBehaviorsEnhanced.Objects
 				int hexesMoved = (int)Math.Ceiling(distance / Mod.Config.Move.MPMetersPerHex);
 				Mod.Log.Info($" - Hexes moved is {hexesMoved} = distance: {distance} / MPMetersPerHex: {Mod.Config.Move.MPMetersPerHex}");
 
+				this.UsePilotingDelta = Mod.Config.Melee.Charge.UsePilotingDelta;
+
 				CalculateDamages(attacker, target, hexesMoved);
 				CalculateInstability(attacker, target, hexesMoved);
 				CalculateModifiers(attacker, target);
@@ -99,12 +101,15 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private void CalculateModifiers(Mech attacker, AbstractActor target)
 		{
-			// Build the comparative skill level
-			int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
-			Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
-				$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
+			if (this.UsePilotingDelta)
+			{
+				// Build the comparative skill level
+				int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
+				Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
+					$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 
-			this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
+				this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
+			}
 
 			// Check for attack modifier statistic
 			if (attacker.StatCollection.ContainsStatistic(ModStats.ChargeAttackMod) &&

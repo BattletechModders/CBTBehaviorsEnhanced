@@ -34,6 +34,8 @@ namespace CBTBehaviorsEnhanced.Objects
 			this.IsValid = ValidateAttack(attacker, target);
 			if (IsValid)
 			{
+				this.UsePilotingDelta = Mod.Config.Melee.DFA.UsePilotingDelta;
+
 				CalculateDamages(attacker, target);
 				CalculateInstability(attacker, target);
 				CalculateModifiers(attacker, target);
@@ -93,11 +95,14 @@ namespace CBTBehaviorsEnhanced.Objects
 			// Always add the jump modifier
 			this.AttackModifiers.Add(ModText.LT_Label_Attacker_Jumped, Mod.Config.ToHitSelfJumped);
 
-			// Build the comparative skill level
-			int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
-			Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
-				$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
-			this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
+			if (this.UsePilotingDelta)
+			{
+				// Build the comparative skill level
+				int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
+				Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
+					$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
+				this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
+			}
 
 			// Check for prone targets
 			if (target.IsProne) this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
