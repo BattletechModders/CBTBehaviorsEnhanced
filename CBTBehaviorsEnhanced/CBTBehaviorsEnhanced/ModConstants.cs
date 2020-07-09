@@ -1,7 +1,5 @@
 ﻿
 // Container for all constant values, like statistic IDs
-using RootMotion.FinalIK;
-
 namespace CBTBehaviorsEnhanced
 {
     public class ModStats
