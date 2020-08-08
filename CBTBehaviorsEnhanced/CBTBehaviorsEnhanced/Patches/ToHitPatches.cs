@@ -18,7 +18,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || ModState.MeleeStates?.SelectedState == null) return;
 
-            Mod.Log.Info("Adding CBTBE modifiers to tohit total");
+            Mod.Log.Debug("Adding CBTBE modifiers to ToHit");
             int sumMod = 0;
             foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
             {

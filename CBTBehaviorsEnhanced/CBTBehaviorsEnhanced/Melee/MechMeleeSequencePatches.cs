@@ -2,12 +2,30 @@
 using CBTBehaviorsEnhanced.Helper;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
+using IRBTModUtils.Extension;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Melee {
 
+    [HarmonyPatch(typeof(MechMeleeSequence), MethodType.Constructor)]
+    static class MechMeleeSequence_ctor
+    {
+        static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, List<Weapon> requestedWeapons, Vector3 desiredMeleePosition)
+        {
+            Mod.Log.Info($"Melee sequence {__instance.SequenceGUID} created for attacker: {mech.DistinctId()} vs. target: {meleeTarget.DistinctId()} using position: {desiredMeleePosition}");
+            StringBuilder sb = new StringBuilder();
+            foreach (Weapon weapon in requestedWeapons)
+            {
+                sb.Append(weapon.UIName);
+                sb.Append(",");
+            }
+            Mod.Log.Info($"  -- requested weapons: {sb}");
+        }
+    }
 
     [HarmonyPatch(typeof(MechMeleeSequence), "BuildMeleeDirectorSequence")]
     [HarmonyBefore("io.mission.modrepuation")]
