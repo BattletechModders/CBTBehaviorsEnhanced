@@ -86,60 +86,95 @@ namespace CBTBehaviorsEnhanced
 		private void EvaluateLegComponent(MechComponent mc)
 		{
 			Mod.Log.Debug($"  - Actuator: {mc.Description.UIName} is functional: {mc.IsFunctional}");
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.HipActuatorCategoryId))
-			{
-				if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftHipIsFunctional = mc.IsFunctional;
-				else this.RightHipIsFunctional = mc.IsFunctional;
+			
+			foreach (string categoryId in Mod.Config.CustomCategories.HipActuatorCategoryId)
+            {
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftHipIsFunctional = mc.IsFunctional;
+					else this.RightHipIsFunctional = mc.IsFunctional;
+					break;
+				}
 			}
 
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.UpperLegActuatorCategoryId))
-			{
-				int mod = mc.IsFunctional ? 1 : 0;
-				if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftLegActuatorsCount += mod;
-				else this.RightLegActuatorsCount += mod;
+			foreach (string categoryId in Mod.Config.CustomCategories.UpperLegActuatorCategoryId)
+            {
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					int mod = mc.IsFunctional ? 1 : 0;
+					if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftLegActuatorsCount += mod;
+					else this.RightLegActuatorsCount += mod;
+					break;
+				}
 			}
 
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.LowerLegActuatorCategoryId))
-			{
-				int mod = mc.IsFunctional ? 1 : 0;
-				if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftLegActuatorsCount += mod;
-				else this.RightLegActuatorsCount += mod;
+			foreach (string categoryId in Mod.Config.CustomCategories.LowerLegActuatorCategoryId)
+            {
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					int mod = mc.IsFunctional ? 1 : 0;
+					if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftLegActuatorsCount += mod;
+					else this.RightLegActuatorsCount += mod;
+					break;
+				}
 			}
 
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.FootActuatorCategoryId))
-			{
-				if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftFootIsFunctional = mc.IsFunctional;
-				else this.RightFootIsFunctional = mc.IsFunctional;
+			foreach (string categoryId in Mod.Config.CustomCategories.FootActuatorCategoryId)
+            {
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					if (mc.Location == (int)ChassisLocations.LeftLeg) this.LeftFootIsFunctional = mc.IsFunctional;
+					else this.RightFootIsFunctional = mc.IsFunctional;
+					break;
+				}
 			}
+
 		}
 
 		private void EvaluateArmComponent(MechComponent mc)
 		{
 			Mod.Log.Debug($"  - Actuator: {mc.Description.UIName} is functional: {mc.IsFunctional}");
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.ShoulderActuatorCategoryId))
+
+			foreach (string categoryId in Mod.Config.CustomCategories.ShoulderActuatorCategoryId)
 			{
-				if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftShoulderIsFunctional = mc.IsFunctional;
-				else this.RightShoulderIsFunctional = mc.IsFunctional;
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftShoulderIsFunctional = mc.IsFunctional;
+					else this.RightShoulderIsFunctional = mc.IsFunctional;
+					break;
+				}
 			}
 
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.UpperArmActuatorCategoryId))
+			foreach (string categoryId in Mod.Config.CustomCategories.UpperArmActuatorCategoryId)
 			{
-				int mod = mc.IsFunctional ? 1 : 0;
-				if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftArmActuatorsCount += mod;
-				else this.RightArmActuatorsCount += mod;
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					int mod = mc.IsFunctional ? 1 : 0;
+					if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftArmActuatorsCount += mod;
+					else this.RightArmActuatorsCount += mod;
+					break;
+				}
 			}
 
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.LowerArmActuatorCategoryId))
+			foreach (string categoryId in Mod.Config.CustomCategories.LowerArmActuatorCategoryId)
 			{
-				int mod = mc.IsFunctional ? 1 : 0;
-				if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftArmActuatorsCount += mod;
-				else this.RightArmActuatorsCount += mod;
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					int mod = mc.IsFunctional ? 1 : 0;
+					if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftArmActuatorsCount += mod;
+					else this.RightArmActuatorsCount += mod;
+					break;
+				}
 			}
 
-			if (mc.mechComponentRef.IsCategory(Mod.Config.CustomCategories.HandActuatorCategoryId))
+			foreach (string categoryId in Mod.Config.CustomCategories.HandActuatorCategoryId)
 			{
-				if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftHandIsFunctional = mc.IsFunctional;
-				else this.RightHandIsFunctional = mc.IsFunctional;
+				if (mc.mechComponentRef.IsCategory(categoryId))
+				{
+					if (mc.Location == (int)ChassisLocations.LeftArm) this.LeftHandIsFunctional = mc.IsFunctional;
+					else this.RightHandIsFunctional = mc.IsFunctional;
+					break;
+				}
 			}
 		}
 	}

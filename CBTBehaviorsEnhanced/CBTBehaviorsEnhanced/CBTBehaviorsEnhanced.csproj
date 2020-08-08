@@ -138,6 +138,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y
+xcopy "$(TargetDir)$(TargetName).pdb" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>

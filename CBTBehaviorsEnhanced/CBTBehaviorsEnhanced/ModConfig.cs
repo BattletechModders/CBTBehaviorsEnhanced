@@ -1,5 +1,6 @@
 ﻿
 
+using System;
 using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced {
@@ -30,15 +31,15 @@ namespace CBTBehaviorsEnhanced {
 
         public class CustomCategoryOpts
         {
-            public string HipActuatorCategoryId = "LegHip";
-            public string UpperLegActuatorCategoryId = "LegUpperActuator";
-            public string LowerLegActuatorCategoryId = "LegLowerActuator";
-            public string FootActuatorCategoryId = "LegFootActuator";
+            public string[] HipActuatorCategoryId = new string[] { "LegHip" };
+            public string[] UpperLegActuatorCategoryId = new string[] { "LegUpperActuator" };
+            public string[] LowerLegActuatorCategoryId = new string[] { "LegLowerActuator" };
+            public string[] FootActuatorCategoryId = new string[] { "LegFootActuator" };
 
-            public string ShoulderActuatorCategoryId = "ArmShoulder";
-            public string UpperArmActuatorCategoryId = "ArmUpperActuator";
-            public string LowerArmActuatorCategoryId = "ArmLowerActuator";
-            public string HandActuatorCategoryId = "ArmHandActuator";
+            public string[] ShoulderActuatorCategoryId = new string[] { "ArmShoulder" };
+            public string[] UpperArmActuatorCategoryId = new string[] { "ArmUpperActuator" };
+            public string[] LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
+            public string[] HandActuatorCategoryId = new string[] { "ArmHandActuator" };
 
         }
         public CustomCategoryOpts CustomCategories = new CustomCategoryOpts();
@@ -280,10 +281,19 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info("");
 
             Mod.Log.Info("=== CUSTOM CATEGORY OPTIONS ===");
-            Mod.Log.Info($"  ShoulderActuatorCategoryId: '{this.CustomCategories.ShoulderActuatorCategoryId}'  UpperArmActuatorCategoryId: '{this.CustomCategories.UpperArmActuatorCategoryId}'  " +
-                $"LowerArmActuatorCategoryId: '{this.CustomCategories.LowerArmActuatorCategoryId}'  HandActuatorCategoryId: '{this.CustomCategories.HandActuatorCategoryId}'  ");
-            Mod.Log.Info($"  HipActuatorCategoryId: '{this.CustomCategories.HipActuatorCategoryId}'  UpperLegActuatorCategoryId: '{this.CustomCategories.UpperLegActuatorCategoryId}'  " +
-                $"LowerLegActuatorCategoryId: '{this.CustomCategories.LowerLegActuatorCategoryId}'  FootActuatorCategoryId: '{this.CustomCategories.FootActuatorCategoryId}'  ");
+            string shoulderCats = String.Join(",", this.CustomCategories.ShoulderActuatorCategoryId);
+            string upperArmCats = String.Join(",", this.CustomCategories.UpperArmActuatorCategoryId);
+            string lowerArmCats = String.Join(",", this.CustomCategories.LowerArmActuatorCategoryId);
+            string handCats = String.Join(",", this.CustomCategories.HandActuatorCategoryId);
+            Mod.Log.Info($"  ShoulderActuatorCategoryId: '{shoulderCats}'  UpperArmActuatorCategoryId: '{upperArmCats}'  " +
+                $"LowerArmActuatorCategoryId: '{lowerArmCats}'  HandActuatorCategoryId: '{handCats}'  ");
+
+            string hipCats = String.Join(",", this.CustomCategories.HipActuatorCategoryId);
+            string upperLegCats = String.Join(",", this.CustomCategories.UpperLegActuatorCategoryId);
+            string lowerLegCats = String.Join(",", this.CustomCategories.LowerLegActuatorCategoryId);
+            string footCats = String.Join(",", this.CustomCategories.FootActuatorCategoryId);
+            Mod.Log.Info($"  HipActuatorCategoryId: '{hipCats}'  UpperLegActuatorCategoryId: '{upperLegCats}'  " +
+                $"LowerLegActuatorCategoryId: '{lowerLegCats}'  FootActuatorCategoryId: '{footCats}'  ");
             Mod.Log.Info("");
 
             Mod.Log.Info("=== HEAT OPTIONS ===");
