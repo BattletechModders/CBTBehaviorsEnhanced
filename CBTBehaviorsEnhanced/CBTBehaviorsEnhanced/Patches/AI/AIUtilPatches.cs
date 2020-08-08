@@ -1,7 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Helper;
 using Harmony;
-using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -32,6 +31,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 MeleeState meleeState = null;
                 Weapon meleeWeapon = null;
 
+                bool isCharge = false;
                 if (attackType == AttackType.Melee && attackingMech.Pathing.GetMeleeDestsForTarget(targetActor).Count > 0)
                 {
                     // Create melee options
@@ -41,8 +41,14 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     meleeWeapon = attackingMech.MeleeWeapon;
                     modifyAttack = true;
                     Mod.Log.Info($"Will modify {attackingMech.DistinctId()}'s melee attack damage for utility");
+
+                    if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Charge)
+                    {
+                        isCharge = true;
+                    }
                 }
 
+                bool isDFA = false;
                 if (attackType == AttackType.DeathFromAbove && attackingMech.JumpPathing.GetDFADestsForTarget(targetActor).Count > 0)
                 {
                     // Create melee options
@@ -52,9 +58,10 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     meleeWeapon = attackingMech.DFAWeapon;
                     modifyAttack = true;
                     Mod.Log.Info($"Will modify {attackingMech.DistinctId()}'s DFA attack damage for utility");
+                    isDFA = true;
                 }
 
-                meleeState = ModState.MeleeStates.SelectedState;
+                meleeState = ModState.MeleeStates != null ? ModState.MeleeStates.SelectedState : null;
                 if (modifyAttack && meleeState == null || !meleeState.IsValid)
                 {
                     Mod.Log.Info($"Failed to find a valid melee state, marking melee weapons as 1 damage.");
@@ -102,6 +109,15 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                                 $"/ injuryFraction: {injuryFraction}");
                         }
                     }
+
+                    // Check to see how much evasion loss the attacker will have
+                    //  use current pips + any pips gained from movement (charge)
+                    float distance = (attackPosition + unit.CurrentPosition).magnitude;
+                    int newPips = unit.GetEvasivePipsResult(distance, isDFA, isCharge, true);
+                    int normedNewPips = (unit.EvasivePipsCurrent + newPips) > unit.StatCollection.GetValue<int>("MaxEvasivePips") ?
+                        unit.StatCollection.GetValue<int>("MaxEvasivePips") : (unit.EvasivePipsCurrent + newPips);
+
+                    // Check to see how much damage the attacker will take
 
                     float virtualDamage = totalDamage + evasionBreakUtility + knockdownUtility;
                     Mod.Log.Info($"Setting weapon: {meleeWeapon.UIName} to virtual damage: {virtualDamage} for EV calculation");
