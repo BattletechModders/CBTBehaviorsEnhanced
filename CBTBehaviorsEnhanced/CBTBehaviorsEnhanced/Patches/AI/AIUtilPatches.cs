@@ -40,7 +40,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     
                     meleeWeapon = attackingMech.MeleeWeapon;
                     modifyAttack = true;
-                    Mod.Log.Info($"Will modify {attackingMech.DistinctId()}'s melee attack damage for utility");
+                    Mod.Log.Info($"=== Will modify {attackingMech.DistinctId()}'s melee attack damage for utility");
 
                     if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Charge)
                     {
@@ -57,7 +57,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 
                     meleeWeapon = attackingMech.DFAWeapon;
                     modifyAttack = true;
-                    Mod.Log.Info($"Will modify {attackingMech.DistinctId()}'s DFA attack damage for utility");
+                    Mod.Log.Info($"=== Will modify {attackingMech.DistinctId()}'s DFA attack damage for utility");
                     isDFA = true;
                 }
 
@@ -133,10 +133,15 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     }
 
                     float virtualDamage = totalDamage + evasionBreakUtility + knockdownUtility - selfEvasionDamage - selfDamage;
+                    Mod.Log.Info($"  Virtual damage calculated as {virtualDamage} = " +
+                        $"totalDamage: {totalDamage} + evasionBreakUtility: {evasionBreakUtility} + knockdownUtility: {knockdownUtility}" +
+                        $" - selfDamage: {selfDamage} - selfEvasionDamage: {selfEvasionDamage}");
+
                     Mod.Log.Info($"Setting weapon: {meleeWeapon.UIName} to virtual damage: {virtualDamage} for EV calculation");
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, virtualDamage);
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
 
+                    Mod.Log.Info($"=== Done modifying attack!");
                 }
                 else
                 {

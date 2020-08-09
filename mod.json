@@ -1,7 +1,7 @@
 {
     "Name": "CBTBehaviorsEnhanced",
     "Enabled": true,
-    "Version": "0.5.3",
+    "Version": "0.5.7",
     "Description": "Provides TableTop like behaviors for heat, movement, and more",
     "Author": "FrostRaptor",
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
@@ -23,15 +23,15 @@
         "ToHitSelfJumped": 3,
 
         "CustomCategories" : {
-           "HipActuatorCategoryId" : "LegHip",
-           "UpperLegActuatorCategoryId" : "LegUpperActuator",
-           "LowerLegActuatorCategoryId" : "LegLowerActuator",
-           "FootActuatorCategoryId" : "LegFootActuator",
+           "HipActuatorCategoryId" :  [ "LegHip" ],
+           "UpperLegActuatorCategoryId" :  [ "LegUpperActuator" ],
+           "LowerLegActuatorCategoryId" :  [ "LegLowerActuator" ],
+           "FootActuatorCategoryId" :  [ "LegFootActuator" ],
 
-           "ShoulderActuatorCategoryId" : "ArmShoulder",
-           "UpperArmActuatorCategoryId" : "ArmUpperActuator",
-           "LowerArmActuatorCategoryId" : "ArmLowerActuator",
-           "HandActuatorCategoryId" : "ArmHandActuator"
+           "ShoulderActuatorCategoryId" : [ "ArmShoulder" ],
+           "UpperArmActuatorCategoryId" :  [ "ArmUpperActuator" ],
+           "LowerArmActuatorCategoryId" :  [ "ArmLowerActuator" ],
+           "HandActuatorCategoryId" :  [ "ArmHandActuator" ]
         },
 
         "Heat" : {
@@ -49,6 +49,12 @@
         },
 
         "Melee" : {
+            "AI" : {
+                "EvasionPipRemovedUtility" : 10.0,
+                "EvasionPipLostUtility" : 5.0,
+                "PilotInjuryMultiUtility" : 1.0,
+            },
+
             "Charge" : {
                 "AttackerDamagePerTargetTon" : 0.5,
                 "TargetDamagePerAttackerTon" : 0.5,

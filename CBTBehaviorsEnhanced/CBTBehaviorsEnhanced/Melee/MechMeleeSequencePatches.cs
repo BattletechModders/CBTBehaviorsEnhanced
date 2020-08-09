@@ -3,6 +3,7 @@ using CBTBehaviorsEnhanced.Helper;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
 using IRBTModUtils.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using us.frostraptor.modUtils;
 namespace CBTBehaviorsEnhanced.Melee {
 
     [HarmonyPatch(typeof(MechMeleeSequence), MethodType.Constructor)]
+    [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List <Weapon>), typeof(Vector3)})]
     static class MechMeleeSequence_ctor
     {
         static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, List<Weapon> requestedWeapons, Vector3 desiredMeleePosition)
