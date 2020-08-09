@@ -116,10 +116,23 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     int newPips = unit.GetEvasivePipsResult(distance, isDFA, isCharge, true);
                     int normedNewPips = (unit.EvasivePipsCurrent + newPips) > unit.StatCollection.GetValue<int>("MaxEvasivePips") ?
                         unit.StatCollection.GetValue<int>("MaxEvasivePips") : (unit.EvasivePipsCurrent + newPips);
+                    float selfEvasionDamage = 0f;
+                    if (meleeState.UnsteadyAttackerOnHit || meleeState.UnsteadyAttackerOnMiss)
+                    {
+                        // TODO: Should evaluate chance to hit, and apply these partial damage based upon success chances
+                        selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipRemovedUtility;
+                        Mod.Log.Info($"  Reducing virtual damage by {selfEvasionDamage} due to potential loss of {normedNewPips} pips.");
+                    }
 
                     // Check to see how much damage the attacker will take
+                    float selfDamage = 0f;
+                    if (meleeState.AttackerDamageClusters.Length > 0)
+                    {
+                        selfDamage = meleeState.AttackerDamageClusters.Sum();
+                        Mod.Log.Info($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
+                    }
 
-                    float virtualDamage = totalDamage + evasionBreakUtility + knockdownUtility;
+                    float virtualDamage = totalDamage + evasionBreakUtility + knockdownUtility - selfEvasionDamage - selfDamage;
                     Mod.Log.Info($"Setting weapon: {meleeWeapon.UIName} to virtual damage: {virtualDamage} for EV calculation");
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, virtualDamage);
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);

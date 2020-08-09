@@ -105,13 +105,15 @@ namespace CBTBehaviorsEnhanced {
         public class AIMeleeOpts
         {
             // Bonus virtual damage - applied to an attack for stripping evasion
-            public float EvasionPipRemovedUtility = 0f;
+            public float EvasionPipRemovedUtility = 10f;
+
+            // Negative virtual damage - applied when the attacker will lose evasion
+            public float EvasionPipLostUtility = 5f;
 
             // Bonus virtual damage - add CT armor + structure, multiplied by this value, as virtual damage
             public float PilotInjuryMultiUtility = 1.0f;
 
         }
-
 
         public class ChargeMeleeOpts
         {
