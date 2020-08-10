@@ -145,7 +145,7 @@ namespace CBTBehaviorsEnhanced.Helper
             {
                 // Round down to allow fractional extra attacks
                 int extraAttacks = (int)Math.Floor(attacker.StatCollection.GetValue<float>(extraHitsCountStat));
-                if (extraAttacks > 0)
+                if (extraAttacks > 1)
                 {
                     // Check for damage split
                     if (Mod.Config.Melee.ExtraHitsAverageAllDamage)
@@ -161,6 +161,11 @@ namespace CBTBehaviorsEnhanced.Helper
                         Mod.Log.Info($"Adding {extraAttacks + 1 } clusters of {totalDamage} damage.");
                         damageClusters = Enumerable.Repeat(totalDamage, extraAttacks + 1).ToArray();
                     }
+                }
+                else
+                {
+                    // Target damage applies as a single attack
+                    damageClusters = new float[] { totalDamage };
                 }
             }
             else
