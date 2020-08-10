@@ -120,7 +120,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     if (meleeState.UnsteadyAttackerOnHit || meleeState.UnsteadyAttackerOnMiss)
                     {
                         // TODO: Should evaluate chance to hit, and apply these partial damage based upon success chances
-                        selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipRemovedUtility;
+                        selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipLostUtility;
                         Mod.Log.Info($"  Reducing virtual damage by {selfEvasionDamage} due to potential loss of {normedNewPips} pips.");
                     }
 
