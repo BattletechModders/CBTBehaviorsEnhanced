@@ -137,7 +137,7 @@ namespace CBTBehaviorsEnhanced.Helper
         public static float[] CreateDamageClustersWithExtraAttacks(AbstractActor attacker, float totalDamage,
             string extraHitsCountStat)
         {
-            float[] damageClusters = new float[] { };
+            float[] damageClusters;
 
             // Check for extra strikes
             if (attacker.StatCollection.ContainsStatistic(extraHitsCountStat) &&
@@ -145,7 +145,7 @@ namespace CBTBehaviorsEnhanced.Helper
             {
                 // Round down to allow fractional extra attacks
                 int extraAttacks = (int)Math.Floor(attacker.StatCollection.GetValue<float>(extraHitsCountStat));
-                if (extraAttacks > 1)
+                if (extraAttacks >= 1)
                 {
                     // Check for damage split
                     if (Mod.Config.Melee.ExtraHitsAverageAllDamage)
