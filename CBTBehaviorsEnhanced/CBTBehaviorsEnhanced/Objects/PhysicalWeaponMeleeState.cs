@@ -126,10 +126,10 @@ namespace CBTBehaviorsEnhanced.Objects
             int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
             int rightArmMalus = (2 - this.AttackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
 
-            int bestMalus = leftArmMalus >= rightArmMalus ? leftArmMalus : rightArmMalus;
+            int bestMalus = leftArmMalus <= rightArmMalus ? leftArmMalus : rightArmMalus;
             if (bestMalus != 0)
             {
-                this.AttackModifiers.Add(ModText.LT_Label_Acutator_Damage, bestMalus);
+                this.AttackModifiers.Add(ModText.LT_Label_Actuator_Damage, bestMalus);
             }
 
             // Check for attack modifier statistic

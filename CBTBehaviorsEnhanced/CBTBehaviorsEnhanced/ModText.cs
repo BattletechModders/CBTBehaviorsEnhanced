@@ -131,7 +131,7 @@ namespace CBTBehaviorsEnhanced
         };
 
         // Labels for weapon tooltips
-        public const string LT_Label_Acutator_Damage = "ATK_MOD_ACTUATOR_DAMAGE";
+        public const string LT_Label_Actuator_Damage = "ATK_MOD_ACTUATOR_DAMAGE";
         public const string LT_Label_Attacker_Jumped = "ATK_MOD_ATTACKER_JUMPED";
         public const string LT_Label_Charge_Attack_Mod = "ATK_MOD_CHARGE_MOD";
         public const string LT_Label_ComparativeSkill_Piloting = "ATK_MOD_COMPARATIVE_PILOTING";
@@ -160,7 +160,7 @@ namespace CBTBehaviorsEnhanced
         public Dictionary<string, string> Labels = new Dictionary<string, string>
         {
             // Attack labels
-            { LT_Label_Acutator_Damage, "ACTUATOR DAMAGE" },
+            { LT_Label_Actuator_Damage, "ACTUATOR DAMAGE" },
             { LT_Label_Attacker_Jumped, "ATTACKER JUMPED" },
             { LT_Label_Charge_Attack_Mod, "CHARGE MOD" },
             { LT_Label_ComparativeSkill_Piloting, "PILOTING DELTA" },

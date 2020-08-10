@@ -107,10 +107,10 @@ namespace CBTBehaviorsEnhanced.Objects
             int rightLegMalus = (2 - this.AttackerCondition.RightLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
             if (!this.AttackerCondition.RightFootIsFunctional) rightLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
 
-            int bestLegMalus = leftLegMalus >= rightLegMalus ? leftLegMalus : rightLegMalus;
+            int bestLegMalus = leftLegMalus <= rightLegMalus ? leftLegMalus : rightLegMalus;
             if (bestLegMalus != 0)
             {
-                this.AttackModifiers.Add(ModText.LT_Label_Acutator_Damage, bestLegMalus);
+                this.AttackModifiers.Add(ModText.LT_Label_Actuator_Damage, bestLegMalus);
             }
 
             // Check for attack modifier statistic
