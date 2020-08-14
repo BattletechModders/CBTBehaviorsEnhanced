@@ -443,7 +443,7 @@ All statistics used in melee values are listed below. See the relevant section f
 |  |                ||
 | CBTBE_Physical_Weapon_Target_Damage_Per_Attacker_Ton | System.Single |value must be > 0|
 | CBTBE_Physical_Weapon_Target_Damage_Mod | System.Int32 ||
-| CBTBE_Physical_Target_Damage_Multi | System.Single |value must be >= 0|
+| CBTBE_Physical_Weapon_Target_Damage_Multi | System.Single |value must be >= 0|
 |  |  ||
 | CBTBE_Physical_Weapon_Target_Instability_Per_Attacker_Ton | System.Single |value must be > 0|
 | CBTBE_Physical_Weapon_Target_Instability_Mod | System.Int32 ||

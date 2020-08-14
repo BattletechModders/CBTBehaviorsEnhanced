@@ -24,6 +24,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             Mech targetMech = target as Mech;
 
             if (attackingMech == null || targetActor == null) return; // Nothing to do
+            if (attackType == AttackType.Shooting || attackType == AttackType.None || attackType == AttackType.Count) return; // nothing to do
 
             try
             {
@@ -32,15 +33,18 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 Weapon meleeWeapon = null;
 
                 bool isCharge = false;
-                if (attackType == AttackType.Melee && attackingMech.Pathing.GetMeleeDestsForTarget(targetActor).Count > 0)
+                bool isMelee = false;
+                if (attackType == AttackType.Melee && attackingMech?.Pathing?.GetMeleeDestsForTarget(targetActor)?.Count > 0)
                 {
+                    Mod.Log.Info($"=== Modifying {attackingMech.DistinctId()}'s melee attack damage for utility");
+
                     // Create melee options
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
                     ModState.MeleeStates.SelectedState = ModState.MeleeStates.GetHighestTargetDamageState();
                     
                     meleeWeapon = attackingMech.MeleeWeapon;
                     modifyAttack = true;
-                    Mod.Log.Info($"=== Will modify {attackingMech.DistinctId()}'s melee attack damage for utility");
+                    isMelee = true;
 
                     if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Charge)
                     {
@@ -49,17 +53,21 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 }
 
                 bool isDFA = false;
-                if (attackType == AttackType.DeathFromAbove && attackingMech.JumpPathing.GetDFADestsForTarget(targetActor).Count > 0)
+                if (attackType == AttackType.DeathFromAbove && attackingMech?.JumpPathing?.GetDFADestsForTarget(targetActor)?.Count > 0)
                 {
+                    Mod.Log.Info($"=== Modifying {attackingMech.DistinctId()}'s DFA attack damage for utility");
+
                     // Create melee options
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
                     ModState.MeleeStates.SelectedState = ModState.MeleeStates.DFA;
                 
                     meleeWeapon = attackingMech.DFAWeapon;
                     modifyAttack = true;
-                    Mod.Log.Info($"=== Will modify {attackingMech.DistinctId()}'s DFA attack damage for utility");
                     isDFA = true;
                 }
+
+                // No pathing dests for melee or DFA - skip
+                if (!isMelee && !isDFA) return;
 
                 meleeState = ModState.MeleeStates != null ? ModState.MeleeStates.SelectedState : null;
                 if (modifyAttack && meleeState == null || !meleeState.IsValid)
@@ -150,7 +158,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             }
             catch (Exception e)
             {
-                Mod.Log.Error("Failed to calculate melee damage due to error!", e);
+                Mod.Log.Error($"Failed to calculate melee damage for {unit.DistinctId()} using attackType {attackType} due to error!", e);
             }
 
 
