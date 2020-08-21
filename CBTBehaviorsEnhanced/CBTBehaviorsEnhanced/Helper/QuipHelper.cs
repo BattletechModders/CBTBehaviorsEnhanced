@@ -15,11 +15,6 @@ namespace CBTBehaviorsEnhanced.Helper {
             CastDef castDef = Coordinator.CreateCast(source);
             DialogueContent content = Coordinator.BuildDialogueContent(castDef, localizedQuip, Color.white);
 
-            //DialogueContent content = new DialogueContent(
-            //    localizedQuip, Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
-            //    );
-            //content.ContractInitialize(source.Combat);
-
             Mod.Log.Info?.Write($"Publishing quip: {localizedQuip} with portrait: {castDef.defaultEmotePortrait.portraitAssetPath}");
             source.Combat.MessageCenter.PublishMessage(new CustomDialogMessage(source, content, 3));
 
