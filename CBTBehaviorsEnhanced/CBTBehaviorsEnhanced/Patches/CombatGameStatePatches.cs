@@ -8,7 +8,7 @@ namespace CBTBehaviorsEnhanced.Patches {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix() {
-            Mod.Log.Trace("CGS:OCGD - entered.");
+            Mod.Log.Trace?.Write("CGS:OCGD - entered.");
 
             // Reset any combat state
             ModState.Reset();

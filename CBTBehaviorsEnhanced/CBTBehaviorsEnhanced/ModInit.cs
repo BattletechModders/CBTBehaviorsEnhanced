@@ -1,10 +1,10 @@
 ﻿using Harmony;
+using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using us.frostraptor.modUtils.logging;
 
 namespace CBTBehaviorsEnhanced {
     public static class Mod {
@@ -13,7 +13,7 @@ namespace CBTBehaviorsEnhanced {
         public const string LogName = "cbt_behaviors_enhanced";
         public const string LogLabel = "CBTBE";
 
-        public static IntraModLogger Log;
+        public static DeferringLogger Log;
         public static string ModDir;
         public static ModConfig Config;
         public static ModText LocalizedText;
@@ -32,7 +32,7 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Config = new ModConfig();
             }
 
-            Log = new IntraModLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
+            Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
 
             // Read localization
             string localizationPath = Path.Combine(ModDir, "./mod_localized_text.json");
@@ -44,21 +44,21 @@ namespace CBTBehaviorsEnhanced {
             catch (Exception e)
             {
                 Mod.LocalizedText = new ModText();
-                Log.Error($"Failed to read localizations from: {localizationPath} due to error!", e);
+                Log.Error?.Write(e, $"Failed to read localizations from: {localizationPath} due to error!");
             }
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Log.Info($"Assembly version: {fvi.ProductVersion}");
+            Log.Info?.Write($"Assembly version: {fvi.ProductVersion}");
 
-            Log.Debug($"ModDir is:{modDirectory}");
-            Log.Debug($"mod.json settings are:({settingsJSON})");
+            Log.Debug?.Write($"ModDir is:{modDirectory}");
+            Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
             if (settingsE != null) {
-                Log.Info($"ERROR reading settings file! Error was: {settingsE}");
+                Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
             } else {
-                Log.Info($"INFO: No errors reading settings file.");
+                Log.Info?.Write($"INFO: No errors reading settings file.");
             }
 
             // Initialize custom components

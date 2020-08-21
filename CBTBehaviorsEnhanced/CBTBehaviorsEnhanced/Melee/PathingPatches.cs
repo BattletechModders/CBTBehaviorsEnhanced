@@ -13,7 +13,7 @@ namespace CBTBehaviorsEnhanced.Melee {
         // WARNING: Prefix false code here!
         // Allow the player to move if they are already in combat. Vanilla normally disables this.
         public static bool Prefix(Pathing __instance, AbstractActor target, ref List<PathNode> __result) {
-            Mod.Log.Debug($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} to target: {CombatantUtils.Label(target)}");
+            Mod.Log.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} to target: {CombatantUtils.Label(target)}");
             // If the target isn't visible, prevent building any path to them.
             VisibilityLevel visibilityLevel = __instance.OwningActor.VisibilityToTargetUnit(target);
             if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost) {
@@ -39,7 +39,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                     pathNodesForPoints.RemoveAt(i);
                 }
             }
-            Mod.Log.Debug($"  found {pathNodesForPoints.Count} nodes that are not blocked and within height");
+            Mod.Log.Debug?.Write($"  found {pathNodesForPoints.Count} nodes that are not blocked and within height");
 
             if (pathNodesForPoints.Count > 1) {
                 // Sort the nodes either by pathing cost, or current distance from attacker

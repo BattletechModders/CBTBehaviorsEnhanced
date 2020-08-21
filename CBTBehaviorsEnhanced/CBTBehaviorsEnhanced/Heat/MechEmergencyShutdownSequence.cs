@@ -31,7 +31,7 @@ namespace CBTBehaviorsEnhanced {
         public override void OnAdded() {
             base.OnAdded();
             if (this.OwningMech.GameRep != null) {
-                Mod.Log.Info("Sending floatie notification.");
+                Mod.Log.Info?.Write("Sending floatie notification.");
 
                 string text = string.Format("MechOverheatSequence_{0}_{1}", base.RootSequenceGUID, base.SequenceGUID);
                 
@@ -51,7 +51,7 @@ namespace CBTBehaviorsEnhanced {
 
         // Prevent call to checkForHeatDamage
         private void setState(EmergencyShutdownState newState) {
-            Mod.Log.Info($"MESS - Setting state to: {newState} for actor: {CombatantUtils.Label(this.OwningMech)}");
+            Mod.Log.Info?.Write($"MESS - Setting state to: {newState} for actor: {CombatantUtils.Label(this.OwningMech)}");
             if (this.state == newState) {
                 return;
             }

@@ -11,7 +11,7 @@ namespace CBTBehaviorsEnhanced {
         [HarmonyPatch(typeof(Mech), "ResolveWeaponDamage", new Type[] { typeof(WeaponHitInfo), typeof(Weapon), typeof(MeleeAttackType) })]
         public static class Mech_ResolveWeaponDamage {
             public static void Postfix(Mech __instance, WeaponHitInfo hitInfo, Weapon weapon, MeleeAttackType meleeAttackType) {
-                Mod.Log.Trace("M:RWD entered.");
+                Mod.Log.Trace?.Write("M:RWD entered.");
 
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(hitInfo.attackSequenceId);
                 AbstractActor target = __instance.Combat.FindActorByGUID(hitInfo.targetId);

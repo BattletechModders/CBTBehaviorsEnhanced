@@ -41,14 +41,14 @@ namespace CBTBehaviorsEnhanced.Heat {
                 calculatedHeat.CACTerrainHeat == this.CACTerrainHeat && 
                 calculatedHeat.CurrentPathNodes == CurrentPathNodes) { return; }
 
-            Mod.Log.Debug($"Updating heat dialog for actor: {CombatantUtils.Label(displayedMech)}");
-            Mod.Log.Debug($"  previous values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
+            Mod.Log.Debug?.Write($"Updating heat dialog for actor: {CombatantUtils.Label(displayedMech)}");
+            Mod.Log.Debug?.Write($"  previous values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
             this.CurrentHeat = calculatedHeat.CurrentHeat;
             this.ProjectedHeat = calculatedHeat.ProjectedHeat;
             this.TempHeat = calculatedHeat.TempHeat;
             this.CACTerrainHeat = calculatedHeat.CACTerrainHeat;
             this.CurrentPathNodes = calculatedHeat.CurrentPathNodes;
-            Mod.Log.Debug($"  current values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
+            Mod.Log.Debug?.Write($"  current values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
 
             StringBuilder descSB = new StringBuilder("");
             StringBuilder warningSB = new StringBuilder("");
@@ -81,12 +81,12 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f && threshold != -1f) { 
-                Mod.Log.Debug($"Ammo Explosion Threshold: {threshold} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug?.Write($"Ammo Explosion Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
             } else if (threshold == -1f) {
-                Mod.Log.Debug($"Ammo Explosion Guaranteed!");
+                Mod.Log.Debug?.Write($"Ammo Explosion Guaranteed!");
                 warningSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Explosion_Warning]));
             }
 
@@ -96,7 +96,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f) {
-                Mod.Log.Debug($"Injury Threshold: {threshold} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug?.Write($"Injury Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
@@ -108,7 +108,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f) {
-                Mod.Log.Debug($"System Failure Threshold: {threshold} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug?.Write($"System Failure Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
@@ -120,12 +120,12 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
             if (threshold != 0f && threshold != -1f) {
-                Mod.Log.Debug($"Shutdown Threshold: {threshold} vs. d100+{heatCheck * 100f}");
+                Mod.Log.Debug?.Write($"Shutdown Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold * 100f }
                 ));
             } else if (threshold == -1f) {
-                Mod.Log.Debug($"Shutdown Guaranteed!");
+                Mod.Log.Debug?.Write($"Shutdown Guaranteed!");
                 warningSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Shutdown_Warning]));
             }
 
@@ -135,7 +135,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { modifier = kvp.Value; }
             }
             if (modifier != 0) {
-                Mod.Log.Debug($"Attack Modifier: +{modifier}");
+                Mod.Log.Debug?.Write($"Attack Modifier: +{modifier}");
                 descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Attack], new object[] { modifier}));
             }
             modifier = 0;
@@ -145,7 +145,7 @@ namespace CBTBehaviorsEnhanced.Heat {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { modifier = kvp.Value; }
             }
             if (modifier != 0) {
-                Mod.Log.Debug($"Movement Modifier: -{modifier * 30}m");
+                Mod.Log.Debug?.Write($"Movement Modifier: -{modifier * 30}m");
                 descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Move], new object[] { modifier * 30f }));
             }
 

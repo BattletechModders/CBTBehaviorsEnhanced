@@ -85,7 +85,7 @@ namespace CBTBehaviorsEnhanced.Helper
             };
             
             AttackDirection attackDirection = attacker.Combat.HitLocation.GetAttackDirection(attacker, target);
-            Mod.Log.Info($"  Attack direction is: {attackDirection}");
+            Mod.Log.Info?.Write($"  Attack direction is: {attackDirection}");
 
             int i = 0;
             foreach (int damage in damageClusters)
@@ -101,7 +101,7 @@ namespace CBTBehaviorsEnhanced.Helper
                     ArmorLocation location =
                         SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
-                    Mod.Log.Info($"  {damage} damage to location: {location}");
+                    Mod.Log.Info?.Write($"  {damage} damage to location: {location}");
 
                     ShowDamageFloatie(mech, location, damage, hitInfo.attackerId);
                 }
@@ -110,7 +110,7 @@ namespace CBTBehaviorsEnhanced.Helper
                     VehicleChassisLocations location =
                         SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
-                    Mod.Log.Info($"  {damage} damage to location: {location}");
+                    Mod.Log.Info?.Write($"  {damage} damage to location: {location}");
 
                     ShowDamageFloatie(vehicle, location, damage, hitInfo.attackerId);
                 }
@@ -118,7 +118,7 @@ namespace CBTBehaviorsEnhanced.Helper
                 {
                     BuildingLocation location = BuildingLocation.Structure;
                     hitInfo.hitLocations[i] = (int)BuildingLocation.Structure;
-                    Mod.Log.Info($"  {damage} damage to location: {location}");
+                    Mod.Log.Info?.Write($"  {damage} damage to location: {location}");
 
                     ShowDamageFloatie(turret, damage, hitInfo.attackerId);
                 }
@@ -152,13 +152,13 @@ namespace CBTBehaviorsEnhanced.Helper
                     {
                         // Divide the damage into N hits, using the extra attacks + 1 as divisor
                         float averaged = (float)Math.Floor(totalDamage / (extraAttacks + 1));
-                        Mod.Log.Info($"Adding {extraAttacks + 1 } clusters of {averaged} damage averaged from {totalDamage} damage.");
+                        Mod.Log.Info?.Write($"Adding {extraAttacks + 1 } clusters of {averaged} damage averaged from {totalDamage} damage.");
                         damageClusters = Enumerable.Repeat(averaged, extraAttacks + 1).ToArray();
                     }
                     else
                     {
                         // Each extra attack adds a new strike
-                        Mod.Log.Info($"Adding {extraAttacks + 1 } clusters of {totalDamage} damage.");
+                        Mod.Log.Info?.Write($"Adding {extraAttacks + 1 } clusters of {totalDamage} damage.");
                         damageClusters = Enumerable.Repeat(totalDamage, extraAttacks + 1).ToArray();
                     }
                 }
@@ -183,7 +183,7 @@ namespace CBTBehaviorsEnhanced.Helper
             if (targetMech == null || targetMech.pilot == null || 
                 targetMech.pilot.StatCollection.GetValue<bool>(ModStats.HBS_Ignore_Pilot_Injuries)) return false;
 
-            Mod.Log.Info($"  Target: {target.DistinctId()} has injuries: {targetMech.pilot.Injuries} + new: {numInjuries} " +
+            Mod.Log.Info?.Write($"  Target: {target.DistinctId()} has injuries: {targetMech.pilot.Injuries} + new: {numInjuries} " +
                 $"vs. totalHeath: {targetMech.pilot.TotalHealth}");
 
             if (targetMech.pilot.Injuries + numInjuries >= targetMech.pilot.TotalHealth) return true;
@@ -198,7 +198,7 @@ namespace CBTBehaviorsEnhanced.Helper
             if (targetMech.IsOrWillBeProne || targetMech.IsBecomingProne) return false;
 
             float expectedStability = ExpectedInstability(instability, targetMech);
-            Mod.Log.Info($"  expectedStability: {expectedStability} vs. threshold: {targetMech.UnsteadyThreshold}");
+            Mod.Log.Info?.Write($"  expectedStability: {expectedStability} vs. threshold: {targetMech.UnsteadyThreshold}");
 
             if (expectedStability >= targetMech.MaxStability && (targetMech.IsUnsteady || attackWillUnsteady))
                 return true;
@@ -214,7 +214,7 @@ namespace CBTBehaviorsEnhanced.Helper
             if (targetMech.IsUnsteady) return false;
 
             float expectedStability = ExpectedInstability(instability, targetMech);
-            Mod.Log.Info($"  expectedStability: {expectedStability} vs. threshold: {targetMech.UnsteadyThreshold}");
+            Mod.Log.Info?.Write($"  expectedStability: {expectedStability} vs. threshold: {targetMech.UnsteadyThreshold}");
 
             if (expectedStability >= targetMech.UnsteadyThreshold)
                 return true;
@@ -225,11 +225,11 @@ namespace CBTBehaviorsEnhanced.Helper
         private static float ExpectedInstability(float instability, Mech targetMech)
         {
             float receivedInstabMulti = targetMech.StatCollection.GetValue<float>(ModStats.HBS_Received_Instability_Multi);
-            Mod.Log.Info($"Target {targetMech.DistinctId()} has ReceivedInstabilityMultiplier: {receivedInstabMulti} " +
+            Mod.Log.Info?.Write($"Target {targetMech.DistinctId()} has ReceivedInstabilityMultiplier: {receivedInstabMulti} " +
                 $"and EntrenchedMulti: {targetMech.EntrenchedMultiplier} with unsteady threshold: {targetMech.UnsteadyThreshold}");
 
             float instabilityDelta = instability * receivedInstabMulti * targetMech.EntrenchedMultiplier;
-            Mod.Log.Info($"  instability delta => {instabilityDelta} = attack: {instability} x receivedMulti: {receivedInstabMulti} x entrenchedMulti: {targetMech.EntrenchedMultiplier}");
+            Mod.Log.Info?.Write($"  instability delta => {instabilityDelta} = attack: {instability} x receivedMulti: {receivedInstabMulti} x entrenchedMulti: {targetMech.EntrenchedMultiplier}");
 
             float totalInstability = targetMech.CurrentStability + instabilityDelta;
             

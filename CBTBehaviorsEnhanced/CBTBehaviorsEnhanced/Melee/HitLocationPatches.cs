@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
 
             if (ModState.ForceDamageTable == DamageTable.PUNCH)
             {
-                Mod.Log.Info($"Attack will use the PUNCH damage table");
+                Mod.Log.Info?.Write($"Attack will use the PUNCH damage table");
                 __result = new Dictionary<ArmorLocation, int>();
                 if (from == AttackDirection.FromLeft)
                 {
@@ -53,7 +53,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
             }
             else if (ModState.ForceDamageTable == DamageTable.KICK)
             {
-                Mod.Log.Info($"Attack will use the KICK damage table.");
+                Mod.Log.Info?.Write($"Attack will use the KICK damage table.");
                 __result = new Dictionary<ArmorLocation, int>();
                 __result.Add(ArmorLocation.LeftLeg, 50);
                 __result.Add(ArmorLocation.RightLeg, 50);

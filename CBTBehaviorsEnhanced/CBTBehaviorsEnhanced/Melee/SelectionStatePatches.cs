@@ -13,13 +13,13 @@ namespace CBTBehaviorsEnhanced.Melee
     {
         static void Postfix(SelectionStateJump __instance, ref float __result)
         {
-            Mod.Log.Trace("SSJ:PSFS - entered.");
+            Mod.Log.Trace?.Write("SSJ:PSFS - entered.");
 
             if (__instance.SelectedActor is Mech selectedMech && ModState.MeleeStates?.SelectedState != null && __instance.PotentialMeleeTarget != null)
             {
                 float newStability = selectedMech.CurrentStability + ModState.MeleeStates.SelectedState.AttackerInstability;
                 float minStability = selectedMech.GetMinStability(StabilityChangeSource.DFA, newStability);
-                Mod.Log.Debug($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
+                Mod.Log.Debug?.Write($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
                     $"current: {selectedMech.CurrentStability}  projectedNew: {ModState.MeleeStates.SelectedState.AttackerInstability}  " +
                     $"totalChange: {newStability}  afterDump: {minStability}");
                 __result = minStability;
@@ -33,7 +33,7 @@ namespace CBTBehaviorsEnhanced.Melee
     {
         static void Postfix(SelectionStateMove __instance, ref float __result)
         {
-            Mod.Log.Trace("SSM:PSFS - entered.");
+            Mod.Log.Trace?.Write("SSM:PSFS - entered.");
 
             if (__instance.SelectedActor is Mech selectedMech && ModState.MeleeStates?.SelectedState != null && __instance.PotentialMeleeTarget != null)
             {
@@ -46,7 +46,7 @@ namespace CBTBehaviorsEnhanced.Melee
                     changeSource = StabilityChangeSource.RemainingStationary;
                 }
                 float minStability = selectedMech.GetMinStability(changeSource, newStability);
-                Mod.Log.Debug($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
+                Mod.Log.Debug?.Write($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
                     $"current: {selectedMech.CurrentStability}  projectedNew: {ModState.MeleeStates.SelectedState.AttackerInstability}  " +
                     $"totalChange: {newStability}  afterDump: {minStability}");
                 __result = minStability;

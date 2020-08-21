@@ -274,83 +274,83 @@ namespace CBTBehaviorsEnhanced {
         public BiomeBreachOptions Breaches = new BiomeBreachOptions();
 
         public void LogConfig() {
-            Mod.Log.Info("=== MOD CONFIG BEGIN ===");
-            Mod.Log.Info($"  Debug: {this.Debug} Trace: {this.Trace}");
-            Mod.Log.Info($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  " +
+            Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
+            Mod.Log.Info?.Write($"  Debug: {this.Debug} Trace: {this.Trace}");
+            Mod.Log.Info?.Write($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  " +
                 $"PermanentEvasion: {this.Features.PermanentEvasion}  SpeedAsMP: {this.Features.SpeedAsMP}  " +
                 $"StartupChecks: {this.Features.StartupChecks}");
-            Mod.Log.Info($"  ToHitSelfJumped: {this.ToHitSelfJumped}");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write($"  ToHitSelfJumped: {this.ToHitSelfJumped}");
+            Mod.Log.Info?.Write("");
 
-            Mod.Log.Info("=== CUSTOM CATEGORY OPTIONS ===");
+            Mod.Log.Info?.Write("=== CUSTOM CATEGORY OPTIONS ===");
             string shoulderCats = String.Join(",", this.CustomCategories.ShoulderActuatorCategoryId);
             string upperArmCats = String.Join(",", this.CustomCategories.UpperArmActuatorCategoryId);
             string lowerArmCats = String.Join(",", this.CustomCategories.LowerArmActuatorCategoryId);
             string handCats = String.Join(",", this.CustomCategories.HandActuatorCategoryId);
-            Mod.Log.Info($"  ShoulderActuatorCategoryId: '{shoulderCats}'  UpperArmActuatorCategoryId: '{upperArmCats}'  " +
+            Mod.Log.Info?.Write($"  ShoulderActuatorCategoryId: '{shoulderCats}'  UpperArmActuatorCategoryId: '{upperArmCats}'  " +
                 $"LowerArmActuatorCategoryId: '{lowerArmCats}'  HandActuatorCategoryId: '{handCats}'  ");
 
             string hipCats = String.Join(",", this.CustomCategories.HipActuatorCategoryId);
             string upperLegCats = String.Join(",", this.CustomCategories.UpperLegActuatorCategoryId);
             string lowerLegCats = String.Join(",", this.CustomCategories.LowerLegActuatorCategoryId);
             string footCats = String.Join(",", this.CustomCategories.FootActuatorCategoryId);
-            Mod.Log.Info($"  HipActuatorCategoryId: '{hipCats}'  UpperLegActuatorCategoryId: '{upperLegCats}'  " +
+            Mod.Log.Info?.Write($"  HipActuatorCategoryId: '{hipCats}'  UpperLegActuatorCategoryId: '{upperLegCats}'  " +
                 $"LowerLegActuatorCategoryId: '{lowerLegCats}'  FootActuatorCategoryId: '{footCats}'  ");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write("");
 
-            Mod.Log.Info("=== HEAT OPTIONS ===");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write("=== HEAT OPTIONS ===");
+            Mod.Log.Info?.Write("");
 
-            Mod.Log.Info("=== MELEE OPTIONS ===");
-            Mod.Log.Info($"  ExtraHitsAverageAllDamage: {this.Melee.ExtraHitsAverageAllDamage}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}");
-            Mod.Log.Info("  -- CHARGE OPTIONS --");
-            Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
-            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}");
-            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Charge.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Charge.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Charge.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write("=== MELEE OPTIONS ===");
+            Mod.Log.Info?.Write($"  ExtraHitsAverageAllDamage: {this.Melee.ExtraHitsAverageAllDamage}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}");
+            Mod.Log.Info?.Write("  -- CHARGE OPTIONS --");
+            Mod.Log.Info?.Write($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
+            Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info?.Write($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}");
+            Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Charge.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Charge.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Charge.UnsteadyTargetOnHit}");
 
-            Mod.Log.Info("  -- DFA OPTIONS --");
-            Mod.Log.Info($"  AttackerDamagePerTargetTon: {this.Melee.DFA.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
-            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.DFA.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  DamageClusterDivisor: {this.Melee.DFA.DamageClusterDivisor}");
-            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.DFA.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.DFA.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.DFA.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write("  -- DFA OPTIONS --");
+            Mod.Log.Info?.Write($"  AttackerDamagePerTargetTon: {this.Melee.DFA.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
+            Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.DFA.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info?.Write($"  DamageClusterDivisor: {this.Melee.DFA.DamageClusterDivisor}");
+            Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.DFA.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.DFA.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.DFA.UnsteadyTargetOnHit}");
 
-            Mod.Log.Info("  -- KICK OPTIONS --");
-            Mod.Log.Info($"  BaseAttackBonus: {this.Melee.Kick.BaseAttackBonus}  LegActuatorDamageMalus: {this.Melee.Kick.LegActuatorDamageMalus}  FootActuatorDamageMalus: {this.Melee.Kick.FootActuatorDamageMalus}");
-            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Kick.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Kick.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  LegActuatorDamageReduction: {this.Melee.Kick.LegActuatorDamageReduction}");
-            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Kick.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Kick.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Kick.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write("  -- KICK OPTIONS --");
+            Mod.Log.Info?.Write($"  BaseAttackBonus: {this.Melee.Kick.BaseAttackBonus}  LegActuatorDamageMalus: {this.Melee.Kick.LegActuatorDamageMalus}  FootActuatorDamageMalus: {this.Melee.Kick.FootActuatorDamageMalus}");
+            Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Kick.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Kick.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info?.Write($"  LegActuatorDamageReduction: {this.Melee.Kick.LegActuatorDamageReduction}");
+            Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Kick.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Kick.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Kick.UnsteadyTargetOnHit}");
 
-            Mod.Log.Info("  -- PHYSICAL WEAPON OPTIONS --");
-            Mod.Log.Info($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}");
-            Mod.Log.Info($"  Unsteady Default => AttackerOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write("  -- PHYSICAL WEAPON OPTIONS --");
+            Mod.Log.Info?.Write($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
+            Mod.Log.Info?.Write($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}");
+            Mod.Log.Info?.Write($"  Unsteady Default => AttackerOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit}");
 
-            Mod.Log.Info("  -- PUNCH OPTIONS --");
-            Mod.Log.Info($"  TargetDamagePerAttackerTon: {this.Melee.Punch.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Punch.TargetInstabilityPerAttackerTon}");
-            Mod.Log.Info($"  ArmActuatorDamageMalus: {this.Melee.Punch.ArmActuatorDamageMalus}  HandActuatorDamageMalus: {this.Melee.Punch.HandActuatorDamageMalus}");
-            Mod.Log.Info($"  ArmActuatorDamageReduction: {this.Melee.Punch.ArmActuatorDamageReduction}");
-            Mod.Log.Info($"  Unsteady => AttackerOnHit: {this.Melee.Punch.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Punch.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Punch.UnsteadyTargetOnHit}");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write("  -- PUNCH OPTIONS --");
+            Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Punch.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Punch.TargetInstabilityPerAttackerTon}");
+            Mod.Log.Info?.Write($"  ArmActuatorDamageMalus: {this.Melee.Punch.ArmActuatorDamageMalus}  HandActuatorDamageMalus: {this.Melee.Punch.HandActuatorDamageMalus}");
+            Mod.Log.Info?.Write($"  ArmActuatorDamageReduction: {this.Melee.Punch.ArmActuatorDamageReduction}");
+            Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Punch.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Punch.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Punch.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write("");
 
-            Mod.Log.Info("=== MOVE OPTIONS ===");
-            Mod.Log.Info($"  MinimumMove: {this.Move.MinimumMove}m  HeatMovePenalty: {this.Move.HeatMovePenalty}m  RunMulti: x{this.Move.RunMulti}  SkillMulti: x{this.Move.SkillMulti}");
-            Mod.Log.Info($"  FallAfterChances =>   Jump: {this.Move.FallAfterJumpChance}  Run: {this.Move.FallAfterRunChance}");
-            Mod.Log.Info($"  MPMetersPerHex: {this.Move.MPMetersPerHex}m");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write("=== MOVE OPTIONS ===");
+            Mod.Log.Info?.Write($"  MinimumMove: {this.Move.MinimumMove}m  HeatMovePenalty: {this.Move.HeatMovePenalty}m  RunMulti: x{this.Move.RunMulti}  SkillMulti: x{this.Move.SkillMulti}");
+            Mod.Log.Info?.Write($"  FallAfterChances =>   Jump: {this.Move.FallAfterJumpChance}  Run: {this.Move.FallAfterRunChance}");
+            Mod.Log.Info?.Write($"  MPMetersPerHex: {this.Move.MPMetersPerHex}m");
+            Mod.Log.Info?.Write("");
 
-            Mod.Log.Info("=== PILOTING OPTIONS ===");
-            Mod.Log.Info($"  SkillMulti: x{this.Piloting.SkillMulti}  StabilityCheck: {this.Piloting.StabilityCheck}");
-            Mod.Log.Info($"  DFAReductionMulti: x{this.Piloting.DFAReductionMulti}  FallingDamagePerTenTons: {this.Piloting.FallingDamagePerTenTons}");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write("=== PILOTING OPTIONS ===");
+            Mod.Log.Info?.Write($"  SkillMulti: x{this.Piloting.SkillMulti}  StabilityCheck: {this.Piloting.StabilityCheck}");
+            Mod.Log.Info?.Write($"  DFAReductionMulti: x{this.Piloting.DFAReductionMulti}  FallingDamagePerTenTons: {this.Piloting.FallingDamagePerTenTons}");
+            Mod.Log.Info?.Write("");
 
-            Mod.Log.Info("=== BREACHES OPTIONS ===");
-            Mod.Log.Info($"  ThinAtmoCheck: {this.Breaches.ThinAtmoCheck}  VacuumCheck: {this.Breaches.VacuumCheck}");
-            Mod.Log.Info("");
+            Mod.Log.Info?.Write("=== BREACHES OPTIONS ===");
+            Mod.Log.Info?.Write($"  ThinAtmoCheck: {this.Breaches.ThinAtmoCheck}  VacuumCheck: {this.Breaches.VacuumCheck}");
+            Mod.Log.Info?.Write("");
 
 
 
-            Mod.Log.Info("=== MOD CONFIG END ===");
+            Mod.Log.Info?.Write("=== MOD CONFIG END ===");
         }
     }
 }

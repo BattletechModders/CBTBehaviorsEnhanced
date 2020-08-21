@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             Mech mech = combatGameState.FindActorByGUID(__instance.MechGUID) as Mech;
             if (mech == null) { return true; }
 
-            Mod.Log.Info($"Processing startup for Mech: {CombatantUtils.Label(mech)}");
+            Mod.Log.Info?.Write($"Processing startup for Mech: {CombatantUtils.Label(mech)}");
 
             // Check to see if we should restart automatically
             float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
@@ -24,20 +24,20 @@ namespace CBTBehaviorsEnhanced.Heat {
             bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
 
             bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, futureHeat, -1, -1, heatCheck);
-            if (failedInjuryCheck) Mod.Log.Info("  -- unit did not pass injury check!");
+            if (failedInjuryCheck) Mod.Log.Info?.Write("  -- unit did not pass injury check!");
 
             bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, futureHeat, -1, heatCheck);
-            if (failedSystemFailureCheck) Mod.Log.Info("  -- unit did not pass system failure check!");
+            if (failedSystemFailureCheck) Mod.Log.Info?.Write("  -- unit did not pass system failure check!");
 
             bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, futureHeat, -1, heatCheck);
-            if (failedAmmoCheck) Mod.Log.Info("  -- unit did not pass ammo explosion check!");
+            if (failedAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass ammo explosion check!");
 
             bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck);
-            if (failedVolatileAmmoCheck) Mod.Log.Info("  -- unit did not pass volatile ammo explosion check!");
+            if (failedVolatileAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass volatile ammo explosion check!");
 
             if (passedStartupCheck) { return true; } // Do the normal startup process
 
-            Mod.Log.Debug($"Mech: {CombatantUtils.Label(mech)} failed a startup roll, venting heat but remaining offline.");
+            Mod.Log.Debug?.Write($"Mech: {CombatantUtils.Label(mech)} failed a startup roll, venting heat but remaining offline.");
 
             DoneWithActorSequence doneWithActorSequence = (DoneWithActorSequence)mech.GetDoneWithActorOrders();
             MechHeatSequence mechHeatSequence = new MechHeatSequence(mech, true, true, "STARTUP");

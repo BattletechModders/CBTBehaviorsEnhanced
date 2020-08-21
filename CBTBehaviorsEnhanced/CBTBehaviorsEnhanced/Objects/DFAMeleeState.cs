@@ -28,7 +28,7 @@ namespace CBTBehaviorsEnhanced.Objects
 		public DFAMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-			Mod.Log.Info($"Building DFA state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+			Mod.Log.Info?.Write($"Building DFA state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
 
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
 			this.IsValid = ValidateAttack(attacker, target);
@@ -61,18 +61,18 @@ namespace CBTBehaviorsEnhanced.Objects
 			//  to allow or prevent a DFA attack
 			if (!attacker.CanDFA)
 			{
-				Mod.Log.Info($"Attacker unable to DFA due to damage or inability.");
+				Mod.Log.Info?.Write($"Attacker unable to DFA due to damage or inability.");
 				return false;
 			}
 
 			if (!attacker.CanDFATargetFromPosition(target, attacker.CurrentPosition))
 			{
-				Mod.Log.Info($"Attacker unable to DFA target from their position.");
+				Mod.Log.Info?.Write($"Attacker unable to DFA target from their position.");
 				return false;
 			}
 
 			// No damage check - by rules, you can DFA?
-			Mod.Log.Info("DFA ATTACK validated");
+			Mod.Log.Info?.Write("DFA ATTACK validated");
 			return true;
 		}
 
@@ -99,7 +99,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			{
 				// Build the comparative skill level
 				int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
-				Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
+				Mod.Log.Info?.Write($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
 					$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 				this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
 			}
@@ -111,13 +111,13 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private void CalculateDamages(Mech attacker, AbstractActor target)
         {
-			Mod.Log.Info($"Calculating DFA damage for attacker: {CombatantUtils.Label(attacker)} " +
+			Mod.Log.Info?.Write($"Calculating DFA damage for attacker: {CombatantUtils.Label(attacker)} " +
 				$"vs. target: {CombatantUtils.Label(target)}");
 			
 			float targetTonnage = 0;
 			if (target is Vehicle vehicle) targetTonnage = vehicle.tonnage;
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
-			Mod.Log.Info($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
+			Mod.Log.Info?.Write($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
 
 			// split attacker damage into clusters
 			float attackerDamage = attacker.DFAAttackerDamage(targetTonnage);
@@ -130,13 +130,13 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private void CalculateInstability(Mech attacker, AbstractActor target)
 		{
-			Mod.Log.Info($"Calculating DFA instability for attacker: {CombatantUtils.Label(attacker)} " +
+			Mod.Log.Info?.Write($"Calculating DFA instability for attacker: {CombatantUtils.Label(attacker)} " +
 				$"vs. target: {CombatantUtils.Label(target)}");
 
 			float targetTonnage = 0;
 			if (target is Vehicle vehicle) targetTonnage = vehicle.tonnage;
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
-			Mod.Log.Info($" - Target tonnage is: {targetTonnage}");
+			Mod.Log.Info?.Write($" - Target tonnage is: {targetTonnage}");
 
 			this.AttackerInstability = attacker.DFAAttackerInstability(targetTonnage);
 			this.TargetInstability = attacker.DFATargetInstability();

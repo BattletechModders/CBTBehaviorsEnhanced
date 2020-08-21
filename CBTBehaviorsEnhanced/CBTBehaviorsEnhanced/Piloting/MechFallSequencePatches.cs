@@ -11,7 +11,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
     [HarmonyPatch(typeof(MechFallSequence), "OnAdded")]
     public class MechFallSequence_OnAdded {
         public static void Postfix(MechFallSequence __instance) {
-            Mod.Log.Trace("MFS:OnAdded - entered.");
+            Mod.Log.Trace?.Write("MFS:OnAdded - entered.");
             QuipHelper.PublishQuip(__instance.OwningMech, Mod.LocalizedText.Qips.Knockdown);            
         }
     }
@@ -21,14 +21,14 @@ namespace CBTBehaviorsEnhanced.Piloting {
     [HarmonyPatch(typeof(MechFallSequence), "OnComplete")]
     public class MechFallSequence_OnComplete {
         public static void Prefix(MechFallSequence __instance) {
-            Mod.Log.Trace("MFS:OnComplete - entered.");
+            Mod.Log.Trace?.Write("MFS:OnComplete - entered.");
             int damagePointsTT = (int)Math.Ceiling(__instance.OwningMech.tonnage / 10f);
-            Mod.Log.Debug($"Actor: {CombatantUtils.Label(__instance.OwningMech)} will suffer {damagePointsTT} TT damage points.");
+            Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} will suffer {damagePointsTT} TT damage points.");
 
             // Check for any pilot skill damage reduction
             float damageReduction = 1.0f - __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.DFAReductionMulti);
             float reducedDamage = (float)Math.Max(0f, Math.Floor(damageReduction * damagePointsTT));
-            Mod.Log.Debug($" Reducing TT fall damage from: {damagePointsTT} by {damageReduction:P1} to {reducedDamage}");
+            Mod.Log.Debug?.Write($" Reducing TT fall damage from: {damagePointsTT} by {damageReduction:P1} to {reducedDamage}");
 
             List<float> locationDamage = new List<float>();
             while (damagePointsTT >= 5) {
@@ -39,7 +39,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
                 locationDamage.Add(damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons);
             }
 
-            Mod.Log.Info($"FALLING DAMAGE: TT damage: {damagePointsTT} => {damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons} falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
+            Mod.Log.Info?.Write($"FALLING DAMAGE: TT damage: {damagePointsTT} => {damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons} falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
             AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.OwningMech, __instance.SequenceGUID, locationDamage.ToArray(), DamageType.KnockdownSelf, MeleeAttackType.NotSet);
         }

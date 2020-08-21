@@ -25,7 +25,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public ChargeMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
 			HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-			Mod.Log.Info($"Building CHARGE state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+			Mod.Log.Info?.Write($"Building CHARGE state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
 
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
@@ -33,7 +33,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			{
 				float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
 				int hexesMoved = (int)Math.Ceiling(distance / Mod.Config.Move.MPMetersPerHex);
-				Mod.Log.Info($" - Hexes moved is {hexesMoved} = distance: {distance} / MPMetersPerHex: {Mod.Config.Move.MPMetersPerHex}");
+				Mod.Log.Info?.Write($" - Hexes moved is {hexesMoved} = distance: {distance} / MPMetersPerHex: {Mod.Config.Move.MPMetersPerHex}");
 
 				this.UsePilotingDelta = Mod.Config.Melee.Charge.UsePilotingDelta;
 
@@ -62,26 +62,26 @@ namespace CBTBehaviorsEnhanced.Objects
 			// If neither tackle (mech) or stomp (vehicle) - we're not a valid attack.
 			if (!validAnimations.Contains(MeleeAttackType.Tackle) && !validAnimations.Contains(MeleeAttackType.Stomp))
 			{
-				Mod.Log.Info("Animations do not include a tackle or stomp, attacker cannot charge!");
+				Mod.Log.Info?.Write("Animations do not include a tackle or stomp, attacker cannot charge!");
 				return false;
 			}
 
 			// If attacker is unsteady - cannot charge
 			if (attacker.IsUnsteady)
 			{
-				Mod.Log.Info($"Attacker unable to charge target while unsteady.");
+				Mod.Log.Info?.Write($"Attacker unable to charge target while unsteady.");
 				return false;
 			}
 
 			// Charges cannot target prone units
 			if (target.IsProne)
 			{
-				Mod.Log.Info($"Attacker unable to charge prone target");
+				Mod.Log.Info?.Write($"Attacker unable to charge prone target");
 				return false;
 			}
 
 
-			Mod.Log.Info("CHARGE ATTACK validated");
+			Mod.Log.Info?.Write("CHARGE ATTACK validated");
 			return true;
 		}
 
@@ -105,7 +105,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			{
 				// Build the comparative skill level
 				int comparativeSkill = (attacker.SkillPiloting - target.SkillPiloting) * -1;
-				Mod.Log.Info($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
+				Mod.Log.Info?.Write($"Comparative skill = {comparativeSkill} => attacker {CombatantUtils.Label(attacker)} @ piloting: {attacker.SkillPiloting} " +
 					$"vs. target: {CombatantUtils.Label(target)} @ piloting: {target.SkillPiloting} ");
 
 				this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
@@ -121,13 +121,13 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private void CalculateDamages(Mech attacker, AbstractActor target, int hexesMoved)
         {
-			Mod.Log.Info($"Calculating CHARGE damage for attacker: {CombatantUtils.Label(attacker)} " +
+			Mod.Log.Info?.Write($"Calculating CHARGE damage for attacker: {CombatantUtils.Label(attacker)} " +
 				$"vs. target: {CombatantUtils.Label(target)} at hexesMoved: {hexesMoved}");
 
 			float targetTonnage = 0;
 			if (target is Vehicle vehicle) targetTonnage = vehicle.tonnage;
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
-			Mod.Log.Info($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
+			Mod.Log.Info?.Write($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
 
 			// Calculate attacker damage
 			float attackerDamage = attacker.ChargeAttackerDamage(targetTonnage);
@@ -140,13 +140,13 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private void CalculateInstability(Mech attacker, AbstractActor target, int hexesMoved)
 		{
-			Mod.Log.Info($"Calculating CHARGE instability for attacker: {CombatantUtils.Label(attacker)} " +
+			Mod.Log.Info?.Write($"Calculating CHARGE instability for attacker: {CombatantUtils.Label(attacker)} " +
 				$"vs. target: {CombatantUtils.Label(target)} at hexesMoved: {hexesMoved}");
 
 			float targetTonnage = 0;
 			if (target is Vehicle vehicle) targetTonnage = vehicle.tonnage;
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
-			Mod.Log.Info($" - Target tonnage is: {targetTonnage}");
+			Mod.Log.Info?.Write($" - Target tonnage is: {targetTonnage}");
 
 			// Resolve attacker instability
 			float attackerInstab = attacker.ChargeAttackerInstability(targetTonnage, hexesMoved);

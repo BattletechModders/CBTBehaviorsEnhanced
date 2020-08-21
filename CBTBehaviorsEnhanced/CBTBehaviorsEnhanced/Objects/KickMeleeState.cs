@@ -25,7 +25,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public KickMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            Mod.Log.Info($"Building KICK state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+            Mod.Log.Info?.Write($"Building KICK state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Kick];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
@@ -56,14 +56,14 @@ namespace CBTBehaviorsEnhanced.Objects
             // If neither kick (mech) or stomp (vehicle) - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Kick) && !validAnimations.Contains(MeleeAttackType.Stomp))
             {
-                Mod.Log.Info("Animations do not include a kick or stomp, cannot kick.");
+                Mod.Log.Info?.Write("Animations do not include a kick or stomp, cannot kick.");
                 return false;
             }
 
             // Damage check - left leg
             if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightHipIsFunctional)
             {
-                Mod.Log.Info("One or more hip actuators are damaged. Cannot kick!");
+                Mod.Log.Info?.Write("One or more hip actuators are damaged. Cannot kick!");
                 return false;
             }
 
@@ -72,11 +72,11 @@ namespace CBTBehaviorsEnhanced.Objects
             float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
             if (distance > maxWalkSpeed)
             {
-                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
+                Mod.Log.Info?.Write($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
                 return false;
             }
 
-            Mod.Log.Info("KICK ATTACK validated");
+            Mod.Log.Info?.Write("KICK ATTACK validated");
             return true;
         }
 
@@ -124,7 +124,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CalculateDamages(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating KICK damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
+            Mod.Log.Info?.Write($"Calculating KICK damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             float damage = attacker.KickDamage(this.AttackerCondition);
@@ -136,12 +136,12 @@ namespace CBTBehaviorsEnhanced.Objects
                 sb.Append(cluster);
                 sb.Append(", ");
             }
-            Mod.Log.Info(sb.ToString());
+            Mod.Log.Info?.Write(sb.ToString());
         }
 
         private void CalculateInstability(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating KICK instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
+            Mod.Log.Info?.Write($"Calculating KICK instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             this.TargetInstability = attacker.KickInstability(this.AttackerCondition);

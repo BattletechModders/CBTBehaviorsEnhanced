@@ -24,7 +24,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public PunchMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            Mod.Log.Info($"Building PUNCH state for attacker: {attacker.DistinctId()} @ attackPos: {attackPos} vs. target: {target.DistinctId()}");
+            Mod.Log.Info?.Write($"Building PUNCH state for attacker: {attacker.DistinctId()} @ attackPos: {attackPos} vs. target: {target.DistinctId()}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Punch];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
@@ -55,14 +55,14 @@ namespace CBTBehaviorsEnhanced.Objects
             // If we cannot punch - not a valid attack
             if (!validAnimations.Contains(MeleeAttackType.Punch) && !(validAnimations.Contains(MeleeAttackType.Tackle)))
             {
-                Mod.Log.Info("Animations do not include a punch or tackle, attacker cannot punch!");
+                Mod.Log.Info?.Write("Animations do not include a punch or tackle, attacker cannot punch!");
                 return false;
             }
 
             // Damage check - both shoulders damaged invalidate us
             if (!this.AttackerCondition.LeftShoulderIsFunctional && !this.AttackerCondition.RightShoulderIsFunctional)
             {
-                Mod.Log.Info("Both shoulder actuators are damaged. Cannot punch!");
+                Mod.Log.Info?.Write("Both shoulder actuators are damaged. Cannot punch!");
                 return false;
             }
 
@@ -71,11 +71,11 @@ namespace CBTBehaviorsEnhanced.Objects
             float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
             if (distance > maxWalkSpeed)
             {
-                Mod.Log.Info($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot punch!");
+                Mod.Log.Info?.Write($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot punch!");
                 return false;
             }
 
-            Mod.Log.Info("PUNCH ATTACK validated");
+            Mod.Log.Info?.Write("PUNCH ATTACK validated");
             return true;
         }
 
@@ -119,7 +119,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CalculateDamages(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating PUNCH damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
+            Mod.Log.Info?.Write($"Calculating PUNCH damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             float damage = attacker.PunchDamage(this.AttackerCondition);
@@ -132,13 +132,13 @@ namespace CBTBehaviorsEnhanced.Objects
                 sb.Append(cluster);
                 sb.Append(", ");
             }
-            Mod.Log.Info(sb.ToString());
+            Mod.Log.Info?.Write(sb.ToString());
 
         }
 
         private void CalculateInstability(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info($"Calculating PUNCH instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
+            Mod.Log.Info?.Write($"Calculating PUNCH instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             this.TargetInstability = attacker.PunchInstability(this.AttackerCondition);

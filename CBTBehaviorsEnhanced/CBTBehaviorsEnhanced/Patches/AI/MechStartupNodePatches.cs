@@ -30,33 +30,33 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 
                 // Check to see if we will shutdown
                 bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
-                Mod.Log.Info($"AI unit {CombatantUtils.Label(mech)} heatCheck: {heatCheck} vs. futureHeat: {futureHeat} " +
+                Mod.Log.Info?.Write($"AI unit {CombatantUtils.Label(mech)} heatCheck: {heatCheck} vs. futureHeat: {futureHeat} " +
                     $"(from currentHeat: {mech.CurrentHeat} - sinking: {mech.AdjustedHeatsinkCapacity}) => passed: {passedStartupCheck}");
 
                 if (!passedStartupCheck)
                 {
-                    Mod.Log.Info($" -- shutdown check failed, forcing it to remain shutdown.");
+                    Mod.Log.Info?.Write($" -- shutdown check failed, forcing it to remain shutdown.");
                     BehaviorTreeResults newResult = new BehaviorTreeResults(BehaviorNodeState.Failure);
                     newResult.orderInfo = new OrderInfo(OrderType.Stand);
                     __result = newResult;
 
                     bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, futureHeat, -1, -1, heatCheck);
-                    if (failedInjuryCheck) Mod.Log.Info("  -- unit did not pass injury check!");
+                    if (failedInjuryCheck) Mod.Log.Info?.Write("  -- unit did not pass injury check!");
 
                     bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, futureHeat, -1, heatCheck);
-                    if (failedSystemFailureCheck) Mod.Log.Info("  -- unit did not pass system failure check!");
+                    if (failedSystemFailureCheck) Mod.Log.Info?.Write("  -- unit did not pass system failure check!");
 
                     bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, futureHeat, -1, heatCheck);
-                    if (failedAmmoCheck) Mod.Log.Info("  -- unit did not pass ammo explosion check!");
+                    if (failedAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass ammo explosion check!");
 
                     bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck);
-                    if (failedVolatileAmmoCheck) Mod.Log.Info("  -- unit did not pass volatile ammo explosion check!");
+                    if (failedVolatileAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass volatile ammo explosion check!");
 
                     QuipHelper.PublishQuip(mech, Mod.LocalizedText.Qips.Startup);
                 }
                 else
                 {
-                    Mod.Log.Info($" -- shutdown check passed, starting up normally.");
+                    Mod.Log.Info?.Write($" -- shutdown check passed, starting up normally.");
                 }
 
             }

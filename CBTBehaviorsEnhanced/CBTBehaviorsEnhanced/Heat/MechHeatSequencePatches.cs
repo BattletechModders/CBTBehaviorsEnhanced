@@ -27,7 +27,7 @@ namespace CBTBehaviorsEnhanced.Patches {
             HeatSequenceState currentState = (HeatSequenceState)stateT.GetValue<int>();
             if (currentState == newState) { return true; }
 
-            Mod.Log.Debug($"MHS - executing updated logic for state: {newState} on actor:{CombatantUtils.Label(__instance.OwningMech)}.");
+            Mod.Log.Debug?.Write($"MHS - executing updated logic for state: {newState} on actor:{CombatantUtils.Label(__instance.OwningMech)}.");
             stateT.SetValue((int)newState);
 
             Traverse timeInCurrentStateT = Traverse.Create(__instance).Field("timeInCurrentState");
@@ -40,25 +40,25 @@ namespace CBTBehaviorsEnhanced.Patches {
              */
 
             if (!__instance.PerformHeatSinkStep) {
-                Mod.Log.Debug($"Reconciling heat for actor: {CombatantUtils.Label(__instance.OwningMech)}");
-                Mod.Log.Debug($"  Before - currentHeat: {__instance.OwningMech.CurrentHeat}  tempHeat: {__instance.OwningMech.TempHeat}  " +
+                Mod.Log.Debug?.Write($"Reconciling heat for actor: {CombatantUtils.Label(__instance.OwningMech)}");
+                Mod.Log.Debug?.Write($"  Before - currentHeat: {__instance.OwningMech.CurrentHeat}  tempHeat: {__instance.OwningMech.TempHeat}  " +
                     $"isPastMaxHeat: {__instance.OwningMech.IsPastMaxHeat}  hasAppliedHeatSinks: {__instance.OwningMech.HasAppliedHeatSinks}");
                 // Checks for heat damage, clamps heat to max and min
                 __instance.OwningMech.ReconcileHeat(__instance.RootSequenceGUID, __instance.InstigatorID);
-                Mod.Log.Debug($"  After - currentHeat: {__instance.OwningMech.CurrentHeat}  tempHeat: {__instance.OwningMech.TempHeat}  " +
+                Mod.Log.Debug?.Write($"  After - currentHeat: {__instance.OwningMech.CurrentHeat}  tempHeat: {__instance.OwningMech.TempHeat}  " +
                     $"isPastMaxHeat: {__instance.OwningMech.IsPastMaxHeat}  hasAppliedHeatSinks: {__instance.OwningMech.HasAppliedHeatSinks}");
             }
 
             if (__instance.PerformHeatSinkStep && !__instance.ApplyStartupHeatSinks)
             {
                 // We are at the end of the turn - force an overheat
-                Mod.Log.Info($"-- AT END OF TURN FOR {CombatantUtils.Label(__instance.OwningMech)}... CHECKING EFFECTS");
+                Mod.Log.Info?.Write($"-- AT END OF TURN FOR {CombatantUtils.Label(__instance.OwningMech)}... CHECKING EFFECTS");
 
                 MultiSequence sequence = new MultiSequence(__instance.OwningMech.Combat);
 
                 float heatCheck = __instance.OwningMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
                 float pilotCheck = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
-                Mod.Log.Debug($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
+                Mod.Log.Debug?.Write($" Actor: {CombatantUtils.Label(__instance.OwningMech)} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
 
                 bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(__instance.OwningMech, __instance.OwningMech.CurrentHeat, __instance.RootSequenceGUID, __instance.SequenceGUID, heatCheck);
                 bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(__instance.OwningMech, __instance.OwningMech.CurrentHeat, __instance.RootSequenceGUID, heatCheck);
@@ -70,10 +70,10 @@ namespace CBTBehaviorsEnhanced.Patches {
                 {
                     // Resolve Shutdown + Fall
                     failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.OwningMech.CurrentHeat, __instance.OwningMech, heatCheck, ModText.FT_Check_Shutdown);
-                    Mod.Log.Debug($"  failedShutdownCheck: {failedShutdownCheck}");
+                    Mod.Log.Debug?.Write($"  failedShutdownCheck: {failedShutdownCheck}");
                     if (failedShutdownCheck)
                     {
-                        Mod.Log.Info($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance.OwningMech)}, forcing unit to shutdown");
+                        Mod.Log.Info?.Write($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance.OwningMech)}, forcing unit to shutdown");
 
                         string debuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Shutdown_Failed_Overide]).ToString();
                         sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, debuffText,
@@ -88,10 +88,10 @@ namespace CBTBehaviorsEnhanced.Patches {
                         if (__instance.OwningMech.IsOrWillBeProne)
                         {
                             bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance.OwningMech, pilotCheck, ModText.FT_Check_Fall);
-                            Mod.Log.Debug($"  failedFallingCheck: {failedFallingCheck}");
+                            Mod.Log.Debug?.Write($"  failedFallingCheck: {failedFallingCheck}");
                             if (failedFallingCheck)
                             {
-                                Mod.Log.Info("   Pilot check from shutdown failed! Forcing a fall!");
+                                Mod.Log.Info?.Write("   Pilot check from shutdown failed! Forcing a fall!");
                                 string fallDebuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Shutdown_Fall]).ToString();
                                 sequence.AddChildSequence(new ShowActorInfoSequence(__instance.OwningMech, fallDebuffText,
                                     FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
@@ -104,19 +104,19 @@ namespace CBTBehaviorsEnhanced.Patches {
                             }
                             else
                             {
-                                Mod.Log.Info($"Pilot check to avoid falling passed. Applying unstead to unit.");
+                                Mod.Log.Info?.Write($"Pilot check to avoid falling passed. Applying unstead to unit.");
                                 __instance.OwningMech.ApplyUnsteady();
                             }
                         }
                         else
                         {
-                            Mod.Log.Debug("Unit is already prone, skipping.");
+                            Mod.Log.Debug?.Write("Unit is already prone, skipping.");
                         }
                     }
                 }
                 else
                 {
-                    Mod.Log.Debug("Unit is already shutdown, skipping.");
+                    Mod.Log.Debug?.Write("Unit is already shutdown, skipping.");
                 }
 
                 if (failedInjuryCheck || failedSystemFailureCheck || failedAmmoCheck || failedVolatileAmmoCheck || failedShutdownCheck)

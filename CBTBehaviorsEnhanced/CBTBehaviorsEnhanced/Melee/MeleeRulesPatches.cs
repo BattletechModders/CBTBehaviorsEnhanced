@@ -11,7 +11,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
         {
             if (ModState.MeleeStates?.SelectedState != null)
             {
-                Mod.Log.Info($"Forcing melee animation to {ModState.MeleeStates.SelectedState.AttackAnimation} for " +
+                Mod.Log.Info?.Write($"Forcing melee animation to {ModState.MeleeStates.SelectedState.AttackAnimation} for " +
                     $"attacker: {attacker.DistinctId()} vs. target: {target.DistinctId()}");
                 __result = ModState.MeleeStates.SelectedState.AttackAnimation;
             }

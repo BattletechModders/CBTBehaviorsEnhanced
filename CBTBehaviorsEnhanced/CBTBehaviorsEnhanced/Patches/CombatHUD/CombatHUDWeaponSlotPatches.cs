@@ -20,7 +20,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null || target == null) return;
 
-            Mod.Log.Trace("CHUDWS:SHC entered");
+            Mod.Log.Trace?.Write("CHUDWS:SHC entered");
 
             Traverse addToolTipDetailT = Traverse.Create(__instance)
                 .Method("AddToolTipDetail", new Type[] { typeof(string), typeof(int) });
@@ -31,7 +31,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump))
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
-                Mod.Log.Debug($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
+                Mod.Log.Debug?.Write($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
                 addToolTipDetailT.GetValue(new object[] { localText, Mod.Config.ToHitSelfJumped });
             }
 
@@ -44,7 +44,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                        Mod.Log.Debug($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
+                        Mod.Log.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
                         addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
                     }
                 }
@@ -61,7 +61,7 @@ namespace CBTBehaviorsEnhanced.Patches
         {
 
             if (__instance == null || ___displayedWeapon == null) return;
-            Mod.Log.Trace("CHUDWS:UMW entered");
+            Mod.Log.Trace?.Write("CHUDWS:UMW entered");
 
             if (ModState.MeleeStates == null || ModState.MeleeStates.SelectedState == null || ModState.MeleeStates.SelectedState == ModState.MeleeStates.DFA)
             {
@@ -123,11 +123,11 @@ namespace CBTBehaviorsEnhanced.Patches
         {
 
             if (__instance == null || ___displayedWeapon == null) return;
-            Mod.Log.Trace("CHUDWS:UDFAW entered");
+            Mod.Log.Trace?.Write("CHUDWS:UDFAW entered");
 
             if (ModState.MeleeStates == null || ModState.MeleeStates.DFA == null)
             {
-                Mod.Log.Debug("Defaulting DFA damage.");
+                Mod.Log.Debug?.Write("Defaulting DFA damage.");
 
                 Mech parentMech = ___displayedWeapon.parent as Mech;
                 float targetDamage = parentMech.DFATargetDamage();
@@ -135,20 +135,20 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else if (ModState.MeleeStates.DFA != null)
             {
-                Mod.Log.Debug("Updating labels for DFA state.");
+                Mod.Log.Debug?.Write("Updating labels for DFA state.");
 
                 float totalDamage = ModState.MeleeStates.DFA.TargetDamageClusters.Sum();
                 if (ModState.MeleeStates.DFA.TargetDamageClusters.Length > 1)
                 {
                     int avgDamage = (int)Math.Floor(totalDamage / ModState.MeleeStates.DFA.TargetDamageClusters.Length);
                     string damageS = $"{avgDamage} <size=80%>(x{ModState.MeleeStates.DFA.TargetDamageClusters.Length})";
-                    Mod.Log.Debug($"  - damageS is: {damageS}");
+                    Mod.Log.Debug?.Write($"  - damageS is: {damageS}");
                     __instance.DamageText.SetText(damageS);
                 }
                 else
                 {
                     __instance.DamageText.SetText($"{totalDamage}");
-                    Mod.Log.Debug($"  - damageS is: {totalDamage}");
+                    Mod.Log.Debug?.Write($"  - damageS is: {totalDamage}");
                 }
             }
         }
@@ -164,7 +164,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
 
-            Mod.Log.Trace("CHUDWS:GTTS entered");
+            Mod.Log.Trace?.Write("CHUDWS:GTTS entered");
 
             // Check melee patches
             if (ModState.MeleeStates?.SelectedState != null && ___displayedWeapon.Type == WeaponType.Melee)
@@ -172,7 +172,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                    Mod.Log.Trace($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.Log.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
@@ -185,7 +185,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                    Mod.Log.Trace($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.Log.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
