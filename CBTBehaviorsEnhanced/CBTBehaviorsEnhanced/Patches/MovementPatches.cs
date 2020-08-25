@@ -2,6 +2,7 @@
 using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using Harmony;
+using IRBTModUtils;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
@@ -37,22 +38,26 @@ namespace CBTBehaviorsEnhanced {
                     {
                         DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
                         Mech mech = __instance.owningActor as Mech;
-                        Mod.Log.Debug?.Write($" OwningActor: {CombatantUtils.Label(__instance.owningActor)} is " +
-                            $"mech: {mech != null}  isShutdown: {mech?.IsShutDown}  " +
-                            $"doneWithActorSequence isNotNull: {dwaSeq != null}  " +
-                            $"isInterleaved: {__instance?.owningActor?.Combat?.TurnDirector?.IsInterleaved}  " +
-                            $"detectedEnemyUnits: {__instance?.owningActor?.Combat?.LocalPlayerTeam?.GetDetectedEnemyUnits()?.Count}");
+                        if (mech == null) return; // WTF... how did this happen?
 
-                        if (mech != null && !mech.IsShutDown && dwaSeq != null && 
-                            !mech.Combat.TurnDirector.IsInterleaved &&
-                            mech.Combat.LocalPlayerTeam.GetDetectedEnemyUnits().Count == 0)
+                        Mod.Log.Debug?.Write($" OwningActor: {CombatantUtils.Label(__instance.owningActor)} is " +
+                            $"mech => {mech != null}  isShutdown => {mech?.IsShutDown}  " +
+                            $"doneWithActorSequence != null => {dwaSeq != null}  " +
+                            $"isInterleaved => {__instance?.owningActor?.Combat?.TurnDirector?.IsInterleaved}  " +
+                            $"isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
+                            $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
+
+                        bool isInterleaved = SharedState.Combat?.TurnDirector?.IsInterleaved == true;
+                        if (isInterleaved || mech.IsShutDown) return; // Nothing to do, this is expected
+
+                        if (dwaSeq != null)
                         {
                             Mod.Log.Debug?.Write($"Creating heat sequence for mech.");
                             // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
                             MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
                             if (heatSequence != null)
                             {
-                                Mod.Log.Debug?.Write($"  Done, adding sequence: {heatSequence.SequenceGUID} to instance.");
+                                Mod.Log.Debug?.Write($"CREATING HEAT SEQUENCE: {heatSequence.SequenceGUID} FOR NON-INTERLEAVED MODE");
                                 __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
                             }
                             else

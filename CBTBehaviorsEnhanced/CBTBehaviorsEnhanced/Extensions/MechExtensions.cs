@@ -340,7 +340,7 @@ namespace CBTBehaviorsEnhanced.Extensions {
 
             // Roll up final damage
             float final = (float)Math.Ceiling((raw + mod) * multi * reductionMulti);
-            Mod.Log.Info?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
+            Mod.Log.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x reductionMulti: {reductionMulti}");
 
             return final;

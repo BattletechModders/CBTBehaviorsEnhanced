@@ -18,7 +18,7 @@ namespace CBTBehaviorsEnhanced.Patches {
             Finished
         }
 
-        // How does this enum work? Fuck if I know. It even surprised paradeike, but apparently it just 'works'. 
+        // How does this enum work? Fuck if I know. It even surprised Paradeike, but apparently it just 'works'. 
         public static bool Prefix(MechHeatSequence __instance, HeatSequenceState newState) {
 
             if (newState != HeatSequenceState.Finished) { return true; }
