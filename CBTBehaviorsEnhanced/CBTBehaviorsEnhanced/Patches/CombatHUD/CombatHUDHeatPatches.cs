@@ -3,6 +3,7 @@ using BattleTech.UI;
 using CBTBehaviorsEnhanced.Heat;
 using Harmony;
 using HBS;
+using IRBTModUtils.Extension;
 using Localize;
 using SVGImporter;
 using System;
@@ -118,17 +119,20 @@ namespace CBTBehaviorsEnhanced.Patches {
             CombatHUD HUD = HUDT.GetValue<CombatHUD>();
             
             CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(mech, HUD.SelectionHandler.ProjectedHeatForState);
-            Mod.Log.Debug?.Write($" In ShutdownIndicator, projectedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
+            Mod.Log.Debug?.Write($"In ShutdownIndicator, projectedHeat {HUD.SelectionHandler.ProjectedHeatForState} => calculatedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
+            Mod.Log.Debug?.Write($"  current: {calculatedHeat.CurrentHeat} projected: {calculatedHeat.ProjectedHeat} temp: {calculatedHeat.TempHeat}  " +
+                $"sinkable: {calculatedHeat.SinkableHeat}  sinkCapacity: {calculatedHeat.OverallSinkCapacity}  future: {calculatedHeat.FutureHeat}  threshold: {calculatedHeat.ThresholdHeat}");
+            Mod.Log.Debug?.Write($"  CACTerrainHeat{ calculatedHeat.CACTerrainHeat}  CurrentPathNodes: {calculatedHeat.CurrentPathNodes}  isProjectedHeat: {calculatedHeat.IsProjectedHeat}");
 
             if (mech.IsShutDown) {
-                Mod.Log.Info?.Write($" MECH {CombatantUtils.Label(mech)} IS SHUTDOWN, DISPLAYING SHUTDOWN WARNING");
+                Mod.Log.Info?.Write($" Mech {CombatantUtils.Label(mech)} is shutdown, displaying the shutdown warning");
                 methodInfo.Invoke(__instance, new object[] { 
                     LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
                     __instance.defaultIconScale, false });
             } else if (calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat) {
-                Mod.Log.Info?.Write($"DISPLAYING OVERHEAT WARNING FOR MECH {CombatantUtils.Label(mech)} - heat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}");
+                Mod.Log.Info?.Write($"Mech {mech.DistinctId()} has thresholdHeat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}. Displaying heat warning.");
                 methodInfo.Invoke(__instance, new object[] {
                     LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TITLE]),

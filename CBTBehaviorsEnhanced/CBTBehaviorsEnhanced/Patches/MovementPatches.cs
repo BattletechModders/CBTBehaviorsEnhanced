@@ -3,6 +3,7 @@ using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using Harmony;
 using IRBTModUtils;
+using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
@@ -16,60 +17,50 @@ namespace CBTBehaviorsEnhanced {
             public static void Prefix(OrderSequence __instance)
             {
                 Mod.Log.Debug?.Write($"OS:OU - entered for actor: {CombatantUtils.Label(__instance?.owningActor)}");
-                if (__instance == null) return;
+                if (__instance == null || __instance.owningActor == null || !(__instance.owningActor is Mech)) return; // Nothing to do
 
+                // Check to see if we'll fall through the checks once control returns to OnUpdate()
                 Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
                 bool sequenceIsComplete = sequenceIsCompleteT.GetValue<bool>();
                 bool baseIsComplete = __instance.childSequences.Count == 0 || (__instance.childSequences.Count == 1 && __instance.cameraSequence != null && __instance.cameraSequence.IsFinished);
-                Mod.Log.Debug?.Write($"  ordersAreComplete: {__instance.OrdersAreComplete}  self.isComplete: {__instance.IsComplete}  base.isComplete: {baseIsComplete}  " +
-                    $"#childSequences: {__instance?.childSequences?.Count}  cameraSequence: {__instance?.cameraSequence?.IsFinished}  sequenceIsComplete: {sequenceIsComplete}");
-                if (__instance.ChildSequenceCount > 0)
+                
+                if (!__instance.OrdersAreComplete || !baseIsComplete || sequenceIsComplete) return; // Not ready to end the sequence yet, so return
+
+                DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
+                if (dwaSeq != null || !__instance.ConsumesActivation) return; // Either a complete ending sequence, or the specific sequence doesn't consume activation so return
+
+                Mech mech = __instance.owningActor as Mech;
+                Mod.Log.Debug?.Write($"OwningActor: {CombatantUtils.Label(__instance.owningActor)} is at end of activation, checking for heat sequence creation. ");
+                Mod.Log.Debug?.Write($"  -- Conditionals: isShutdown => {mech?.IsShutDown}  " +
+                    $"doneWithActorSequence != null => {dwaSeq != null}  " +
+                    $"isInterleaved => {__instance?.owningActor?.Combat?.TurnDirector?.IsInterleaved}  " +
+                    $"isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
+                    $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
+
+                // We should now be in the place where OnUpdate will try to build a heatSequence for mechs
+                bool isInterleaved = SharedState.Combat?.TurnDirector?.IsInterleaved == true;
+                if (isInterleaved)
                 {
-                    foreach (IStackSequence seq in __instance.childSequences)
-                    {
-                        Mod.Log.Debug?.Write($" -- child sequence  type: {seq.GetType()}  msgIdx: {seq.MessageIndex}");
-                    }
+                    Mod.Log.Debug?.Write(" -- Combat is interleaved, should be handled by OnUpdate() or MechStartupSequence - skipping.");
+                    return; 
                 }
 
-                if (__instance.OrdersAreComplete && baseIsComplete && !sequenceIsComplete)
+                if (mech.IsShutDown)
                 {
-                    Mod.Log.Debug?.Write($"OrderSequence consumesActivation: {__instance.ConsumesActivation}");
-                    if (__instance.ConsumesActivation)
-                    {
-                        DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
-                        Mech mech = __instance.owningActor as Mech;
-                        if (mech == null) return; // WTF... how did this happen?
+                    Mod.Log.Debug?.Write(" -- Mech is shutdown, assuming a MechStartupSequence will handle this - skipping.");
+                    return;
+                }
 
-                        Mod.Log.Debug?.Write($" OwningActor: {CombatantUtils.Label(__instance.owningActor)} is " +
-                            $"mech => {mech != null}  isShutdown => {mech?.IsShutDown}  " +
-                            $"doneWithActorSequence != null => {dwaSeq != null}  " +
-                            $"isInterleaved => {__instance?.owningActor?.Combat?.TurnDirector?.IsInterleaved}  " +
-                            $"isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
-                            $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
-
-                        bool isInterleaved = SharedState.Combat?.TurnDirector?.IsInterleaved == true;
-                        if (isInterleaved || mech.IsShutDown) return; // Nothing to do, this is expected
-
-                        if (dwaSeq != null)
-                        {
-                            Mod.Log.Debug?.Write($"Creating heat sequence for mech.");
-                            // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
-                            MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
-                            if (heatSequence != null)
-                            {
-                                Mod.Log.Debug?.Write($"CREATING HEAT SEQUENCE: {heatSequence.SequenceGUID} FOR NON-INTERLEAVED MODE");
-                                __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
-                            }
-                            else
-                            {
-                                Mod.Log.Debug?.Write($" HEAT SEQUENCE IS NULL - PROBABLY AN ERROR!");
-                            }
-                        }
-                        else 
-                        {
-                            Mod.Log.Debug?.Write("HEAT SEQUENCE CONDITIONAL FAILED");
-                        }
-                    }
+                // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
+                MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
+                if (heatSequence != null)
+                {
+                    Mod.Log.Debug?.Write($" -- Creating heat sequence for non-interleaved mode");                
+                    __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
+                }
+                else
+                {
+                    Mod.Log.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
                 }
                 
             }
