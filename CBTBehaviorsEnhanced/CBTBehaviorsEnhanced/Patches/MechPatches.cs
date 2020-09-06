@@ -1,12 +1,15 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
+using CustAmmoCategories;
 using Harmony;
+using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Patches {
+namespace CBTBehaviorsEnhanced.Patches
+{
 
     // Initialize statistics. InitEffectStats is invoked in the middle of the InitStats function, before effects are applied.
     [HarmonyPatch(typeof(Mech), "InitEffectStats")]
@@ -14,7 +17,8 @@ namespace CBTBehaviorsEnhanced.Patches {
     public static class Mech_InitEffectStats
     {
 
-        public static void Postfix(Mech __instance) {
+        public static void Postfix(Mech __instance)
+        {
             Mod.Log.Trace?.Write("M:I entered.");
 
             // Initialize mod-specific statistics
@@ -102,10 +106,13 @@ namespace CBTBehaviorsEnhanced.Patches {
     // TODO: This is redundant since we've replaced DFASelfDamage, I think? Just remove?
     // Mitigate DFA self damage based upon piloting skill
     [HarmonyPatch(typeof(Mech), "TakeWeaponDamage")]
-    public static class Mech_TakeWeaponDamage {
-        public static void Prefix(Mech __instance, ref float damageAmount, DamageType damageType) {
+    public static class Mech_TakeWeaponDamage
+    {
+        public static void Prefix(Mech __instance, ref float damageAmount, DamageType damageType)
+        {
             // 	public override void TakeWeaponDamage(WeaponHitInfo hitInfo, int hitLocation, Weapon weapon, float damageAmount, float directStructureDamage, int hitIndex, DamageType damageType)
-            if (damageType == DamageType.DFASelf) {
+            if (damageType == DamageType.DFASelf)
+            {
                 float damageReduction = 1.0f - __instance.PilotCheckMod(Mod.Config.Piloting.DFAReductionMulti);
                 float reducedDamage = (float)Math.Max(0f, Math.Floor(damageReduction * damageAmount));
                 Mod.Log.Debug?.Write($" Reducing DFA damage for actor: {CombatantUtils.Label(__instance)} from original damage: {damageAmount} by {damageReduction:P1} to {reducedDamage}");
@@ -116,8 +123,10 @@ namespace CBTBehaviorsEnhanced.Patches {
 
     // Forces your startup sequence to only sink your capacity, not the ratio HBS uses
     [HarmonyPatch(typeof(Mech), "ApplyStartupHeatSinks")]
-    public static class Mech_ApplyStartupHeatSinks {
-        public static bool Prefix(Mech __instance, int stackID) {
+    public static class Mech_ApplyStartupHeatSinks
+    {
+        public static bool Prefix(Mech __instance, int stackID)
+        {
             Mod.Log.Trace?.Write("M:ASHS - entered.");
             Mod.Log.Debug?.Write($" Actor: {CombatantUtils.Label(__instance)} sinking {__instance.AdjustedHeatsinkCapacity} at startup.");
             __instance.ApplyHeatSinks(stackID);
@@ -127,22 +136,40 @@ namespace CBTBehaviorsEnhanced.Patches {
 
     // Deliberately skip to prevent any structure damage
     [HarmonyPatch(typeof(Mech), "CheckForHeatDamage")]
-    public static class Mech_CheckForHeatDamage {
-        static bool Prefix(Mech __instance, int stackID, string attackerID) {
+    public static class Mech_CheckForHeatDamage
+    {
+        static bool Prefix(Mech __instance, int stackID, string attackerID)
+        {
             return false;
         }
     }
 
     // Log the current heat at the end of actrivation
     [HarmonyPatch(typeof(Mech), "OnActivationEnd")]
-    public static class Mech_OnActivationEnd {
-        private static void Prefix(Mech __instance, string sourceID, int stackItemID) {
+    static class Mech_OnActivationEnd
+    {
+        [HarmonyAfter("us.frostraptor.SkillBasedInit")]
+        static void Prefix(Mech __instance)
+        {
 
-            Mod.Log.Debug?.Write($"Actor: {__instance.DisplayName}_{__instance.GetPilot().Name} has currentHeat: {__instance.CurrentHeat}" +
+            Mod.Log.Debug?.Write($"ON_ACTIVATION_END:PRE - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
             // Invalidate any melee state the actor may have set
             ModState.MeleeStates = null;
+        }
+
+        [HarmonyAfter("io.mission.modrepuation", "us.frostraptor.SkillBasedInit")]
+        static void Postfix(Mech __instance)
+        {
+            Mod.Log.Debug?.Write($"ON_ACTIVATION_END:POST - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
+                $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
+
+            if (__instance.UsedHeatSinksCap() != 0)
+            {
+                Mod.Log.Warn?.Write("MECH ACTIVATION COMPLETE, BUT HEAT SINKS REMAIN USED! FORCE-CLEARING HS.");
+                __instance.clearUsedHeatSinksCap();
+            }
         }
     }
 
@@ -152,8 +179,10 @@ namespace CBTBehaviorsEnhanced.Patches {
      */
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
-    public static class Mech_MaxWalkDistance_Get {
-        public static void Postfix(Mech __instance, ref float __result) {
+    public static class Mech_MaxWalkDistance_Get
+    {
+        public static void Postfix(Mech __instance, ref float __result)
+        {
             Mod.Log.Trace?.Write("M:MWD:GET entered.");
             __result = MechHelper.FinalWalkSpeed(__instance);
         }
@@ -162,8 +191,10 @@ namespace CBTBehaviorsEnhanced.Patches {
     // Override walk speed (see above)
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxBackwardDistance", MethodType.Getter)]
-    public static class Mech_MaxBackwardDistance_Get {
-        public static void Postfix(Mech __instance, ref float __result) {
+    public static class Mech_MaxBackwardDistance_Get
+    {
+        public static void Postfix(Mech __instance, ref float __result)
+        {
             Mod.Log.Trace?.Write("M:MBD:GET entered.");
             __result = MechHelper.FinalWalkSpeed(__instance);
         }
@@ -172,15 +203,20 @@ namespace CBTBehaviorsEnhanced.Patches {
     // Override run speed to 1.5 x walking semantics
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
-    public static class Mech_MaxSprintDistance_Get {
-        public static void Postfix(Mech __instance, ref float __result) {
+    public static class Mech_MaxSprintDistance_Get
+    {
+        public static void Postfix(Mech __instance, ref float __result)
+        {
             Mod.Log.Trace?.Write("M:MSD:GET entered.");
             __result = MechHelper.FinalRunSpeed(__instance);
 
             //This is an easy place to put this where it will always be checked. This is the key to full non-interleaved combat.
-            if (__instance.Combat.TurnDirector.IsInterleaved) {
+            if (__instance.Combat.TurnDirector.IsInterleaved)
+            {
                 __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, true);
-            } else {
+            }
+            else
+            {
                 __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, false);
             }
         }
@@ -189,8 +225,10 @@ namespace CBTBehaviorsEnhanced.Patches {
     // Override run speed to 1.5 x walking semantics
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxMeleeEngageRangeDistance", MethodType.Getter)]
-    public static class Mech_MaxMeleeEngageRangeDistance_Get {
-        public static void Postfix(Mech __instance, ref float __result) {
+    public static class Mech_MaxMeleeEngageRangeDistance_Get
+    {
+        public static void Postfix(Mech __instance, ref float __result)
+        {
             Mod.Log.Trace?.Write("M:MMERD:GET entered.");
             // TODO: Should this be Run or Walk speed?
             __result = MechHelper.FinalRunSpeed(__instance);

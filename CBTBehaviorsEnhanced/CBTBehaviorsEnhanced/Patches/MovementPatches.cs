@@ -16,8 +16,8 @@ namespace CBTBehaviorsEnhanced {
         {
             public static void Prefix(OrderSequence __instance)
             {
-                Mod.Log.Debug?.Write($"OS:OU - entered for actor: {CombatantUtils.Label(__instance?.owningActor)}");
                 if (__instance == null || __instance.owningActor == null || !(__instance.owningActor is Mech)) return; // Nothing to do
+                Mod.Log.Debug?.Write($"OS:OU - entered for actor: {CombatantUtils.Label(__instance?.owningActor)}");
 
                 // Check to see if we'll fall through the checks once control returns to OnUpdate()
                 Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
