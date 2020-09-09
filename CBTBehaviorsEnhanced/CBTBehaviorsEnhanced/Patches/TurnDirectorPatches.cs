@@ -4,27 +4,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Patches {
+namespace CBTBehaviorsEnhanced.Patches
+{
 
     [HarmonyPatch(typeof(TurnDirector), "OnEncounterBegin")]
-    public static class TurnDirector_OnEncounterBegin { 
-        public static void Postfix(TurnDirector __instance, MessageCenterMessage message) {
+    public static class TurnDirector_OnEncounterBegin
+    {
+        public static void Postfix(TurnDirector __instance, MessageCenterMessage message)
+        {
 
             // Remain interleaved until the end of the round. This prevents the case where you immediately get dropped out of combat, then get forced back into it.
-            if (__instance != null && __instance.Combat.EncounterLayerData != null) {
+            if (__instance != null && __instance.Combat.EncounterLayerData != null)
+            {
                 __instance.Combat.EncounterLayerData.turnDirectorBehavior = TurnDirectorBehaviorType.RemainInterleaved;
                 Mod.Log.Info?.Write("Interleaved mode set to: REMAIN_INTERLEAVED");
-            } else {
+            }
+            else
+            {
                 Mod.Log.Warn?.Write("COULD NOT FIND ENCOUNTER_LAYER_DATA - INTERLEAVED FIX CANNOT BE APPLIED!");
             }
 
             // Check for hull breach biomes
             TerrainGenerator terrainGenerator = Terrain.activeTerrains != null ? Terrain.activeTerrain.GetComponent<TerrainGenerator>() : null;
             Biome.BIOMESKIN biomeSkin = terrainGenerator != null && terrainGenerator.biome != null ? terrainGenerator.biome.biomeSkin : Biome.BIOMESKIN.UNDEFINED;
-            if (__instance.Combat.MapMetaData == null) {
+            if (__instance.Combat.MapMetaData == null)
+            {
                 Mod.Log.Warn?.Write("COULD NOT DETERMINE BIOMESKIN, SKIPPING BREACH CHECK");
-            } else {
-                switch (__instance.Combat.MapMetaData.biomeSkin) {
+            }
+            else
+            {
+                switch (__instance.Combat.MapMetaData.biomeSkin)
+                {
                     case Biome.BIOMESKIN.lunarVacuum:
                         ModState.BreachCheck = Mod.Config.Breaches.VacuumCheck;
                         Mod.Log.Debug?.Write($"Lunar biome detected - setting breach chance to: {ModState.BreachCheck}");
@@ -42,11 +52,14 @@ namespace CBTBehaviorsEnhanced.Patches {
     }
 
     [HarmonyPatch(typeof(TurnDirector), "OnTurnActorActivateComplete")]
-    public static class TurnDirector_OnTurnActorActivateComplete {
-        private static bool Prefix(TurnDirector __instance) {
+    public static class TurnDirector_OnTurnActorActivateComplete
+    {
+        private static bool Prefix(TurnDirector __instance)
+        {
             Mod.Log.Trace?.Write($"TD:OTAAC invoked");
 
-            if (__instance.IsMissionOver) {
+            if (__instance.IsMissionOver)
+            {
                 return false;
             }
 
@@ -55,7 +68,7 @@ namespace CBTBehaviorsEnhanced.Patches {
 
             foreach (TurnActor turnActor in __instance.TurnActors)
             {
-                if (turnActor is Team teamActor) 
+                if (turnActor is Team teamActor)
                 {
                     Mod.Log.Debug?.Write($" -- TEAM: {teamActor.Name} --");
                     foreach (AbstractActor actor in teamActor.units)
@@ -70,7 +83,7 @@ namespace CBTBehaviorsEnhanced.Patches {
                     {
                         Mod.Log.Debug?.Write($" ---- UNIT: {actor}");
                     }
-                } 
+                }
                 else
                 {
                     Mod.Log.Debug?.Write($"Unknown team activated! {turnActor.GUID}");
@@ -90,11 +103,14 @@ namespace CBTBehaviorsEnhanced.Patches {
             int numUnusedUnitsForCurrentPhase = __instance.TurnActors[__instance.ActiveTurnActorIndex].GetNumUnusedUnitsForCurrentPhase();
             Mod.Log.Info?.Write($"There are {numUnusedUnitsForCurrentPhase} unusedUnits in the current phase");
 
-            if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0) {
+            if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0)
+            {
                 Mod.Log.Info?.Write("Sending TurnActorActivateMessage");
                 Traverse staamT = Traverse.Create(__instance).Method("SendTurnActorActivateMessage", new object[] { __instance.ActiveTurnActorIndex });
                 staamT.GetValue();
-            } else {
+            }
+            else
+            {
                 Mod.Log.Debug?.Write("Incrementing ActiveTurnActor");
                 Traverse iataT = Traverse.Create(__instance).Method("IncrementActiveTurnActor");
                 iataT.GetValue();
@@ -106,13 +122,18 @@ namespace CBTBehaviorsEnhanced.Patches {
 
     // Intercept the condition where contact has been lost, and shift that logic to the end of the round
     [HarmonyPatch(typeof(TurnDirector), "NotifyContact")]
-    public static class TurnDirector_NotifyContact {
-        public static bool Prefix(TurnDirector __instance, VisibilityLevel contactLevel) {
+    public static class TurnDirector_NotifyContact
+    {
+        public static bool Prefix(TurnDirector __instance, VisibilityLevel contactLevel)
+        {
             Mod.Log.Trace?.Write($"TD:NC - entered.");
-            if (__instance.IsInterleaved && contactLevel == VisibilityLevel.None && !__instance.DoAnyUnitsHaveContactWithEnemy) {
+            if (__instance.IsInterleaved && contactLevel == VisibilityLevel.None && !__instance.DoAnyUnitsHaveContactWithEnemy)
+            {
                 Mod.Log.Info?.Write("Intercepting lostContact state, allowing remainder of actors to move.");
                 return false;
-            } else {
+            }
+            else
+            {
                 return true;
             }
         }
@@ -120,10 +141,13 @@ namespace CBTBehaviorsEnhanced.Patches {
 
     // Intercept the condition where contact has been lost, and shift that logic to the beginning of a turn.
     [HarmonyPatch(typeof(TurnDirector), "EndCurrentRound")]
-    public static class TurnDirector_EndCurrentRound {
-        public static void Postfix(TurnDirector __instance) {
+    public static class TurnDirector_EndCurrentRound
+    {
+        public static void Postfix(TurnDirector __instance)
+        {
             Mod.Log.Trace?.Write($"TD:ECR - entered.");
-            if (__instance.IsInterleaved && !__instance.DoAnyUnitsHaveContactWithEnemy) {
+            if (__instance.IsInterleaved && !__instance.DoAnyUnitsHaveContactWithEnemy)
+            {
                 Mod.Log.Info?.Write("No actors have contact, returning to non-interleaved mode.");
 
                 Traverse turnDirectorT = Traverse.Create(__instance).Property("IsInterleaved");
@@ -137,8 +161,10 @@ namespace CBTBehaviorsEnhanced.Patches {
 
     // Because we've intercepted this, we can safely change to non-interleaved mode
     [HarmonyPatch(typeof(TurnDirector), "OnLostContact")]
-    public static class TurnDirector_OnLostContact {
-        public static void Postfix(TurnDirector __instance) {
+    public static class TurnDirector_OnLostContact
+    {
+        public static void Postfix(TurnDirector __instance)
+        {
             Mod.Log.Trace?.Write($"TD:OLC - entered.");
 
             Mod.Log.Info?.Write($"TD isInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.Combat.TurnDirector.IsInterleavePending}" +
@@ -148,4 +174,6 @@ namespace CBTBehaviorsEnhanced.Patches {
             __instance.Combat.MessageCenter.PublishMessage(new InterleaveChangedMessage());
         }
     }
+
+    
 }
