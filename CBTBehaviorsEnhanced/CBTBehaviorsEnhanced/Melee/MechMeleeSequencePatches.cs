@@ -164,6 +164,23 @@ namespace CBTBehaviorsEnhanced.Melee {
         }
     }
 
+    // Attack locations are calculated when the sequence is generated. Rebuild the attack sequence before firing to ensure we use the correct dictionary
+    [HarmonyPatch(typeof(MechMeleeSequence), "FireWeapons")]
+    static class MechMeleeSequence_FireWeapons
+    {
+        static void Prefix(MechMeleeSequence __instance)
+        {
+            // Reset melee state
+            ModState.MeleeStates = null;
+            ModState.ForceDamageTable = DamageTable.NONE;
+
+            Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
+            Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
+            BuildWeaponDirectorSequenceT.GetValue();
+            Mod.MeleeLog.Debug?.Write(" -- Done!");
+        }
+    }
+
     [HarmonyPatch(typeof(MechMeleeSequence), "CompleteOrders")]
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_CompleteOrders
