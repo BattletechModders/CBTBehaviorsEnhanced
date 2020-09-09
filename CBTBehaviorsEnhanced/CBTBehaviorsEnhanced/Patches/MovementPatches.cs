@@ -7,42 +7,42 @@ using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced {
+namespace CBTBehaviorsEnhanced
+{
 
-    public static class MovementPatches {
+    public static class MovementPatches
+    {
 
         [HarmonyPatch(typeof(OrderSequence), "OnUpdate")]
         public static class OrderSequence_OnUpdate
         {
-            public static void Prefix(OrderSequence __instance)
+            public static void Prefix(OrderSequence __instance, ref bool __state)
             {
-                if (__instance == null || __instance.owningActor == null || !(__instance.owningActor is Mech)) return; // Nothing to do
-                Mod.Log.Debug?.Write($"OS:OU - entered for actor: {CombatantUtils.Label(__instance?.owningActor)}");
-
-                // Check to see if we'll fall through the checks once control returns to OnUpdate()
-                Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
-                bool sequenceIsComplete = sequenceIsCompleteT.GetValue<bool>();
-                bool baseIsComplete = __instance.childSequences.Count == 0 || (__instance.childSequences.Count == 1 && __instance.cameraSequence != null && __instance.cameraSequence.IsFinished);
-                
-                if (!__instance.OrdersAreComplete || !baseIsComplete || sequenceIsComplete) return; // Not ready to end the sequence yet, so return
-
-                DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
-                if (dwaSeq != null || !__instance.ConsumesActivation) return; // Either a complete ending sequence, or the specific sequence doesn't consume activation so return
+                __state = false;
 
                 Mech mech = __instance.owningActor as Mech;
-                Mod.Log.Debug?.Write($"OwningActor: {CombatantUtils.Label(__instance.owningActor)} is at end of activation, checking for heat sequence creation. ");
-                Mod.Log.Debug?.Write($"  -- Conditionals: isShutdown => {mech?.IsShutDown}  " +
-                    $"doneWithActorSequence != null => {dwaSeq != null}  " +
-                    $"isInterleaved => {__instance?.owningActor?.Combat?.TurnDirector?.IsInterleaved}  " +
-                    $"isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
-                    $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
+                if (__instance == null || __instance.owningActor == null || mech == null) return; // Nothing to do
 
-                // We should now be in the place where OnUpdate will try to build a heatSequence for mechs
-                bool isInterleaved = SharedState.Combat?.TurnDirector?.IsInterleaved == true;
-                if (isInterleaved)
+                // sequenceIsComplete should be false here, but true in the postfix
+                Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
+                __state = sequenceIsCompleteT.GetValue<bool>();
+            }
+
+            public static void Postfix(OrderSequence __instance, bool __state)
+            {
+
+                Mech mech = __instance.owningActor as Mech;
+                if (__instance == null || __instance.owningActor == null || mech == null) return; // Nothing to do
+                Mod.Log.Debug?.Write($"OS:OU - entered for Mech: {CombatantUtils.Label(mech)} with autoBrace: {mech.AutoBrace}");
+
+                // If state is true, orders were complete before we headed into the sequence, so skip
+                if (__state) return;
+
+                // If the seqeuence doesn't consume activation, it's not one we target. Ignore it.
+                if (!__instance.ConsumesActivation)
                 {
-                    Mod.Log.Debug?.Write(" -- Combat is interleaved, should be handled by OnUpdate() or MechStartupSequence - skipping.");
-                    return; 
+                    Mod.Log.Debug?.Write($" -- !consumesActivation: {__instance.ConsumesActivation}, skipping");
+                    return;
                 }
 
                 if (mech.IsShutDown)
@@ -51,33 +51,74 @@ namespace CBTBehaviorsEnhanced {
                     return;
                 }
 
+                bool isInterleaved = SharedState.Combat?.TurnDirector?.IsInterleaved == true;
+                if (isInterleaved)
+                {
+                    Mod.Log.Debug?.Write(" -- Combat is interleaved, should be handled by OnUpdate() or MechStartupSequence - skipping.");
+                    return;
+                }
+
+                DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
+                if (dwaSeq != null)
+                {
+                    Mod.Log.Debug?.Write($" -- sequence is DoneWithActorSequence: {dwaSeq != null}, skipping.");
+                    return; // Either a complete ending sequence, or the specific sequence doesn't consume activation so return
+                }
+
+                // Finally, check to see if the sequence isn't complete yet
+                Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
+                bool sequenceIsComplete = sequenceIsCompleteT.GetValue<bool>();
+                if (!sequenceIsComplete)
+                {
+                    Mod.Log.Debug?.Write($" -- !sequenceIsComplete: {sequenceIsComplete}, skipping");
+                    return;
+                }
+
+                // At this point, ___state should be false and sequenceIsComplete is true. This represents OnUpdate flipping the value during it's processing.
+                Mod.Log.Debug?.Write($" -- AT ACTIVATION END, checking for heat sequence creation. ");
+                Mod.Log.Debug?.Write($"  -- isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
+                    $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
+
                 // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
                 MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
                 if (heatSequence != null)
                 {
-                    Mod.Log.Debug?.Write($" -- Creating heat sequence for non-interleaved mode");                
+                    Mod.Log.Debug?.Write($" -- Creating heat sequence for non-interleaved mode");
                     __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
                 }
                 else
                 {
                     Mod.Log.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
                 }
-                
+
+            }
+        }
+
+        [HarmonyPatch(typeof(AbstractActor), "DoneWithActor")]
+        static class AbstractActor_DoneWithActor
+        {
+            static void Postfix(AbstractActor __instance)
+            {
+
             }
         }
 
         [HarmonyPatch(typeof(ActorMovementSequence), "OnComplete")]
-        public static class ActorMovementSequence_OnComplete {
-            private static void Prefix(ActorMovementSequence __instance) {
-                Mod.Log.Debug?.Write($"AMS:OC entered for actor: {CombatantUtils.Label(__instance?.OwningActor)}");
+        public static class ActorMovementSequence_OnComplete
+        {
+            private static void Prefix(ActorMovementSequence __instance)
+            {
+                Mod.Log.Debug?.Write($"AMS:OC:PRE entered for actor: {CombatantUtils.Label(__instance?.OwningActor)}");
 
                 // Interleaved - check for visibility to any enemies 
-                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
-                    __instance.owningActor.AutoBrace = true;                    
+                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
+                {
+                    __instance.owningActor.AutoBrace = true;
                 }
 
                 // Movement - check for damage after a sprint, and if so force a piloting check
-                if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0) {
+                if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0)
+                {
                     Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
                     float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
@@ -85,7 +126,8 @@ namespace CBTBehaviorsEnhanced {
                     Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 
                     bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Run);
-                    if (!sourcePassed) {
+                    if (!sourcePassed)
+                    {
                         Mod.Log.Info?.Write($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after sprinting with actuator damage, forcing fall.");
                         MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModText.FT_Fall_After_Run);
                     }
@@ -94,17 +136,19 @@ namespace CBTBehaviorsEnhanced {
 
             static void Postfix(ActorMovementSequence __instance)
             {
-                Mod.Log.Debug?.Write($"AMS:OC:post - actor: {CombatantUtils.Label(__instance.OwningActor)} " +
+                Mod.Log.Debug?.Write($"AMS:OC:POST - actor: {CombatantUtils.Label(__instance.OwningActor)} " +
                     $"autoBrace: {__instance.OwningActor.AutoBrace}  hasFired: {__instance.OwningActor.HasFiredThisRound}  consumesFiring: {__instance.ConsumesFiring}");
             }
         }
 
         // Prevents a mech from being able to move into combat or use abilities from non-interleaved mode
         [HarmonyPatch(typeof(ActorMovementSequence), "ConsumesFiring", MethodType.Getter)]
-        public static class ActorMovementSequence_ConsumesFiring_Getter {
-            private static void Postfix(ActorMovementSequence __instance, ref bool __result) {
+        public static class ActorMovementSequence_ConsumesFiring_Getter
+        {
+            private static void Postfix(ActorMovementSequence __instance, ref bool __result)
+            {
                 Mod.Log.Trace?.Write("AMS:CF:GET entered");
-                if (!__instance.OwningActor.Combat.TurnDirector.IsInterleaved) 
+                if (!__instance.OwningActor.Combat.TurnDirector.IsInterleaved)
                 {
                     // We want to auto-brace, and auto-brace requires that consumesFiring = false. So when no enemies are around, don't consume firing so 
                     //   that we can auto-brace
@@ -113,13 +157,15 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
-
         // Prevents a mech from being able to jump into combat from non-interleaved mode
         [HarmonyPatch(typeof(MechJumpSequence), "ConsumesFiring", MethodType.Getter)]
-        public static class MechJumpSequence_ConsumesFiring_Getter {
-            private static void Postfix(MechJumpSequence __instance, ref bool __result) {
+        public static class MechJumpSequence_ConsumesFiring_Getter
+        {
+            private static void Postfix(MechJumpSequence __instance, ref bool __result)
+            {
                 Mod.Log.Trace?.Write("AMS:CF:GET entered");
-                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved) {
+                if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
+                {
                     // We want to auto-brace, and auto-brace requires that consumesFiring = false. So when no enemies are around, don't consume firing so 
                     //   that we can auto-brace
                     __result = false;
@@ -129,13 +175,15 @@ namespace CBTBehaviorsEnhanced {
 
 
         [HarmonyPatch(typeof(MechJumpSequence), "OnComplete")]
-        public static class MechJumpSequence_OnComplete {
-            private static void Prefix(MechJumpSequence __instance) {
+        public static class MechJumpSequence_OnComplete
+        {
+            private static void Prefix(MechJumpSequence __instance)
+            {
                 Mod.Log.Debug?.Write($"MJS:OC entered for actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
                 // Check for visibility to any enemies
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
-                {                
+                {
                     Mod.Log.Debug?.Write("MJS:OC is not interleaved and no enemies - autobracing ");
                     __instance.owningActor.AutoBrace = true;
                 }
@@ -143,7 +191,8 @@ namespace CBTBehaviorsEnhanced {
                 Mod.Log.Trace?.Write($"JUMP -- ABILITY_CONSUMES_FIRING: {__instance.AbilityConsumesFiring} / CONSUMES_FIRING: {__instance.ConsumesFiring}");
 
                 // Movement - check for damage after a jump, and if so force a piloting check
-                if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0) {
+                if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0)
+                {
                     Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
                     float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
@@ -151,7 +200,8 @@ namespace CBTBehaviorsEnhanced {
                     Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 
                     bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Jump);
-                    if (!sourcePassed) {
+                    if (!sourcePassed)
+                    {
                         Mod.Log.Info?.Write($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after jumping with actuator damage, forcing fall.");
                         MechHelper.AddFallingSequence(__instance.OwningMech, __instance, ModText.FT_Fall_After_Jump);
                     }
@@ -159,36 +209,67 @@ namespace CBTBehaviorsEnhanced {
             }
         }
 
+
+        [HarmonyPatch(typeof(AbstractActorMovementInvocation), "Invoke")]
+        public static class AbstractActorMovementInvocation_Invoke
+        {
+            private static void Postfix(AbstractActorMovementInvocation __instance)
+            {
+                AbstractActor actor = SharedState.Combat.FindActorByGUID(__instance.ActorGUID);
+                if (actor != null)
+                {
+                    Mod.Log.Debug?.Write($"AAMI:I entered for actor: {CombatantUtils.Label(actor)}");
+
+                    // Check for visibility to any enemies
+                    if (!actor.Combat.TurnDirector.IsInterleaved)
+                    {
+                        Mod.Log.Debug?.Write("MJS:OC is not interleaved and no enemies - autobracing ");
+                        actor.AutoBrace = true;
+                    }
+                }
+
+            }
+        }
+
         // Prevents losing evasion when attacked
         [HarmonyPatch(typeof(AbstractActor), "ResolveAttackSequence", null)]
-        public static class AbstractActor_ResolveAttackSequence_Patch {
-            
-            private static bool Prefix(AbstractActor __instance) {
+        public static class AbstractActor_ResolveAttackSequence_Patch
+        {
+
+            private static bool Prefix(AbstractActor __instance)
+            {
                 Mod.Log.Trace?.Write("AA:RAS:PRE entered");
                 return !Mod.Config.Features.PermanentEvasion;
             }
 
-            private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection) {
+            private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection)
+            {
                 Mod.Log.Trace?.Write("AA:RAS:POST entered");
                 if (!Mod.Config.Features.PermanentEvasion) { return; }
 
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(sequenceID);
-                if (attackSequence != null) {
-                    if (!attackSequence.GetAttackDidDamage(__instance.GUID)) {
+                if (attackSequence != null)
+                {
+                    if (!attackSequence.GetAttackDidDamage(__instance.GUID))
+                    {
                         return;
                     }
                     List<Effect> list = __instance.Combat.EffectManager
                         .GetAllEffectsTargeting(__instance)
                         .FindAll((Effect x) => x.EffectData.targetingData.effectTriggerType == EffectTriggerType.OnDamaged);
-                    
-                    for (int i = 0; i < list.Count; i++) {
+
+                    for (int i = 0; i < list.Count; i++)
+                    {
                         list[i].OnEffectTakeDamage(attackSequence.attacker, __instance);
                     }
-                    
-                    if (attackSequence.isMelee) {
+
+                    if (attackSequence.isMelee)
+                    {
                         int value = attackSequence.attacker.StatCollection.GetValue<int>(ModStats.MeleeHitPushBackPhases);
-                        if (value > 0) {
-                            for (int j = 0; j < value; j++) {
+                        if (value > 0)
+                        {
+                            for (int j = 0; j < value; j++)
+                            {
                                 __instance.ForceUnitOnePhaseDown(sourceID, stackItemID, false);
                             }
                         }
