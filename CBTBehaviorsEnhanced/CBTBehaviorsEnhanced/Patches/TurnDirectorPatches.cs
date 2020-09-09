@@ -174,6 +174,4 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.Combat.MessageCenter.PublishMessage(new InterleaveChangedMessage());
         }
     }
-
-    
 }
