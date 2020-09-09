@@ -1,5 +1,4 @@
 ﻿using BattleTech;
-using CustAmmoCategories;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -60,13 +59,15 @@ namespace CBTBehaviorsEnhanced.Helper
             }
         }
 
-
-
         public static void CreateImaginaryAttack(Mech attacker, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters, 
             DamageType damageType, MeleeAttackType attackType)
         {
+
+            Weapon imaginaryWeapon = new Weapon(attacker, SharedState.Combat, 
+                attackType == MeleeAttackType.DFA ? attacker.DFAWeapon.mechComponentRef : attacker.MeleeWeapon.mechComponentRef, "0xdeadbeef");
+
             AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(0, attacker, target, 
-                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attacker.ImaginaryLaserWeapon }, 
+                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { imaginaryWeapon }, 
                 attackType, 0, false
                 );
 
@@ -124,9 +125,8 @@ namespace CBTBehaviorsEnhanced.Helper
                 }
 
                 // Make the target take weapon damage
-                target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], attacker.ImaginaryLaserWeapon, damage, 0, 0, damageType);
-
-                
+                //target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], attacker.ImaginaryLaserWeapon, damage, 0, 0, damageType);
+                target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], imaginaryWeapon, damage, 0, 0, damageType);
 
                 i++;
             }
