@@ -21,7 +21,7 @@ namespace CBTBehaviorsEnhanced {
         public static int NormalizedHeatSinkCapacity(this Mech mech) {
             // Total HeatSinkCapacity is HeatSinkCapacity (patched by KMission) + UsedHeatSinksCap
             int totalHeatSinkCap = mech.HeatSinkCapacity + mech.UsedHeatSinksCap();
-            Mod.Log.Trace?.Write($"Mech: {CombatantUtils.Label(mech)} has totalHeatSinkCap: {totalHeatSinkCap} from currentCap: {mech.HeatSinkCapacity} + usedCap: {mech.UsedHeatSinksCap()}");
+            Mod.HeatLog.Trace?.Write($"Mech: {CombatantUtils.Label(mech)} has totalHeatSinkCap: {totalHeatSinkCap} from currentCap: {mech.HeatSinkCapacity} + usedCap: {mech.UsedHeatSinksCap()}");
             return totalHeatSinkCap;
         }
 
@@ -33,7 +33,7 @@ namespace CBTBehaviorsEnhanced {
 
             int capacity = fractional ? mech.HeatSinkCapacity : mech.NormalizedHeatSinkCapacity();
             float adjustedNormalizedCap = (float)capacity * mech.DesignMaskHeatMulti(isProjectedHeat);
-            Mod.Log.Trace?.Write($"Mech: {CombatantUtils.Label(mech)} has adjustedNormedCap: {adjustedNormalizedCap} from normedCap: {capacity} x multi: {mech.DesignMaskHeatMulti(isProjectedHeat)}");
+            Mod.HeatLog.Trace?.Write($"Mech: {CombatantUtils.Label(mech)} has adjustedNormedCap: {adjustedNormalizedCap} from normedCap: {capacity} x multi: {mech.DesignMaskHeatMulti(isProjectedHeat)}");
 
             return (int)adjustedNormalizedCap;
         }
@@ -45,14 +45,14 @@ namespace CBTBehaviorsEnhanced {
             try {
                 // Check for currently occupied, or future
                 if (isProjectedHeat) {
-                    Mod.Log.Trace?.Write("Calculating projected position heat.");
+                    Mod.HeatLog.Trace?.Write("Calculating projected position heat.");
                     if (mech.Pathing != null && mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0) {
 
                         // Determine the destination designMask
-                        Mod.Log.Trace?.Write($"CurrentPath has: {mech.Pathing.CurrentPath.Count} nodes, using destination path: {mech.Pathing.ResultDestination}");
+                        Mod.HeatLog.Trace?.Write($"CurrentPath has: {mech.Pathing.CurrentPath.Count} nodes, using destination path: {mech.Pathing.ResultDestination}");
                         DesignMaskDef destinationDesignMaskDef = mech?.Combat?.MapMetaData?.GetPriorityDesignMaskAtPos(mech.Pathing.ResultDestination);
                         if (destinationDesignMaskDef != null && !Mathf.Approximately(destinationDesignMaskDef.heatSinkMultiplier, 1f)) {
-                            Mod.Log.Trace?.Write($"Destination design mask: {destinationDesignMaskDef?.Description?.Name} has heatSinkMulti: x{destinationDesignMaskDef?.heatSinkMultiplier} ");
+                            Mod.HeatLog.Trace?.Write($"Destination design mask: {destinationDesignMaskDef?.Description?.Name} has heatSinkMulti: x{destinationDesignMaskDef?.heatSinkMultiplier} ");
                             capacityMulti *= destinationDesignMaskDef.heatSinkMultiplier;
                         }
 
@@ -62,18 +62,18 @@ namespace CBTBehaviorsEnhanced {
                             mech, mech.Pathing.CurrentPath, mech.Pathing.ResultDestination, (ICombatant)mech.Pathing.CurrentMeleeTarget, mech.Pathing.MoveType
                             );
                         List<MapTerrainCellWaypoint> terrainWaypoints = DynamicMapHelper.getVisitedWaypoints(mech.Combat, waypointsFromPath);
-                        Mod.Log.Trace?.Write($"  Count of waypointsFromPath: {waypointsFromPath?.Count}  terrainWaypoints: {terrainWaypoints?.Count}");
+                        Mod.HeatLog.Trace?.Write($"  Count of waypointsFromPath: {waypointsFromPath?.Count}  terrainWaypoints: {terrainWaypoints?.Count}");
 
                         // This assumes 1) only KMission is using stickyEffects that modify HeatSinkCapacity and 2) it has a stackLimit of 1. Anything else will break this.
                         float stickyModifier = 1f;
                         foreach (MapTerrainCellWaypoint cell in terrainWaypoints) {
                             if (cell != null && cell?.cell?.BurningStrength > 0 && cell?.cell?.mapMetaData?.designMaskDefs != null) {
-                                Mod.Log.Trace?.Write($"  checking burningCell for designMask.");
+                                Mod.HeatLog.Trace?.Write($"  checking burningCell for designMask.");
                                 foreach (DesignMaskDef cellDesignMaskDef in cell?.cell?.mapMetaData?.designMaskDefs?.Values) {
-                                    Mod.Log.Trace?.Write($"    checking designMask for stickyEffects.");
+                                    Mod.HeatLog.Trace?.Write($"    checking designMask for stickyEffects.");
                                     if (cellDesignMaskDef.stickyEffect != null && cellDesignMaskDef.stickyEffect?.statisticData != null &&
                                         cellDesignMaskDef.stickyEffect.statisticData.statName == ModStats.HBS_HeatSinkCapacity) {
-                                        Mod.Log.Trace?.Write($"      found stickyEffects.");
+                                        Mod.HeatLog.Trace?.Write($"      found stickyEffects.");
                                         stickyModifier = Single.Parse(cellDesignMaskDef.stickyEffect.statisticData.modValue);
                                     }
                                 }
@@ -81,30 +81,30 @@ namespace CBTBehaviorsEnhanced {
                         }
                         if (!Mathf.Approximately(stickyModifier, 1f)) {
                             capacityMulti *= stickyModifier;
-                            Mod.Log.Trace?.Write($"  capacityMulti: {capacityMulti} after stickyModifier: {stickyModifier}");
+                            Mod.HeatLog.Trace?.Write($"  capacityMulti: {capacityMulti} after stickyModifier: {stickyModifier}");
                         }
 
                     } else {
-                        Mod.Log.Trace?.Write($"Current path is null or has 0 count, skipping.");
+                        Mod.HeatLog.Trace?.Write($"Current path is null or has 0 count, skipping.");
                     }
                 } else {
-                    Mod.Log.Trace?.Write("Calculating current position heat.");
+                    Mod.HeatLog.Trace?.Write("Calculating current position heat.");
                     if (mech.occupiedDesignMask != null && !Mathf.Approximately(mech.occupiedDesignMask.heatSinkMultiplier, 1f)) {
-                        Mod.Log.Trace?.Write($"Multi for currentPos is: {mech?.occupiedDesignMask?.heatSinkMultiplier}");
+                        Mod.HeatLog.Trace?.Write($"Multi for currentPos is: {mech?.occupiedDesignMask?.heatSinkMultiplier}");
                         capacityMulti *= mech.occupiedDesignMask.heatSinkMultiplier;
                     }
 
                 }
 
                 if (mech?.Combat?.MapMetaData?.biomeDesignMask != null && !Mathf.Approximately(mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier, 1f)) {
-                    Mod.Log.Trace?.Write($"Biome: {mech.Combat.MapMetaData.biomeDesignMask.Id} has heatSinkMulti: x{mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier} ");
+                    Mod.HeatLog.Trace?.Write($"Biome: {mech.Combat.MapMetaData.biomeDesignMask.Id} has heatSinkMulti: x{mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier} ");
                     capacityMulti *= mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier;
                 }
             } catch (Exception e) {
-                Mod.Log.Error?.Write(e, $"Failed to calculate designMaskHeatMulti due to error: {e}");
+                Mod.HeatLog.Error?.Write(e, $"Failed to calculate designMaskHeatMulti due to error: {e}");
             }
             
-            Mod.Log.Trace?.Write($"Calculated capacityMulti: {capacityMulti} x globalHeatSinkMulti: {mech.Combat.Constants.Heat.GlobalHeatSinkMultiplier} ");
+            Mod.HeatLog.Trace?.Write($"Calculated capacityMulti: {capacityMulti} x globalHeatSinkMulti: {mech.Combat.Constants.Heat.GlobalHeatSinkMultiplier} ");
             capacityMulti *= mech.Combat.Constants.Heat.GlobalHeatSinkMultiplier;
             return capacityMulti;
         }
@@ -125,23 +125,23 @@ namespace CBTBehaviorsEnhanced {
                     mech, mech.Pathing.CurrentPath, mech.Pathing.ResultDestination, (ICombatant)mech.Pathing.CurrentMeleeTarget, mech.Pathing.MoveType
                     );
                 List<MapTerrainCellWaypoint> terrainWaypoints = DynamicMapHelper.getVisitedWaypoints(mech.Combat, waypointsFromPath);
-                Mod.Log.Trace?.Write($"  Count of waypointsFromPath: {waypointsFromPath.Count}  terrainWaypoints: {terrainWaypoints.Count}");
+                Mod.HeatLog.Trace?.Write($"  Count of waypointsFromPath: {waypointsFromPath.Count}  terrainWaypoints: {terrainWaypoints.Count}");
 
                 float sumOfCellHeat = 0f;
                 int totalCells = 0;
                 foreach (MapTerrainCellWaypoint cell in terrainWaypoints) {
                     if (cell != null && cell.cell.BurningStrength > 0) {
-                        Mod.Log.Trace?.Write($" --Adding {cell.cell.BurningStrength} heat from cell at worldPos: {cell.cell.WorldPos()}");
+                        Mod.HeatLog.Trace?.Write($" --Adding {cell.cell.BurningStrength} heat from cell at worldPos: {cell.cell.WorldPos()}");
                         sumOfCellHeat += cell.cell.BurningStrength;
                         totalCells += 1;
                     }
                 }
                 terrainHeat = totalCells != 0 ? (float)Math.Ceiling(sumOfCellHeat / totalCells) : 0;
-                Mod.Log.Trace?.Write($"TerrainHeat: {terrainHeat} = sumOfHeat: {sumOfCellHeat} / totalCells: {totalCells}");
+                Mod.HeatLog.Trace?.Write($"TerrainHeat: {terrainHeat} = sumOfHeat: {sumOfCellHeat} / totalCells: {totalCells}");
             } else {
                 MapTerrainDataCellEx cell = mech.Combat.MapMetaData.GetCellAt(mech.CurrentPosition) as MapTerrainDataCellEx;
                 if (cell != null && cell.BurningStrength > 0) {
-                    Mod.Log.Trace?.Write($"Adding {cell.BurningStrength} heat from current position: {mech.CurrentPosition}");
+                    Mod.HeatLog.Trace?.Write($"Adding {cell.BurningStrength} heat from current position: {mech.CurrentPosition}");
                     terrainHeat = cell.BurningStrength;
                 }
             }
@@ -172,19 +172,19 @@ namespace CBTBehaviorsEnhanced {
             bool isProjectedHeat = projectedHeat != 0 || currentPathNodes != 0;
             int sinkableHeat = mech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, true) * -1;
             int overallSinkCapacity = mech.NormalizedAdjustedHeatSinkCapacity(isProjectedHeat, false) * -1;
-            Mod.Log.Trace?.Write($"  remainingCapacity: {mech.HeatSinkCapacity}  rawCapacity: {overallSinkCapacity}  normedAdjustedFraction: {sinkableHeat}");
+            Mod.HeatLog.Trace?.Write($"  remainingCapacity: {mech.HeatSinkCapacity}  rawCapacity: {overallSinkCapacity}  normedAdjustedFraction: {sinkableHeat}");
 
             int currentHeat = mech.CurrentHeat;
             int tempHeat = mech.TempHeat;
 
             int futureHeat = Math.Max(0, currentHeat + tempHeat + projectedHeat + cacTerrainHeat);
             if (futureHeat > Mod.Config.Heat.MaxHeat) futureHeat = Mod.Config.Heat.MaxHeat;
-            Mod.Log.Trace?.Write($"  currentHeat: {currentHeat} + tempHeat: {tempHeat} + projectedHeat: {projectedHeat} + cacTerrainheat: {cacTerrainHeat} + sinkableHeat: {sinkableHeat}" +
+            Mod.HeatLog.Trace?.Write($"  currentHeat: {currentHeat} + tempHeat: {tempHeat} + projectedHeat: {projectedHeat} + cacTerrainheat: {cacTerrainHeat} + sinkableHeat: {sinkableHeat}" +
                 $"  =  futureHeat: {futureHeat}");
 
             int thresholdHeat = Math.Max(0, futureHeat + sinkableHeat);
             if (thresholdHeat > Mod.Config.Heat.MaxHeat) thresholdHeat = Mod.Config.Heat.MaxHeat;
-            Mod.Log.Trace?.Write($"Threshold heat: {thresholdHeat} = futureHeat: {futureHeat} + sinkableHeat: {sinkableHeat}");
+            Mod.HeatLog.Trace?.Write($"Threshold heat: {thresholdHeat} = futureHeat: {futureHeat} + sinkableHeat: {sinkableHeat}");
 
             return new CalculatedHeat {
                 CurrentHeat = currentHeat,
@@ -205,22 +205,22 @@ namespace CBTBehaviorsEnhanced {
             AmmunitionBox mosDangerousBox = null;
             foreach (AmmunitionBox ammoBox in mech.ammoBoxes) {
                 if (ammoBox.IsFunctional == false) {
-                    Mod.Log.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' is not functional, skipping."); 
+                    Mod.HeatLog.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' is not functional, skipping."); 
                     continue; 
                 }
 
                 if (ammoBox.CurrentAmmo <= 0) {
-                    Mod.Log.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' has no ammo, skipping.");
+                    Mod.HeatLog.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' has no ammo, skipping.");
                     continue; 
                 }
 
                 if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp)) {
-                    Mod.Log.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
+                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
                     continue;
                 }
 
                 if (!ammoBox.mechComponentRef.Is<VolatileAmmo>(out VolatileAmmo vAmmo) && isVolatile) {
-                    Mod.Log.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not a volatile ammo, skipping.");
+                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not a volatile ammo, skipping.");
                     continue;
                 }
 
@@ -230,7 +230,7 @@ namespace CBTBehaviorsEnhanced {
                     boxDamage *= vAmmo.damageWeighting;
                 }
 
-                Mod.Log.Debug?.Write($" AmmoBox: {ammoBox.UIName} has {ammoBox.CurrentAmmo} rounds with explosion/ammo: {compExp.ExplosionDamagePerAmmo} " +
+                Mod.HeatLog.Debug?.Write($" AmmoBox: {ammoBox.UIName} has {ammoBox.CurrentAmmo} rounds with explosion/ammo: {compExp.ExplosionDamagePerAmmo} " +
                     $"heat/ammo: {compExp.HeatDamagePerAmmo} stab/ammo: {compExp.StabilityDamagePerAmmo} weight: {vAmmo?.damageWeighting} " +
                     $"for {boxDamage} total damage.");
 

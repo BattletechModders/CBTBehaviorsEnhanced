@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced
 
 		public MechMeleeCondition(Mech attacker)
         {
-			Mod.Log.Debug?.Write($"Building possible attacks from current attacker damage state:");
+			Mod.MeleeLog.Debug?.Write($"Building possible attacks from current attacker damage state:");
 			foreach (MechComponent mc in attacker.allComponents)
 			{
 				switch (mc.Location)
@@ -85,7 +85,7 @@ namespace CBTBehaviorsEnhanced
 
 		private void EvaluateLegComponent(MechComponent mc)
 		{
-			Mod.Log.Debug?.Write($"  - Actuator: {mc.Description.UIName} is functional: {mc.IsFunctional}");
+			Mod.MeleeLog.Debug?.Write($"  - Actuator: {mc.Description.UIName} is functional: {mc.IsFunctional}");
 			
 			foreach (string categoryId in Mod.Config.CustomCategories.HipActuatorCategoryId)
             {
@@ -133,7 +133,7 @@ namespace CBTBehaviorsEnhanced
 
 		private void EvaluateArmComponent(MechComponent mc)
 		{
-			Mod.Log.Debug?.Write($"  - Actuator: {mc.Description.UIName} is functional: {mc.IsFunctional}");
+			Mod.MeleeLog.Debug?.Write($"  - Actuator: {mc.Description.UIName} is functional: {mc.IsFunctional}");
 
 			foreach (string categoryId in Mod.Config.CustomCategories.ShoulderActuatorCategoryId)
 			{

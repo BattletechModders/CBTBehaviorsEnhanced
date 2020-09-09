@@ -152,7 +152,7 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Prefix(Mech __instance)
         {
 
-            Mod.Log.Debug?.Write($"ON_ACTIVATION_END:PRE - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
+            Mod.HeatLog.Debug?.Write($"ON_ACTIVATION_END:PRE - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
             // Invalidate any melee state the actor may have set
@@ -162,12 +162,12 @@ namespace CBTBehaviorsEnhanced.Patches
         [HarmonyAfter("io.mission.modrepuation", "us.frostraptor.SkillBasedInit")]
         static void Postfix(Mech __instance)
         {
-            Mod.Log.Debug?.Write($"ON_ACTIVATION_END:POST - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
+            Mod.HeatLog.Debug?.Write($"ON_ACTIVATION_END:POST - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
             if (__instance.UsedHeatSinksCap() != 0)
             {
-                Mod.Log.Warn?.Write("MECH ACTIVATION COMPLETE, BUT HEAT SINKS REMAIN USED! FORCE-CLEARING HS.");
+                Mod.HeatLog.Warn?.Write("MECH ACTIVATION COMPLETE, BUT HEAT SINKS REMAIN USED! FORCE-CLEARING HS.");
                 __instance.clearUsedHeatSinksCap();
             }
         }

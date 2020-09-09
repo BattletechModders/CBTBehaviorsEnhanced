@@ -44,7 +44,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                        Mod.Log.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
+                        Mod.MeleeLog.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
                         addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
                     }
                 }
@@ -127,7 +127,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (ModState.MeleeStates == null || ModState.MeleeStates.DFA == null)
             {
-                Mod.Log.Debug?.Write("Defaulting DFA damage.");
+                Mod.MeleeLog.Debug?.Write("Defaulting DFA damage.");
 
                 Mech parentMech = ___displayedWeapon.parent as Mech;
                 float targetDamage = parentMech.DFATargetDamage();
@@ -135,20 +135,20 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else if (ModState.MeleeStates.DFA != null)
             {
-                Mod.Log.Debug?.Write("Updating labels for DFA state.");
+                Mod.MeleeLog.Debug?.Write("Updating labels for DFA state.");
 
                 float totalDamage = ModState.MeleeStates.DFA.TargetDamageClusters.Sum();
                 if (ModState.MeleeStates.DFA.TargetDamageClusters.Length > 1)
                 {
                     int avgDamage = (int)Math.Floor(totalDamage / ModState.MeleeStates.DFA.TargetDamageClusters.Length);
                     string damageS = $"{avgDamage} <size=80%>(x{ModState.MeleeStates.DFA.TargetDamageClusters.Length})";
-                    Mod.Log.Debug?.Write($"  - damageS is: {damageS}");
+                    Mod.MeleeLog.Debug?.Write($"  - damageS is: {damageS}");
                     __instance.DamageText.SetText(damageS);
                 }
                 else
                 {
                     __instance.DamageText.SetText($"{totalDamage}");
-                    Mod.Log.Debug?.Write($"  - damageS is: {totalDamage}");
+                    Mod.MeleeLog.Debug?.Write($"  - damageS is: {totalDamage}");
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                    Mod.Log.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.MeleeLog.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
@@ -185,7 +185,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                    Mod.Log.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.MeleeLog.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
