@@ -24,7 +24,7 @@ namespace CBTBehaviorsEnhanced.Objects
         public PhysicalWeaponMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
             HashSet<MeleeAttackType> validAnimations) : base(attacker)
         {
-            Mod.Log.Info?.Write($"Building PHYSICAL WEAPON state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+            Mod.MeleeLog.Info?.Write($"Building PHYSICAL WEAPON state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
             this.IsValid = ValidateAttack(attacker, target, validAnimations);
@@ -71,14 +71,14 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
                 !attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
             {
-                Mod.Log.Info?.Write("Unit has no physical weapon by stat; skipping.");
+                Mod.MeleeLog.Info?.Write("Unit has no physical weapon by stat; skipping.");
                 return false;
             }
 
             // If no punch - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Punch))
             {
-                Mod.Log.Info?.Write("Animations do not include a punch, cannot use physical weapon.");
+                Mod.MeleeLog.Info?.Write("Animations do not include a punch, cannot use physical weapon.");
                 return false;
             }
 
@@ -87,7 +87,7 @@ namespace CBTBehaviorsEnhanced.Objects
             bool rightArmIsFunctional = this.AttackerCondition.RightShoulderIsFunctional && this.AttackerCondition.RightHandIsFunctional;
             if (!leftArmIsFunctional && !rightArmIsFunctional)
             {
-                Mod.Log.Info?.Write("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
+                Mod.MeleeLog.Info?.Write("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
                 return false;
             }
 
@@ -96,11 +96,11 @@ namespace CBTBehaviorsEnhanced.Objects
             float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
             if (distance > maxWalkSpeed)
             {
-                Mod.Log.Info?.Write($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot use physical weapon!");
+                Mod.MeleeLog.Info?.Write($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot use physical weapon!");
                 return false;
             }
 
-            Mod.Log.Info?.Write("PHYSICAL WEAPON ATTACK validated");
+            Mod.MeleeLog.Info?.Write("PHYSICAL WEAPON ATTACK validated");
             return true;
         }
 
@@ -142,7 +142,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private void CalculateDamages(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info?.Write($"Calculating PHYSICAL WEAPON damage for attacker: {CombatantUtils.Label(attacker)} " +
+            Mod.MeleeLog.Info?.Write($"Calculating PHYSICAL WEAPON damage for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             float damage = attacker.PhysicalWeaponDamage(this.AttackerCondition);
@@ -155,13 +155,13 @@ namespace CBTBehaviorsEnhanced.Objects
                 sb.Append(cluster);
                 sb.Append(", ");
             }
-            Mod.Log.Info?.Write(sb.ToString());
+            Mod.MeleeLog.Info?.Write(sb.ToString());
 
         }
 
         private void CalculateInstability(Mech attacker, AbstractActor target)
         {
-            Mod.Log.Info?.Write($"Calculating PHYSICAL WEAPON instability for attacker: {CombatantUtils.Label(attacker)} " +
+            Mod.MeleeLog.Info?.Write($"Calculating PHYSICAL WEAPON instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             this.TargetInstability = attacker.PhysicalWeaponInstability(this.AttackerCondition);

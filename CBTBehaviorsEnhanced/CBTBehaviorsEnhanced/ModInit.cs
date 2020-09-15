@@ -68,7 +68,8 @@ namespace CBTBehaviorsEnhanced {
             // Initialize custom components
             CustomComponents.Registry.RegisterSimpleCustomComponents(Assembly.GetExecutingAssembly());
 
-            var harmony = HarmonyInstance.Create(HarmonyPackage);
+            //HarmonyInstance.DEBUG = true;
+            var harmony = HarmonyInstance.Create(HarmonyPackage);            
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 

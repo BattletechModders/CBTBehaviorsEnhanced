@@ -36,7 +36,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 bool isMelee = false;
                 if (attackType == AttackType.Melee && attackingMech?.Pathing?.GetMeleeDestsForTarget(targetActor)?.Count > 0)
                 {
-                    Mod.Log.Info?.Write($"=== Modifying {attackingMech.DistinctId()}'s melee attack damage for utility");
+                    Mod.MeleeLog.Info?.Write($"=== Modifying {attackingMech.DistinctId()}'s melee attack damage for utility");
 
                     // Create melee options
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
@@ -55,7 +55,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 bool isDFA = false;
                 if (attackType == AttackType.DeathFromAbove && attackingMech?.JumpPathing?.GetDFADestsForTarget(targetActor)?.Count > 0)
                 {
-                    Mod.Log.Info?.Write($"=== Modifying {attackingMech.DistinctId()}'s DFA attack damage for utility");
+                    Mod.MeleeLog.Info?.Write($"=== Modifying {attackingMech.DistinctId()}'s DFA attack damage for utility");
 
                     // Create melee options
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
@@ -72,7 +72,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 meleeState = ModState.MeleeStates != null ? ModState.MeleeStates.SelectedState : null;
                 if (modifyAttack && meleeState == null || !meleeState.IsValid)
                 {
-                    Mod.Log.Info?.Write($"Failed to find a valid melee state, marking melee weapons as 1 damage.");
+                    Mod.MeleeLog.Info?.Write($"Failed to find a valid melee state, marking melee weapons as 1 damage.");
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, 0);
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
                     return;
@@ -82,7 +82,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 {
                     // Set the DFA weapon's damage to our expected damage
                     float totalDamage = meleeState.TargetDamageClusters.Sum();
-                    Mod.Log.Info?.Write($" - totalDamage: {totalDamage}");
+                    Mod.MeleeLog.Info?.Write($" - totalDamage: {totalDamage}");
 
                     // Check to see if the attack will unsteady a target
                     float evasionBreakUtility = 0f;
@@ -92,7 +92,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     {
                         // Target will lose their evasion pips
                         evasionBreakUtility = targetMech.EvasivePipsCurrent * Mod.Config.Melee.AI.EvasionPipRemovedUtility;
-                        Mod.Log.Info?.Write($"  Adding {evasionBreakUtility} virtual damage to EV from " +
+                        Mod.MeleeLog.Info?.Write($"  Adding {evasionBreakUtility} virtual damage to EV from " +
                             $"evasivePips: {targetMech.EvasivePipsCurrent} x bonusDamagePerPip: {Mod.Config.Melee.AI.EvasionPipRemovedUtility}");
                     }
 
@@ -104,7 +104,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                         if (AttackHelper.WillInjuriesKillTarget(targetMech, 1))
                         {
                             knockdownUtility = centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility;
-                            Mod.Log.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
+                            Mod.MeleeLog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
                                 $"centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}");
                         }
                         else
@@ -112,7 +112,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                             // Attack won't kill, so only apply a fraction equal to the totalHeath 
                             float injuryFraction = (targetMech.pilot.TotalHealth - 1) - (targetMech.pilot.Injuries + 1);
                             knockdownUtility = (centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility) / injuryFraction;
-                            Mod.Log.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
+                            Mod.MeleeLog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
                                 $"(centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}) " +
                                 $"/ injuryFraction: {injuryFraction}");
                         }
@@ -129,7 +129,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     {
                         // TODO: Should evaluate chance to hit, and apply these partial damage based upon success chances
                         selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipLostUtility;
-                        Mod.Log.Info?.Write($"  Reducing virtual damage by {selfEvasionDamage} due to potential loss of {normedNewPips} pips.");
+                        Mod.MeleeLog.Info?.Write($"  Reducing virtual damage by {selfEvasionDamage} due to potential loss of {normedNewPips} pips.");
                     }
 
                     // Check to see how much damage the attacker will take
@@ -137,28 +137,28 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     if (meleeState.AttackerDamageClusters.Length > 0)
                     {
                         selfDamage = meleeState.AttackerDamageClusters.Sum();
-                        Mod.Log.Info?.Write($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
+                        Mod.MeleeLog.Info?.Write($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
                     }
 
                     float virtualDamage = totalDamage + evasionBreakUtility + knockdownUtility - selfEvasionDamage - selfDamage;
-                    Mod.Log.Info?.Write($"  Virtual damage calculated as {virtualDamage} = " +
+                    Mod.MeleeLog.Info?.Write($"  Virtual damage calculated as {virtualDamage} = " +
                         $"totalDamage: {totalDamage} + evasionBreakUtility: {evasionBreakUtility} + knockdownUtility: {knockdownUtility}" +
                         $" - selfDamage: {selfDamage} - selfEvasionDamage: {selfEvasionDamage}");
 
-                    Mod.Log.Info?.Write($"Setting weapon: {meleeWeapon.UIName} to virtual damage: {virtualDamage} for EV calculation");
+                    Mod.MeleeLog.Info?.Write($"Setting weapon: {meleeWeapon.UIName} to virtual damage: {virtualDamage} for EV calculation");
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, virtualDamage);
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
 
-                    Mod.Log.Info?.Write($"=== Done modifying attack!");
+                    Mod.MeleeLog.Info?.Write($"=== Done modifying attack!");
                 }
                 else
                 {
-                    Mod.Log.Debug?.Write($"Attack is not melee {modifyAttack}, or melee state is invalid or null. I assume the normal AI will prevent action.");
+                    Mod.MeleeLog.Debug?.Write($"Attack is not melee {modifyAttack}, or melee state is invalid or null. I assume the normal AI will prevent action.");
                 }
             }
             catch (Exception e)
             {
-                Mod.Log.Error?.Write(e, $"Failed to calculate melee damage for {unit.DistinctId()} using attackType {attackType} due to error!");
+                Mod.MeleeLog.Error?.Write(e, $"Failed to calculate melee damage for {unit.DistinctId()} using attackType {attackType} due to error!");
             }
 
 
