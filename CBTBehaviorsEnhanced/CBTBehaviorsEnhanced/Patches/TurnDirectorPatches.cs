@@ -84,9 +84,13 @@ namespace CBTBehaviorsEnhanced.Patches
                         Mod.Log.Debug?.Write($" ---- UNIT: {actor}");
                     }
                 }
+                else if ("EFFECT MANAGER SINGLETON".Equals(turnActor.GUID, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Mod.Log.Debug?.Write($" -- TEAM: Effect Manager --");
+                }
                 else
                 {
-                    Mod.Log.Debug?.Write($"Unknown team activated! {turnActor.GUID}");
+                    Mod.Log.Debug?.Write($" -- TEAM: Unknown team activated! {turnActor.GUID} --");
                 }
             }
 

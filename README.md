@@ -250,6 +250,7 @@ The inputs for these values differ based upon configuration values (exposed thro
 | Input     | Source    | Damage Values                            | Instability Values                            |
 | --------- | --------- | ---------------------------------------- | --------------------------------------------- |
 | **raw**   | mod.json  | `Melee.Punch.TargetDamagePerAttackerTon` | `Melee.Punch.TargetInstabilityPerAttackerTon` |
+|           | statistic | `CBTBE_Punch_Target_Damage_Per_Attacker_Ton` | `CBTBE_Punch_Target_Damage_Per_Attacker_Ton` |
 | **mod**   | statistic | `CBTBE_Punch_Target_Damage_Mod`          | `CBTBE_Punch_Target_Instability_Mod`          |
 | **multi** | statistic | `CBTBE_Punch_Target_Damage_Multi`        | `CBTBE_Punch_Target_Instability_Multi`        |
 

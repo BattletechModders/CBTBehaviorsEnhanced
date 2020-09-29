@@ -314,9 +314,13 @@ namespace CBTBehaviorsEnhanced.Extensions {
         {
             if (!attackerCondition.CanPunch()) return 0;
 
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Punch.TargetDamagePerAttackerTon * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"PUNCH baseDamage: {Mod.Config.Melee.Punch.TargetDamagePerAttackerTon} x " +
-                $"attacker tonnage: {mech.tonnage} = {raw}");
+            float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamage) &&
+                mech.StatCollection.GetValue<float>(ModStats.PunchTargetDamage) > 0 ?
+                mech.StatCollection.GetValue<float>(ModStats.PunchTargetDamage) :
+                Mod.Config.Melee.Punch.TargetDamagePerAttackerTon;
+
+            float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
+            Mod.MeleeLog.Debug?.Write($"PUNCH damage => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetDamageMod) ?

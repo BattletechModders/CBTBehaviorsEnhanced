@@ -64,6 +64,7 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchAttackMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchExtraHitsCount, 0f);
 
+            __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetDamage, 0);
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetDamageMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetDamageMulti, 1f);
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetInstabilityMod, 0);
