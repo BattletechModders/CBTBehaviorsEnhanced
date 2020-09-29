@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using System;
+using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Extensions {

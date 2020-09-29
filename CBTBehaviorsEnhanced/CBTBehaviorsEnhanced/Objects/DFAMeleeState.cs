@@ -54,8 +54,12 @@ namespace CBTBehaviorsEnhanced.Objects
 				this.AttackAnimation = MeleeAttackType.DFA;
 			}
 		}
+		public override bool IsRangedWeaponAllowed(Weapon weapon)
+		{
+			return false;
+		}
 
-        private bool ValidateAttack(Mech attacker, AbstractActor target)
+		private bool ValidateAttack(Mech attacker, AbstractActor target)
         {
 			// Animations will never include DFA, as that's only for selecting a random attack. Assume the UI has done the checking
 			//  to allow or prevent a DFA attack

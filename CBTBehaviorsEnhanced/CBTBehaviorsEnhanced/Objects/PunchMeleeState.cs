@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustomComponents;
 using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
@@ -48,6 +49,28 @@ namespace CBTBehaviorsEnhanced.Objects
                 // Set the animation type
                 this.AttackAnimation = validAnimations.Contains(MeleeAttackType.Punch) ? MeleeAttackType.Punch : MeleeAttackType.Tackle;
             }
+        }
+        public override bool IsRangedWeaponAllowed(Weapon weapon)
+        {
+            if (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm)
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for punch because it is in the arms.");
+                return false;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_NoArmMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for punch as it is a handheld that requires hands");
+                return false;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for punch as it can never be used in melee");
+                return false;
+            }
+
+            return true;
         }
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)

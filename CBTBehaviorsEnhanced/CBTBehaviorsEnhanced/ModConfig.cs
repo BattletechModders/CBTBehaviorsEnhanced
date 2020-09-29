@@ -218,6 +218,9 @@ namespace CBTBehaviorsEnhanced {
             // Prone target modifier
             public int ProneTargetAttackModifier = -2;
 
+            // Should weapons by filtered by location
+            public bool FilterCanUseInMeleeWeaponsByAttack = false;
+
             public AIMeleeOpts AI = new AIMeleeOpts();
             public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
             public DFAMeleeOpts DFA = new DFAMeleeOpts();
@@ -302,7 +305,8 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("=== MELEE OPTIONS ===");
-            Mod.Log.Info?.Write($"  ExtraHitsAverageAllDamage: {this.Melee.ExtraHitsAverageAllDamage}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}");
+            Mod.Log.Info?.Write($"  ExtraHitsAverageAllDamage: {this.Melee.ExtraHitsAverageAllDamage}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}  " +
+                $"FilterCanUseInMeleeWeaponsByAttack: {this.Melee.FilterCanUseInMeleeWeaponsByAttack}");
             Mod.Log.Info?.Write("  -- CHARGE OPTIONS --");
             Mod.Log.Info?.Write($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
             Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");

@@ -268,7 +268,7 @@ namespace CBTBehaviorsEnhanced.Patches
             if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
             {
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.Charge;
-                shouldReturn = false;
+                shouldReturn = false;                
             }
             else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
             {

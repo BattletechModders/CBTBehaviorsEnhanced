@@ -52,6 +52,31 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
+    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
+    static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
+    {
+        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon)
+        {
+
+            if (__instance == null || ___displayedWeapon == null || !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
+
+            if (ModState.MeleeStates != null && ModState.MeleeStates.SelectedState != null)
+            {
+                // Check if the weapon can fire according to the select melee type
+                bool isAllowed = ModState.MeleeStates.SelectedState.IsRangedWeaponAllowed(___displayedWeapon);
+                Mod.MeleeLog.Debug?.Write($"Weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
+
+                if (!isAllowed)
+                {
+                    Mod.MeleeLog.Debug?.Write($"Disabling weapon from selection");
+                    __instance.ToggleButton.isChecked = false;
+                    Traverse showDisabledHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
+                    showDisabledHexT.GetValue();
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateMeleeWeapon")]
     [HarmonyPatch(new Type[] { })]
     static class CombatHUDWeaponSlot_UpdateMeleeWeapon

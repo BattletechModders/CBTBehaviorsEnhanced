@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustomComponents;
 using Localize;
 using System.Collections.Generic;
 using System.Text;
@@ -63,6 +64,30 @@ namespace CBTBehaviorsEnhanced.Objects
                 // Set the animation type
                 this.AttackAnimation = MeleeAttackType.Punch;
             }
+        }
+
+        public override bool IsRangedWeaponAllowed(Weapon weapon)
+        {
+            // TODO: Add conditional for bolt-ons; waiting on Harkonnen
+            if (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm)
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon because it is in the arms.");
+                return false;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_NoArmMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon as it is a handheld that requires hands");
+                return false;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon as it can never be used in melee");
+                return false;
+            }
+
+            return true;
         }
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)

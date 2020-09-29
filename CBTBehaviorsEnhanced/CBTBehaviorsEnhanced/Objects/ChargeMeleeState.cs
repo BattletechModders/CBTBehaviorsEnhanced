@@ -57,6 +57,11 @@ namespace CBTBehaviorsEnhanced.Objects
 			}
 		}
 
+		public override bool IsRangedWeaponAllowed(Weapon weapon)
+		{
+			return false;
+		}
+
 		private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
 		{
 			// If neither tackle (mech) or stomp (vehicle) - we're not a valid attack.

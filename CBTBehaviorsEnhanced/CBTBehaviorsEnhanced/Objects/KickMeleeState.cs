@@ -51,6 +51,17 @@ namespace CBTBehaviorsEnhanced.Objects
             }
         }
 
+        public override bool IsRangedWeaponAllowed(Weapon weapon)
+        {
+            if (weapon.Location == (int)ChassisLocations.LeftLeg || weapon.Location == (int)ChassisLocations.RightLeg)
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for kick because it is in the legs.");
+                return false;
+            }
+
+            return true;
+        }
+
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
             // If neither kick (mech) or stomp (vehicle) - we're not a valid attack.

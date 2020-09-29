@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List <Weapon>), typeof(Vector3)})]
     static class MechMeleeSequence_ctor
     {
-        static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, List<Weapon> requestedWeapons, Vector3 desiredMeleePosition)
+        static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, List<Weapon> requestedWeapons, Vector3 desiredMeleePosition, List<Weapon> ___requestedWeapons)
         {
             Mod.MeleeLog.Info?.Write($"Melee sequence {__instance.SequenceGUID} created for attacker: {mech.DistinctId()} vs. target: {meleeTarget.DistinctId()} using position: {desiredMeleePosition}");
             StringBuilder sb = new StringBuilder();
@@ -25,7 +25,9 @@ namespace CBTBehaviorsEnhanced.Melee {
                 sb.Append(weapon.UIName);
                 sb.Append(",");
             }
-            Mod.MeleeLog.Info?.Write($"  -- requested weapons: {sb}");
+            Mod.MeleeLog.Info?.Write($"  -- Initial requested weapons: {sb}");
+
+
         }
     }
 
@@ -33,7 +35,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_BuildMeleeDirectorSequence
     {
-        static void Prefix(MechMeleeSequence __instance)
+        static void Prefix(MechMeleeSequence __instance, List<Weapon> ___requestedWeapons)
         {
             // TODO: If this happens before the above... need to grab the selected melee type from state
             Mod.MeleeLog.Info?.Write($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon.UIName}");
@@ -53,6 +55,23 @@ namespace CBTBehaviorsEnhanced.Melee {
 
                 // Make sure we use the targets's damage table
                 ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.TargetTable;
+
+                // Filter any weapons from requested weapons. This works because BuildMeleeDirectorSequence is called immediately before BuildWeaponDirectorSequence
+                if (Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack)
+                {
+                    Mod.MeleeLog.Debug?.Write($"Filtering melee weapons by attack type: {ModState.MeleeStates.SelectedState.Label}");
+                    List<Weapon> allowedWeapons = new List<Weapon>();
+                    foreach (Weapon weapon in ___requestedWeapons)
+                    {
+                        if (ModState.MeleeStates.SelectedState.IsRangedWeaponAllowed(weapon))
+                        {
+                            Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed by melee type.");
+                            allowedWeapons.Add(weapon);
+                        }
+                    }
+                    ___requestedWeapons.Clear();
+                    ___requestedWeapons.AddRange(allowedWeapons);
+                }
             }
         }
     }

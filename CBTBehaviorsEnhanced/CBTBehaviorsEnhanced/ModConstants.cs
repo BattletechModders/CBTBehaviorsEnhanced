@@ -100,5 +100,8 @@ namespace CBTBehaviorsEnhanced
         public const string KickFB_GO_ID = "cbtbe_kick_button";
         public const string PhysicalWeaponFB_GO_ID = "cbtbe_phys_weapon_button";
         public const string PunchFB_GO_ID = "cbtbe_punch_button";
+
+        public const string CC_Category_NeverMelee = "NeverMelee";
+        public const string CC_Category_HandHeld_NoArmMelee = "HandHeldNoArmMelee";
     }
 }

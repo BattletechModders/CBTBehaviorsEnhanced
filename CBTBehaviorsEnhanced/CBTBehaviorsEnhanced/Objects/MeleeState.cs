@@ -80,6 +80,7 @@ namespace CBTBehaviorsEnhanced
             AttackerCondition = new MechMeleeCondition(attacker);
         }
 
+        public abstract bool IsRangedWeaponAllowed(Weapon weapon);
     }
 
     public enum DamageTable
