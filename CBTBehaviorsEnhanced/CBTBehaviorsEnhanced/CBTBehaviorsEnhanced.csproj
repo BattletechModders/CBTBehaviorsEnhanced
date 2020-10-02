@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
     <Compile Include="Helper\AttackHelper.cs" />
+    <Compile Include="Helper\CleverGirlCalculator.cs" />
     <Compile Include="Helper\MeleeHelper.cs" />
     <Compile Include="Helper\QuipHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />

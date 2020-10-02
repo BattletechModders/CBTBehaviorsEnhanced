@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -75,6 +76,12 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightHipIsFunctional)
             {
                 Mod.MeleeLog.Info?.Write("One or more hip actuators are damaged. Cannot kick!");
+                return false;
+            }
+
+            if (target.UnaffectedPathing())
+            {
+                Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
                 return false;
             }
 

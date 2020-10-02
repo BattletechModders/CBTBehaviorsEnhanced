@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
 using CustomComponents;
 using IRBTModUtils.Extension;
 using Localize;
@@ -86,6 +87,12 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!this.AttackerCondition.LeftShoulderIsFunctional && !this.AttackerCondition.RightShoulderIsFunctional)
             {
                 Mod.MeleeLog.Info?.Write("Both shoulder actuators are damaged. Cannot punch!");
+                return false;
+            }
+
+            if (target.UnaffectedPathing())
+            {
+                Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
                 return false;
             }
 

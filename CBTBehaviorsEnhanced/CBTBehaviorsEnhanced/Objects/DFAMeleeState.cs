@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -72,6 +73,12 @@ namespace CBTBehaviorsEnhanced.Objects
 			if (!attacker.CanDFATargetFromPosition(target, attacker.CurrentPosition))
 			{
 				Mod.MeleeLog.Info?.Write($"Attacker unable to DFA target from their position.");
+				return false;
+			}
+
+			if (target.UnaffectedPathing())
+			{
+				Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
 				return false;
 			}
 

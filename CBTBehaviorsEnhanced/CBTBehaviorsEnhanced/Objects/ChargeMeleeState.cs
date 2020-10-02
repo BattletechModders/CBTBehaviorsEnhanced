@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -85,6 +86,11 @@ namespace CBTBehaviorsEnhanced.Objects
 				return false;
 			}
 
+			if (target.UnaffectedPathing())
+            {
+				Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
+				return false;
+            }
 
 			Mod.MeleeLog.Info?.Write("CHARGE ATTACK validated");
 			return true;

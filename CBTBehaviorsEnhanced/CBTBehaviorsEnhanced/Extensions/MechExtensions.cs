@@ -355,9 +355,14 @@ namespace CBTBehaviorsEnhanced.Extensions {
         {
             if (!attackerCondition.CanPunch()) return 0;
 
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"PUNCH baseStability: {Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon} x " +
-                $"attacker tonnage: {mech.tonnage} = {raw}");
+            // 0 is a signal that there's no divisor
+            float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetInstability) &&
+                mech.StatCollection.GetValue<float>(ModStats.PunchTargetInstability) > 0 ?
+                mech.StatCollection.GetValue<float>(ModStats.PunchTargetInstability) :
+                Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon;
+
+            float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
+            Mod.MeleeLog.Debug?.Write($"PUNCH instability => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetInstabilityMod) ?

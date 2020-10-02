@@ -71,6 +71,8 @@ namespace CBTBehaviorsEnhanced
         public const string PunchTargetDamage = "CBTBE_Punch_Target_Damage_Per_Attacker_Ton"; // float - how much damage * attacker ton the weapon does
         public const string PunchTargetDamageMod = "CBTBE_Punch_Target_Damage_Mod"; // int
         public const string PunchTargetDamageMulti = "CBTBE_Punch_Target_Damage_Multi"; // float
+
+        public const string PunchTargetInstability = "CBTBE_Punch_Target_Instability_Per_Attacker_Ton"; // float - how much stab / ton the weapon does
         public const string PunchTargetInstabilityMod = "CBTBE_Punch_Target_Instability_Mod"; // int
         public const string PunchTargetInstabilityMulti = "CBTBE_Punch_Target_Instability_Multi"; // float
 

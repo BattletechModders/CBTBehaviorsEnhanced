@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
 using CustomComponents;
 using Localize;
 using System.Collections.Generic;
@@ -104,6 +105,12 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!validAnimations.Contains(MeleeAttackType.Punch))
             {
                 Mod.MeleeLog.Info?.Write("Animations do not include a punch, cannot use physical weapon.");
+                return false;
+            }
+
+            if (target.UnaffectedPathing())
+            {
+                Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
                 return false;
             }
 
