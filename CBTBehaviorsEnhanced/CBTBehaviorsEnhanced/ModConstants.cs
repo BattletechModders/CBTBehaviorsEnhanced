@@ -105,5 +105,8 @@ namespace CBTBehaviorsEnhanced
 
         public const string CC_Category_NeverMelee = "NeverMelee";
         public const string CC_Category_HandHeld_NoArmMelee = "HandHeldNoArmMelee";
+
+        public const string CAC_Modifier_ToHit_Heat = "CBTBEToHitHeat";
+        public const string CAC_Modifier_ToHit_Jumped = "CBTBEToHitJumped";
     }
 }

@@ -1,5 +1,8 @@
-﻿using Harmony;
+﻿using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
+using Harmony;
 using IRBTModUtils.Logging;
+using Localize;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -22,14 +25,18 @@ namespace CBTBehaviorsEnhanced {
 
         public static readonly Random Random = new Random();
 
-        public static void Init(string modDirectory, string settingsJSON) {
-            ModDir = modDirectory; 
+        public static void Init(string modDirectory, string settingsJSON)
+        {
+            ModDir = modDirectory;
 
             // Read the config
             Exception settingsE = null;
-            try {
+            try
+            {
                 Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsJSON);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 settingsE = e;
                 Mod.Config = new ModConfig();
             }
@@ -59,19 +66,35 @@ namespace CBTBehaviorsEnhanced {
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
-            if (settingsE != null) {
+            if (settingsE != null)
+            {
                 Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
-            } else {
+            }
+            else
+            {
                 Log.Info?.Write($"INFO: No errors reading settings file.");
             }
 
             // Initialize custom components
             CustomComponents.Registry.RegisterSimpleCustomComponents(Assembly.GetExecutingAssembly());
 
+            RegisterCACDelegates();
+
             //HarmonyInstance.DEBUG = true;
-            var harmony = HarmonyInstance.Create(HarmonyPackage);            
+            var harmony = HarmonyInstance.Create(HarmonyPackage);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
+        // Register CAC Delegates for ToHit and Damage modifiers
+        private static void RegisterCACDelegates()
+        {
+            string ToHitHeatLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Overheating]).ToString();
+            ToHitModifiersHelper.registerModifier(ModConsts.CAC_Modifier_ToHit_Heat, ToHitHeatLabel, true, true,
+                CACDelegates.HeatToHitModifer, null);
+
+            string ToHitJumpedLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
+            ToHitModifiersHelper.registerModifier(ModConsts.CAC_Modifier_ToHit_Jumped, ToHitJumpedLabel, true, true,
+                CACDelegates.JumpedToHitModifier, null);
+        }
     }
 }
