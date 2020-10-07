@@ -140,7 +140,6 @@ namespace CBTBehaviorsEnhanced
         public const string LT_Label_Punch_Attack_Mod = "ATK_MOD_PUNCH_MOD";
         public const string LT_Label_Physical_Weapon_Attack_Mod = "ATK_MOD_PHYS_WEP_MOD";
         public const string LT_Label_Target_Prone = "ATK_MOD_TARGET_PRONE";
-        public const string LT_Label_Overheating = "ATK_MOD_OVERHEATED";
 
         public const string LT_Label_Weapon_Hover_Damage = "WEAPON_HOVER_DAMAGE";
         public const string LT_Label_Weapon_Hover_Instability = "WEAPON_HOVER_INSTABILITY";
@@ -170,7 +169,6 @@ namespace CBTBehaviorsEnhanced
             { LT_Label_Punch_Attack_Mod, "PUNCH MOD" },
             { LT_Label_Physical_Weapon_Attack_Mod, "P.WEAP MOD" },
             { LT_Label_Target_Prone, "PRONE MELEE TARGET" },
-            { LT_Label_Overheating, "OVERHEATED" },
 
             // Weapon hover labels
             { LT_Label_Weapon_Hover_Damage, "{0} dmg" },

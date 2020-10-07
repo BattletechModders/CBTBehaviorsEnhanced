@@ -1,5 +1,8 @@
 ﻿using BattleTech;
+using BattleTech.UI;
 using Harmony;
+using IRBTModUtils;
+using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,6 +45,27 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
+    [HarmonyPatch(typeof(ToHit), "GetAllModifiers")]
+    static class ToHit_GetAllModifiers
+    {
+        static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker, Weapon weapon, ICombatant target,
+            Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot)
+        {
+            Mod.Log.Trace?.Write("TH:GAM entered");
+
+            if (__instance == null || weapon == null) return;
+
+            if (
+                (attacker.HasMovedThisRound && attacker.JumpedLastRound) ||
+                (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
+                SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump)
+                )
+            {
+                __result += (float)Mod.Config.ToHitSelfJumped;
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(ToHit), "GetAllModifiersDescription")]
     static class ToHit_GetAllModifiersDescription
     {
@@ -49,6 +73,14 @@ namespace CBTBehaviorsEnhanced.Patches
             Vector3 attackPosition, Vector3 targetPosition, LineOfFireLevel lofLevel, bool isCalledShot)
         {
             Mod.Log.Trace?.Write("TH:GAMD entered");
+
+            if (attacker.HasMovedThisRound && attacker.JumpedLastRound ||
+                (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
+                SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump))
+            {
+                string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
+                __result = string.Format("{0}{1} {2:+#;-#}; ", __result, localText, Mod.Config.ToHitSelfJumped);
+            }
 
             // Check melee patches
             if (ModState.MeleeStates?.SelectedState != null && weapon.Type == WeaponType.Melee)
@@ -74,9 +106,21 @@ namespace CBTBehaviorsEnhanced.Patches
         public static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker)
         {
             Mod.Log.Trace?.Write("TH:GHM entered.");
+            if (attacker is Mech mech && mech.IsOverheated)
+            {
 
-            // Set the modifier to 0 regardless of input, and allow real work to happen in CACDelegates.HeatToHitModifier
-            __result = 0; 
+                float penalty = 0f;
+                foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing)
+                {
+                    if (mech.CurrentHeat >= kvp.Key)
+                    {
+                        penalty = kvp.Value;
+                    }
+                }
+
+                Mod.Log.Trace?.Write($"  AttackPenalty: {penalty:+0;-#} from heat: {mech.CurrentHeat} for actor: {attacker.DistinctId()}");
+                __result = penalty;
+            }
         }
     }
 
