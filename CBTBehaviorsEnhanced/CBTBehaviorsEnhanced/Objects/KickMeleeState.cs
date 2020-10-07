@@ -2,6 +2,7 @@
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
+using CustomComponents;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,12 @@ namespace CBTBehaviorsEnhanced.Objects
             if (weapon.Location == (int)ChassisLocations.LeftLeg || weapon.Location == (int)ChassisLocations.RightLeg)
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for kick because it is in the legs.");
+                return false;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for kick as it can never be used in melee");
                 return false;
             }
 
