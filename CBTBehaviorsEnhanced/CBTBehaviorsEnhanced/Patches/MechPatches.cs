@@ -167,12 +167,6 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             Mod.HeatLog.Debug?.Write($"ON_ACTIVATION_END:POST - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
-
-            if (__instance.UsedHeatSinksCap() != 0)
-            {
-                Mod.HeatLog.Warn?.Write("MECH ACTIVATION COMPLETE, BUT HEAT SINKS REMAIN USED! FORCE-CLEARING HS.");
-                __instance.clearUsedHeatSinksCap();
-            }
         }
     }
 
