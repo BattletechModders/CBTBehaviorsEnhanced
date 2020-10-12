@@ -144,7 +144,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     bool hasContact = actor.HasAnyContactWithEnemy;
                     Mod.Log.Debug?.Write($" -- Unit: {actor.DistinctId()} hasContact: {hasContact}  " +
-                        $"highestVisLevel => selfCache: {actor?.VisibilityCache?.HighestEnemyContactLevel}  parentCache: {actor?.VisibilityCache?.ParentCache?.HasAnyContact}");
+                        $"highestVisLevel => selfCache: {actor?.VisibilityCache?.HighestEnemyContactLevel}  parentCache: {actor?.VisibilityCache?.ParentCache?.HighestEnemyContactLevel}");
 
                     if (hasContact)
                     {

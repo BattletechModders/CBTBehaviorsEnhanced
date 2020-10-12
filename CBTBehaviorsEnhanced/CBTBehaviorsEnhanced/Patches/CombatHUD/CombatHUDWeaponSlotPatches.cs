@@ -134,6 +134,10 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     __instance.DamageText.SetText($"{totalDamage}");
                 }
+
+                ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, totalDamage);
+                ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, ModState.MeleeStates.SelectedState.TargetInstability);
+                CustAmmoCategories.DamageModifiersCache.ClearDamageCache(___displayedWeapon);
             }
         }
     }
