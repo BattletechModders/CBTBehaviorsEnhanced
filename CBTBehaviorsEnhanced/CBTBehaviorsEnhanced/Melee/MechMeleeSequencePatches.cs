@@ -2,6 +2,7 @@
 using CBTBehaviorsEnhanced.Helper;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
+using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -89,6 +90,37 @@ namespace CBTBehaviorsEnhanced.Melee {
                 Mod.MeleeLog.Info?.Write($" -- Adding {ModState.MeleeStates.SelectedState.AttackerInstability} absolute instability to attacker.");
                 __instance.OwningMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.AttackerInstability, StabilityChangeSource.Attack, "-1");
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(MechMeleeSequence), "ExecuteMelee")]
+    static class MechMeleeSequence_ExecuteMelee
+    {
+        // Remove the BuildWeaponDirectorSequence, to prevent duplicate ammo consumption
+        static bool Prefix(MechMeleeSequence __instance)
+        {
+            Traverse BuildMeleeDirectorSequenceT = Traverse.Create(__instance).Method("BuildMeleeDirectorSequence");
+            BuildMeleeDirectorSequenceT.GetValue();
+
+            if (__instance.OwningMech.GameRep != null)
+            {
+                __instance.OwningMech.GameRep.ReturnToNeutralFacing(isParellelSequence: true, 0.5f, __instance.RootSequenceGUID, __instance.SequenceGUID, null);
+            }
+            if (__instance.OwningMech.GameRep != null)
+            {
+                __instance.OwningMech.GameRep.FadeThrottleAudio(0f, 50f, 1f);
+            }
+            SharedState.Combat.MessageCenter.AddSubscriber(MessageCenterMessageType.OnAttackComplete, __instance.OnMeleeComplete);
+            SharedState.Combat.MessageCenter.AddSubscriber(MessageCenterMessageType.OnAttackSequenceFire, __instance.OnMeleeReady);
+
+            // Reading meleeSequence as a property doesn't seem to work, because it always returns null. I'm unsure if this
+            //   is a harmony bug... so read it directly, which seems to work.
+            Traverse meleeSequenceT = Traverse.Create(__instance).Field("meleeSequence");
+            AttackStackSequence meleeSequence = meleeSequenceT.GetValue<AttackStackSequence>();
+
+            SharedState.Combat.MessageCenter.PublishMessage(new AddParallelSequenceToStackMessage(meleeSequence));
+
+            return false;
         }
     }
 
