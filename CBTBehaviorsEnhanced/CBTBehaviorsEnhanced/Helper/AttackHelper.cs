@@ -96,37 +96,40 @@ namespace CBTBehaviorsEnhanced.Helper
                 hitInfo.hitQualities[i] = AttackImpactQuality.Solid;
                 hitInfo.hitPositions[i] = attacker.CurrentPosition;
 
+                float adjustedDamage = damage;
                 float randomRoll = (float)Mod.Random.NextDouble();
                 if (target is Mech mech)
                 {
                     ArmorLocation location =
                         SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
-                    Mod.Log.Info?.Write($"  {damage} damage to location: {location}");
 
-                    ShowDamageFloatie(mech, location, damage, hitInfo.attackerId);
+                    adjustedDamage = mech.GetAdjustedDamageForMelee(damage, imaginaryWeapon.WeaponCategoryValue);
+                    Mod.Log.Info?.Write($"  {adjustedDamage} damage to location: {location}");
+                    ShowDamageFloatie(mech, location, adjustedDamage, hitInfo.attackerId);
                 }
                 else if (target is Vehicle vehicle)
                 {
                     VehicleChassisLocations location =
                         SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
                     hitInfo.hitLocations[i] = (int)location;
-                    Mod.Log.Info?.Write($"  {damage} damage to location: {location}");
 
-                    ShowDamageFloatie(vehicle, location, damage, hitInfo.attackerId);
+                    adjustedDamage = vehicle.GetAdjustedDamageForMelee(damage, imaginaryWeapon.WeaponCategoryValue);
+                    Mod.Log.Info?.Write($"  {adjustedDamage} damage to location: {location}");
+                    ShowDamageFloatie(vehicle, location, adjustedDamage, hitInfo.attackerId);
                 }
                 else if (target is Turret turret)
                 {
                     BuildingLocation location = BuildingLocation.Structure;
                     hitInfo.hitLocations[i] = (int)BuildingLocation.Structure;
-                    Mod.Log.Info?.Write($"  {damage} damage to location: {location}");
 
-                    ShowDamageFloatie(turret, damage, hitInfo.attackerId);
+                    adjustedDamage = turret.GetAdjustedDamageForMelee(damage, imaginaryWeapon.WeaponCategoryValue);
+                    Mod.Log.Info?.Write($"  {adjustedDamage} damage to location: {location}");
+                    ShowDamageFloatie(turret, adjustedDamage, hitInfo.attackerId);
                 }
 
                 // Make the target take weapon damage
-                //target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], attacker.ImaginaryLaserWeapon, damage, 0, 0, damageType);
-                target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], imaginaryWeapon, damage, 0, 0, damageType);
+                target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[i], imaginaryWeapon, adjustedDamage, 0, 0, damageType);
 
                 i++;
             }
