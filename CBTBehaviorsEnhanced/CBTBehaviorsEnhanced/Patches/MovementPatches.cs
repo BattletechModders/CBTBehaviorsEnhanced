@@ -190,8 +190,10 @@ namespace CBTBehaviorsEnhanced
 
                 Mod.Log.Trace?.Write($"JUMP -- ABILITY_CONSUMES_FIRING: {__instance.AbilityConsumesFiring} / CONSUMES_FIRING: {__instance.ConsumesFiring}");
 
+                if (__instance.OwningMech == null) return; // Nothing more to do
+
                 // Movement - check for damage after a jump, and if so force a piloting check
-                if (__instance.OwningMech != null && __instance.OwningMech.ActuatorDamageMalus() != 0)
+                if (__instance.OwningMech.ActuatorDamageMalus() != 0 || Mod.Config.Developer.ForceFallAfterJump)
                 {
                     Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
@@ -199,7 +201,8 @@ namespace CBTBehaviorsEnhanced
                     float checkMod = sourceSkillMulti + damagePenalty;
                     Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 
-                    bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Jump);
+                    bool sourcePassed = Mod.Config.Developer.ForceFallAfterJump ? false : 
+                        CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterJumpChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Jump);
                     if (!sourcePassed)
                     {
                         Mod.Log.Info?.Write($"Source actor: {CombatantUtils.Label(__instance.OwningMech)} failed pilot check after jumping with actuator damage, forcing fall.");

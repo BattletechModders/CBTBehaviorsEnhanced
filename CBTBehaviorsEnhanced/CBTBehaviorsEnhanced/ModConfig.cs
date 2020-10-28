@@ -4,276 +4,22 @@ using System;
 using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced {
-    
+
     public class ModConfig {
 
         public bool Debug = false;
         public bool Trace = false;
 
-        public class FeatureList {
-            // If true, hull breaches will be allowed in certain biomes
-            public bool BiomeBreaches = true;
-
-            // If true, evasion won't be removed by attacks
-            public bool PermanentEvasion = true;
-
-            // If true, walk and run speeds will be normalized to MP instead of the HBS speeds.
-            // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
-            public bool SpeedAsMP = false;
-
-            // If true, mechs must make a piloting skill roll (PSR) to restart. On a failure, they remain shutdown.
-            public bool StartupChecks = true;
-        }
-        public FeatureList Features = new FeatureList();
-
         // Movement - should be a +3 per BT Manual pg. 28
         public int ToHitSelfJumped = 3;
 
-        public class CustomCategoryOpts
-        {
-            public string[] HipActuatorCategoryId = new string[] { "LegHip" };
-            public string[] UpperLegActuatorCategoryId = new string[] { "LegUpperActuator" };
-            public string[] LowerLegActuatorCategoryId = new string[] { "LegLowerActuator" };
-            public string[] FootActuatorCategoryId = new string[] { "LegFootActuator" };
-
-            public string[] ShoulderActuatorCategoryId = new string[] { "ArmShoulder" };
-            public string[] UpperArmActuatorCategoryId = new string[] { "ArmUpperActuator" };
-            public string[] LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
-            public string[] HandActuatorCategoryId = new string[] { "ArmHandActuator" };
-
-        }
+        public DevOpts Developer = new DevOpts();
+        public FeatureList Features = new FeatureList();
         public CustomCategoryOpts CustomCategories = new CustomCategoryOpts();
-
-        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
-        // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
-        public class HeatOptions {
-            // 5:-1, 10:-2, 15:-3, 20:-4, 25:-5, 31:-6, 37:-7, 43:-8, 49:-9
-            public SortedDictionary<int, int> Movement = new SortedDictionary<int, int> {
-                { 15, -1 }, { 30, -2 }, { 45, -3 }, { 60, -4 }, { 75, -5 },
-                { 93, -6 }, { 111, -7 }, { 129, -8 }, { 147, -9 }
-            };
-
-            // 8:-1, 13:-2, 17:-3, 24:-4, 33:-5, 41:-6, 48:-7
-            public SortedDictionary<int, int> Firing = new SortedDictionary<int, int> {
-                { 24, 1 }, { 39 , 2 }, { 51, 3 }, { 72, 4 }, { 99, 5 },
-                { 123, 6 }, { 144, 7 }
-            };
-
-            // 14:4+, 18:6+, 22:8+, 26:10+, 30:12+, 34:14+, 38:16+, 42:18+, 46:20+, 50:INFINITY
-            // If shutdown, needing piloting skill roll or fall over; roll has a +3 modifier
-            public SortedDictionary<int, float> Shutdown = new SortedDictionary<int, float> {
-                { 42, 0.1f }, { 54, 0.3f }, { 66, 0.6f}, { 78, 0.8f }, { 90, 0.9f },
-                { 102, 1.0f }, { 114, 1.1f }, { 126, 1.2f }, { 138, 1.3f }, { 150, -1f }
-            };
-
-            // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
-            // Explosion should impact most damaging ammo first
-            // Inferno weapons require a 2nd roll in addition to the first 
-            // Any ammo explosion automatically causes 2 points of pilot damage and forces a conciousness roll
-            public SortedDictionary<int, float> Explosion = new SortedDictionary<int, float> {
-                {  57, 0.1f },
-                {  69, 0.3f },
-                {  84, 0.5f },
-                { 105, 0.8f },
-                { 120, 0.95f },
-                { 135, -1f },
-            };
-
-            // 32:8+, 39:10+, 47:12+
-            // If life support damaged, can't be avoided and is in addition to normal damage
-            public SortedDictionary<int, float> PilotInjury = new SortedDictionary<int, float> {
-                { 84, 0.3f }, { 117, 0.6f}, { 141, 0.8f }
-            };
-
-            // 36:8+, 44:10+
-            // If roll fails, roll a hit location on the front column of mech critical hit table and apply single critical hit to location
-            public SortedDictionary<int, float> SystemFailures = new SortedDictionary<int, float> {
-                { 108, 0.3f }, { 132, 0.6f},
-            };
-
-            // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
-            public int ShowLowOverheatAnim = 42; // When to show as steaming
-            public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
-            public float ShutdownFallThreshold = 0.75f;
-
-            // When to show the shutdown warning and when to where to place the 'overheated' bar
-            public int MaxHeat = 150;
-            public int WarnAtHeat = 42;
-        }
         public HeatOptions Heat = new HeatOptions();
-
-        public class AIMeleeOpts
-        {
-            // Bonus virtual damage - applied to an attack for stripping evasion
-            public float EvasionPipRemovedUtility = 10f;
-
-            // Negative virtual damage - applied when the attacker will lose evasion
-            public float EvasionPipLostUtility = 5f;
-
-            // Bonus virtual damage - add CT armor + structure, multiplied by this value, as virtual damage
-            public float PilotInjuryMultiUtility = 1.0f;
-
-        }
-
-        public class ChargeMeleeOpts
-        {
-            // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
-            public float AttackerDamagePerTargetTon = 0.5f;
-            public float TargetDamagePerAttackerTon= 0.5f;
-
-            public float AttackerInstabilityPerTargetTon = 0.5f;
-            public float TargetInstabilityPerAttackerTon = 0.5f;
-
-            // When an attack does damage, it will be split into N groups of no more than this value 
-            public float DamageClusterDivisor = 25.0f;
-
-            // If true, make the attack apply unsteady before applying instability
-            public bool UnsteadyAttackerOnHit = false;
-            public bool UnsteadyAttackerOnMiss = false;
-            public bool UnsteadyTargetOnHit = false;
-
-            // If true use the delta of the piloting skills between the attacker and target for
-            // a bonus/penalty
-            public bool UsePilotingDelta = true;
-        }
-
-        // BT Manual pg.37 
-        public class DFAMeleeOpts
-        {
-            // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton, x3 for DFA
-            public float AttackerDamagePerTargetTon = 0.5f;
-            public float TargetDamagePerAttackerTon = 1.5f;
-
-            public float AttackerInstabilityPerTargetTon = 0.5f;
-            public float TargetInstabilityPerAttackerTon = 0.5f;
-
-            // When an attack does damage, it will be split into N groups of no more than this value 
-            public float DamageClusterDivisor = 25.0f;
-
-            // If true, make the attack apply unsteady before applying instability
-            public bool UnsteadyAttackerOnHit = false;
-            public bool UnsteadyAttackerOnMiss = false;
-            public bool UnsteadyTargetOnHit = false;
-
-            // If true use the delta of the piloting skills between the attacker and target for
-            // a bonus/penalty
-            public bool UsePilotingDelta = true;
-        }
-
-        public class KickMeleeOps
-        {
-            // The base bonus applied for a kick 
-            public int BaseAttackBonus = -2;
-            public int LegActuatorDamageMalus = 2;
-            public int FootActuatorDamageMalus = 1;
-
-            // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
-            public float TargetDamagePerAttackerTon = 1;
-            public float TargetInstabilityPerAttackerTon = 0.5f;
-
-            public float LegActuatorDamageReduction = 0.5f;
-
-            // If true, make the attack apply unsteady before applying instability
-            public bool UnsteadyAttackerOnHit = false;
-            public bool UnsteadyAttackerOnMiss = false;
-            public bool UnsteadyTargetOnHit = false;
-        }
-
-        public class PhysicalWeaponMeleeOps
-        {
-            public int ArmActuatorDamageMalus = 2;
-
-            public float DefaultDamagePerAttackerTon = 2;
-            public float DefaultInstabilityPerAttackerTon = 1f;
-
-            public bool DefaultUnsteadyAttackerOnHit = false;
-            public bool DefaultUnsteadyAttackerOnMiss = false;
-            public bool DefaultUnsteadyTargetOnHit = false;
-        }
-
-        public class PunchMeleeOps
-        {
-            public int ArmActuatorDamageMalus = 2;
-            public int HandActuatorDamageMalus = 1;
-
-            // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
-            public float TargetDamagePerAttackerTon = 0.5f;
-            public float TargetInstabilityPerAttackerTon = 0.5f;
-
-            public float ArmActuatorDamageReduction = 0.5f;
-
-            // If true, make the attack apply unsteady before applying instability
-            public bool UnsteadyAttackerOnHit = false;
-            public bool UnsteadyAttackerOnMiss = false;
-            public bool UnsteadyTargetOnHit = false;
-        }
-
-
-        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
-        public class MeleeOptions {
-
-            // If true, all hits will average the base damage.
-            public bool ExtraHitsAverageAllDamage = false;
-
-            // Prone target modifier
-            public int ProneTargetAttackModifier = -2;
-
-            // Should weapons by filtered by location
-            public bool FilterCanUseInMeleeWeaponsByAttack = false;
-
-            public AIMeleeOpts AI = new AIMeleeOpts();
-            public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
-            public DFAMeleeOpts DFA = new DFAMeleeOpts();
-            public KickMeleeOps Kick = new KickMeleeOps();
-            public PhysicalWeaponMeleeOps PhysicalWeapon = new PhysicalWeaponMeleeOps();
-            public PunchMeleeOps Punch = new PunchMeleeOps();
-
-        }
         public MeleeOptions Melee = new MeleeOptions();
-
-        public class MoveOptions {
-            // This is set to 40m, because it should the minimum required to move across one 'hex' no 
-            //   matter the penalties on that hex.
-            public float MinimumMove = 40f;
-
-            // How much walk distance is removed for each point of heat penalty
-            public float HeatMovePenalty = 24f;
-
-            // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
-            public float RunMulti = 1.5f;
-
-            // Multiplier for the pilot's piloting skill used in the check for FallAfterRunChance and FallAfterJumpChance
-            public float SkillMulti = 0.05f;
-
-            // If you have leg damage and run, you can fall
-            public float FallAfterRunChance = 0.30f;
-
-            // If you have leg damage and jump, you can fall
-            public float FallAfterJumpChance = 0.30f;
-
-            //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
-            //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 
-            //   with 0.8 movement mods and with a 0.8 elevation pitch.
-            public float MPMetersPerHex = 24f;
-
-        }
         public MoveOptions Move = new MoveOptions();
-
-        // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
-        public class PilotingOptions {
-            public float SkillMulti = 0.05f;
-            public float StabilityCheck = 0.30f;
-            public float DFAReductionMulti = 0.05f;
-
-            // How many damage points 
-            public int FallingDamagePerTenTons = 5;
-        }
         public PilotingOptions Piloting = new PilotingOptions();
-
-        public class BiomeBreachOptions {
-            public float VacuumCheck = 0.17f;
-            public float ThinAtmoCheck = 0.03f;
-        }
         public BiomeBreachOptions Breaches = new BiomeBreachOptions();
 
         public void LogConfig() {
@@ -356,5 +102,272 @@ namespace CBTBehaviorsEnhanced {
 
             Mod.Log.Info?.Write("=== MOD CONFIG END ===");
         }
+    }
+
+    public class DevOpts
+    {
+        public bool ForceFallAfterJump = false; // If true, always enable a fall after a jump as if the mech had component damage
+    }
+
+    public class FeatureList
+    {
+        // If true, hull breaches will be allowed in certain biomes
+        public bool BiomeBreaches = true;
+
+        // If true, evasion won't be removed by attacks
+        public bool PermanentEvasion = true;
+
+        // If true, walk and run speeds will be normalized to MP instead of the HBS speeds.
+        // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
+        public bool SpeedAsMP = false;
+
+        // If true, mechs must make a piloting skill roll (PSR) to restart. On a failure, they remain shutdown.
+        public bool StartupChecks = true;
+    }
+
+    public class CustomCategoryOpts
+    {
+        public string[] HipActuatorCategoryId = new string[] { "LegHip" };
+        public string[] UpperLegActuatorCategoryId = new string[] { "LegUpperActuator" };
+        public string[] LowerLegActuatorCategoryId = new string[] { "LegLowerActuator" };
+        public string[] FootActuatorCategoryId = new string[] { "LegFootActuator" };
+
+        public string[] ShoulderActuatorCategoryId = new string[] { "ArmShoulder" };
+        public string[] UpperArmActuatorCategoryId = new string[] { "ArmUpperActuator" };
+        public string[] LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
+        public string[] HandActuatorCategoryId = new string[] { "ArmHandActuator" };
+
+    }
+
+    // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
+    // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
+    public class HeatOptions
+    {
+        // 5:-1, 10:-2, 15:-3, 20:-4, 25:-5, 31:-6, 37:-7, 43:-8, 49:-9
+        public SortedDictionary<int, int> Movement = new SortedDictionary<int, int> {
+                { 15, -1 }, { 30, -2 }, { 45, -3 }, { 60, -4 }, { 75, -5 },
+                { 93, -6 }, { 111, -7 }, { 129, -8 }, { 147, -9 }
+            };
+
+        // 8:-1, 13:-2, 17:-3, 24:-4, 33:-5, 41:-6, 48:-7
+        public SortedDictionary<int, int> Firing = new SortedDictionary<int, int> {
+                { 24, 1 }, { 39 , 2 }, { 51, 3 }, { 72, 4 }, { 99, 5 },
+                { 123, 6 }, { 144, 7 }
+            };
+
+        // 14:4+, 18:6+, 22:8+, 26:10+, 30:12+, 34:14+, 38:16+, 42:18+, 46:20+, 50:INFINITY
+        // If shutdown, needing piloting skill roll or fall over; roll has a +3 modifier
+        public SortedDictionary<int, float> Shutdown = new SortedDictionary<int, float> {
+                { 42, 0.1f }, { 54, 0.3f }, { 66, 0.6f}, { 78, 0.8f }, { 90, 0.9f },
+                { 102, 1.0f }, { 114, 1.1f }, { 126, 1.2f }, { 138, 1.3f }, { 150, -1f }
+            };
+
+        // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
+        // Explosion should impact most damaging ammo first
+        // Inferno weapons require a 2nd roll in addition to the first 
+        // Any ammo explosion automatically causes 2 points of pilot damage and forces a conciousness roll
+        public SortedDictionary<int, float> Explosion = new SortedDictionary<int, float> {
+                {  57, 0.1f },
+                {  69, 0.3f },
+                {  84, 0.5f },
+                { 105, 0.8f },
+                { 120, 0.95f },
+                { 135, -1f },
+            };
+
+        // 32:8+, 39:10+, 47:12+
+        // If life support damaged, can't be avoided and is in addition to normal damage
+        public SortedDictionary<int, float> PilotInjury = new SortedDictionary<int, float> {
+                { 84, 0.3f }, { 117, 0.6f}, { 141, 0.8f }
+            };
+
+        // 36:8+, 44:10+
+        // If roll fails, roll a hit location on the front column of mech critical hit table and apply single critical hit to location
+        public SortedDictionary<int, float> SystemFailures = new SortedDictionary<int, float> {
+                { 108, 0.3f }, { 132, 0.6f},
+            };
+
+        // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
+        public int ShowLowOverheatAnim = 42; // When to show as steaming
+        public int ShowExtremeOverheatAnim = 90; // When to show as glowing hot
+        public float ShutdownFallThreshold = 0.75f;
+
+        // When to show the shutdown warning and when to where to place the 'overheated' bar
+        public int MaxHeat = 150;
+        public int WarnAtHeat = 42;
+    }
+
+    public class AIMeleeOpts
+    {
+        // Bonus virtual damage - applied to an attack for stripping evasion
+        public float EvasionPipRemovedUtility = 10f;
+
+        // Negative virtual damage - applied when the attacker will lose evasion
+        public float EvasionPipLostUtility = 5f;
+
+        // Bonus virtual damage - add CT armor + structure, multiplied by this value, as virtual damage
+        public float PilotInjuryMultiUtility = 1.0f;
+
+    }
+
+    public class ChargeMeleeOpts
+    {
+        // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
+        public float AttackerDamagePerTargetTon = 0.5f;
+        public float TargetDamagePerAttackerTon = 0.5f;
+
+        public float AttackerInstabilityPerTargetTon = 0.5f;
+        public float TargetInstabilityPerAttackerTon = 0.5f;
+
+        // When an attack does damage, it will be split into N groups of no more than this value 
+        public float DamageClusterDivisor = 25.0f;
+
+        // If true, make the attack apply unsteady before applying instability
+        public bool UnsteadyAttackerOnHit = false;
+        public bool UnsteadyAttackerOnMiss = false;
+        public bool UnsteadyTargetOnHit = false;
+
+        // If true use the delta of the piloting skills between the attacker and target for
+        // a bonus/penalty
+        public bool UsePilotingDelta = true;
+    }
+
+    // BT Manual pg.37 
+    public class DFAMeleeOpts
+    {
+        // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton, x3 for DFA
+        public float AttackerDamagePerTargetTon = 0.5f;
+        public float TargetDamagePerAttackerTon = 1.5f;
+
+        public float AttackerInstabilityPerTargetTon = 0.5f;
+        public float TargetInstabilityPerAttackerTon = 0.5f;
+
+        // When an attack does damage, it will be split into N groups of no more than this value 
+        public float DamageClusterDivisor = 25.0f;
+
+        // If true, make the attack apply unsteady before applying instability
+        public bool UnsteadyAttackerOnHit = false;
+        public bool UnsteadyAttackerOnMiss = false;
+        public bool UnsteadyTargetOnHit = false;
+
+        // If true use the delta of the piloting skills between the attacker and target for
+        // a bonus/penalty
+        public bool UsePilotingDelta = true;
+    }
+
+    public class KickMeleeOps
+    {
+        // The base bonus applied for a kick 
+        public int BaseAttackBonus = -2;
+        public int LegActuatorDamageMalus = 2;
+        public int FootActuatorDamageMalus = 1;
+
+        // TT => 1 point / 5, HBS => 5 points / 5 == 1 points per ton
+        public float TargetDamagePerAttackerTon = 1;
+        public float TargetInstabilityPerAttackerTon = 0.5f;
+
+        public float LegActuatorDamageReduction = 0.5f;
+
+        // If true, make the attack apply unsteady before applying instability
+        public bool UnsteadyAttackerOnHit = false;
+        public bool UnsteadyAttackerOnMiss = false;
+        public bool UnsteadyTargetOnHit = false;
+    }
+
+    public class PhysicalWeaponMeleeOps
+    {
+        public int ArmActuatorDamageMalus = 2;
+
+        public float DefaultDamagePerAttackerTon = 2;
+        public float DefaultInstabilityPerAttackerTon = 1f;
+
+        public bool DefaultUnsteadyAttackerOnHit = false;
+        public bool DefaultUnsteadyAttackerOnMiss = false;
+        public bool DefaultUnsteadyTargetOnHit = false;
+    }
+
+    public class PunchMeleeOps
+    {
+        public int ArmActuatorDamageMalus = 2;
+        public int HandActuatorDamageMalus = 1;
+
+        // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton
+        public float TargetDamagePerAttackerTon = 0.5f;
+        public float TargetInstabilityPerAttackerTon = 0.5f;
+
+        public float ArmActuatorDamageReduction = 0.5f;
+
+        // If true, make the attack apply unsteady before applying instability
+        public bool UnsteadyAttackerOnHit = false;
+        public bool UnsteadyAttackerOnMiss = false;
+        public bool UnsteadyTargetOnHit = false;
+    }
+
+
+    // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
+    public class MeleeOptions
+    {
+
+        // If true, all hits will average the base damage.
+        public bool ExtraHitsAverageAllDamage = false;
+
+        // Prone target modifier
+        public int ProneTargetAttackModifier = -2;
+
+        // Should weapons by filtered by location
+        public bool FilterCanUseInMeleeWeaponsByAttack = false;
+
+        public AIMeleeOpts AI = new AIMeleeOpts();
+        public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
+        public DFAMeleeOpts DFA = new DFAMeleeOpts();
+        public KickMeleeOps Kick = new KickMeleeOps();
+        public PhysicalWeaponMeleeOps PhysicalWeapon = new PhysicalWeaponMeleeOps();
+        public PunchMeleeOps Punch = new PunchMeleeOps();
+
+    }
+
+    // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
+    public class PilotingOptions
+    {
+        public float SkillMulti = 0.05f;
+        public float StabilityCheck = 0.30f;
+        public float DFAReductionMulti = 0.05f;
+
+        // How many damage points 
+        public int FallingDamagePerTenTons = 5;
+    }
+
+    public class BiomeBreachOptions
+    {
+        public float VacuumCheck = 0.17f;
+        public float ThinAtmoCheck = 0.03f;
+    }
+
+    public class MoveOptions
+    {
+        // This is set to 40m, because it should the minimum required to move across one 'hex' no 
+        //   matter the penalties on that hex.
+        public float MinimumMove = 40f;
+
+        // How much walk distance is removed for each point of heat penalty
+        public float HeatMovePenalty = 24f;
+
+        // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
+        public float RunMulti = 1.5f;
+
+        // Multiplier for the pilot's piloting skill used in the check for FallAfterRunChance and FallAfterJumpChance
+        public float SkillMulti = 0.05f;
+
+        // If you have leg damage and run, you can fall
+        public float FallAfterRunChance = 0.30f;
+
+        // If you have leg damage and jump, you can fall
+        public float FallAfterJumpChance = 0.30f;
+
+        //   This is set to 24m, because both ME and HexGrid.HexWidth reply upon it. However, it should likely be larger, as designMasks and vertical distances
+        //   could prevent a unit from moving *at all* if this value is too low. A value like 40m should ensure a unit can always move, even through designMasks 
+        //   with 0.8 movement mods and with a 0.8 elevation pitch.
+        public float MPMetersPerHex = 24f;
+
     }
 }
