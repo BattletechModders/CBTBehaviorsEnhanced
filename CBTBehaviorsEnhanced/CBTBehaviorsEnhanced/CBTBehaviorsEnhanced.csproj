@@ -126,7 +126,6 @@
     <Compile Include="Patches\CombatHUD\CombatHUDHeatPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatHUDWeaponSlotPatches.cs" />
     <Compile Include="Patches\CombatSelectionHandlerPatches.cs" />
-    <Compile Include="Heat\MechHeatSequencePatches.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="Melee\MeleeRulesPatches.cs" />
     <Compile Include="Patches\MovementPatches.cs" />

@@ -3,9 +3,11 @@ using CBTBehaviorsEnhanced.Extensions;
 using CustAmmoCategories;
 using Harmony;
 using IRBTModUtils.Extension;
+using Localize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches
@@ -154,12 +156,84 @@ namespace CBTBehaviorsEnhanced.Patches
         [HarmonyAfter("us.frostraptor.SkillBasedInit")]
         static void Prefix(Mech __instance)
         {
+            Mod.HeatLog.Info?.Write($"-- AT END OF TURN FOR {__instance.DistinctId()}... CHECKING EFFECTS");
 
             Mod.HeatLog.Debug?.Write($"ON_ACTIVATION_END:PRE - Actor: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
             // Invalidate any melee state the actor may have set
             ModState.MeleeStates = null;
+
+            // Make the checks for ammo explosions, etc
+            float heatCheck = __instance.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+            float pilotCheck = __instance.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
+            Mod.HeatLog.Debug?.Write($" Actor: {__instance.DistinctId()} has gutsMulti: {heatCheck}  pilotingMulti: {pilotCheck}");
+
+            MultiSequence sequence = new MultiSequence(__instance.Combat);
+            bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(__instance, __instance.CurrentHeat, sequence.RootSequenceGUID, sequence.SequenceGUID, heatCheck);
+            bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
+            bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
+            bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
+
+            bool failedShutdownCheck = false;
+            if (!__instance.IsShutDown)
+            {
+                // Resolve Shutdown + Fall
+                failedShutdownCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, __instance.CurrentHeat, __instance, heatCheck, ModText.FT_Check_Shutdown);
+                Mod.HeatLog.Debug?.Write($"  failedShutdownCheck: {failedShutdownCheck}");
+                if (failedShutdownCheck)
+                {
+                    Mod.HeatLog.Info?.Write($"-- Shutdown check failed for unit {CombatantUtils.Label(__instance)}, forcing unit to shutdown");
+
+                    string debuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Shutdown_Failed_Overide]).ToString();
+                    sequence.AddChildSequence(new ShowActorInfoSequence(__instance, debuffText,
+                        FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                    MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance);
+                    //{
+                    //    RootSequenceGUID = __instance.SequenceGUID
+                    //};
+                    sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
+
+                    if (__instance.IsOrWillBeProne)
+                    {
+                        bool failedFallingCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.ShutdownFallThreshold, __instance, pilotCheck, ModText.FT_Check_Fall);
+                        Mod.HeatLog.Debug?.Write($"  failedFallingCheck: {failedFallingCheck}");
+                        if (failedFallingCheck)
+                        {
+                            Mod.HeatLog.Info?.Write("   Pilot check from shutdown failed! Forcing a fall!");
+                            string fallDebuffText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Shutdown_Fall]).ToString();
+                            sequence.AddChildSequence(new ShowActorInfoSequence(__instance, fallDebuffText,
+                                FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
+
+                            MechFallSequence mfs = new MechFallSequence(__instance, "Overheat", new Vector2(0f, -1f));
+                            //{
+                            //    RootSequenceGUID = __instance.SequenceGUID
+                            //};
+                            sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
+                        }
+                        else
+                        {
+                            Mod.HeatLog.Info?.Write($"Pilot check to avoid falling passed. Applying unstead to unit.");
+                            __instance.ApplyUnsteady();
+                        }
+                    }
+                    else
+                    {
+                        Mod.HeatLog.Debug?.Write("Unit is already prone, skipping.");
+                    }
+                }
+            }
+            else
+            {
+                Mod.HeatLog.Debug?.Write("Unit is already shutdown, skipping.");
+            }
+
+            if (failedInjuryCheck || failedSystemFailureCheck || failedAmmoCheck || failedVolatileAmmoCheck || failedShutdownCheck)
+            {
+                __instance.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(sequence));
+            }
+
         }
 
         [HarmonyAfter("io.mission.modrepuation", "us.frostraptor.SkillBasedInit")]
