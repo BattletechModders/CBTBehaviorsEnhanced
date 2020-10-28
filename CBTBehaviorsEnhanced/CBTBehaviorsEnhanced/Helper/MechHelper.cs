@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
+using IRBTModUtils.Extension;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -129,6 +130,8 @@ namespace CBTBehaviorsEnhanced {
         // Create a falling sequence, publish a floatie with the error
         public static void AddFallingSequence(Mech mech, MultiSequence parentSequence, string floatieText) {
 
+            Mod.Log.Info?.Write($"Adding falling sequence for mech: {mech.DistinctId()}");
+
             MechFallSequence mechFallSequence = new MechFallSequence(mech, floatieText, new Vector2(0f, -1f));
 
             string fallDebuffText = new Text(Mod.LocalizedText.Floaties[floatieText]).ToString();
@@ -136,8 +139,13 @@ namespace CBTBehaviorsEnhanced {
                 RootSequenceGUID = mechFallSequence.SequenceGUID
             };
             mechFallSequence.AddChildSequence(showInfoSequence, mechFallSequence.MessageIndex);
-
             mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(mechFallSequence));
+            Mod.Log.Info?.Write(" -- published fall sequence.");
+
+            IStackSequence doneWithActorSequence = mech.DoneWithActor();
+            mech.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(doneWithActorSequence));
+            Mod.Log.Info?.Write(" -- published doneWithActor sequence.");
+
         }
 
         public static void PilotCheckOnInstabilityDamage(Mech target, float stabilityDamage) {
