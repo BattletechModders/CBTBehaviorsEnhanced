@@ -95,9 +95,11 @@ namespace CBTBehaviorsEnhanced.Objects
             // If distance > walkSpeed, disable kick/physical weapon/punch
             float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
             float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
-            if (distance > maxWalkSpeed)
+            float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
+            if (distance > maxDistance)
             {
-                Mod.MeleeLog.Info?.Write($"Attack distance of {distance} is greater than attacker walkSpeed: {maxWalkSpeed}. Cannot kick!");
+                Mod.MeleeLog.Info?.Write($"Cannot kick! Attack maxDistance: {maxDistance}m is greater than attacker walkSpeed: {maxWalkSpeed}m + " +
+                    $"reachRange: {Mod.Config.Melee.WalkAttackAdditionalRange}m.");
                 return false;
             }
 

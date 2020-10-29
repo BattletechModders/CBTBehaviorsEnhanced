@@ -327,6 +327,10 @@ namespace CBTBehaviorsEnhanced {
         // Should weapons by filtered by location
         public bool FilterCanUseInMeleeWeaponsByAttack = false;
 
+        // Additional range added to delta of positions to see if an attack is valid. Should be 1/2
+        //   a hex to allow the mech to 'reach'
+        public float WalkAttackAdditionalRange = 18f;
+
         public AIMeleeOpts AI = new AIMeleeOpts();
         public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
         public DFAMeleeOpts DFA = new DFAMeleeOpts();
