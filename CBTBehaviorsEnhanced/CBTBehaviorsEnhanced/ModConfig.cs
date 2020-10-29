@@ -208,6 +208,10 @@ namespace CBTBehaviorsEnhanced {
         // Bonus virtual damage - add CT armor + structure, multiplied by this value, as virtual damage
         public float PilotInjuryMultiUtility = 1.0f;
 
+        // TODO: New
+        public float MaxModifiedShutdownChance = 0.7f;
+        public float MaxEVForAmmoExplosionDamage = 60f;
+
     }
 
     public class ChargeMeleeOpts
@@ -303,11 +307,17 @@ namespace CBTBehaviorsEnhanced {
         public bool UnsteadyTargetOnHit = false;
     }
 
+    public class TurretOpts
+    {
+        public float DefaultTonnage = 100;
+        public float LightTonnage = 60;
+        public float MediumTonnage = 80;
+        public float HeavyTonnage = 100;
+    }
 
     // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
     public class MeleeOptions
     {
-
         // If true, all hits will average the base damage.
         public bool ExtraHitsAverageAllDamage = false;
 
@@ -323,6 +333,8 @@ namespace CBTBehaviorsEnhanced {
         public KickMeleeOps Kick = new KickMeleeOps();
         public PhysicalWeaponMeleeOps PhysicalWeapon = new PhysicalWeaponMeleeOps();
         public PunchMeleeOps Punch = new PunchMeleeOps();
+        public TurretOpts Turrets = new TurretOpts();
+
 
     }
 

@@ -31,7 +31,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                     ModState.MeleeStates.SelectedState.TargetDamageClusters[0] : 0;
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
-                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set melee weapon damage: {targetDamage}  and instability: {ModState.MeleeStates.SelectedState.TargetInstability}");
+                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set DFA weapon damage: {targetDamage}  and instability: {ModState.MeleeStates.SelectedState.TargetInstability}");
 
                 // Cache the attacker's original DFASelfDamage value and set it to zero, so we can apply our own damage
                 ModState.OriginalDFASelfDamage = __instance.OwningMech.StatCollection.GetValue<float>(ModStats.HBS_DFA_Self_Damage);
@@ -44,7 +44,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 // Filter any weapons from requested weapons. This works because BuildMeleeDirectorSequence is called immediately before BuildWeaponDirectorSequence
                 if (Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack)
                 {
-                    Mod.MeleeLog.Debug?.Write($"Filtering melee weapons by attack type: {ModState.MeleeStates.SelectedState.Label}");
+                    Mod.MeleeLog.Debug?.Write($"Filtering DFA weapons by attack type: {ModState.MeleeStates.SelectedState.Label}");
                     List<Weapon> allowedWeapons = new List<Weapon>();
                     foreach (Weapon weapon in ___requestedWeapons)
                     {
@@ -86,7 +86,7 @@ namespace CBTBehaviorsEnhanced.Melee {
             Mod.Log.Trace?.Write("MMS:OMC entered.");
 
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
-            Mod.MeleeLog.Info?.Write($"== Resolving cluster damage, instability, and unsteady on melee attacker: {CombatantUtils.Label(__instance.OwningMech)} and " +
+            Mod.MeleeLog.Info?.Write($"== Resolving cluster damage, instability, and unsteady on DFA attacker: {CombatantUtils.Label(__instance.OwningMech)} and " +
                 $"target: {CombatantUtils.Label(__instance.DFATarget)}.");
             if (attackCompleteMessage.stackItemUID == ___meleeSequence.SequenceGUID && ModState.MeleeStates?.SelectedState != null)
             {

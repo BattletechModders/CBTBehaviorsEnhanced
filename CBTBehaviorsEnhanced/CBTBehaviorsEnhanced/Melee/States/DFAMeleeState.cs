@@ -128,6 +128,7 @@ namespace CBTBehaviorsEnhanced.Objects
 			float targetTonnage = 0;
 			if (target is Vehicle vehicle) targetTonnage = vehicle.tonnage;
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
+			else if (target is Turret turret) targetTonnage = turret.MeleeTonnage();
 			Mod.MeleeLog.Info?.Write($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
 
 			// split attacker damage into clusters

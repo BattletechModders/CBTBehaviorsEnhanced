@@ -64,7 +64,7 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 // Check if the weapon can fire according to the select melee type
                 bool isAllowed = ModState.MeleeStates.SelectedState.IsRangedWeaponAllowed(___displayedWeapon);
-                Mod.MeleeLog.Debug?.Write($"Weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
+                Mod.MeleeLog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
 
                 if (!isAllowed)
                 {
