@@ -1,5 +1,7 @@
 ﻿using BattleTech;
+using CustAmmoCategories;
 using Harmony;
+using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -14,6 +16,7 @@ namespace CBTBehaviorsEnhanced.Melee {
         // Allow the player to move if they are already in combat. Vanilla normally disables this.
         public static bool Prefix(Pathing __instance, AbstractActor target, ref List<PathNode> __result) {
             Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} to target: {CombatantUtils.Label(target)}");
+            
             // If the target isn't visible, prevent building any path to them.
             VisibilityLevel visibilityLevel = __instance.OwningActor.VisibilityToTargetUnit(target);
             if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost) {
@@ -21,6 +24,13 @@ namespace CBTBehaviorsEnhanced.Melee {
                 return false;
             }
 
+            // If the target ignores pathing (it's a VTOL or similar), prevent building any pathing to them
+            if (target != null && target.UnaffectedPathing())
+            {
+                Mod.Log.Info?.Write($"Target: {target.DistinctId()} is unaffected by pathing - cannot be meleed!");
+                __result = new List<PathNode>();
+                return false;
+            }    
 
             // Get the Melee and Sprinting grids
             Traverse walkingGridT = Traverse.Create(__instance).Property("WalkingGrid");
