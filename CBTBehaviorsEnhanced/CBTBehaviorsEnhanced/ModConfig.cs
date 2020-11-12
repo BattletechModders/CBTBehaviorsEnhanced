@@ -108,6 +108,7 @@ namespace CBTBehaviorsEnhanced {
     {
         public bool ForceFallAfterJump = false; // If true, always enable a fall after a jump as if the mech had component damage
         public bool ForceInvalidateAllMeleeAttacks = false; // If true, all melee attacks are considered invalid
+        public int DebugHeatToAdd = 250;
     }
 
     public class FeatureList
