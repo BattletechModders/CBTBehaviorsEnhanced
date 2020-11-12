@@ -62,6 +62,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private bool ValidateAttack(Mech attacker, AbstractActor target)
         {
+			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+			{
+				Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+				return false;
+			}
+
 			// Animations will never include DFA, as that's only for selecting a random attack. Assume the UI has done the checking
 			//  to allow or prevent a DFA attack
 			if (!attacker.CanDFA)

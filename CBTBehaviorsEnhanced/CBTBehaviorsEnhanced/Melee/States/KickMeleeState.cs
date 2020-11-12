@@ -72,6 +72,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
+            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+            {
+                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+                return false;
+            }
+
             // If neither kick (mech) or stomp (vehicle) - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Kick) && !validAnimations.Contains(MeleeAttackType.Stomp))
             {
