@@ -75,6 +75,8 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetInstabilityMulti, 1f);
 
             __instance.StatCollection.AddStatistic<bool>(ModStats.PunchIsPhysicalWeapon, false);
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponIgnoreActuators, false);
+
             __instance.StatCollection.AddStatistic<string>(ModStats.PhysicalWeaponLocationTable, "");
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponAttackMod, 0);
 

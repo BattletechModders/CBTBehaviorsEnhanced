@@ -124,7 +124,13 @@ namespace CBTBehaviorsEnhanced.Objects
             // Damage check - shoulder and hand
             bool leftArmIsFunctional = this.AttackerCondition.LeftShoulderIsFunctional && this.AttackerCondition.LeftHandIsFunctional;
             bool rightArmIsFunctional = this.AttackerCondition.RightShoulderIsFunctional && this.AttackerCondition.RightHandIsFunctional;
-            if (!leftArmIsFunctional && !rightArmIsFunctional)
+            Statistic ignoreActuatorsStat = attacker.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
+            bool ignoresActuatorDamage = ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>();
+            if (ignoresActuatorDamage)
+            {
+                Mod.MeleeLog.Info?.Write("Unit ignores actuator damage, passes this validation.");
+            }
+            else if (!leftArmIsFunctional && !rightArmIsFunctional)
             {
                 Mod.MeleeLog.Info?.Write("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
                 return false;
@@ -140,7 +146,6 @@ namespace CBTBehaviorsEnhanced.Objects
                     $"reachRange: {Mod.Config.Melee.WalkAttackAdditionalRange}m.");
                 return false;
             }
-
 
             Mod.MeleeLog.Info?.Write("PHYSICAL WEAPON ATTACK validated");
             return true;
@@ -167,16 +172,22 @@ namespace CBTBehaviorsEnhanced.Objects
             // +2 to hit for each upper/lower actuator hit
             int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
             int rightArmMalus = (2 - this.AttackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
-
             int bestMalus = leftArmMalus <= rightArmMalus ? leftArmMalus : rightArmMalus;
-            if (bestMalus != 0)
+
+            // If the ignore actuators stat is set, set the malus to 0 regardless of damage
+            Statistic ignoreActuatorsStat = attacker.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
+            if (ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>())
             {
-                this.AttackModifiers.Add(ModText.LT_Label_Actuator_Damage, bestMalus);
+                bestMalus = 0;
             }
 
+            // Add actuator damage if it exists
+            if (bestMalus != 0)
+                this.AttackModifiers.Add(ModText.LT_Label_Actuator_Damage, bestMalus);
+
             // Check for attack modifier statistic
-            if (attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponAttackMod) &&
-                attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponAttackMod) != 0)
+            Statistic phyWeapAttackMod = attacker.StatCollection.GetStatistic(ModStats.PhysicalWeaponAttackMod);
+            if (phyWeapAttackMod != null && phyWeapAttackMod.Value<int>() != 0)
             {
                 this.AttackModifiers.Add(ModText.LT_Label_Physical_Weapon_Attack_Mod, attacker.StatCollection.GetValue<int>(ModStats.PhysicalWeaponAttackMod));
             }

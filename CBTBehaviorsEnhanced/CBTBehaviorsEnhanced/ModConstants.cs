@@ -77,6 +77,7 @@ namespace CBTBehaviorsEnhanced
         public const string PunchTargetInstabilityMulti = "CBTBE_Punch_Target_Instability_Multi"; // float
 
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
+        
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
         public const string PhysicalWeaponAttackMod = "CBTBE_Physical_Weapon_Attack_Mod"; // int - a straight modifier to the attack roll
         public const string PhysicalWeaponExtraHitsCount = "CBTBE_Physical_Weapon_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
@@ -93,6 +94,7 @@ namespace CBTBehaviorsEnhanced
         public const string PhysicalWeaponTargetInstabilityMod = "CBTBE_Physical_Weapon_Target_Instability_Mod"; // int
         public const string PhysicalWeaponTargetInstabilityMulti = "CBTBE_Physical_Weapon_Target_Instability_Multi"; // float
 
+        public const string PhysicalWeaponIgnoreActuators = "CBTBE_Physical_Weapon_Ignore_Actuators"; // bool - if true, treat the unit as having fully functional actuators with their physical weapon
     }
 
     public class ModConsts
