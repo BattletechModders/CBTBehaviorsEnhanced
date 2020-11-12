@@ -48,7 +48,7 @@ namespace CBTBehaviorsEnhanced {
             }
             float movePenaltyDist = movePenalty * Mod.Config.Move.HeatMovePenalty;
             float modifiedWalkSpeed = mech.WalkSpeed + movePenaltyDist;
-            Mod.Log.Trace?.Write($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
+            Mod.Log.Debug?.Write($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
 
             // Normalize to the minimum if somehow we're below that.
             return modifiedWalkSpeed < Mod.Config.Move.MinimumMove ? Mod.Config.Move.MinimumMove : modifiedWalkSpeed;

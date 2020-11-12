@@ -199,6 +199,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             float damage = attacker.PhysicalWeaponDamage(this.AttackerCondition);
+            damage = target.ApplyPhysicalWeaponDamageReduction(damage);
 
             // Target damage applies as a single modifier
             this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.PhysicalWeaponExtraHitsCount);
@@ -216,8 +217,10 @@ namespace CBTBehaviorsEnhanced.Objects
         {
             Mod.MeleeLog.Info?.Write($"Calculating PHYSICAL WEAPON instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
-
-            this.TargetInstability = attacker.PhysicalWeaponInstability(this.AttackerCondition);
+            
+            float instab = attacker.PhysicalWeaponInstability(this.AttackerCondition);
+            instab = target.ApplyPhysicalWeaponInstabReduction(instab);
+            this.TargetInstability = instab;
         }
     }
 }

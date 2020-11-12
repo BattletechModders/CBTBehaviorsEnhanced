@@ -89,6 +89,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\AbstractActorExtensions.cs" />
     <Compile Include="Extensions\TurretExtensions.cs" />
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
     <Compile Include="Helper\AttackHelper.cs" />

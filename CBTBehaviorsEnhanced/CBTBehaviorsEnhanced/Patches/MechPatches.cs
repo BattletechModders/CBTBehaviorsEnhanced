@@ -31,6 +31,8 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<bool>(ModStats.HullBreachImmunity, true);
 
             // Setup melee stats
+
+            // --- CHARGE STATS ---
             __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackMod, 0);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.ChargeAttackerDamageMod, 0);
@@ -43,6 +45,10 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<int>(ModStats.ChargeTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetInstabilityMulti, 1f);
 
+            __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetDamageReductionMulti, 1f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.ChargeTargetInstabReductionMulti, 1f);
+
+            // --- DFA STATS ---
             __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveAttackMod, 0);
 
             __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveAttackerDamageMod, 0);
@@ -55,6 +61,10 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<int>(ModStats.DeathFromAboveTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetInstabilityMulti, 1f);
 
+            __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetDamageReductionMulti, 1f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.DeathFromAboveTargetInstabReductionMulti, 1f);
+
+            // --- KICK STATS ---
             __instance.StatCollection.AddStatistic<int>(ModStats.KickAttackMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.KickExtraHitsCount, 0f);
 
@@ -63,6 +73,10 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<int>(ModStats.KickTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetInstabilityMulti, 1f);
 
+            __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetDamageReductionMulti, 1f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.KickTargetInstabReductionMulti, 1f);
+
+            // --- PUNCH STATS ---
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchAttackMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchExtraHitsCount, 0f);
 
@@ -74,6 +88,10 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<int>(ModStats.PunchTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetInstabilityMulti, 1f);
 
+            __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetDamageReductionMulti, 1f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PunchTargetInstabReductionMulti, 1f);
+
+            // --- PHYSICAL WEAPON STATS ---
             __instance.StatCollection.AddStatistic<bool>(ModStats.PunchIsPhysicalWeapon, false);
             __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponIgnoreActuators, false);
 
@@ -94,6 +112,9 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstability, 0f);
             __instance.StatCollection.AddStatistic<int>(ModStats.PhysicalWeaponTargetInstabilityMod, 0);
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstabilityMulti, 1f);
+
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamageReductionMulti, 1f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetInstabReductionMulti, 1f);
 
             // Override the heat and shutdown levels
             List<int> sortedKeys = Mod.Config.Heat.Shutdown.Keys.ToList().OrderBy(x => x).ToList();

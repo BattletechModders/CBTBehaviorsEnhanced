@@ -139,10 +139,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
 			// split attacker damage into clusters
 			float attackerDamage = attacker.DFAAttackerDamage(targetTonnage);
+			attackerDamage = attacker.ApplyDFADamageReduction(attackerDamage);
 			DamageHelper.ClusterDamage(attackerDamage, Mod.Config.Melee.DFA.DamageClusterDivisor, out this.AttackerDamageClusters);
 
 			// split target damage into clusters
 			float targetDamage = attacker.DFATargetDamage();
+			targetDamage = target.ApplyDFADamageReduction(targetDamage);
 			DamageHelper.ClusterDamage(targetDamage, Mod.Config.Melee.DFA.DamageClusterDivisor, out this.TargetDamageClusters);
 		}
 
@@ -156,8 +158,13 @@ namespace CBTBehaviorsEnhanced.Objects
 			else if (target is Mech mech) targetTonnage = mech.tonnage;
 			Mod.MeleeLog.Info?.Write($" - Target tonnage is: {targetTonnage}");
 
-			this.AttackerInstability = attacker.DFAAttackerInstability(targetTonnage);
-			this.TargetInstability = attacker.DFATargetInstability();
+			float attackerInstab = attacker.DFAAttackerInstability(targetTonnage);
+			attackerInstab = attacker.ApplyDFAInstabReduction(attackerInstab);
+			this.AttackerInstability = attackerInstab;
+
+			float targetInstab = attacker.DFATargetInstability();
+			targetInstab = target.ApplyDFAInstabReduction(targetInstab);
+			this.TargetInstability = targetInstab;
 		}
 	}
 }
