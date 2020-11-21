@@ -32,7 +32,7 @@ namespace CBTBehaviorsEnhanced
         public const string HBS_Ignore_Pilot_Injuries = "IgnorePilotInjuries";
         public const string HBS_Mech_Current_Heat = "CurrentHeat";
 
-        // Melee damage modifier stats
+        // --- CHARGE STATS ---
         public const string ChargeAttackMod = "CBTBE_Charge_Attack_Mod"; // int - a straight modifier to the attack roll
 
         public const string ChargeAttackerDamageMod = "CBTBE_Charge_Attacker_Damage_Mod"; // int
@@ -45,6 +45,10 @@ namespace CBTBehaviorsEnhanced
         public const string ChargeTargetInstabilityMod = "CBTBE_Charge_Target_Instability_Mod"; // int
         public const string ChargeTargetInstabilityMulti = "CBTBE_Charge_Target_Instability_Multi"; // float
 
+        public const string ChargeTargetDamageReductionMulti = "CBTBE_Charge_Target_Damage_Reduction_Multi"; // float
+        public const string ChargeTargetInstabReductionMulti = "CBTBE_Charge_Target_Instability_Reduction_Multi"; // float
+
+        // --- DFA STATS ---
         public const string DeathFromAboveAttackMod = "CBTBE_DFA_Attack_Mod"; // int - a straight modifier to the attack roll
 
         public const string DeathFromAboveAttackerDamageMod = "CBTBE_DFA_Attacker_Damage_Mod"; // int
@@ -57,6 +61,10 @@ namespace CBTBehaviorsEnhanced
         public const string DeathFromAboveTargetInstabilityMod = "CBTBE_DFA_Target_Instability_Mod"; // int
         public const string DeathFromAboveTargetInstabilityMulti = "CBTBE_DFA_Target_Instability_Multi"; // float
 
+        public const string DeathFromAboveTargetDamageReductionMulti = "CBTBE_DFA_Target_Damage_Reduction_Multi"; // float
+        public const string DeathFromAboveTargetInstabReductionMulti = "CBTBE_DFA_Target_Instability_Reduction_Multi"; // float
+
+        // --- KICK STATS ---
         public const string KickAttackMod = "CBTBE_Kick_Attack_Mod"; // int - a straight modifier to the attack roll
         public const string KickExtraHitsCount = "CBTBE_Kick_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
 
@@ -65,6 +73,10 @@ namespace CBTBehaviorsEnhanced
         public const string KickTargetInstabilityMod = "CBTBE_Kick_Target_Instability_Mod"; // int
         public const string KickTargetInstabilityMulti = "CBTBE_Kick_Target_Instability_Multi"; // float
 
+        public const string KickTargetDamageReductionMulti = "CBTBE_Kick_Target_Damage_Reduction_Multi"; // float
+        public const string KickTargetInstabReductionMulti = "CBTBE_Kick_Target_Instability_Reduction_Multi"; // float
+
+        // --- PUNCH STATS ---
         public const string PunchAttackMod = "CBTBE_Punch_Attack_Mod"; // int - a straight modifier to the attack roll
         public const string PunchExtraHitsCount = "CBTBE_Punch_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
 
@@ -76,7 +88,12 @@ namespace CBTBehaviorsEnhanced
         public const string PunchTargetInstabilityMod = "CBTBE_Punch_Target_Instability_Mod"; // int
         public const string PunchTargetInstabilityMulti = "CBTBE_Punch_Target_Instability_Multi"; // float
 
+        public const string PunchTargetDamageReductionMulti = "CBTBE_Punch_Target_Damage_Reduction_Multi"; // float
+        public const string PunchTargetInstabReductionMulti = "CBTBE_Punch_Target_Instability_Reduction_Multi"; // float
+
+        // --- PHYSICAL WEAPON STATS ---
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
+
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
         public const string PhysicalWeaponAttackMod = "CBTBE_Physical_Weapon_Attack_Mod"; // int - a straight modifier to the attack roll
         public const string PhysicalWeaponExtraHitsCount = "CBTBE_Physical_Weapon_Extra_Hits_Count"; // float - a number of extra hits (using the calculated damage of the single strike) that will be applied. Will be rounded down.
@@ -93,6 +110,10 @@ namespace CBTBehaviorsEnhanced
         public const string PhysicalWeaponTargetInstabilityMod = "CBTBE_Physical_Weapon_Target_Instability_Mod"; // int
         public const string PhysicalWeaponTargetInstabilityMulti = "CBTBE_Physical_Weapon_Target_Instability_Multi"; // float
 
+        public const string PhysicalWeaponIgnoreActuators = "CBTBE_Physical_Weapon_Ignore_Actuators"; // bool - if true, treat the unit as having fully functional actuators with their physical weapon
+
+        public const string PhysicalWeaponTargetDamageReductionMulti = "CBTBE_Physical_Weapon_Target_Damage_Reduction_Multi"; // float
+        public const string PhysicalWeaponTargetInstabReductionMulti = "CBTBE_Physical_Weapon_Target_Instability_Reduction_Multi"; // float
     }
 
     public class ModConsts

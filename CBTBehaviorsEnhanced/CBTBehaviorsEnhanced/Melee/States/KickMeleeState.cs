@@ -72,6 +72,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
+            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+            {
+                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+                return false;
+            }
+
             // If neither kick (mech) or stomp (vehicle) - we're not a valid attack.
             if (!validAnimations.Contains(MeleeAttackType.Kick) && !validAnimations.Contains(MeleeAttackType.Stomp))
             {
@@ -155,6 +161,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             float damage = attacker.KickDamage(this.AttackerCondition);
+            
+            // Adjust damage for any target resistance
+            damage = target.ApplyKickDamageReduction(damage);
 
             this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.KickExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
@@ -171,7 +180,12 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating KICK instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            this.TargetInstability = attacker.KickInstability(this.AttackerCondition);
+            float instab = attacker.KickInstability(this.AttackerCondition);
+
+            // Adjust damage for any target resistance
+            instab = target.ApplyKickInstabReduction(instab);
+
+            this.TargetInstability = instab;
         }
     }
 }

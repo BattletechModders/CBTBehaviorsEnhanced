@@ -3,34 +3,42 @@ using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Extensions {
-    public static class MechExtensions {
+namespace CBTBehaviorsEnhanced.Extensions
+{
+    public static class MechExtensions
+    {
 
-        public static int ActuatorDamageMalus(this Mech mech) {
+        public static int ActuatorDamageMalus(this Mech mech)
+        {
             int malus = 0;
             if (mech.StatCollection != null &&
-                mech.StatCollection.ContainsStatistic(ModStats.ActuatorDamageMalus)) {
+                mech.StatCollection.ContainsStatistic(ModStats.ActuatorDamageMalus))
+            {
                 malus = mech.StatCollection.GetStatistic(ModStats.ActuatorDamageMalus).Value<int>();
             }
             return malus;
         }
 
-        public static float PilotCheckMod(this Mech mech, float multi) {
+        public static float PilotCheckMod(this Mech mech, float multi)
+        {
             return CalculateCheckMod(mech, multi, false);
         }
 
-        public static float HeatCheckMod(this Mech mech, float multi) {
+        public static float HeatCheckMod(this Mech mech, float multi)
+        {
             return CalculateCheckMod(mech, multi, true);
         }
 
-        private static float CalculateCheckMod(Mech mech, float multi, bool gutsSkill) {
+        private static float CalculateCheckMod(Mech mech, float multi, bool gutsSkill)
+        {
 
             int rawSkill = gutsSkill ? mech.SkillGuts : mech.SkillPiloting;
             int actorSkill = SkillUtils.NormalizeSkill(rawSkill);
             Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(mech)} has rawSkill: {actorSkill} normalized to {actorSkill}");
 
             int malus = 0;
-            if (!gutsSkill) {
+            if (!gutsSkill)
+            {
                 // Piloting checks must use damage malus
                 malus += mech.ActuatorDamageMalus();
             }
@@ -255,7 +263,7 @@ namespace CBTBehaviorsEnhanced.Extensions {
             float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
             Mod.MeleeLog.Debug?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x actuatorMulti: {actuatorMulti}");
-            
+
             return final;
         }
 

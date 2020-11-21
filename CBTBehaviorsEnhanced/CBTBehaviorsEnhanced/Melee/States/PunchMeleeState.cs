@@ -76,6 +76,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
+            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+            {
+                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+                return false;
+            }
+
             // If we cannot punch - not a valid attack
             if (!validAnimations.Contains(MeleeAttackType.Punch) && !(validAnimations.Contains(MeleeAttackType.Tackle)))
             {
@@ -156,6 +162,9 @@ namespace CBTBehaviorsEnhanced.Objects
 
             float damage = attacker.PunchDamage(this.AttackerCondition);
 
+            // Adjust damage for any target resistance
+            damage = target.ApplyPunchDamageReduction(damage);
+
             // Target damage applies as a single hit
             this.TargetDamageClusters = AttackHelper.CreateDamageClustersWithExtraAttacks(attacker, damage, ModStats.PunchExtraHitsCount);
             StringBuilder sb = new StringBuilder(" - Target damage clusters: ");
@@ -173,7 +182,12 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating PUNCH instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            this.TargetInstability = attacker.PunchInstability(this.AttackerCondition);
+            float instab = attacker.PunchInstability(this.AttackerCondition);
+
+            // Adjust damage for any target resistance
+            instab = target.ApplyPunchInstabReduction(instab);
+
+            this.TargetInstability = instab;
 
         }
     }

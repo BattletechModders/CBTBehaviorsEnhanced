@@ -14,12 +14,12 @@ namespace CBTBehaviorsEnhanced.Patches
             if (___combatHUD.SelectedTarget != null && ___combatHUD.SelectedTarget is Mech targetMech)
             {
                 Mod.Log.Info?.Write($"Adding {Mod.Config.Heat.MaxHeat} external heat to targetMech: {CombatantUtils.Label(targetMech)} ");
-                targetMech.AddExternalHeat("CBTBE_DEBUG", Mod.Config.Heat.MaxHeat);
+                targetMech.AddExternalHeat("CBTBE_DEBUG", Mod.Config.Developer.DebugHeatToAdd);
             }
             else if (___combatHUD.SelectedActor != null && ___combatHUD.SelectedActor is Mech actorMech)
             {
                 Mod.Log.Info?.Write($"Adding {Mod.Config.Heat.MaxHeat} external heat to actorMech: {CombatantUtils.Label(actorMech)} ");
-                actorMech.AddExternalHeat("CBTBE_DEBUG", Mod.Config.Heat.MaxHeat);
+                actorMech.AddExternalHeat("CBTBE_DEBUG", Mod.Config.Developer.DebugHeatToAdd);
             }
         }
     }
