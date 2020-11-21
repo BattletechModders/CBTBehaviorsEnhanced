@@ -84,8 +84,10 @@ namespace CBTBehaviorsEnhanced.Helper
 
         public static HashSet<MeleeAttackType> AvailableAttacks(Mech attacker, Vector3 attackPos, ICombatant target)
         {
-			Mod.MeleeLog.Info?.Write($"Checking available animations for attacker: {CombatantUtils.Label(attacker)} " +
-				$"at position: {attackPos} versus target: {CombatantUtils.Label(target)}");
+			Mod.MeleeLog.Info?.Write($"Checking available animations for " +
+				$"attacker: {CombatantUtils.Label(attacker)} from position: {attackPos} " +
+				$"versus target: {CombatantUtils.Label(target)} at position: {target.CurrentPosition} " +
+				$"with distance: {(attackPos - target.CurrentPosition).magnitude}");
 
 			HashSet<MeleeAttackType> availableAttacks = new HashSet<MeleeAttackType>();
 			if (target == null) return availableAttacks;

@@ -107,7 +107,6 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-
             Mod.MeleeLog.Info?.Write("PUNCH ATTACK validated");
             return true;
         }
