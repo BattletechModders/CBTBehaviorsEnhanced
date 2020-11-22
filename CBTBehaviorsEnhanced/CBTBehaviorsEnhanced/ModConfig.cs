@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info?.Write($"  Debug: {this.Debug} Trace: {this.Trace}");
             Mod.Log.Info?.Write($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  " +
-                $"PermanentEvasion: {this.Features.PermanentEvasion}  SpeedAsMP: {this.Features.SpeedAsMP}  " +
+                $"PermanentEvasion: {this.Features.PermanentEvasion}  " +
                 $"StartupChecks: {this.Features.StartupChecks}");
             Mod.Log.Info?.Write($"  ToHitSelfJumped: {this.ToHitSelfJumped}");
             Mod.Log.Info?.Write("");
@@ -118,10 +118,6 @@ namespace CBTBehaviorsEnhanced {
 
         // If true, evasion won't be removed by attacks
         public bool PermanentEvasion = true;
-
-        // If true, walk and run speeds will be normalized to MP instead of the HBS speeds.
-        // General - should match setting from https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/Engines/EngineSettings.cs#L32
-        public bool SpeedAsMP = false;
 
         // If true, mechs must make a piloting skill roll (PSR) to restart. On a failure, they remain shutdown.
         public bool StartupChecks = true;
