@@ -33,7 +33,7 @@ namespace CBTBehaviorsEnhanced
 
                 Mech mech = __instance.owningActor as Mech;
                 if (__instance == null || __instance.owningActor == null || mech == null) return; // Nothing to do
-                Mod.Log.Debug?.Write($"OS:OU - entered for Mech: {CombatantUtils.Label(mech)} with autoBrace: {mech.AutoBrace}");
+                Mod.ActivationLog.Debug?.Write($"OS:OU - entered for Mech: {CombatantUtils.Label(mech)} with autoBrace: {mech.AutoBrace}");
 
                 // If state is true, orders were complete before we headed into the sequence, so skip
                 if (__state) return;
@@ -41,27 +41,27 @@ namespace CBTBehaviorsEnhanced
                 // If the seqeuence doesn't consume activation, it's not one we target. Ignore it.
                 if (!__instance.ConsumesActivation)
                 {
-                    Mod.Log.Debug?.Write($" -- !consumesActivation: {__instance.ConsumesActivation}, skipping");
+                    Mod.ActivationLog.Debug?.Write($" -- !consumesActivation: {__instance.ConsumesActivation}, skipping");
                     return;
                 }
 
                 if (mech.IsShutDown)
                 {
-                    Mod.Log.Debug?.Write(" -- Mech is shutdown, assuming a MechStartupSequence will handle this - skipping.");
+                    Mod.ActivationLog.Debug?.Write(" -- Mech is shutdown, assuming a MechStartupSequence will handle this - skipping.");
                     return;
                 }
 
                 bool isInterleaved = SharedState.Combat?.TurnDirector?.IsInterleaved == true;
                 if (isInterleaved)
                 {
-                    Mod.Log.Debug?.Write(" -- Combat is interleaved, should be handled by OnUpdate() or MechStartupSequence - skipping.");
+                    Mod.ActivationLog.Debug?.Write(" -- Combat is interleaved, should be handled by OnUpdate() or MechStartupSequence - skipping.");
                     return;
                 }
 
                 DoneWithActorSequence dwaSeq = __instance as DoneWithActorSequence;
                 if (dwaSeq != null)
                 {
-                    Mod.Log.Debug?.Write($" -- sequence is DoneWithActorSequence: {dwaSeq != null}, skipping.");
+                    Mod.ActivationLog.Debug?.Write($" -- sequence is DoneWithActorSequence: {dwaSeq != null}, skipping.");
                     return; // Either a complete ending sequence, or the specific sequence doesn't consume activation so return
                 }
 
@@ -70,25 +70,25 @@ namespace CBTBehaviorsEnhanced
                 bool sequenceIsComplete = sequenceIsCompleteT.GetValue<bool>();
                 if (!sequenceIsComplete)
                 {
-                    Mod.Log.Debug?.Write($" -- !sequenceIsComplete: {sequenceIsComplete}, skipping");
+                    Mod.ActivationLog.Debug?.Write($" -- !sequenceIsComplete: {sequenceIsComplete}, skipping");
                     return;
                 }
 
                 // At this point, ___state should be false and sequenceIsComplete is true. This represents OnUpdate flipping the value during it's processing.
-                Mod.Log.Debug?.Write($" -- AT ACTIVATION END, checking for heat sequence creation. ");
-                Mod.Log.Debug?.Write($"  -- isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
+                Mod.ActivationLog.Info?.Write($" -- AT ACTIVATION END, checking for heat sequence creation. ");
+                Mod.ActivationLog.Info?.Write($"  -- isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
                     $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
 
                 // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
                 MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
                 if (heatSequence != null)
                 {
-                    Mod.Log.Debug?.Write($" -- Creating heat sequence for non-interleaved mode");
+                    Mod.ActivationLog.Info?.Write($" -- Creating heat sequence for non-interleaved mode");
                     __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
                 }
                 else
                 {
-                    Mod.Log.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
+                    Mod.ActivationLog.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
                 }
 
             }
@@ -108,7 +108,7 @@ namespace CBTBehaviorsEnhanced
         {
             private static void Prefix(ActorMovementSequence __instance)
             {
-                Mod.Log.Debug?.Write($"AMS:OC:PRE entered for actor: {CombatantUtils.Label(__instance?.OwningActor)}");
+                Mod.ActivationLog.Info?.Write($"AMS:OC:PRE entered for actor: {CombatantUtils.Label(__instance?.OwningActor)}");
 
                 // Interleaved - check for visibility to any enemies 
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
@@ -119,7 +119,7 @@ namespace CBTBehaviorsEnhanced
                 // Movement - check for damage after a sprint, and if so force a piloting check
                 if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0)
                 {
-                    Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
+                    Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
                     float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
                     float checkMod = sourceSkillMulti + damagePenalty;
@@ -136,7 +136,7 @@ namespace CBTBehaviorsEnhanced
 
             static void Postfix(ActorMovementSequence __instance)
             {
-                Mod.Log.Debug?.Write($"AMS:OC:POST - actor: {CombatantUtils.Label(__instance.OwningActor)} " +
+                Mod.ActivationLog.Info?.Write($"AMS:OC:POST - actor: {CombatantUtils.Label(__instance.OwningActor)} " +
                     $"autoBrace: {__instance.OwningActor.AutoBrace}  hasFired: {__instance.OwningActor.HasFiredThisRound}  consumesFiring: {__instance.ConsumesFiring}");
             }
         }
@@ -179,12 +179,12 @@ namespace CBTBehaviorsEnhanced
         {
             private static void Prefix(MechJumpSequence __instance)
             {
-                Mod.Log.Debug?.Write($"MJS:OC entered for actor: {CombatantUtils.Label(__instance.OwningMech)}");
+                Mod.ActivationLog.Debug?.Write($"MJS:OC entered for actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
                 // Check for visibility to any enemies
                 if (!__instance.owningActor.Combat.TurnDirector.IsInterleaved)
                 {
-                    Mod.Log.Debug?.Write("MJS:OC is not interleaved and no enemies - autobracing ");
+                    Mod.ActivationLog.Info?.Write("MJS:OC is not interleaved and no enemies - autobracing ");
                     __instance.owningActor.AutoBrace = true;
                 }
 
@@ -195,7 +195,7 @@ namespace CBTBehaviorsEnhanced
                 // Movement - check for damage after a jump, and if so force a piloting check
                 if (__instance.OwningMech.ActuatorDamageMalus() != 0 || Mod.Config.Developer.ForceFallAfterJump)
                 {
-                    Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
+                    Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
                     float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
                     float checkMod = sourceSkillMulti + damagePenalty;
@@ -221,12 +221,12 @@ namespace CBTBehaviorsEnhanced
                 AbstractActor actor = SharedState.Combat.FindActorByGUID(__instance.ActorGUID);
                 if (actor != null)
                 {
-                    Mod.Log.Debug?.Write($"AAMI:I entered for actor: {CombatantUtils.Label(actor)}");
+                    Mod.ActivationLog.Debug?.Write($"AAMI:I entered for actor: {CombatantUtils.Label(actor)}");
 
                     // Check for visibility to any enemies
                     if (!actor.Combat.TurnDirector.IsInterleaved)
                     {
-                        Mod.Log.Debug?.Write("MJS:OC is not interleaved and no enemies - autobracing ");
+                        Mod.ActivationLog.Info?.Write("MJS:OC is not interleaved and no enemies - autobracing ");
                         actor.AutoBrace = true;
                     }
                 }
