@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced
             }
             float movePenaltyDist = movePenalty * Mod.Config.Move.HeatMovePenalty;
             float modifiedWalkSpeed = mech.WalkSpeed + movePenaltyDist;
-            Mod.MoveLog.Info?.Write($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
+            Mod.MoveLog.Debug?.Write($"Modified mechs walk speed from {mech.WalkSpeed} by {movePenalty} x {Mod.Config.Move.HeatMovePenalty} = {modifiedWalkSpeed}");
 
             // Normalize to the minimum if somehow we're below that.
             return modifiedWalkSpeed < Mod.Config.Move.MinimumMove ? Mod.Config.Move.MinimumMove : modifiedWalkSpeed;
@@ -36,12 +36,12 @@ namespace CBTBehaviorsEnhanced
         {
             if (mech.IsLegged)
             {
-                Mod.MoveLog.Info?.Write($"Mech: {mech.DistinctId()} is legged, returning {Mod.Config.Move.MinimumMove}m");
+                Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} is legged, returning {Mod.Config.Move.MinimumMove}m");
                 return Mod.Config.Move.MinimumMove;
             }
 
             float walkSpeed = CalcWalkDist(mech);
-            Mod.MoveLog.Info?.Write($" Mech: {mech.DistinctId()} has WalkSpeed of {walkSpeed}");
+            Mod.MoveLog.Debug?.Write($" Mech: {mech.DistinctId()} has WalkSpeed of {walkSpeed}");
             return walkSpeed;
         }
 
@@ -52,7 +52,7 @@ namespace CBTBehaviorsEnhanced
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
             if (mech.IsLegged)
             {
-                Mod.MoveLog.Info?.Write($"Mech: {mech.DistinctId()} is legged, returning {Mod.Config.Move.MinimumMove}m");
+                Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} is legged, returning {Mod.Config.Move.MinimumMove}m");
                 return Mod.Config.Move.MinimumMove;
             }
 
@@ -67,7 +67,7 @@ namespace CBTBehaviorsEnhanced
             float walkSpeed = CalcWalkDist(mech);
             // Per Battletech Manual, Running MP is always rounded up. Follow that principle here as well.
             float runSpeed = (float)Math.Ceiling(walkSpeed * runMulti);
-            Mod.MoveLog.Info?.Write($" Mech: {mech.DistinctId()} has RunSpeed of {runSpeed} from walkSpeed: {walkSpeed} x runMulti: {runMulti}");
+            Mod.MoveLog.Debug?.Write($" Mech: {mech.DistinctId()} has RunSpeed of {runSpeed} from walkSpeed: {walkSpeed} x runMulti: {runMulti}");
 
             return runSpeed;
         }
