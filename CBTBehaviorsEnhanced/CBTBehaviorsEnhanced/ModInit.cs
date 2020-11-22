@@ -16,6 +16,9 @@ namespace CBTBehaviorsEnhanced {
         public static DeferringLogger Log;
         public static DeferringLogger HeatLog;
         public static DeferringLogger MeleeLog;
+        public static DeferringLogger ActivationLog;
+        public static DeferringLogger MoveLog;
+
         public static string ModDir;
         public static ModConfig Config;
         public static ModText LocalizedText;
@@ -37,6 +40,8 @@ namespace CBTBehaviorsEnhanced {
             Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
             HeatLog = new DeferringLogger(modDirectory, LogName + "_heat", LogLabel, Config.Debug, Config.Trace);
             MeleeLog = new DeferringLogger(modDirectory, LogName + "_melee", LogLabel, Config.Debug, Config.Trace);
+            ActivationLog = new DeferringLogger(modDirectory, LogName + "_activation", LogLabel, Config.Debug, Config.Trace);
+            MoveLog = new DeferringLogger(modDirectory, LogName + "_move", LogLabel, Config.Debug, Config.Trace);
 
             // Read localization
             string localizationPath = Path.Combine(ModDir, "./mod_localized_text.json");
