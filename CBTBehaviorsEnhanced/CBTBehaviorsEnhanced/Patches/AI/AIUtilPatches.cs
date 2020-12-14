@@ -195,11 +195,11 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     }
 
                     float rawExplosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                    Mod.HeatLog.Debug?.Write($" -- explosionChance: {rawExplosionChance} => value: {kvp.Value} - heatCheckMod: {heatCheckMod}");
+                    Mod.HeatLog.Info?.Write($" -- explosionChance: {rawExplosionChance} => value: {kvp.Value} - heatCheckMod: {heatCheckMod}");
                     float successChance = 1.0f - rawExplosionChance;
                     float compoundChance = successChance * successChance;
                     float finalExplosionChance = 1.0f - compoundChance;
-                    Mod.HeatLog.Debug?.Write($" -- finalExplosionChance: {finalExplosionChance} = 1.0f - compoundChance: {compoundChance}");
+                    Mod.HeatLog.Info?.Write($" -- finalExplosionChance: {finalExplosionChance} = 1.0f - compoundChance: {compoundChance}");
                     if (finalExplosionChance <= bhvarAcceptableHeatFraction)
                         acceptableHeat = kvp.Key;
                     else
@@ -227,7 +227,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     }
 
                     float explosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                    Mod.HeatLog.Debug?.Write($" -- explosionChance: {explosionChance} => value: {kvp.Value} - heatCheckMod: {heatCheckMod}");
+                    Mod.HeatLog.Info?.Write($" -- explosionChance: {explosionChance} => value: {kvp.Value} - heatCheckMod: {heatCheckMod}");
                     if (explosionChance <= bhvarAcceptableHeatFraction)
                         acceptableHeat = kvp.Key;
                     else
