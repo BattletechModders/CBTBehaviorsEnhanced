@@ -37,6 +37,10 @@ All heat effects are resolved at the end of the current turn, __except__ for the
 
 The table below lists the thresholds for the default configuration provided in `mod.json`.
 
+Note the chance for an event is modified by the pilot's Guts skill. When a roll is made for an event, the Guts skill is multiplied by the `Piloting.SkillMulti` value (in mod.json) and is added to the random result. This value is then compared against the event chance, and if lower than the threshold percentage the event occurs.
+
+> Example: A mech with piloting 4 has a 60% shutdown chance. The random roll is 0.23 + (4 x 0.05) = 0.43. This is less than the threshold of 0.60, so the mech will shutdown.
+
 | Heat Level | Shutdown Chance | Ammo Explosion | Pilot Injury | System Failure | Attack Modifier | Movement Modifier |
 | -- | -- | -- | -- | -- | -- | -- |
 | 15 | - | - | - | - | - | -30m |
@@ -79,6 +83,19 @@ The table below lists the thresholds for the default configuration provided in `
 The chances above are displayed in a tooltip shown when hovering over the heat-bar in the bottom left corner, just above the Mech paper doll. These values are dynamically updated when you target an enemy, so you can predict will occur at the end of your turn.
 
 All chances and modifiers are configurable in the mod.json file.
+
+### AI and Heat Scale
+The AI was trained to deal with the HBS model of heat. As you gained heat, you eventually did damage to your structure, and could die from 'corroding' it from the inside out. The AI uses the behavior variable `Float_AcceptableHeatLevel` to determine how risky it chooses to play, with a range from 0-3.
+
+CBTBE uses this value, but expects you (the mod developer) to set it to a percentage representing the maximum percentage of failure the AI will accept from heat. This value is from 0.0 - 1.0, with a suggested value between 0.4 - 0.8 if you're using the heat scale as presented.
+
+When the AI calculates it's acceptable heat, CBTBE will evaluate the maximum possible heat in this order:  
+
+1. Volatile ammo boxes: If the unit has any volatile ammo boxes *at all* then the chance of failure is increased, as there are two rolls made. This comparison is against the ammo explosion limits.
+2. Regular ammo boxes: If the unit has any ammo boxes, then the `Float_AcceptableHeatLevel` threshold is checked against the ammo explosion limits.
+3. Shutdown: The default; if all other tests pass then `Float_AcceptableHeatLevel` is compared against the shutdown thresholds.
+
+(!) Note - because behaviorVars are exposed through JArrays, CBTBE cannot selectively merge changes to `Float_AcceptableHeatLevel`. Other mods like BetterAI already change these values, and CBTBE will overwrite any such changes they make. You are strongly encouraged to modify `Float_AcceptableHeatLevel` in the appropriate file in your own mod, and delete the StreamAssets version shipped with CBTBE. 
 
 ## Classic Piloting
 

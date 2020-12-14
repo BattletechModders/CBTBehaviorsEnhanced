@@ -202,7 +202,7 @@ namespace CBTBehaviorsEnhanced {
 
         public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isVolatile) {
             float totalDamage = 0f;
-            AmmunitionBox mosDangerousBox = null;
+            AmmunitionBox mostDangerousBox = null;
             foreach (AmmunitionBox ammoBox in mech.ammoBoxes) {
                 if (ammoBox.IsFunctional == false) {
                     Mod.HeatLog.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' is not functional, skipping."); 
@@ -235,12 +235,12 @@ namespace CBTBehaviorsEnhanced {
                     $"for {boxDamage} total damage.");
 
                 if (boxDamage > totalDamage) {
-                    mosDangerousBox = ammoBox;
+                    mostDangerousBox = ammoBox;
                     totalDamage = boxDamage;
                 }
             }
 
-            return mosDangerousBox;
+            return mostDangerousBox;
         } 
 
     }

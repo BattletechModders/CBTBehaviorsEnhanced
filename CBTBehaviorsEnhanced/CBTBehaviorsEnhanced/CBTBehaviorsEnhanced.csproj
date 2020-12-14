@@ -97,6 +97,7 @@
     <Compile Include="Helper\CleverGirlCalculator.cs" />
     <Compile Include="Helper\MeleeHelper.cs" />
     <Compile Include="Helper\QuipHelper.cs" />
+    <Compile Include="Helper\UnitHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
     <Compile Include="Melee\MechDFASequencePatches.cs" />
     <Compile Include="Melee\SelectionStatePatches.cs" />
