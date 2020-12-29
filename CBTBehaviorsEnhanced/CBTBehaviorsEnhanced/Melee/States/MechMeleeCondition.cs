@@ -64,6 +64,11 @@ namespace CBTBehaviorsEnhanced
 				return false;
 			}
 
+			// If the ignore actuators stat is set, allow the attack regardless of actuator damage
+			Statistic ignoreActuatorsStat = Attacker.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
+			if (ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>())
+				return true;
+
 			// Damage check - shoulder and hand
 			bool leftArmIsFunctional = LeftShoulderIsFunctional && LeftHandIsFunctional;
 			bool rightArmIsFunctional = RightShoulderIsFunctional && RightHandIsFunctional;
