@@ -277,6 +277,7 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         public static void Postfix(Mech __instance, ref float __result)
         {
+            // TODO: Only modify these if we're actively in combat
             Mod.Log.Trace?.Write("M:MWD:GET entered.");
             __result = MechHelper.FinalWalkSpeed(__instance);
         }
@@ -289,6 +290,7 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         public static void Postfix(Mech __instance, ref float __result)
         {
+            // TODO: Only modify these if we're actively in combat
             Mod.Log.Trace?.Write("M:MBD:GET entered.");
             __result = MechHelper.FinalWalkSpeed(__instance);
         }
@@ -301,6 +303,7 @@ namespace CBTBehaviorsEnhanced.Patches
     {
         public static void Postfix(Mech __instance, ref float __result)
         {
+            // TODO: Only modify these if we're actively in combat
             Mod.Log.Trace?.Write("M:MSD:GET entered.");
             __result = MechHelper.FinalRunSpeed(__instance);
 
