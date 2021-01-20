@@ -110,22 +110,30 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(CombatHUDAttackModeSelector), "ShowFireButton")]
     static class CombatHUDAttackModeSelector_ShowFireButton
     {
-        static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, ref string additionalDetails, bool showHeatWarnings)
+        static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
+            ref string additionalDetails, bool showHeatWarnings)
         {
             Mod.Log.Trace?.Write($"ShowFireButton called with mode: {mode}");
 
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
             {
-                if (ModState.MeleeStates == null  || SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos != ModState.MeleePreviewPos)
+                if (SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos != ModState.MeleePreviewPos || ModState.MeleeStates == null)
                 {
+                    ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
+
+                    // Update melee states
                     ModState.MeleeStates = MeleeHelper.GetMeleeStates(
                         SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
                         );
-                    ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
                     Mod.MeleeLog.Debug?.Write($"Updated melee state for position: {ModState.MeleePreviewPos}");
+
+                    // Re-enable any buttons if they were disabled.
+                    __instance.FireButton.SetState(ButtonState.Enabled);
+                    __instance.DescriptionContainer.SetActive(true);
+
                 }
             }
             else
@@ -134,7 +142,8 @@ namespace CBTBehaviorsEnhanced.Patches
             }
         }
 
-        static void Postfix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, ref string additionalDetails, bool showHeatWarnings)
+        static void Postfix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
+            ref string additionalDetails, bool showHeatWarnings)
         {
             // Disable the melee container if there's no active state
             if (SharedState.CombatHUD.SelectionHandler.ActiveState == null)
@@ -197,6 +206,17 @@ namespace CBTBehaviorsEnhanced.Patches
             // Handle the DFA button here
             if (mode == CombatHUDFireButton.FireMode.DFA)
             {
+                // Check for valid attack
+                if (!ModState.MeleeStates.DFA.IsValid)
+                {
+                    Mod.MeleeLog.Info?.Write($"DFA attack failed validation, disabling button.");
+                    __instance.FireButton.SetState(ButtonState.Disabled);
+                    __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    __instance.DescriptionContainer.SetActive(false);
+                    SharedState.CombatHUD.SelectionHandler.ActiveState.BackOut();
+                    __instance.ForceRefreshImmediate();
+                }
+
                 HashSet<string> descriptonNotes = ModState.MeleeStates.DFA.DescriptionNotes;
                 additionalDetails = String.Join(", ", descriptonNotes);
                 Mod.MeleeLog.Info?.Write($"Aggregate description is: {additionalDetails}");
