@@ -227,8 +227,17 @@ namespace CBTBehaviorsEnhanced.Melee {
 
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
             Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
-            BuildWeaponDirectorSequenceT.GetValue();
-            Mod.MeleeLog.Debug?.Write(" -- Done!");
+            if (BuildWeaponDirectorSequenceT == null)
+            {
+                Mod.Log.Error?.Write($"No method named BuildWeaponDirectorSequence found - no clue what will happen next!");
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                Mod.Log.Info?.Write($"  Error occured at: {t}");
+            }
+            else
+            {
+                BuildWeaponDirectorSequenceT.GetValue();
+                Mod.MeleeLog.Debug?.Write(" -- Done!");
+            }
         }
     }
 
