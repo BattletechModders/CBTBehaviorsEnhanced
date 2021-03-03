@@ -17,13 +17,13 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    [HarmonyPatch(typeof(AbstractActor), "OnActivationBegin")]
-    [HarmonyPatch(new Type[] { typeof(string), typeof(int) })]
-    static class AbstractActor_OnActivationBegin
+    [HarmonyPatch(typeof(AbstractActor), "OnNewRound")]
+    [HarmonyPatch(new Type[] { typeof(int) })]
+    static class AbstractActor_OnNewRound
     {
         static void Postfix(AbstractActor __instance)
         {
-            Mod.ActivationLog.Debug?.Write($"AA:OAB entered - for actor: {__instance.DisplayName} with TD.IsInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}. " +
+            Mod.ActivationLog.Debug?.Write($"AA:ONR entered - for actor: {__instance.DisplayName} with TD.IsInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}. " +
                 $"Setting CanShootAfterSprinting: {__instance.Combat.TurnDirector.IsInterleaved}");
             //This is an easy place to put this where it will always be checked. This is the key to full non-interleaved combat.
             __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, __instance.Combat.TurnDirector.IsInterleaved);
