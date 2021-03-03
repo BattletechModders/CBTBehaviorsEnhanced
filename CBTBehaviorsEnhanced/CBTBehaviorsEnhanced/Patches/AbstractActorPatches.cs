@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using Harmony;
 using IRBTModUtils.Extension;
+using System;
 using UnityEngine;
 
 namespace CBTBehaviorsEnhanced.Patches
@@ -13,6 +14,19 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             Mod.Log.Debug?.Write($"AA:IES entered- setting CanShootAfterSprinting for actor:{__instance.DisplayName}");
             __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, true);
+        }
+    }
+
+    [HarmonyPatch(typeof(AbstractActor), "OnActivationBegin")]
+    [HarmonyPatch(new Type[] { typeof(string), typeof(int) })]
+    static class AbstractActor_OnActivationBegin
+    {
+        static void Postfix(AbstractActor __instance)
+        {
+            Mod.ActivationLog.Debug?.Write($"AA:OAB entered - for actor: {__instance.DisplayName} with TD.IsInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}. " +
+                $"Setting CanShootAfterSprinting: {__instance.Combat.TurnDirector.IsInterleaved}");
+            //This is an easy place to put this where it will always be checked. This is the key to full non-interleaved combat.
+            __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, __instance.Combat.TurnDirector.IsInterleaved);
         }
     }
 
