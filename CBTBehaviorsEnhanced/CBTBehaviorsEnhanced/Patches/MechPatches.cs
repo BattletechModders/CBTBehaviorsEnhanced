@@ -194,6 +194,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             MultiSequence sequence = new MultiSequence(__instance.Combat);
             bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(__instance, __instance.CurrentHeat, sequence.RootSequenceGUID, sequence.SequenceGUID, heatCheck);
+
             bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
             bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
             bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
