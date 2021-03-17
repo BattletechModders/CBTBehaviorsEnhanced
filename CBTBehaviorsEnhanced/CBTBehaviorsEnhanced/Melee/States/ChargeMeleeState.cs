@@ -149,12 +149,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
 			// Calculate attacker damage
 			float attackerDamage = attacker.ChargeAttackerDamage(targetTonnage);
-			attackerDamage = attacker.ApplyDFADamageReduction(attackerDamage);
+			attackerDamage = attacker.ApplyChargeDamageReduction(attackerDamage);
 			DamageHelper.ClusterDamage(attackerDamage, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.AttackerDamageClusters);
 
 			// Resolve target damage - include movement!
 			float targetDamage = attacker.ChargeTargetDamage(hexesMoved);
-			targetDamage = target.ApplyDFADamageReduction(targetDamage);
+			targetDamage = target.ApplyChargeDamageReduction(targetDamage);
 			DamageHelper.ClusterDamage(targetDamage, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.TargetDamageClusters);
 		}
 
@@ -170,12 +170,12 @@ namespace CBTBehaviorsEnhanced.Objects
 
 			// Resolve attacker instability
 			float attackerInstab = attacker.ChargeAttackerInstability(targetTonnage, hexesMoved);
-			attackerInstab = attacker.ApplyDFAInstabReduction(attackerInstab);
+			attackerInstab = attacker.ApplyChargeInstabReduction(attackerInstab);
 			this.AttackerInstability = attackerInstab;
 
 			// Resolve target instability
 			float targetInstab = attacker.ChargeTargetInstability(targetTonnage, hexesMoved);
-			targetInstab = target.ApplyDFAInstabReduction(targetInstab);
+			targetInstab = target.ApplyChargeInstabReduction(targetInstab);
 			this.TargetInstability = targetInstab;
 
 		}

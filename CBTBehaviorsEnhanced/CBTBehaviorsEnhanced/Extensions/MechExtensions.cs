@@ -106,7 +106,7 @@ namespace CBTBehaviorsEnhanced.Extensions
 
         public static float ChargeTargetInstability(this Mech mech, float targetTonnage, int hexesMoved)
         {
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.TargetInstabilityPerAttackerTon * targetTonnage * hexesMoved);
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.TargetInstabilityPerAttackerTon * mech.tonnage * hexesMoved);
             Mod.MeleeLog.Debug?.Write($"Charge Target instability: {Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon} x " +
                 $"target tonnage: {targetTonnage} x hexesMoved: {hexesMoved} = {raw}");
 
@@ -323,7 +323,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         {
             if (!attackerCondition.CanPunch()) return 0;
 
-            float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamage) &&
+            float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetDamage) &&
                 mech.StatCollection.GetValue<float>(ModStats.PunchTargetDamage) > 0 ?
                 mech.StatCollection.GetValue<float>(ModStats.PunchTargetDamage) :
                 Mod.Config.Melee.Punch.TargetDamagePerAttackerTon;
