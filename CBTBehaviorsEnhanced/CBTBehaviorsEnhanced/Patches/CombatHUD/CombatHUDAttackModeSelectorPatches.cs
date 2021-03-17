@@ -94,10 +94,10 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 // Reverse order, as the first one created is the right-most
                 Mod.Log.Trace?.Write($"CREATING BUTTONS");
-                ModState.PunchFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PunchFB_GO_ID, Combat, HUD);
-                ModState.PhysicalWeaponFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PhysicalWeaponFB_GO_ID, Combat, HUD);
-                ModState.KickFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.KickFB_GO_ID, Combat, HUD);
                 ModState.ChargeFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.ChargeFB_GO_ID, Combat, HUD);
+                ModState.PhysicalWeaponFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PhysicalWeaponFB_GO_ID, Combat, HUD);
+                ModState.PunchFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PunchFB_GO_ID, Combat, HUD);
+                ModState.KickFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.KickFB_GO_ID, Combat, HUD);
             }
             catch (Exception e)
             {
@@ -303,29 +303,53 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || __instance.gameObject == null || ModState.MeleeStates == null) return true;
 
-            Mod.Log.Trace?.Write($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}!");
+            Mod.Log.Info?.Write($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}");
 
             bool shouldReturn = true;
             CombatHUDAttackModeSelector selector = SharedState.CombatHUD.AttackModeSelector;
             if (__instance.gameObject.name == ModConsts.ChargeFB_GO_ID)
             {
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.Charge;
+                Mod.Log.Info?.Write("User selected Charge button");
                 shouldReturn = false;                
             }
             else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
             {
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.Kick;
+                Mod.Log.Info?.Write("User selected Kick button");
                 shouldReturn = false;
             }
             else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
             {
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.PhysicalWeapon;
+                Mod.Log.Info?.Write("User selected PhysWeap button");
                 shouldReturn = false;
             }
             else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
             {
                 ModState.MeleeStates.SelectedState = ModState.MeleeStates.Punch;
+                Mod.Log.Info?.Write("User selected Punch button");
                 shouldReturn = false;
+            }
+            else 
+            {
+                if (ModState.MeleeStates.SelectedState != null)
+                {
+                    Mod.Log.Info?.Write("OnClick from generic CHUDFB with selected type, short-cutting to action.");
+
+                    // Disable the buttons to prevent accidental clicks?
+                    if (ModState.MeleeStates.SelectedState != ModState.MeleeStates.Charge)
+                        ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    if (ModState.MeleeStates.SelectedState != ModState.MeleeStates.Kick)
+                        ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    if (ModState.MeleeStates.SelectedState != ModState.MeleeStates.PhysicalWeapon)
+                        ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    if (ModState.MeleeStates.SelectedState != ModState.MeleeStates.Punch)
+                        ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+
+                    return true;
+                }
+                
             }
 
             if (ModState.MeleeStates.SelectedState != null)
