@@ -2,25 +2,25 @@
     "Name": "CBTBehaviorsEnhanced",
     "Enabled": true,
 	"Hidden": true,
-    "Version": "0.6.2",
+    "Version": "0.6.7",
     "Description": "Provides TableTop like behaviors for heat, movement, and more",
     "Author": "FrostRaptor",
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
     "Contact": "",
     "DLL": "CBTBehaviorsEnhanced.dll",
     "DependsOn" : [ "IRBTModUtils", "MechEngineer", "CustomComponents", "Custom Ammo Categories" ],
-	"OptionallyDependsOn": [ "BetterAI" ],
-    "ConflictsWith" : [ "CharlesB" ],
+   	"OptionallyDependsOn": [ "BetterAI" ],
+	"ConflictsWith" : [ "CharlesB" ],
     "Settings": {
         "Debug" : false,
         "Trace" : false,
-        
-        "Developer": {
+
+		"Developer": {
             "ForceFallAfterJump" : false,
             "ForceInvalidateAllMeleeAttacks" : false,
             "DebugHeatToAdd" : 150
         },
-
+		
         "Features" : {
             "BiomeBreaches" : false,
 			"PermanentEvasion" : true,
@@ -132,7 +132,6 @@
         },
         
         "Move" : {
-            "SkillMulti" : 0.05,
             "MinimumMove" : 40.0,
             "RunMulti" : 1.5,
             "FallAfterRunChance" : 0.30,
@@ -140,7 +139,6 @@
         },
         
         "Piloting" : {
-            "SkillMulti" : 0.05,
             "StabilityCheck" : 0.30,
             "DFAReductionMulti" : 0.05,
             "ShowAllStabilityRolls" : false,
@@ -151,7 +149,12 @@
         "Breaches" : {
             "VacuumCheck" : 0.17,
             "ThinAtmoCheck" : 0.03
-        }
+        },
+		
+		"SkillChecks" : {
+			"ModPerPointOfPiloting" : 0.05,
+			"ModPerPointOfGuts" : 0.05
+		}
 
     }
 }
