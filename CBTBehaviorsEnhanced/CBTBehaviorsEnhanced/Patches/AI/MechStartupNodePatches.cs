@@ -25,7 +25,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             if (unit is Mech mech)
             {
                 
-                float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+                float heatCheck = mech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
                 int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
                 
                 // Check to see if we will shutdown

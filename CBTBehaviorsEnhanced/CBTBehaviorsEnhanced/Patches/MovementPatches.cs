@@ -120,8 +120,8 @@ namespace CBTBehaviorsEnhanced
                 if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0)
                 {
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
-                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
-                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
+                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
+                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.SkillChecks.ModPerPointOfPiloting;
                     float checkMod = sourceSkillMulti + damagePenalty;
                     Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 
@@ -196,8 +196,8 @@ namespace CBTBehaviorsEnhanced
                 if (__instance.OwningMech.ActuatorDamageMalus() != 0 || Mod.Config.Developer.ForceFallAfterJump)
                 {
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
-                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Move.SkillMulti);
-                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.Move.SkillMulti;
+                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
+                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.SkillChecks.ModPerPointOfPiloting;
                     float checkMod = sourceSkillMulti + damagePenalty;
                     Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
 

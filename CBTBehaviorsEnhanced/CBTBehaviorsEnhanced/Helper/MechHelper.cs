@@ -104,7 +104,7 @@ namespace CBTBehaviorsEnhanced
                 return;
             }
 
-            float pilotCheck = target.PilotCheckMod(Mod.Config.Piloting.SkillMulti);
+            float pilotCheck = target.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
             bool didCheckPass = CheckHelper.DidCheckPassThreshold(Mod.Config.Piloting.StabilityCheck, target, pilotCheck, ModText.FT_Check_Fall);
             if (!didCheckPass)
             {

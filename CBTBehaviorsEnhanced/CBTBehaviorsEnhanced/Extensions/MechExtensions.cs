@@ -21,11 +21,13 @@ namespace CBTBehaviorsEnhanced.Extensions
 
         public static float PilotCheckMod(this Mech mech, float multi)
         {
+            Mod.Log.Info?.Write($"Calculating pilot check modifier for actor: {CombatantUtils.Label(mech)}");
             return CalculateCheckMod(mech, multi, false);
         }
 
         public static float HeatCheckMod(this Mech mech, float multi)
         {
+            Mod.Log.Info?.Write($"Calculating heat check modifier for actor: {CombatantUtils.Label(mech)}");
             return CalculateCheckMod(mech, multi, true);
         }
 
@@ -44,10 +46,10 @@ namespace CBTBehaviorsEnhanced.Extensions
             }
 
             float adjustedSkill = actorSkill - malus > 0f ? actorSkill - malus : 0f;
-            Mod.Log.Debug?.Write($"  AdjustedSkill: {adjustedSkill} = actorSkill: {actorSkill} - malus: {malus}.");
+            Mod.Log.Info?.Write($"  AdjustedSkill: {adjustedSkill} = actorSkill: {actorSkill} - malus: {malus}.");
 
             float checkMod = adjustedSkill * multi;
-            Mod.Log.Debug?.Write($"  CheckMod: {checkMod} = adjustedSkill: {adjustedSkill} * multi: {multi}");
+            Mod.Log.Info?.Write($"  CheckMod: {checkMod} = adjustedSkill: {adjustedSkill} * multi: {multi}");
             return checkMod;
         }
 

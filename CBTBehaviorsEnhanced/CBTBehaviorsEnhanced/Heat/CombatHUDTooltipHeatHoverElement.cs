@@ -57,7 +57,7 @@ namespace CBTBehaviorsEnhanced.Heat {
             ));
 
             // Heat line
-            float heatCheck = displayedMech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+            float heatCheck = displayedMech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
 
             // Force a recalculation of the overheat warning
             if (calculatedHeat.FutureHeat > Mod.Config.Heat.WarnAtHeat) {

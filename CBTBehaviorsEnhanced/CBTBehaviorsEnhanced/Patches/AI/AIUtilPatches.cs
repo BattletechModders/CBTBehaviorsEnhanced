@@ -175,15 +175,16 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             sw.Start();
 
             float bhvarAcceptableHeatFraction = UnitHelper.GetBehaviorVariableValue(mech.BehaviorTree, BehaviorVariableName.Float_AcceptableHeatLevel).FloatVal;
-            Mod.HeatLog.Info?.Write($"Unit: {mech.DistinctId()} has heatRiskRatio: {bhvarAcceptableHeatFraction}");
+            Mod.HeatLog.Info?.Write($"Unit: {mech.DistinctId()} has heatRiskRatio: {bhvarAcceptableHeatFraction} and currentHeat: {mech.CurrentHeat}");
 
             int acceptableHeat = 0;
-            float heatCheckMod = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+            float heatCheckMod = mech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
 
             // TODO: Check explosion chance; volatile is essentially double chance
             AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(mech, true);
             if (mostDamagingVolatile != null)
             {
+                Mod.HeatLog.Info?.Write($"-- Checking volatile ammo ");
                 // We have volatile ammo, success chances will be lower because of the greater chance of an ammo explosion
                 foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
                 {
@@ -195,11 +196,11 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     }
 
                     float rawExplosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                    Mod.HeatLog.Info?.Write($" -- explosionChance: {rawExplosionChance} => value: {kvp.Value} - heatCheckMod: {heatCheckMod}");
+                    Mod.HeatLog.Info?.Write($" -- heat: {kvp.Key} has rawChance: {kvp.Value} - pilotMod: {heatCheckMod} => raw explosionChance: {rawExplosionChance}");
                     float successChance = 1.0f - rawExplosionChance;
                     float compoundChance = successChance * successChance;
                     float finalExplosionChance = 1.0f - compoundChance;
-                    Mod.HeatLog.Info?.Write($" -- finalExplosionChance: {finalExplosionChance} = 1.0f - compoundChance: {compoundChance}");
+                    Mod.HeatLog.Info?.Write($" -- 1.0f - compoundChance: {compoundChance} => finalExplosionChance: {finalExplosionChance}");
                     if (finalExplosionChance <= bhvarAcceptableHeatFraction)
                         acceptableHeat = kvp.Key;
                     else
@@ -216,6 +217,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(mech, false);
             if (mostDamaging != null)
             {
+                Mod.HeatLog.Info?.Write($"-- Checking regular ammo ");
                 // We have regular ammo, so success chances are as on tin
                 foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
                 {
@@ -227,7 +229,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     }
 
                     float explosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                    Mod.HeatLog.Info?.Write($" -- explosionChance: {explosionChance} => value: {kvp.Value} - heatCheckMod: {heatCheckMod}");
+                    Mod.HeatLog.Info?.Write($" -- heat: {kvp.Key} has rawChance: {kvp.Value} - pilotMod: {heatCheckMod} => explosionChance: {explosionChance}");
                     if (explosionChance <= bhvarAcceptableHeatFraction)
                         acceptableHeat = kvp.Key;
                     else

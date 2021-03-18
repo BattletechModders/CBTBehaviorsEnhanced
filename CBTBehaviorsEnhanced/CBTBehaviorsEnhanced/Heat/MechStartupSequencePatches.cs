@@ -22,7 +22,7 @@ namespace CBTBehaviorsEnhanced.Heat
             Mod.Log.Info?.Write($"Processing startup for Mech: {CombatantUtils.Label(mech)}");
 
             // Check to see if we should restart automatically
-            float heatCheck = mech.HeatCheckMod(Mod.Config.Piloting.SkillMulti);
+            float heatCheck = mech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
             int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
             bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
             Mod.Log.Info?.Write($"  -- futureHeat: {futureHeat} = current: {mech.CurrentHeat} - HSCapacity: {mech.AdjustedHeatsinkCapacity} vs. heatCheck: {heatCheck} => passedStartup: {passedStartupCheck}");

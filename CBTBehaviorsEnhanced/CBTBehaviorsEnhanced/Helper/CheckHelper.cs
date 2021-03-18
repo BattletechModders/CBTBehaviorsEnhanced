@@ -14,7 +14,7 @@ namespace CBTBehaviorsEnhanced {
                     checkTarget = kvp.Value;
                 }
             }
-            Mod.Log.Debug?.Write($"  target roll set to: {checkTarget} for heat: {heatValue}");
+            Mod.HeatLog.Info?.Write($"  For heat value: {heatValue} target roll is: {checkTarget}");
             return PassedCheck(checkTarget, mech, skillMod, floatieText);
         }
         public static bool DidCheckPassThreshold(float checkTarget, AbstractActor actor, float skillMod, string floatieText) {
@@ -36,7 +36,7 @@ namespace CBTBehaviorsEnhanced {
 
             float randomRoll = actor.Combat.NetworkRandom.Float();
             float checkResult = randomRoll + skillMod;
-            Mod.Log.Debug?.Write($"  pilotMod: {skillMod:#.##} + roll: {randomRoll:#.##} = checkResult: {checkResult:#.##} vs. checkTarget: {checkTarget:#.##}");
+            Mod.Log.Info?.Write($"  pilotMod: {skillMod:#.##} + roll: {randomRoll:#.##} = checkResult: {checkResult:#.##} vs. checkTarget: {checkTarget:#.##}");
 
             string operatorText = "=";
             if (checkResult > checkTarget) { operatorText = ">"; } else if (checkResult < checkTarget) { operatorText = "<"; }
