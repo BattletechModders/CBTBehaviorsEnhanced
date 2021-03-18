@@ -6,8 +6,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
-namespace CBTBehaviorsEnhanced {
-    public static class Mod {
+namespace CBTBehaviorsEnhanced
+{
+    public static class Mod
+    {
 
         public const string HarmonyPackage = "us.frostraptor.CBTBehaviorsEnhanced";
         public const string LogName = "cbt_behaviors_enhanced";
@@ -25,17 +27,22 @@ namespace CBTBehaviorsEnhanced {
 
         public static readonly Random Random = new Random();
 
-        public static void Init(string modDirectory, string settingsJSON) {
-            ModDir = modDirectory; 
+        public static void Init(string modDirectory, string settingsJSON)
+        {
+            ModDir = modDirectory;
 
             // Read the config
             Exception settingsE = null;
-            try {
+            try
+            {
                 Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsJSON);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 settingsE = e;
                 Mod.Config = new ModConfig();
             }
+            Mod.Config.InitUnsetValues();
 
             Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
             HeatLog = new DeferringLogger(modDirectory, LogName + "_heat", LogLabel, Config.Debug, Config.Trace);
@@ -64,9 +71,12 @@ namespace CBTBehaviorsEnhanced {
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
-            if (settingsE != null) {
+            if (settingsE != null)
+            {
                 Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
-            } else {
+            }
+            else
+            {
                 Log.Info?.Write($"INFO: No errors reading settings file.");
             }
 
@@ -74,7 +84,7 @@ namespace CBTBehaviorsEnhanced {
             CustomComponents.Registry.RegisterSimpleCustomComponents(Assembly.GetExecutingAssembly());
 
             //HarmonyInstance.DEBUG = true;
-            var harmony = HarmonyInstance.Create(HarmonyPackage);            
+            var harmony = HarmonyInstance.Create(HarmonyPackage);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 

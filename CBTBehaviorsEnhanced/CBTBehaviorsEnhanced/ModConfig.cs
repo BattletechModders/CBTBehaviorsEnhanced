@@ -2,10 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CBTBehaviorsEnhanced {
+namespace CBTBehaviorsEnhanced
+{
 
-    public class ModConfig {
+    public class ModConfig
+    {
 
         public bool Debug = false;
         public bool Trace = false;
@@ -20,9 +23,11 @@ namespace CBTBehaviorsEnhanced {
         public MeleeOptions Melee = new MeleeOptions();
         public MoveOptions Move = new MoveOptions();
         public PilotingOptions Piloting = new PilotingOptions();
+        public SkillCheckOptions SkillChecks = new SkillCheckOptions();
         public BiomeBreachOptions Breaches = new BiomeBreachOptions();
 
-        public void LogConfig() {
+        public void LogConfig()
+        {
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info?.Write($"  Debug: {this.Debug} Trace: {this.Trace}");
             Mod.Log.Info?.Write($"  FEATURES => BiomeBreaches: {this.Features.BiomeBreaches}  " +
@@ -48,6 +53,52 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("=== HEAT OPTIONS ===");
+            StringBuilder sb = new StringBuilder();
+            foreach (KeyValuePair<int, int> kvp in this.Heat.Movement)
+            {
+                sb.Append($"{kvp.Key} : {kvp.Value}, ");
+            }
+            Mod.Log.Info?.Write($"  Movement mods: {sb}");
+            sb.Clear();
+
+            foreach (KeyValuePair<int, int> kvp in this.Heat.Firing)
+            {
+                sb.Append($"{kvp.Key} : {kvp.Value}, ");
+            }
+            Mod.Log.Info?.Write($"  Firing mods: {sb}");
+            sb.Clear();
+
+            foreach (KeyValuePair<int, float> kvp in this.Heat.Shutdown)
+            {
+                sb.Append($"{kvp.Key} : {kvp.Value}, ");
+            }
+            Mod.Log.Info?.Write($"  Shutdown chances: {sb}");
+            sb.Clear();
+
+            foreach (KeyValuePair<int, float> kvp in this.Heat.Explosion)
+            {
+                sb.Append($"{kvp.Key} : {kvp.Value}, ");
+            }
+            Mod.Log.Info?.Write($"  Ammo Explosion chances: {sb}");
+            sb.Clear();
+
+            foreach (KeyValuePair<int, float> kvp in this.Heat.PilotInjury)
+            {
+                sb.Append($"{kvp.Key} : {kvp.Value}, ");
+            }
+            Mod.Log.Info?.Write($"  Pilot Injury chances: {sb}");
+            sb.Clear();
+
+            foreach (KeyValuePair<int, float> kvp in this.Heat.SystemFailures)
+            {
+                sb.Append($"{kvp.Key} : {kvp.Value}, ");
+            }
+            Mod.Log.Info?.Write($"  System Failure chances: {sb}");
+            sb.Clear();
+
+            Mod.Log.Info?.Write($"  ShowLowOverheatAnim: {this.Heat.ShowLowOverheatAnim}  ShowExtremeOverheatAnim: {this.Heat.ShowExtremeOverheatAnim}");
+            Mod.Log.Info?.Write($"  ShutdownFallThreshold: {this.Heat.ShutdownFallThreshold}");
+            Mod.Log.Info?.Write($"  MaxHeat: {this.Heat.MaxHeat}  WarnAtHeat: {this.Heat.WarnAtHeat}");
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("=== MELEE OPTIONS ===");
@@ -84,23 +135,119 @@ namespace CBTBehaviorsEnhanced {
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("=== MOVE OPTIONS ===");
-            Mod.Log.Info?.Write($"  MinimumMove: {this.Move.MinimumMove}m  HeatMovePenalty: {this.Move.HeatMovePenalty}m  RunMulti: x{this.Move.RunMulti}  SkillMulti: x{this.Move.SkillMulti}");
+            Mod.Log.Info?.Write($"  MinimumMove: {this.Move.MinimumMove}m  HeatMovePenalty: {this.Move.HeatMovePenalty}m  RunMulti: x{this.Move.RunMulti}");
             Mod.Log.Info?.Write($"  FallAfterChances =>   Jump: {this.Move.FallAfterJumpChance}  Run: {this.Move.FallAfterRunChance}");
             Mod.Log.Info?.Write($"  MPMetersPerHex: {this.Move.MPMetersPerHex}m");
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("=== PILOTING OPTIONS ===");
-            Mod.Log.Info?.Write($"  SkillMulti: x{this.Piloting.SkillMulti}  StabilityCheck: {this.Piloting.StabilityCheck}");
+            Mod.Log.Info?.Write($"  StabilityCheck: {this.Piloting.StabilityCheck}");
             Mod.Log.Info?.Write($"  DFAReductionMulti: x{this.Piloting.DFAReductionMulti}  FallingDamagePerTenTons: {this.Piloting.FallingDamagePerTenTons}");
             Mod.Log.Info?.Write("");
+
+            Mod.Log.Info?.Write("=== SKILL CHECKS OPTIONS ===");
+            Mod.Log.Info?.Write($"  PilotingSkillMulti: x{this.SkillChecks.ModPerPointOfPiloting}  GutsSkillMulti: {this.SkillChecks.ModPerPointOfGuts}");
+
 
             Mod.Log.Info?.Write("=== BREACHES OPTIONS ===");
             Mod.Log.Info?.Write($"  ThinAtmoCheck: {this.Breaches.ThinAtmoCheck}  VacuumCheck: {this.Breaches.VacuumCheck}");
             Mod.Log.Info?.Write("");
 
-
-
             Mod.Log.Info?.Write("=== MOD CONFIG END ===");
+        }
+
+        // Newtonsoft seems to merge values into existing dictionaries instead of replacing them entirely. So instead
+        //   populate default values in dictionaries through this call instead
+        public void InitUnsetValues()
+        {
+            // == Init Heat ==
+
+            // 5:-1, 10:-2, 15:-3, 20:-4, 25:-5, 31:-6, 37:-7, 43:-8, 49:-9
+            if (this.Heat.Movement.Count == 0)
+            {
+                this.Heat.Movement = new SortedDictionary<int, int>
+                {
+                    { 15, -1 }, { 30, -2 }, { 45, -3 }, { 60, -4 }, { 75, -5 },
+                    { 93, -6 }, { 111, -7 }, { 129, -8 }, { 147, -9 }
+                };
+            }
+
+            // 8:-1, 13:-2, 17:-3, 24:-4, 33:-5, 41:-6, 48:-7
+            if (this.Heat.Firing.Count == 0)
+            {
+                this.Heat.Firing = new SortedDictionary<int, int>
+                {
+                    { 24, 1 }, { 39 , 2 }, { 51, 3 }, { 72, 4 }, { 99, 5 },
+                    { 123, 6 }, { 144, 7 }
+                };
+            }
+
+            // 14:4+, 18:6+, 22:8+, 26:10+, 30:12+, 34:14+, 38:16+, 42:18+, 46:20+, 50:INFINITY
+            // If shutdown, needing piloting skill roll or fall over; roll has a +3 modifier
+            if (this.Heat.Shutdown.Count == 0)
+            {
+                this.Heat.Shutdown = new SortedDictionary<int, float>
+                {
+                    { 42, 0.1f }, { 54, 0.3f }, { 66, 0.6f}, { 78, 0.8f }, { 90, 0.9f },
+                    { 102, 1.0f }, { 114, 1.1f }, { 126, 1.2f }, { 138, 1.3f }, { 150, -1f }
+                };
+            }
+
+            // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
+            // Explosion should impact most damaging ammo first
+            // Inferno weapons require a 2nd roll in addition to the first 
+            // Any ammo explosion automatically causes 2 points of pilot damage and forces a conciousness roll
+            if (this.Heat.Explosion.Count == 0)
+            {
+                this.Heat.Explosion = new SortedDictionary<int, float>
+                {
+                    {  57, 0.1f },
+                    {  69, 0.3f },
+                    {  84, 0.5f },
+                    { 105, 0.8f },
+                    { 120, 0.95f },
+                    { 135, -1f },
+                };
+            }
+
+            // 32:8+, 39:10+, 47:12+
+            // If life support damaged, can't be avoided and is in addition to normal damage
+            if (this.Heat.PilotInjury.Count == 0)
+            {
+                this.Heat.PilotInjury = new SortedDictionary<int, float>
+                {
+                    { 84, 0.3f }, { 117, 0.6f}, { 141, 0.8f }
+                };
+            }
+
+            // 36:8+, 44:10+
+            // If roll fails, roll a hit location on the front column of mech critical hit table and apply single critical hit to location
+            if (this.Heat.SystemFailures.Count == 0)
+            {
+                this.Heat.SystemFailures = new SortedDictionary<int, float>
+                {
+                    { 108, 0.3f }, { 132, 0.6f}
+                };
+            }
+
+            // == Init Custom Category ==
+            if (this.CustomCategories.HipActuatorCategoryId.Length == 0)
+                this.CustomCategories.HipActuatorCategoryId = new string[] { "LegHip" };
+            if (this.CustomCategories.UpperLegActuatorCategoryId.Length == 0)
+                this.CustomCategories.UpperLegActuatorCategoryId = new string[] { "LegUpperActuator" };
+            if (this.CustomCategories.LowerLegActuatorCategoryId.Length == 0)
+                this.CustomCategories.LowerLegActuatorCategoryId = new string[] { "LegLowerActuator" };
+            if (this.CustomCategories.FootActuatorCategoryId.Length == 0)
+                this.CustomCategories.FootActuatorCategoryId = new string[] { "LegFootActuator" };
+
+            if (this.CustomCategories.ShoulderActuatorCategoryId.Length == 0)
+                this.CustomCategories.ShoulderActuatorCategoryId = new string[] { "ArmShoulder" };
+            if (this.CustomCategories.UpperArmActuatorCategoryId.Length == 0)
+                this.CustomCategories.UpperArmActuatorCategoryId = new string[] { "ArmUpperActuator" };
+            if (this.CustomCategories.LowerArmActuatorCategoryId.Length == 0)
+                this.CustomCategories.LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
+            if (this.CustomCategories.HandActuatorCategoryId.Length == 0)
+                this.CustomCategories.HandActuatorCategoryId = new string[] { "ArmHandActuator" };
         }
     }
 
@@ -125,15 +272,15 @@ namespace CBTBehaviorsEnhanced {
 
     public class CustomCategoryOpts
     {
-        public string[] HipActuatorCategoryId = new string[] { "LegHip" };
-        public string[] UpperLegActuatorCategoryId = new string[] { "LegUpperActuator" };
-        public string[] LowerLegActuatorCategoryId = new string[] { "LegLowerActuator" };
-        public string[] FootActuatorCategoryId = new string[] { "LegFootActuator" };
+        public string[] HipActuatorCategoryId = new string[] { };
+        public string[] UpperLegActuatorCategoryId = new string[] { };
+        public string[] LowerLegActuatorCategoryId = new string[] { };
+        public string[] FootActuatorCategoryId = new string[] { };
 
-        public string[] ShoulderActuatorCategoryId = new string[] { "ArmShoulder" };
-        public string[] UpperArmActuatorCategoryId = new string[] { "ArmUpperActuator" };
-        public string[] LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
-        public string[] HandActuatorCategoryId = new string[] { "ArmHandActuator" };
+        public string[] ShoulderActuatorCategoryId = new string[] { };
+        public string[] UpperArmActuatorCategoryId = new string[] { };
+        public string[] LowerArmActuatorCategoryId = new string[] { };
+        public string[] HandActuatorCategoryId = new string[] { };
 
     }
 
@@ -142,48 +289,28 @@ namespace CBTBehaviorsEnhanced {
     public class HeatOptions
     {
         // 5:-1, 10:-2, 15:-3, 20:-4, 25:-5, 31:-6, 37:-7, 43:-8, 49:-9
-        public SortedDictionary<int, int> Movement = new SortedDictionary<int, int> {
-                { 15, -1 }, { 30, -2 }, { 45, -3 }, { 60, -4 }, { 75, -5 },
-                { 93, -6 }, { 111, -7 }, { 129, -8 }, { 147, -9 }
-            };
+        public SortedDictionary<int, int> Movement = new SortedDictionary<int, int>();
 
         // 8:-1, 13:-2, 17:-3, 24:-4, 33:-5, 41:-6, 48:-7
-        public SortedDictionary<int, int> Firing = new SortedDictionary<int, int> {
-                { 24, 1 }, { 39 , 2 }, { 51, 3 }, { 72, 4 }, { 99, 5 },
-                { 123, 6 }, { 144, 7 }
-            };
+        public SortedDictionary<int, int> Firing = new SortedDictionary<int, int>();
 
         // 14:4+, 18:6+, 22:8+, 26:10+, 30:12+, 34:14+, 38:16+, 42:18+, 46:20+, 50:INFINITY
         // If shutdown, needing piloting skill roll or fall over; roll has a +3 modifier
-        public SortedDictionary<int, float> Shutdown = new SortedDictionary<int, float> {
-                { 42, 0.1f }, { 54, 0.3f }, { 66, 0.6f}, { 78, 0.8f }, { 90, 0.9f },
-                { 102, 1.0f }, { 114, 1.1f }, { 126, 1.2f }, { 138, 1.3f }, { 150, -1f }
-            };
+        public SortedDictionary<int, float> Shutdown = new SortedDictionary<int, float>();
 
         // 19:4+, 23:6+, 28:8+, 35:10+, 40:12+, 45:INFINITY
         // Explosion should impact most damaging ammo first
         // Inferno weapons require a 2nd roll in addition to the first 
         // Any ammo explosion automatically causes 2 points of pilot damage and forces a conciousness roll
-        public SortedDictionary<int, float> Explosion = new SortedDictionary<int, float> {
-                {  57, 0.1f },
-                {  69, 0.3f },
-                {  84, 0.5f },
-                { 105, 0.8f },
-                { 120, 0.95f },
-                { 135, -1f },
-            };
+        public SortedDictionary<int, float> Explosion = new SortedDictionary<int, float>();
 
         // 32:8+, 39:10+, 47:12+
         // If life support damaged, can't be avoided and is in addition to normal damage
-        public SortedDictionary<int, float> PilotInjury = new SortedDictionary<int, float> {
-                { 84, 0.3f }, { 117, 0.6f}, { 141, 0.8f }
-            };
+        public SortedDictionary<int, float> PilotInjury = new SortedDictionary<int, float>();
 
         // 36:8+, 44:10+
         // If roll fails, roll a hit location on the front column of mech critical hit table and apply single critical hit to location
-        public SortedDictionary<int, float> SystemFailures = new SortedDictionary<int, float> {
-                { 108, 0.3f }, { 132, 0.6f},
-            };
+        public SortedDictionary<int, float> SystemFailures = new SortedDictionary<int, float>();
 
         // 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.3, 7:0.35, 8:0.4, 9:0.45, 10:0.5
         public int ShowLowOverheatAnim = 42; // When to show as steaming
@@ -343,12 +470,17 @@ namespace CBTBehaviorsEnhanced {
     // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
     public class PilotingOptions
     {
-        public float SkillMulti = 0.05f;
         public float StabilityCheck = 0.30f;
         public float DFAReductionMulti = 0.05f;
 
         // How many damage points 
         public int FallingDamagePerTenTons = 5;
+    }
+
+    public class SkillCheckOptions
+    {
+        public float ModPerPointOfPiloting = 0.05f;
+        public float ModPerPointOfGuts = 0.05f;
     }
 
     public class BiomeBreachOptions
@@ -368,9 +500,6 @@ namespace CBTBehaviorsEnhanced {
 
         // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
         public float RunMulti = 1.5f;
-
-        // Multiplier for the pilot's piloting skill used in the check for FallAfterRunChance and FallAfterJumpChance
-        public float SkillMulti = 0.05f;
 
         // If you have leg damage and run, you can fall
         public float FallAfterRunChance = 0.30f;
