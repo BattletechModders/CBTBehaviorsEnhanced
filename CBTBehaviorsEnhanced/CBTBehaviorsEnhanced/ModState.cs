@@ -1,6 +1,7 @@
 ﻿
 using BattleTech;
 using BattleTech.UI;
+using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,6 +35,10 @@ namespace CBTBehaviorsEnhanced {
         public static CombatHUDFireButton PhysicalWeaponFB = null;
         public static CombatHUDFireButton PunchFB = null;
 
+        // Per Unit or Position State
+        private static Dictionary<string, MechMeleeCondition> meleeConditionCache = new Dictionary<string, MechMeleeCondition>();
+
+
         public static void Reset() {
 
             // Melee weapon state
@@ -58,6 +63,29 @@ namespace CBTBehaviorsEnhanced {
             KickFB = null;
             PhysicalWeaponFB = null;
             PunchFB = null;
+
+            // State caches
+            meleeConditionCache.Clear();
+        }
+
+        public static MechMeleeCondition GetMeleeCondition(Mech mech)
+        {
+            MechMeleeCondition condition;
+            meleeConditionCache.TryGetValue(mech.DistinctId(), out condition);
+            if (condition == null)
+            {
+                condition = new MechMeleeCondition(mech);
+                meleeConditionCache.Add(mech.DistinctId(), condition);
+            }
+            return condition;
+        }
+
+        public static void InvalidateState(AbstractActor actor)
+        {
+            if (actor is Mech mech && meleeConditionCache.ContainsKey(mech.DistinctId()))
+            {
+                meleeConditionCache.Remove(mech.DistinctId());
+            }
         }
     }
 
