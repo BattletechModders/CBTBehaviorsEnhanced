@@ -26,21 +26,24 @@ namespace CBTBehaviorsEnhanced
 
 		public MechMeleeCondition(Mech attacker)
         {
-			Mod.MeleeLog.Debug?.Write($"Building possible attacks from current attacker damage state:");
-			foreach (MechComponent mc in attacker.allComponents)
-			{
-				switch (mc.Location)
+			if (attacker != null)
+            {
+				Mod.MeleeLog.Debug?.Write($"Building possible attacks from current attacker damage state:");
+				foreach (MechComponent mc in attacker.allComponents)
 				{
-					case (int)ChassisLocations.LeftArm:
-					case (int)ChassisLocations.RightArm:
-						EvaluateArmComponent(mc);
-						break;
-					case (int)ChassisLocations.LeftLeg:
-					case (int)ChassisLocations.RightLeg:
-						EvaluateLegComponent(mc);
-						break;
-					default:
-						break;
+					switch (mc.Location)
+					{
+						case (int)ChassisLocations.LeftArm:
+						case (int)ChassisLocations.RightArm:
+							EvaluateArmComponent(mc);
+							break;
+						case (int)ChassisLocations.LeftLeg:
+						case (int)ChassisLocations.RightLeg:
+							EvaluateLegComponent(mc);
+							break;
+						default:
+							break;
+					}
 				}
 			}
 
