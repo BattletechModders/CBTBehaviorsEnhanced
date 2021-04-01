@@ -14,7 +14,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
 
         public override float EvaluateInfluenceMapFactorAtPosition(AbstractActor unit, Vector3 position, float angle, MoveType moveType, PathNode pathNode)
         {
-            Mod.AILog.Info?.Write($"Evaluating PreferAvoidStationaryWhenOutTonned for unit: {unit.DistinctId()} at position: {position}");
+            Mod.AILog.Debug?.Write($"Evaluating PreferAvoidStationaryWhenOutTonned for unit: {unit.DistinctId()} at position: {position}");
 
             float factor = 0f;
             if (unit is Mech mech)
@@ -32,11 +32,11 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
                 }
 
                 float ratio = opforTonnage / mech.tonnage;
-                Mod.AILog.Info?.Write($"  - ratio: {ratio} from opfor tonnage: {opforTonnage} / mech tonnage: {mech.tonnage}");
+                Mod.AILog.Debug?.Write($"  - ratio: {ratio} from opfor tonnage: {opforTonnage} / mech tonnage: {mech.tonnage}");
             }
             else
             {
-                Mod.AILog.Info?.Write($"  - could not find an enemy within maxMeleeRange, returning 0");
+                Mod.AILog.Debug?.Write($"  - could not find an enemy within maxMeleeRange, returning 0");
             }
             return factor;
         }

@@ -14,24 +14,24 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
 
         public override float EvaluateInfluenceMapFactorAtPosition(AbstractActor unit, Vector3 position, float angle, MoveType moveType, PathNode pathNode)
         {
-            Mod.AILog.Info?.Write($"Evaluating PreferStationaryWithMeleeWeapon for unit: {unit.DistinctId()} at position: {position}");
+            Mod.AILog.Debug?.Write($"Evaluating PreferStationaryWithMeleeWeapon for unit: {unit.DistinctId()} at position: {position}");
 
             Mech mech = unit as Mech;
             if (mech == null)
             {
-                Mod.AILog.Info?.Write($"  - unit is not a mech, skipping.");
+                Mod.AILog.Debug?.Write($"  - unit is not a mech, skipping.");
             }
 
             if (!FactorUtil.IsStationaryForActor(position, angle, unit))
             {
-                Mod.AILog.Info?.Write($"  - position is not a stationary node, skipping.");
+                Mod.AILog.Debug?.Write($"  - position is not a stationary node, skipping.");
                 return 0f;
             }
 
             MechMeleeCondition meleeCondition = new MechMeleeCondition(mech);
             if (!mech.CanMakePhysicalWeaponAttack(meleeCondition))
             {
-                Mod.AILog.Info?.Write($"  - mech does not have a physical attack.");
+                Mod.AILog.Debug?.Write($"  - mech does not have a physical attack.");
                 return 0f;
             }
 
@@ -41,12 +41,12 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
                 AbstractActor abstractActor = unit.BehaviorTree.enemyUnits[i] as AbstractActor;
                 if (abstractActor != null && !abstractActor.IsDead && (unit.CurrentPosition - abstractActor.CurrentPosition).magnitude <= maxMeleeEngageRangeDistance)
                 {
-                    Mod.AILog.Info?.Write($"  - {abstractActor.DistinctId()} can be attacked, returning 1.0f");
+                    Mod.AILog.Debug?.Write($"  - {abstractActor.DistinctId()} can be attacked, returning 1.0f");
                     return 1f;
                 }
             }
 
-            Mod.AILog.Info?.Write($"  - could not find an enemy within maxMeleeRange, returning 0");
+            Mod.AILog.Debug?.Write($"  - could not find an enemy within maxMeleeRange, returning 0");
             return 0f;
         }
 
