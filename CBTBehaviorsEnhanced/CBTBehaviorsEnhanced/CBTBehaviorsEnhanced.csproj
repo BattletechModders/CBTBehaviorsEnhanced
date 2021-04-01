@@ -33,34 +33,34 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\0Harmony.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="BattleTech.Common">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\BattleTech.Common.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\BattleTech.Common.dll</HintPath>
     </Reference>
     <Reference Include="CustomAmmoCategories, Version=0.0.1.59, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\BATTLETECH\Mods\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
     </Reference>
     <Reference Include="CustomComponents">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\CustomComponents\CustomComponents.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\CustomComponents\CustomComponents.dll</HintPath>
     </Reference>
     <Reference Include="IRBTModUtils, Version=1.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\BATTLETECH\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
     </Reference>
     <Reference Include="MechEngineer">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\MechEngineer\MechEngineer.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\MechEngineer\MechEngineer.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,22 +71,22 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +122,11 @@
     <Compile Include="Melee\States\MeleeState.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
+    <Compile Include="Patches\AI\BehaviorNodes\CanMoveAndShootWithoutOverheatingNodePatches.cs" />
+    <Compile Include="Patches\AI\BehaviorNodes\ShootAtHighestPriorityEnemyNodePatches.cs" />
+    <Compile Include="Patches\AI\BehaviorNodes\CanDFAHostileTargetsNodePatches.cs" />
+    <Compile Include="Patches\AI\BehaviorNodes\CanMeleeHostileTargetsNodePatches.cs" />
+    <Compile Include="Patches\AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
     <Compile Include="Patches\ToHitPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />
@@ -144,7 +149,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>time /t
-xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y</PostBuildEvent>
+    <PostBuildEvent>if exist "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" (
+time /t
+xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>
