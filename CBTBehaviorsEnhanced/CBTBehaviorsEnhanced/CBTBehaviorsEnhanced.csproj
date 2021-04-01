@@ -126,7 +126,7 @@
     <Compile Include="Patches\AI\BehaviorNodes\ShootAtHighestPriorityEnemyNodePatches.cs" />
     <Compile Include="Patches\AI\BehaviorNodes\CanDFAHostileTargetsNodePatches.cs" />
     <Compile Include="Patches\AI\BehaviorNodes\CanMeleeHostileTargetsNodePatches.cs" />
-    <Compile Include="Patches\AI\InfluenceMap\PreferAvoidStationaryWhenOutTonned.cs" />
+    <Compile Include="Patches\AI\InfluenceMap\PreferAvoidMeleeWhenOutTonned.cs" />
     <Compile Include="Patches\AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
     <Compile Include="Patches\ToHitPatches.cs" />

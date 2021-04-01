@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
 {
-    public class PreferAvoidStationaryWhenOutTonned : CustomInfluenceMapPositionFactor
+    public class PreferAvoidMeleeWhenOutTonned : CustomInfluenceMapPositionFactor
     {
 
-        public PreferAvoidStationaryWhenOutTonned() { }
+        public PreferAvoidMeleeWhenOutTonned() { }
 
-        public override string Name => "Prefer avoiding stationary moves when unit is out-tonned by nearby enemies";
+        public override string Name => "Prefer avoiding melee positions for enemies when out-tonned.";
 
         public override float EvaluateInfluenceMapFactorAtPosition(AbstractActor unit, Vector3 position, float angle, MoveType moveType, PathNode pathNode)
         {
@@ -31,7 +31,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
                     }
                 }
 
-                float ratio = opforTonnage / mech.tonnage;
+                float ratio = -1 * opforTonnage / mech.tonnage;
                 Mod.AILog.Debug?.Write($"  - ratio: {ratio} from opfor tonnage: {opforTonnage} / mech tonnage: {mech.tonnage}");
             }
             else
