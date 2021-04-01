@@ -269,6 +269,7 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
+        // PhysicalWeapon extensions
         public static float PhysicalWeaponDamage(this Mech mech, MechMeleeCondition attackerCondition)
         {
             if (!attackerCondition.CanUsePhysicalAttack()) return 0;
@@ -319,6 +320,40 @@ namespace CBTBehaviorsEnhanced.Extensions
             Mod.MeleeLog.Debug?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
+        }
+
+        public static bool CanMakePhysicalWeaponAttack(this Mech mech, MechMeleeCondition attackerCondition)
+        {
+            // Check that unit has a physical attack
+            if (!mech.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
+                !mech.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+            {
+                Mod.MeleeLog.Info?.Write("Unit has no physical weapon by stat; skipping.");
+                return false;
+            }
+
+            // Damage check - shoulder and hand
+            bool leftArmIsFunctional = attackerCondition.LeftShoulderIsFunctional && attackerCondition.LeftHandIsFunctional;
+            bool rightArmIsFunctional = attackerCondition.RightShoulderIsFunctional && attackerCondition.RightHandIsFunctional;
+            Statistic ignoreActuatorsStat = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
+            bool ignoresActuatorDamage = ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>();
+            if (ignoresActuatorDamage)
+            {
+                Mod.MeleeLog.Info?.Write("Unit ignores actuator damage, passes this validation.");
+            }
+            else if (!leftArmIsFunctional && !rightArmIsFunctional)
+            {
+                Mod.MeleeLog.Info?.Write("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
+                return false;
+            }
+
+            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+            {
+                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+                return false;
+            }
+
+            return true;
         }
 
         public static float PunchDamage(this Mech mech, MechMeleeCondition attackerCondition)

@@ -20,10 +20,13 @@ namespace CBTBehaviorsEnhanced
             MeleeState selectedState = null;
             float selectedDamage = 0;
 
+            // Do not include charge by default; only include it when all other attacks are null
+            List<MeleeState> allStates = new List<MeleeState> { Kick, PhysicalWeapon, Punch };
+            
             // Do not use DFA here, because it's selected differently in UI.
-            List<MeleeState> allStates = new List<MeleeState> { Charge, Kick, PhysicalWeapon, Punch };
             if (includeDFA && DFA != null) allStates.Add(DFA);
 
+            // Check kick, phyweap, punch first
             foreach (MeleeState state in allStates)
             {
                 if (state != null)
@@ -36,6 +39,13 @@ namespace CBTBehaviorsEnhanced
                         selectedState = state;
                     }
                 }
+            }
+
+            // If everything remains zero, check charge
+            if (selectedDamage == 0 && Charge.IsValid)
+            {
+                selectedDamage = Charge.TargetDamageClusters.Sum();
+                selectedState = Charge;
             }
 
             return selectedState;

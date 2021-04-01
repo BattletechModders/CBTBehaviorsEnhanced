@@ -24,14 +24,14 @@ namespace CBTBehaviorsEnhanced.Melee {
             if (ModState.MeleeStates?.SelectedState != null)
             {
                 // Selected state *BETTER* be DFA here
-                ModState.MeleeType = ModState.MeleeStates.SelectedState.AttackAnimation;
+                ModState.MeleeType = ModState.MeleeStates.DFA.AttackAnimation;
 
                 // Modify the owning mech DFA melee weapon to do the 'first' hit
-                float targetDamage = ModState.MeleeStates.SelectedState?.TargetDamageClusters?.Length > 0 ?
-                    ModState.MeleeStates.SelectedState.TargetDamageClusters[0] : 0;
+                float targetDamage = ModState.MeleeStates.DFA?.TargetDamageClusters?.Length > 0 ?
+                    ModState.MeleeStates.DFA.TargetDamageClusters[0] : 0;
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
                 ModState.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
-                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set DFA weapon damage: {targetDamage}  and instability: {ModState.MeleeStates.SelectedState.TargetInstability}");
+                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set DFA weapon damage: {targetDamage}  and instability: {ModState.MeleeStates.DFA.TargetInstability}");
 
                 // Cache the attacker's original DFASelfDamage value and set it to zero, so we can apply our own damage
                 ModState.OriginalDFASelfDamage = __instance.OwningMech.StatCollection.GetValue<float>(ModStats.HBS_DFA_Self_Damage);
@@ -39,16 +39,16 @@ namespace CBTBehaviorsEnhanced.Melee {
                 __instance.OwningMech.StatCollection.Set<bool>(ModStats.HBS_DFA_Causes_Self_Unsteady, false);
 
                 // Make sure we use the target's damage table
-                ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.TargetTable;
+                ModState.ForceDamageTable = ModState.MeleeStates.DFA.TargetTable;
 
                 // Filter any weapons from requested weapons. This works because BuildMeleeDirectorSequence is called immediately before BuildWeaponDirectorSequence
                 if (Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack)
                 {
-                    Mod.MeleeLog.Debug?.Write($"Filtering DFA weapons by attack type: {ModState.MeleeStates.SelectedState.Label}");
+                    Mod.MeleeLog.Debug?.Write($"Filtering DFA weapons by attack type: {ModState.MeleeStates.DFA.Label}");
                     List<Weapon> allowedWeapons = new List<Weapon>();
                     foreach (Weapon weapon in ___requestedWeapons)
                     {
-                        if (ModState.MeleeStates.SelectedState.IsRangedWeaponAllowed(weapon))
+                        if (ModState.MeleeStates.DFA.IsRangedWeaponAllowed(weapon))
                         {
                             Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed by melee type.");
                             allowedWeapons.Add(weapon);
@@ -69,10 +69,10 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechDFASequence __instance)
         {
-            if (ModState.MeleeStates?.SelectedState != null && ModState.MeleeStates.SelectedState.AttackerInstability != 0)
+            if (ModState.MeleeStates?.SelectedState != null && ModState.MeleeStates.DFA.AttackerInstability != 0)
             {
-                Mod.MeleeLog.Info?.Write($" -- Adding {ModState.MeleeStates.SelectedState.AttackerInstability} absolute instability to attacker.");
-                __instance.OwningMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.AttackerInstability, StabilityChangeSource.Attack, "-1");
+                Mod.MeleeLog.Info?.Write($" -- Adding {ModState.MeleeStates.DFA.AttackerInstability} absolute instability to attacker.");
+                __instance.OwningMech.AddAbsoluteInstability(ModState.MeleeStates.DFA.AttackerInstability, StabilityChangeSource.Attack, "-1");
             }
         }
     }
@@ -108,8 +108,8 @@ namespace CBTBehaviorsEnhanced.Melee {
                 if (!__instance.OwningMech.IsOrWillBeProne)
                 {
                     // Target stability and unsteady - always applies as we're always a mech
-                    if ((targetWasHit && ModState.MeleeStates.SelectedState.UnsteadyAttackerOnHit) ||
-                        (!targetWasHit && ModState.MeleeStates.SelectedState.UnsteadyAttackerOnMiss))
+                    if ((targetWasHit && ModState.MeleeStates.DFA.UnsteadyAttackerOnHit) ||
+                        (!targetWasHit && ModState.MeleeStates.DFA.UnsteadyAttackerOnMiss))
                     {
                         Mod.MeleeLog.Info?.Write(" -- Forcing attacker to become unsteady from attack!");
                         __instance.OwningMech.ApplyUnsteady();
@@ -121,26 +121,26 @@ namespace CBTBehaviorsEnhanced.Melee {
                 if (targetWasHit && !__instance.OwningMech.IsDead)
                 {
                     // Make sure we use the attackers's damage table
-                    ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.AttackerTable;
+                    ModState.ForceDamageTable = ModState.MeleeStates.DFA.AttackerTable;
 
-                    if (ModState.MeleeStates.SelectedState.AttackerDamageClusters.Length > 0)
+                    if (ModState.MeleeStates.DFA.AttackerDamageClusters.Length > 0)
                     {
-                        Mod.MeleeLog.Info?.Write($" -- Applying {ModState.MeleeStates.SelectedState.AttackerDamageClusters.Sum()} damage to attacker as {ModState.MeleeStates.SelectedState.AttackerDamageClusters.Length} clusters.");
+                        Mod.MeleeLog.Info?.Write($" -- Applying {ModState.MeleeStates.DFA.AttackerDamageClusters.Sum()} damage to attacker as {ModState.MeleeStates.DFA.AttackerDamageClusters.Length} clusters.");
                         AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.OwningMech, __instance.SequenceGUID,
-                            ModState.MeleeStates.SelectedState.AttackerDamageClusters, DamageType.Melee, MeleeAttackType.Kick);
+                            ModState.MeleeStates.DFA.AttackerDamageClusters, DamageType.Melee, MeleeAttackType.Kick);
                     }
                 }
 
                 // Target stability and unsteady - only applies to mech targets
                 if (targetWasHit && __instance.DFATarget is Mech targetMech && !targetMech.IsProne)
                 {
-                    if (ModState.MeleeStates.SelectedState.TargetInstability != 0)
+                    if (ModState.MeleeStates.DFA.TargetInstability != 0)
                     {
-                        Mod.MeleeLog.Info?.Write($" -- Adding {ModState.MeleeStates.SelectedState.TargetInstability} absolute instability to target.");
-                        targetMech.AddAbsoluteInstability(ModState.MeleeStates.SelectedState.TargetInstability, StabilityChangeSource.Attack, "-1");
+                        Mod.MeleeLog.Info?.Write($" -- Adding {ModState.MeleeStates.DFA.TargetInstability} absolute instability to target.");
+                        targetMech.AddAbsoluteInstability(ModState.MeleeStates.DFA.TargetInstability, StabilityChangeSource.Attack, "-1");
                     }
 
-                    if (ModState.MeleeStates.SelectedState.UnsteadyTargetOnHit)
+                    if (ModState.MeleeStates.DFA.UnsteadyTargetOnHit)
                     {
                         Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
                         targetMech.ApplyUnsteady();
@@ -148,13 +148,13 @@ namespace CBTBehaviorsEnhanced.Melee {
                 }
 
                 // Target cluster damage - first attack was applied through melee weapon
-                if (targetWasHit && ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1 && !__instance.DFATarget.IsDead)
+                if (targetWasHit && ModState.MeleeStates.DFA.TargetDamageClusters.Length > 1 && !__instance.DFATarget.IsDead)
                 {
                     // Make sure we use the attackers's damage table
-                    ModState.ForceDamageTable = ModState.MeleeStates.SelectedState.TargetTable;
+                    ModState.ForceDamageTable = ModState.MeleeStates.DFA.TargetTable;
 
                     // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
-                    float[] clusterDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.SubArray(1, ModState.MeleeStates.SelectedState.TargetDamageClusters.Length);
+                    float[] clusterDamage = ModState.MeleeStates.DFA.TargetDamageClusters.SubArray(1, ModState.MeleeStates.DFA.TargetDamageClusters.Length);
                     Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
                     AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.DFATarget, __instance.SequenceGUID, clusterDamage,
                         DamageType.Melee, MeleeAttackType.DFA);
