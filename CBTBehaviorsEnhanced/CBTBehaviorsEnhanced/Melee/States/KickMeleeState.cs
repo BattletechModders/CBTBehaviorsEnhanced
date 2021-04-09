@@ -3,6 +3,7 @@ using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
+using IRBTModUtils.Extension;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -72,9 +73,10 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
-            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+            ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
+            if (!meleeCondition.CanKick())
             {
-                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+                Mod.MeleeLog.Info?.Write($"Attacker cannot kick, skipping.");
                 return false;
             }
 
@@ -82,13 +84,6 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!validAnimations.Contains(MeleeAttackType.Kick) && !validAnimations.Contains(MeleeAttackType.Stomp))
             {
                 Mod.MeleeLog.Info?.Write("Animations do not include a kick or stomp, cannot kick.");
-                return false;
-            }
-
-            // Damage check - left leg
-            if (!this.AttackerCondition.LeftHipIsFunctional || !this.AttackerCondition.RightHipIsFunctional)
-            {
-                Mod.MeleeLog.Info?.Write("One or more hip actuators are damaged. Cannot kick!");
                 return false;
             }
 
@@ -100,7 +95,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
             // If distance > walkSpeed, disable kick/physical weapon/punch
             float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
-            float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
+            float maxWalkSpeed = attacker.ModifiedWalkDistance();
             float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
             if (distance > maxDistance)
             {
@@ -134,11 +129,12 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
-            int leftLegMalus = (2 - this.AttackerCondition.LeftLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
-            if (!this.AttackerCondition.LeftFootIsFunctional) leftLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(attacker);
+            int leftLegMalus = (2 - attackerCondition.LeftLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
+            if (!attackerCondition.LeftFootIsFunctional) leftLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
 
-            int rightLegMalus = (2 - this.AttackerCondition.RightLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
-            if (!this.AttackerCondition.RightFootIsFunctional) rightLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
+            int rightLegMalus = (2 - attackerCondition.RightLegActuatorsCount) * Mod.Config.Melee.Kick.LegActuatorDamageMalus;
+            if (!attackerCondition.RightFootIsFunctional) rightLegMalus += Mod.Config.Melee.Kick.FootActuatorDamageMalus;
 
             int bestLegMalus = leftLegMalus <= rightLegMalus ? leftLegMalus : rightLegMalus;
             if (bestLegMalus != 0)
@@ -160,7 +156,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating KICK damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float damage = attacker.KickDamage(this.AttackerCondition);
+            float damage = attacker.KickDamage();
             
             // Adjust damage for any target resistance
             damage = target.ApplyKickDamageReduction(damage);
@@ -180,7 +176,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating KICK instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float instab = attacker.KickInstability(this.AttackerCondition);
+            float instab = attacker.KickInstability();
 
             // Adjust damage for any target resistance
             instab = target.ApplyKickInstabReduction(instab);

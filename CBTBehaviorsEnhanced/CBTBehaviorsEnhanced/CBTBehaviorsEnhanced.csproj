@@ -90,6 +90,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CAC\InvalidateUnitStateOnDamage.cs" />
     <Compile Include="Extensions\AbstractActorExtensions.cs" />
     <Compile Include="Extensions\TurretExtensions.cs" />
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Melee\States\MechMeleeCondition.cs" />
     <Compile Include="Melee\States\ChargeMeleeState.cs" />
     <Compile Include="Melee\States\MeleeState.cs" />
+    <Compile Include="Move\CBTBEMechMoveModifier.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
     <Compile Include="Patches\AI\BehaviorNodes\CanMoveAndShootWithoutOverheatingNodePatches.cs" />
@@ -129,6 +131,8 @@
     <Compile Include="Patches\AI\InfluenceMap\PreferAvoidMeleeWhenOutTonned.cs" />
     <Compile Include="Patches\AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
+    <Compile Include="Patches\TurretPatches.cs" />
+    <Compile Include="Patches\VehiclePatches.cs" />
     <Compile Include="Patches\ToHitPatches.cs" />
     <Compile Include="Patches\CombatHUD\CombatDebugHUDPatches.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />

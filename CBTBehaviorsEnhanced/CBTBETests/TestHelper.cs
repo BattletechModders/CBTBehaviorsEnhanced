@@ -53,24 +53,12 @@ namespace CBTBETests
             return (Vehicle)InitAbstractActor(vehicle);
         }
 
-        public static MechMeleeCondition AllEnabledCondition(Mech mech)
+        public static ActorMeleeCondition AllEnabledCondition(Mech mech)
         {
-            MechMeleeCondition mmc = new MechMeleeCondition(mech);
-            mmc.LeftShoulderIsFunctional = true;
-            mmc.LeftArmActuatorsCount = 2;
-            mmc.LeftHandIsFunctional = true;
-
-            mmc.RightShoulderIsFunctional = true;
-            mmc.RightArmActuatorsCount = 2;
-            mmc.RightHandIsFunctional = true;
-
-            mmc.LeftHipIsFunctional = true;
-            mmc.LeftLegActuatorsCount = 2;
-            mmc.LeftFootIsFunctional = true;
-
-            mmc.RightHipIsFunctional = true;
-            mmc.RightLegActuatorsCount = 2;
-            mmc.RightFootIsFunctional = true;
+            ActorMeleeCondition mmc = new ActorMeleeCondition(mech,
+                true, true, 2, 2, true, true,
+                true, true, 2, 2, true, true, 
+                true, true);
 
             return mmc;
         }

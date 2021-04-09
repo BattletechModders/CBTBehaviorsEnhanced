@@ -1,4 +1,6 @@
-﻿using Harmony;
+﻿using CBTBehaviorsEnhanced.CAC;
+using CustAmmoCategories;
+using Harmony;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
@@ -90,5 +92,10 @@ namespace CBTBehaviorsEnhanced
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
+        public static void FinishedLoading()
+        {
+            //DamageModifiersCache.RegisterDamageModifier("CBTBE_UnitState_Invalidator", "CBTBE_UnitState_Invalidator", 
+            //    true, true, true, true, true, InvalidateUnitStateOnDamage.NoopDamageModifier, null);
+        }
     }
 }

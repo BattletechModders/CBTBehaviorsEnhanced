@@ -36,7 +36,7 @@ namespace CBTBehaviorsEnhanced {
         public static CombatHUDFireButton PunchFB = null;
 
         // Per Unit or Position State
-        private static Dictionary<string, MechMeleeCondition> meleeConditionCache = new Dictionary<string, MechMeleeCondition>();
+        public static Dictionary<string, ActorMeleeCondition> meleeConditionCache = new Dictionary<string, ActorMeleeCondition>();
 
 
         public static void Reset() {
@@ -68,18 +68,20 @@ namespace CBTBehaviorsEnhanced {
             meleeConditionCache.Clear();
         }
 
-        public static MechMeleeCondition GetMeleeCondition(Mech mech)
+
+        public static ActorMeleeCondition GetMeleeCondition(AbstractActor actor)
         {
-            MechMeleeCondition condition;
-            meleeConditionCache.TryGetValue(mech.DistinctId(), out condition);
+            ActorMeleeCondition condition;
+            meleeConditionCache.TryGetValue(actor.DistinctId(), out condition);
             if (condition == null)
             {
-                condition = new MechMeleeCondition(mech);
-                meleeConditionCache.Add(mech.DistinctId(), condition);
+                condition = new ActorMeleeCondition(actor);
+                meleeConditionCache.Add(actor.DistinctId(), condition);
             }
             return condition;
         }
 
+        // Invalidate all cache entries for the specified actor
         public static void InvalidateState(AbstractActor actor)
         {
             if (actor is Mech mech && meleeConditionCache.ContainsKey(mech.DistinctId()))

@@ -2,6 +2,7 @@
 using CBTBehaviorsEnhanced.Extensions;
 using CustAmmoCategories;
 using Harmony;
+using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;
 using System;
@@ -268,61 +269,28 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    /* Override walk speed. Reference also: 
-     *   MechEngineer.Features.ShutdownInjuryProtection
-     *   MechEngineer.Features.Engine
-     */
-    [HarmonyPatch(typeof(Mech))]
-    [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
-    public static class Mech_MaxWalkDistance_Get
-    {
-        public static void Postfix(Mech __instance, ref float __result)
-        {
-            // TODO: Only modify these if we're actively in combat
-            Mod.Log.Trace?.Write("M:MWD:GET entered.");
-            __result = MechHelper.FinalWalkSpeed(__instance);
-        }
-    }
-
-    // Override walk speed (see above)
-    [HarmonyPatch(typeof(Mech))]
-    [HarmonyPatch("MaxBackwardDistance", MethodType.Getter)]
-    public static class Mech_MaxBackwardDistance_Get
-    {
-        public static void Postfix(Mech __instance, ref float __result)
-        {
-            // TODO: Only modify these if we're actively in combat
-            Mod.Log.Trace?.Write("M:MBD:GET entered.");
-            __result = MechHelper.FinalWalkSpeed(__instance);
-        }
-    }
-
-    // Override run speed to 1.5 x walking semantics
-    [HarmonyPatch(typeof(Mech))]
-    [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
-    public static class Mech_MaxSprintDistance_Get
-    {
-        public static void Postfix(Mech __instance, ref float __result)
-        {
-            // TODO: Only modify these if we're actively in combat
-            Mod.Log.Trace?.Write("M:MSD:GET entered.");
-            __result = MechHelper.FinalRunSpeed(__instance);
-        }
-    }
-
-    // Override run speed to 1.5 x walking semantics
+    // Override max engage distance to be sprinting
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxMeleeEngageRangeDistance", MethodType.Getter)]
     public static class Mech_MaxMeleeEngageRangeDistance_Get
     {
         public static void Postfix(Mech __instance, ref float __result)
         {
-            Mod.Log.Trace?.Write("M:MMERD:GET entered.");
-            // TODO: Should this be Run or Walk speed?
-            __result = MechHelper.FinalRunSpeed(__instance);
+            if (SharedState.Combat != null)
+                __result = __instance.ModifiedRunDistance();
         }
     }
 
-
+    // Override max engage distance to be sprinting
+    [HarmonyPatch(typeof(Mech), "DamageLocation")]
+    [HarmonyPriority(Priority.Last)]
+    public static class Mech_DamageLocation
+    {
+        public static void Prefix(Mech __instance)
+        {
+            // Invalidate any held state on damage
+            ModState.InvalidateState(__instance);
+        }
+    }
 
 }

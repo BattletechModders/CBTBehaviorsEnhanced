@@ -20,6 +20,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
             if (mech == null)
             {
                 Mod.AILog.Debug?.Write($"  - unit is not a mech, skipping.");
+                return 0f;
             }
 
             if (!FactorUtil.IsStationaryForActor(position, angle, unit))
@@ -28,8 +29,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
                 return 0f;
             }
 
-            MechMeleeCondition meleeCondition = new MechMeleeCondition(mech);
-            if (!mech.CanMakePhysicalWeaponAttack(meleeCondition))
+            if (!mech.CanMakePhysicalWeaponAttack())
             {
                 Mod.AILog.Debug?.Write($"  - mech does not have a physical attack.");
                 return 0f;

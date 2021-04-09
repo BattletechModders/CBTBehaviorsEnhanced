@@ -197,8 +197,9 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
-        public static float KickDamage(this Mech mech, MechMeleeCondition attackerCondition)
+        public static float KickDamage(this Mech mech)
         {
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             if (!attackerCondition.CanKick()) return 0;
 
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetDamagePerAttackerTon * mech.tonnage);
@@ -233,8 +234,9 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
-        public static float KickInstability(this Mech mech, MechMeleeCondition attackerCondition)
+        public static float KickInstability(this Mech mech)
         {
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             if (!attackerCondition.CanKick()) return 0;
 
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon * mech.tonnage);
@@ -270,8 +272,9 @@ namespace CBTBehaviorsEnhanced.Extensions
         }
 
         // PhysicalWeapon extensions
-        public static float PhysicalWeaponDamage(this Mech mech, MechMeleeCondition attackerCondition)
+        public static float PhysicalWeaponDamage(this Mech mech)
         {
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             if (!attackerCondition.CanUsePhysicalAttack()) return 0;
 
             // 0 is a signal that there's no divisor
@@ -296,8 +299,9 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
-        public static float PhysicalWeaponInstability(this Mech mech, MechMeleeCondition attackerCondition)
+        public static float PhysicalWeaponInstability(this Mech mech)
         {
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             if (!attackerCondition.CanUsePhysicalAttack()) return 0;
 
             // 0 is a signal that there's no divisor
@@ -322,42 +326,15 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
-        public static bool CanMakePhysicalWeaponAttack(this Mech mech, MechMeleeCondition attackerCondition)
+        public static bool CanMakePhysicalWeaponAttack(this Mech mech)
         {
-            // Check that unit has a physical attack
-            if (!mech.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
-                !mech.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
-            {
-                Mod.MeleeLog.Info?.Write("Unit has no physical weapon by stat; skipping.");
-                return false;
-            }
-
-            // Damage check - shoulder and hand
-            bool leftArmIsFunctional = attackerCondition.LeftShoulderIsFunctional && attackerCondition.LeftHandIsFunctional;
-            bool rightArmIsFunctional = attackerCondition.RightShoulderIsFunctional && attackerCondition.RightHandIsFunctional;
-            Statistic ignoreActuatorsStat = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
-            bool ignoresActuatorDamage = ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>();
-            if (ignoresActuatorDamage)
-            {
-                Mod.MeleeLog.Info?.Write("Unit ignores actuator damage, passes this validation.");
-            }
-            else if (!leftArmIsFunctional && !rightArmIsFunctional)
-            {
-                Mod.MeleeLog.Info?.Write("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
-                return false;
-            }
-
-            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
-            {
-                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
-                return false;
-            }
-
-            return true;
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);            
+            return attackerCondition.CanUsePhysicalAttack();
         }
 
-        public static float PunchDamage(this Mech mech, MechMeleeCondition attackerCondition)
+        public static float PunchDamage(this Mech mech)
         {
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             if (!attackerCondition.CanPunch()) return 0;
 
             float tonnageMulti = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetDamage) &&
@@ -396,8 +373,9 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
-        public static float PunchInstability(this Mech mech, MechMeleeCondition attackerCondition)
+        public static float PunchInstability(this Mech mech)
         {
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             if (!attackerCondition.CanPunch()) return 0;
 
             // 0 is a signal that there's no divisor

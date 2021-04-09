@@ -496,7 +496,7 @@ namespace CBTBehaviorsEnhanced
         public float MinimumMove = 40f;
 
         // How much walk distance is removed for each point of heat penalty
-        public float HeatMovePenalty = 24f;
+        public float HeatMovePenalty = -24f;
 
         // When calculating RunSpeed, multiply the current WalkSpeed by this amount. 
         public float RunMulti = 1.5f;

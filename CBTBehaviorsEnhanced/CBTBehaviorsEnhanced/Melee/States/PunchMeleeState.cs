@@ -76,9 +76,10 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
-            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+            ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
+            if (!meleeCondition.CanPunch())
             {
-                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+                Mod.MeleeLog.Info?.Write($"Attacker cannot punch, skipping.");
                 return false;
             }
 
@@ -86,13 +87,6 @@ namespace CBTBehaviorsEnhanced.Objects
             if (!validAnimations.Contains(MeleeAttackType.Punch) && !(validAnimations.Contains(MeleeAttackType.Tackle)))
             {
                 Mod.MeleeLog.Info?.Write("Animations do not include a punch or tackle, attacker cannot punch!");
-                return false;
-            }
-
-            // Damage check - both shoulders damaged invalidate us
-            if (!this.AttackerCondition.LeftShoulderIsFunctional && !this.AttackerCondition.RightShoulderIsFunctional)
-            {
-                Mod.MeleeLog.Info?.Write("Both shoulder actuators are damaged. Cannot punch!");
                 return false;
             }
 
@@ -104,7 +98,7 @@ namespace CBTBehaviorsEnhanced.Objects
 
             // If distance > walkSpeed, disable kick/physical weapon/punch
             float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
-            float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
+            float maxWalkSpeed = attacker.ModifiedWalkDistance();
             float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
             if (distance > maxDistance)
             {
@@ -135,11 +129,12 @@ namespace CBTBehaviorsEnhanced.Objects
             if (target.IsProne) this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for arm actuator, +2 to hit for each upper/lower actuator hit
-            int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
-            if (!this.AttackerCondition.LeftHandIsFunctional) leftArmMalus += Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(attacker);
+            int leftArmMalus = (2 - attackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            if (!attackerCondition.LeftHandIsFunctional) leftArmMalus += Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
 
-            int rightArmMalus = (2 - this.AttackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
-            if (!this.AttackerCondition.RightHandIsFunctional) rightArmMalus += Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            int rightArmMalus = (2 - attackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            if (!attackerCondition.RightHandIsFunctional) rightArmMalus += Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
 
             int bestMalus = leftArmMalus <= rightArmMalus ? leftArmMalus : rightArmMalus;
             if (bestMalus != 0)
@@ -160,7 +155,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating PUNCH damage for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float damage = attacker.PunchDamage(this.AttackerCondition);
+            float damage = attacker.PunchDamage();
 
             // Adjust damage for any target resistance
             damage = target.ApplyPunchDamageReduction(damage);
@@ -182,7 +177,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating PUNCH instability for attacker: {CombatantUtils.Label(attacker)} @ {attacker.tonnage} tons " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float instab = attacker.PunchInstability(this.AttackerCondition);
+            float instab = attacker.PunchInstability();
 
             // Adjust damage for any target resistance
             instab = target.ApplyPunchInstabReduction(instab);

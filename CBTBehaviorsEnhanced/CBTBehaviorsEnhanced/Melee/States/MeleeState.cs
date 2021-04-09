@@ -55,11 +55,10 @@ namespace CBTBehaviorsEnhanced
     public abstract class MeleeState
     {
         public bool IsValid = false;
+        public Mech Attacker = null;
 
         public DamageTable AttackerTable { get; set; }
         public DamageTable TargetTable { get; set; }
-
-        protected MechMeleeCondition AttackerCondition { get; private set; }
 
         public float[] AttackerDamageClusters = new float[] { };
         public float[] TargetDamageClusters = new float[] { };
@@ -85,9 +84,9 @@ namespace CBTBehaviorsEnhanced
         // What animation to use
         public MeleeAttackType AttackAnimation = MeleeAttackType.NotSet;
 
-        public MeleeState(Mech attacker)
+        public MeleeState(Mech attacker) 
         {
-            AttackerCondition = new MechMeleeCondition(attacker);
+            this.Attacker = attacker;
         }
 
         public abstract bool IsRangedWeaponAllowed(Weapon weapon);

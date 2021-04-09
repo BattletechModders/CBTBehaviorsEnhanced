@@ -3,6 +3,7 @@ using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
+using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
 using System.Text;
@@ -93,18 +94,11 @@ namespace CBTBehaviorsEnhanced.Objects
 
         private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
         {
-            if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
-            {
-                Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
-                return false;
-            }
 
-
-            // Check that unit has a physical attack
-            if (!attacker.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) ||
-                !attacker.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+            ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
+            if (!meleeCondition.CanUsePhysicalAttack())
             {
-                Mod.MeleeLog.Info?.Write("Unit has no physical weapon by stat; skipping.");
+                Mod.MeleeLog.Info?.Write($"Attacker cannot make a physical attack, skipping.");
                 return false;
             }
 
@@ -121,24 +115,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            // Damage check - shoulder and hand
-            bool leftArmIsFunctional = this.AttackerCondition.LeftShoulderIsFunctional && this.AttackerCondition.LeftHandIsFunctional;
-            bool rightArmIsFunctional = this.AttackerCondition.RightShoulderIsFunctional && this.AttackerCondition.RightHandIsFunctional;
-            Statistic ignoreActuatorsStat = attacker.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
-            bool ignoresActuatorDamage = ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>();
-            if (ignoresActuatorDamage)
-            {
-                Mod.MeleeLog.Info?.Write("Unit ignores actuator damage, passes this validation.");
-            }
-            else if (!leftArmIsFunctional && !rightArmIsFunctional)
-            {
-                Mod.MeleeLog.Info?.Write("Both arms are inoperable due to shoulder and hand actuator damage. Cannot use a physical weapon!");
-                return false;
-            }
-
             // If distance > walkSpeed, disable kick/physical weapon/punch
             float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
-            float maxWalkSpeed = MechHelper.FinalWalkSpeed(attacker);
+            float maxWalkSpeed = attacker.ModifiedWalkDistance();
             float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
             if (distance > maxDistance)
             {
@@ -170,8 +149,9 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // +2 to hit for each upper/lower actuator hit
-            int leftArmMalus = (2 - this.AttackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
-            int rightArmMalus = (2 - this.AttackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(attacker);
+            int leftArmMalus = (2 - attackerCondition.LeftArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
+            int rightArmMalus = (2 - attackerCondition.RightArmActuatorsCount) * Mod.Config.Melee.Punch.ArmActuatorDamageMalus;
             int bestMalus = leftArmMalus <= rightArmMalus ? leftArmMalus : rightArmMalus;
 
             // If the ignore actuators stat is set, set the malus to 0 regardless of damage
@@ -198,7 +178,7 @@ namespace CBTBehaviorsEnhanced.Objects
             Mod.MeleeLog.Info?.Write($"Calculating PHYSICAL WEAPON damage for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
 
-            float damage = attacker.PhysicalWeaponDamage(this.AttackerCondition);
+            float damage = attacker.PhysicalWeaponDamage();
             damage = target.ApplyPhysicalWeaponDamageReduction(damage);
 
             // Target damage applies as a single modifier
@@ -217,8 +197,8 @@ namespace CBTBehaviorsEnhanced.Objects
         {
             Mod.MeleeLog.Info?.Write($"Calculating PHYSICAL WEAPON instability for attacker: {CombatantUtils.Label(attacker)} " +
                 $"vs. target: {CombatantUtils.Label(target)}");
-            
-            float instab = attacker.PhysicalWeaponInstability(this.AttackerCondition);
+
+            float instab = attacker.PhysicalWeaponInstability();
             instab = target.ApplyPhysicalWeaponInstabReduction(instab);
             this.TargetInstability = instab;
         }

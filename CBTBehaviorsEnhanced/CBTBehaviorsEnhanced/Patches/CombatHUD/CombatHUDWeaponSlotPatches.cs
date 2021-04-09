@@ -96,11 +96,12 @@ namespace CBTBehaviorsEnhanced.Patches
                 __instance.WeaponText.SetText(weaponLabel);
 
                 Mech parentMech = ___displayedWeapon.parent as Mech;
-                MechMeleeCondition meleeCondition = new MechMeleeCondition(parentMech);
 
-                float kickDam = parentMech.KickDamage(meleeCondition);               
-                float punchDam = parentMech.PunchDamage(meleeCondition);
-                float weapDam = parentMech.PhysicalWeaponDamage(meleeCondition);
+                ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(parentMech);
+
+                float kickDam = parentMech.KickDamage();               
+                float punchDam = parentMech.PunchDamage();
+                float weapDam = parentMech.PhysicalWeaponDamage();
                 string damageText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_No_Attack_Type_Damage],
                     new object[] { weapDam, punchDam, kickDam }
                     ).ToString();
