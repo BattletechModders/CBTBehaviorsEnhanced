@@ -49,7 +49,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 				// Unsteady
 				this.UnsteadyAttackerOnHit = Mod.Config.Melee.Charge.UnsteadyAttackerOnHit;
 				this.UnsteadyAttackerOnMiss = Mod.Config.Melee.Charge.UnsteadyAttackerOnMiss;
-				this.UnsteadyTargetOnHit = Mod.Config.Melee.Charge.UnsteadyTargetOnHit;
+				this.OnTargetMechHitForceUnsteady = Mod.Config.Melee.Charge.UnsteadyTargetOnHit;
 
 				// Set the animation type
 				if (state.target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;

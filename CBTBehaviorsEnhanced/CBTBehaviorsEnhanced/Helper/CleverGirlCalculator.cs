@@ -78,7 +78,7 @@ namespace CBTBehaviorsEnhanced.Helper
                         // Apply evasion break and knockdown utility to the melee weapon
                         float evasionBreakUtility = 0f;
                         if (targetMech != null && targetMech.EvasivePipsCurrent > 0 &&
-                             (meleeState.UnsteadyTargetOnHit || AttackHelper.WillUnsteadyTarget(totalTargetStab, targetMech))
+                             (meleeState.OnTargetMechHitForceUnsteady || AttackHelper.WillUnsteadyTarget(totalTargetStab, targetMech))
                            )
                         {
                             // Target will lose their evasion pips
@@ -89,7 +89,7 @@ namespace CBTBehaviorsEnhanced.Helper
 
                         float knockdownUtility = 0f;
                         if (targetMech != null && targetMech.pilot != null &&
-                            AttackHelper.WillKnockdownTarget(totalTargetStab, targetMech, meleeState.UnsteadyTargetOnHit))
+                            AttackHelper.WillKnockdownTarget(totalTargetStab, targetMech, meleeState.OnTargetMechHitForceUnsteady))
                         {
                             float centerTorsoArmorAndStructure = targetMech.GetMaxArmor(ArmorLocation.CenterTorso) + targetMech.GetMaxStructure(ChassisLocations.CenterTorso);
                             if (AttackHelper.WillInjuriesKillTarget(targetMech, 1))

@@ -58,7 +58,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                     state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) :
                     Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss;
 
-                this.UnsteadyTargetOnHit = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
+                this.OnTargetMechHitForceUnsteady = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
                     state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit) :
                     Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit;
 

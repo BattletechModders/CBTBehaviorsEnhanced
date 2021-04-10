@@ -24,7 +24,10 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         public bool UnsteadyAttackerOnHit = false;
         public bool UnsteadyAttackerOnMiss = false;
-        public bool UnsteadyTargetOnHit = false;
+
+        // Target modifiers
+        public bool OnTargetMechHitForceUnsteady = false;
+        public int OnTargetVehicleHitEvasionPipsRemoved = 0;
 
         public bool UsePilotingDelta = true;
 
