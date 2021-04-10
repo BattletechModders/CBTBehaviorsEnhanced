@@ -23,6 +23,7 @@ namespace CBTBehaviorsEnhanced
         public static DeferringLogger ActivationLog;
         public static DeferringLogger MoveLog;
         public static DeferringLogger AILog;
+        public static DeferringLogger UILog;
 
         public static string ModDir;
         public static ModConfig Config;
@@ -53,6 +54,7 @@ namespace CBTBehaviorsEnhanced
             ActivationLog = new DeferringLogger(modDirectory, LogName + "_activation", LogLabel, Config.Debug, Config.Trace);
             AILog = new DeferringLogger(modDirectory, LogName + "_ai", LogLabel, Config.Debug, Config.Trace);
             MoveLog = new DeferringLogger(modDirectory, LogName + "_move", LogLabel, Config.Debug, Config.Trace);
+            UILog = new DeferringLogger(modDirectory, LogName + "_ui", LogLabel, Config.Debug, Config.Trace);
 
             // Read localization
             string localizationPath = Path.Combine(ModDir, "./mod_localized_text.json");

@@ -22,7 +22,7 @@ namespace CBTBehaviorsEnhanced.Patches
             CombatHUDFireButton newButton = GameObject.Instantiate<CombatHUDFireButton>(cloneSource);
             newButton.Init(Combat, HUD);
             newButton.gameObject.transform.parent = parent.transform;
-            Mod.Log.Trace?.Write($"Created {goName} and attached to parent.");
+            Mod.UILog.Trace?.Write($"Created {goName} and attached to parent.");
 
             newButton.gameObject.name = goName;
             newButton.gameObject.transform.SetAsFirstSibling();
@@ -48,7 +48,7 @@ namespace CBTBehaviorsEnhanced.Patches
             GameObject sideWedges = newButton.gameObject.transform.Find("confirmFrame_sideWedges (1)").gameObject;
             sideWedges.SetActive(false);
        
-            Mod.Log.Trace?.Write($"Redid layout for {goName}.");
+            Mod.UILog.Trace?.Write($"Redid layout for {goName}.");
             return newButton;
         }
 
@@ -56,12 +56,12 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             try
             {
-                Mod.Log.Trace?.Write($"CREATING TEST COMPONENTS: instance is null? {__instance == null}  instanceGO is null? {__instance?.gameObject == null}");
+                Mod.UILog.Trace?.Write($"CREATING TEST COMPONENTS: instance is null? {__instance == null}  instanceGO is null? {__instance?.gameObject == null}");
 
                 // Find icPanel_Layout as the parent
                 Transform icPanelLayoutTransform = __instance.FireButton.gameObject.transform.parent;
                 GameObject icPanelLayoutGO = icPanelLayoutTransform.gameObject;
-                if (icPanelLayoutGO == null) Mod.Log.Warn?.Write("FAILED TO FIND IC_PANEL_LAYOUT!");
+                if (icPanelLayoutGO == null) Mod.UILog.Warn?.Write("FAILED TO FIND IC_PANEL_LAYOUT!");
 
                 VerticalLayoutGroup vlg = icPanelLayoutGO.GetComponent<VerticalLayoutGroup>();
                 vlg.childAlignment = TextAnchor.MiddleCenter;
@@ -73,13 +73,13 @@ namespace CBTBehaviorsEnhanced.Patches
                 ModState.MeleeAttackContainer.transform.SetSiblingIndex(1); // Move us above the description container
                 ModState.MeleeAttackContainer.layer = 5; // everyting else is at this level
                 ModState.MeleeAttackContainer.name = ModConsts.Container_GO_ID;
-                if (ModState.MeleeAttackContainer == null) Mod.Log.Warn?.Write("FAILED TO ADD CONTAINER!");
+                if (ModState.MeleeAttackContainer == null) Mod.UILog.Warn?.Write("FAILED TO ADD CONTAINER!");
 
                 RectTransform containerRectTransform = ModState.MeleeAttackContainer.AddComponent<RectTransform>();
                 containerRectTransform.localScale = Vector3.one;
 
                 HorizontalLayoutGroup hlg = ModState.MeleeAttackContainer.AddComponent<HorizontalLayoutGroup>();
-                if (hlg == null) Mod.Log.Warn?.Write("FAILED TO CREATE HORIZONTAL GROUP");
+                if (hlg == null) Mod.UILog.Warn?.Write("FAILED TO CREATE HORIZONTAL GROUP");
                 hlg.childForceExpandHeight = false;
                 hlg.childForceExpandWidth = false;
                 hlg.childControlHeight = false;
@@ -89,12 +89,12 @@ namespace CBTBehaviorsEnhanced.Patches
                 hlg.gameObject.SetActive(true);
 
                 LayoutElement le = ModState.MeleeAttackContainer.AddComponent<LayoutElement>();
-                if (le == null) Mod.Log.Warn?.Write("FAILED TO ADD LAYOUT ELEMENT");
+                if (le == null) Mod.UILog.Warn?.Write("FAILED TO ADD LAYOUT ELEMENT");
                 le.preferredHeight = 75f;
                 le.preferredWidth = 500f;
 
                 // Reverse order, as the first one created is the right-most
-                Mod.Log.Trace?.Write($"CREATING BUTTONS");
+                Mod.UILog.Trace?.Write($"CREATING BUTTONS");
                 ModState.ChargeFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.ChargeFB_GO_ID, Combat, HUD);
                 ModState.PhysicalWeaponFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PhysicalWeaponFB_GO_ID, Combat, HUD);
                 ModState.PunchFB = CloneCHUDFireButton(hlg.gameObject, __instance.FireButton, ModConsts.PunchFB_GO_ID, Combat, HUD);
@@ -102,7 +102,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             catch (Exception e)
             {
-                Mod.Log.Error?.Write(e, $"Failed to create melee buttons!");
+                Mod.UILog.Error?.Write(e, $"Failed to create melee buttons!");
             }
 
         }
@@ -114,7 +114,7 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
             ref string additionalDetails, bool showHeatWarnings)
         {
-            Mod.Log.Trace?.Write($"ShowFireButton called with mode: {mode}");
+            Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode}");
 
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
@@ -127,7 +127,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     ModState.AddorUpdateMeleeState(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant);
-                    Mod.MeleeLog.Debug?.Write($"Updated melee state for position: {ModState.MeleePreviewPos}");
+                    Mod.UILog.Debug?.Write($"Updated melee state for position: {ModState.MeleePreviewPos}");
 
                     // Re-enable any buttons if they were disabled.
                     __instance.FireButton.SetState(ButtonState.Enabled);
@@ -137,7 +137,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else
             {
-                ModState.InvalidateMeleeStates(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor);
+                ModState.InvalidateMeleeStates(SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor);
             }
         }
 
@@ -147,16 +147,16 @@ namespace CBTBehaviorsEnhanced.Patches
             // Disable the melee container if there's no active state
             if (SharedState.CombatHUD.SelectionHandler.ActiveState == null)
             {
-                Mod.Log.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
+                Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(false);
                 return;
             }
 
-            Mod.Log.Trace?.Write($"ShowFireButton called with mode: {mode}");
+            Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode}");
 
             if (mode == CombatHUDFireButton.FireMode.Engage)
             {
-                Mod.Log.Trace?.Write($"Enabling all CHUD_Fire_Buttons");
+                Mod.UILog.Trace?.Write($"Enabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(true);
 
                 MeleeState meleeState = ModState.GetMeleeState(
@@ -169,16 +169,16 @@ namespace CBTBehaviorsEnhanced.Patches
                 // Autoselect best option
                 MeleeAttack autoselectedAttack = meleeState.GetHighestDamageAttackForUI();
                 if (autoselectedAttack != null)
-                    Mod.MeleeLog.Info?.Write($"Autoselecting state of type: '{autoselectedAttack.Label}' as most damaging.");
+                    Mod.UILog.Info?.Write($"Autoselecting state of type: '{autoselectedAttack.Label}' as most damaging.");
                 else
-                    Mod.MeleeLog.Info?.Write("No highest damaging state - no melee options!");
+                    Mod.UILog.Info?.Write("No highest damaging state - no melee options!");
 
                 // Final check - if everything is disabled, disable the button
                 bool hasValidAttack = meleeState.Charge.IsValid || meleeState.Kick.IsValid ||
                     meleeState.PhysicalWeapon.IsValid || meleeState.Punch.IsValid;
                 if (!hasValidAttack)
                 {
-                    Mod.MeleeLog.Info?.Write("NO VALID MELEE ATTACKS, DISABLING!");
+                    Mod.UILog.Info?.Write("NO VALID MELEE ATTACKS, DISABLING!");
                     __instance.FireButton.SetState(ButtonState.Disabled);
                     __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                     __instance.DescriptionContainer.SetActive(false);
@@ -187,7 +187,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 }
                 else
                 {
-                    Mod.MeleeLog.Info?.Write($" CHECKING FOR VALID ATTACKS: hasValidAttack=>{hasValidAttack}" +
+                    Mod.UILog.Info?.Write($" CHECKING FOR VALID ATTACKS: hasValidAttack=>{hasValidAttack}" +
                         $"  charge=>{meleeState.Charge.IsValid}" +
                         $"  kick=>{meleeState.Kick.IsValid}" +
                         $"  punch=>{meleeState.Punch.IsValid}" +
@@ -197,7 +197,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else
             {
-                Mod.Log.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
+                Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
                 ModState.MeleeAttackContainer.SetActive(false);
                 if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                 if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
@@ -216,7 +216,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 // Check for valid attack
                 if (!meleeState.DFA.IsValid)
                 {
-                    Mod.MeleeLog.Info?.Write($"DFA attack failed validation, disabling button.");
+                    Mod.UILog.Info?.Write($"DFA attack failed validation, disabling button.");
                     __instance.FireButton.SetState(ButtonState.Disabled);
                     __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                     __instance.DescriptionContainer.SetActive(false);
@@ -226,7 +226,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 HashSet<string> descriptonNotes = meleeState.DFA.DescriptionNotes;
                 additionalDetails = String.Join(", ", descriptonNotes);
-                Mod.MeleeLog.Info?.Write($"Aggregate description is: {additionalDetails}");
+                Mod.UILog.Info?.Write($"Aggregate description is: {additionalDetails}");
 
                 // Select state here as a click will validate 
                 ModState.AddOrUpdateSelectedAttack(
@@ -313,7 +313,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || __instance.gameObject == null) return true;
             
-            Mod.Log.Info?.Write($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}");
+            Mod.UILog.Info?.Write($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}");
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor);
 
@@ -328,7 +328,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     meleeState.Charge
                     );
-                Mod.Log.Info?.Write("User selected Charge button");
+                Mod.UILog.Info?.Write("User selected Charge button");
                 shouldReturn = false;                
             }
             else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
@@ -340,7 +340,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     meleeState.Kick
                     );
-                Mod.Log.Info?.Write("User selected Kick button");
+                Mod.UILog.Info?.Write("User selected Kick button");
                 shouldReturn = false;
             }
             else if (__instance.gameObject.name == ModConsts.PhysicalWeaponFB_GO_ID)
@@ -352,7 +352,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     meleeState.PhysicalWeapon
                     );
-                Mod.Log.Info?.Write("User selected PhysWeap button");
+                Mod.UILog.Info?.Write("User selected PhysWeap button");
                 shouldReturn = false;
             }
             else if (__instance.gameObject.name == ModConsts.PunchFB_GO_ID)
@@ -364,7 +364,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                     meleeState.Punch
                     );
-                Mod.Log.Info?.Write("User selected Punch button");
+                Mod.UILog.Info?.Write("User selected Punch button");
                 shouldReturn = false;
             }
             else 
@@ -372,7 +372,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 if (selectedAttack != null)
                 {
-                    Mod.Log.Info?.Write("OnClick from generic CHUDFB with selected type, short-cutting to action.");
+                    Mod.UILog.Info?.Write("OnClick from generic CHUDFB with selected type, short-cutting to action.");
 
                     // Disable the buttons to prevent accidental clicks?
                     if (selectedAttack is ChargeAttack)
@@ -391,13 +391,13 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (selectedAttack != null)
             {
-                Mod.Log.Debug?.Write("Enabling description container for melee attack");
+                Mod.UILog.Debug?.Write("Enabling description container for melee attack");
                 selector.DescriptionContainer.SetActive(true);
                 selector.DescriptionContainer.gameObject.SetActive(true);
 
                 HashSet<string> descriptonNotes = selectedAttack.DescriptionNotes;
                 string description = String.Join(", ", descriptonNotes);
-                Mod.Log.Debug?.Write($"Aggregate description is: {description}");
+                Mod.UILog.Debug?.Write($"Aggregate description is: {description}");
 
                 selector.DescriptionText.SetText(description);
                 selector.DescriptionText.ForceMeshUpdate(true);
