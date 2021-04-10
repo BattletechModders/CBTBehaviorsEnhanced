@@ -103,6 +103,7 @@
     <Compile Include="Melee\MechDFASequencePatches.cs" />
     <Compile Include="Melee\SelectionStatePatches.cs" />
     <Compile Include="Melee\HitLocationPatches.cs" />
+    <Compile Include="Melee\States\MeleeState.cs" />
     <Compile Include="ModInit.cs" />
     <Compile Include="Components\VolatileAmmo.cs" />
     <Compile Include="Extensions\MechExtensions.cs" />

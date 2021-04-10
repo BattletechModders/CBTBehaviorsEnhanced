@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using BattleTech.UI;
 using CBTBehaviorsEnhanced.Extensions;
+using CBTBehaviorsEnhanced.MeleeStates;
 using Harmony;
 using IRBTModUtils;
 using Localize;
@@ -36,12 +37,13 @@ namespace CBTBehaviorsEnhanced.Patches
             }
 
             // Check melee patches
-            if (ModState.MeleeStates?.SelectedState != null && ___displayedWeapon.Type == WeaponType.Melee)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            if (selectedAttack != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
                     ___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
-                    foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
+                    foreach (KeyValuePair<string, int> kvp in selectedAttack.AttackModifiers)
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                         Mod.MeleeLog.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
@@ -55,15 +57,16 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
     static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
     {
-        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon)
+        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
             if (__instance == null || ___displayedWeapon == null || !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
 
-            if (ModState.MeleeStates != null && ModState.MeleeStates.SelectedState != null)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            if (selectedAttack != null)
             {
                 // Check if the weapon can fire according to the select melee type
-                bool isAllowed = ModState.MeleeStates.SelectedState.IsRangedWeaponAllowed(___displayedWeapon);
+                bool isAllowed = selectedAttack.IsRangedWeaponAllowed(___displayedWeapon);
                 Mod.MeleeLog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
 
                 if (!isAllowed)
@@ -88,7 +91,8 @@ namespace CBTBehaviorsEnhanced.Patches
             if (__instance == null || ___displayedWeapon == null) return;
             Mod.Log.Trace?.Write("CHUDWS:UMW entered");
 
-            if (ModState.MeleeStates == null || ModState.MeleeStates.SelectedState == null || ModState.MeleeStates.SelectedState == ModState.MeleeStates.DFA)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            if (selectedAttack == null || selectedAttack is DFAAttack)
             {
                 string weaponLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_Weapon], 
                     new object[] { Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_No_Attack_Type] }
@@ -107,16 +111,16 @@ namespace CBTBehaviorsEnhanced.Patches
                     ).ToString();
                 __instance.DamageText.SetText(damageText);
             }
-            else if (ModState.MeleeStates.SelectedState != ModState.MeleeStates.DFA)
+            else if (selectedAttack is ChargeAttack || selectedAttack is KickAttack || selectedAttack is PunchAttack || selectedAttack is WeaponAttack)
             {
                 string attackName = "UNKNOWN";
-                if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Charge)
+                if (selectedAttack is ChargeAttack)
                     attackName = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge];
-                else if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Kick)
+                else if (selectedAttack is KickAttack)
                     attackName = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Kick];
-                else if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.PhysicalWeapon)
+                else if (selectedAttack is WeaponAttack)
                     attackName = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
-                else if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Punch)
+                else if (selectedAttack is PunchAttack)
                     attackName = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Punch];
                 
                 string weaponLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_Weapon],
@@ -125,11 +129,11 @@ namespace CBTBehaviorsEnhanced.Patches
                 __instance.WeaponText.SetText(weaponLabel);
 
 
-                float totalDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
-                if (ModState.MeleeStates.SelectedState.TargetDamageClusters.Length > 1)
+                float totalDamage = selectedAttack.TargetDamageClusters.Sum();
+                if (selectedAttack.TargetDamageClusters.Length > 1)
                 {
-                    int avgDamage = (int)Math.Floor(totalDamage / ModState.MeleeStates.SelectedState.TargetDamageClusters.Length);
-                    __instance.DamageText.SetText($"{avgDamage} <size=80%>(x{ModState.MeleeStates.SelectedState.TargetDamageClusters.Length})");
+                    int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
+                    __instance.DamageText.SetText($"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})");
                 }
                 else
                 {
@@ -137,7 +141,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 }
 
                 ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, totalDamage);
-                ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, ModState.MeleeStates.SelectedState.TargetInstability);
+                ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, selectedAttack.TargetInstability);
                 CustAmmoCategories.DamageModifiersCache.ClearDamageCache(___displayedWeapon);
             }
         }
@@ -155,7 +159,8 @@ namespace CBTBehaviorsEnhanced.Patches
             if (__instance == null || ___displayedWeapon == null) return;
             Mod.Log.Trace?.Write("CHUDWS:UDFAW entered");
 
-            if (ModState.MeleeStates == null || ModState.MeleeStates.DFA == null)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            if (selectedAttack == null || !(selectedAttack is DFAAttack))
             {
                 Mod.MeleeLog.Debug?.Write("Defaulting DFA damage.");
 
@@ -163,15 +168,15 @@ namespace CBTBehaviorsEnhanced.Patches
                 float targetDamage = parentMech.DFATargetDamage();
                 __instance.DamageText.SetText($"{targetDamage}");
             }
-            else if (ModState.MeleeStates.DFA != null)
+            else if (selectedAttack is DFAAttack)
             {
                 Mod.MeleeLog.Debug?.Write("Updating labels for DFA state.");
 
-                float totalDamage = ModState.MeleeStates.DFA.TargetDamageClusters.Sum();
-                if (ModState.MeleeStates.DFA.TargetDamageClusters.Length > 1)
+                float totalDamage = selectedAttack.TargetDamageClusters.Sum();
+                if (selectedAttack.TargetDamageClusters.Length > 1)
                 {
-                    int avgDamage = (int)Math.Floor(totalDamage / ModState.MeleeStates.DFA.TargetDamageClusters.Length);
-                    string damageS = $"{avgDamage} <size=80%>(x{ModState.MeleeStates.DFA.TargetDamageClusters.Length})";
+                    int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
+                    string damageS = $"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})";
                     Mod.MeleeLog.Debug?.Write($"  - damageS is: {damageS}");
                     __instance.DamageText.SetText(damageS);
                 }
@@ -192,36 +197,37 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, int ___displayedHeat)
         {
 
-            if (__instance == null || ___displayedWeapon == null || ModState.MeleeStates == null) return;
+            if (__instance == null || ___displayedWeapon == null) return;
 
             Mod.Log.Trace?.Write("CHUDWS:GTTS entered");
 
             // Check melee patches
-            if (ModState.MeleeStates?.SelectedState != null && ___displayedWeapon.Type == WeaponType.Melee)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            if (selectedAttack != null && ___displayedWeapon.Type == WeaponType.Melee)
             {
                 if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {
-                    float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                    float targetDamage = selectedAttack.TargetDamageClusters.Sum();
                     Mod.MeleeLog.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
-                        $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
+                        $"=> Damage: {targetDamage}  instability: {selectedAttack.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
-                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], selectedAttack.TargetInstability),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
                     };
                 }
                 else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
-                    float targetDamage = ModState.MeleeStates.SelectedState.TargetDamageClusters.Sum();
+                    float targetDamage = selectedAttack.TargetDamageClusters.Sum();
                     Mod.MeleeLog.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
-                        $"=> Damage: {targetDamage}  instability: {ModState.MeleeStates.SelectedState.TargetInstability}  " +
+                        $"=> Damage: {targetDamage}  instability: {selectedAttack.TargetInstability}  " +
                         $"heat: {___displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
-                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], ModState.MeleeStates.SelectedState.TargetInstability),
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], selectedAttack.TargetInstability),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
                     };
 

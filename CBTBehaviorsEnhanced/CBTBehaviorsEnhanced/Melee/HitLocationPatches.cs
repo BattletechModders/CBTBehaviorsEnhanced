@@ -11,10 +11,6 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
     {
         static void Postfix(AttackDirection from, ref Dictionary<ArmorLocation, int> __result)
         {
-            // If this attack isn't a melee attack, abort
-            if (ModState.MeleeType == MeleeAttackType.NotSet || ModState.MeleeWeapon == null ||
-                ModState.ForceDamageTable == DamageTable.NONE || ModState.ForceDamageTable == DamageTable.STANDARD) return;
-
             if (ModState.ForceDamageTable == DamageTable.PUNCH)
             {
                 Mod.Log.Info?.Write($"Attack will use the PUNCH damage table");
@@ -58,6 +54,10 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                 __result = new Dictionary<ArmorLocation, int>();
                 __result.Add(ArmorLocation.LeftLeg, 50);
                 __result.Add(ArmorLocation.RightLeg, 50);
+            }
+            else
+            {
+                return;
             }
         }
     }

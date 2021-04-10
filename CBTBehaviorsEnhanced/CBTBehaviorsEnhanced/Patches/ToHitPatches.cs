@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced.MeleeStates;
 using Harmony;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
@@ -16,11 +17,14 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             Mod.Log.Trace?.Write("TH:GAMM entered");
 
-            if (__instance == null || ModState.MeleeStates?.SelectedState == null) return;
+            if (__instance == null) return;
+
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(attacker);
+            if (selectedAttack == null) return;
 
             Mod.Log.Debug?.Write("Adding CBTBE modifiers to ToHit");
             int sumMod = 0;
-            foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
+            foreach (KeyValuePair<string, int> kvp in selectedAttack.AttackModifiers)
             {
                 string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                 Mod.Log.Debug?.Write($" - Found attack modifier: {localText} = {kvp.Value}, adding to sum modifier");
@@ -83,10 +87,11 @@ namespace CBTBehaviorsEnhanced.Patches
             }
 
             // Check melee patches
-            if (ModState.MeleeStates?.SelectedState != null && weapon.Type == WeaponType.Melee)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(attacker);
+            if (selectedAttack != null && weapon.Type == WeaponType.Melee)
             {
 
-                foreach (KeyValuePair<string, int> kvp in ModState.MeleeStates.SelectedState.AttackModifiers)
+                foreach (KeyValuePair<string, int> kvp in selectedAttack.AttackModifiers)
                 {
                     string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                     Mod.Log.Info?.Write($" - Found attack modifier for desc: {localText} = {kvp.Value}");

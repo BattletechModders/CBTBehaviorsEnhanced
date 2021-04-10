@@ -41,7 +41,8 @@ namespace CBTBehaviorsEnhanced.Piloting {
 
             Mod.Log.Info?.Write($"FALLING DAMAGE: TT damage: {damagePointsTT} => {damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons} falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
-            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, __instance.OwningMech, __instance.SequenceGUID, locationDamage.ToArray(), DamageType.KnockdownSelf, MeleeAttackType.NotSet);
+            (Weapon melee, Weapon dfa) fakeWeapons = ModState.GetFakedWeapons(__instance.OwningMech);
+            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, fakeWeapons.melee, __instance.OwningMech, __instance.SequenceGUID, locationDamage.ToArray(), DamageType.KnockdownSelf, MeleeAttackType.NotSet);
         }
     }
 }

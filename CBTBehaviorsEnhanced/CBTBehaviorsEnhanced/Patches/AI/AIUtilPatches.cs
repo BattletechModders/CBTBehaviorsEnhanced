@@ -45,7 +45,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 }
 
                 bool modifyAttack = false;
-                MeleeAttack meleeState = null;
+                MeleeAttack meleeAttack = null;
                 Weapon meleeWeapon = null;
 
                 bool isCharge = false;
@@ -55,17 +55,20 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     Mod.AILog.Info?.Write($"Modifying {attackingMech.DistinctId()}'s melee attack damage for utility");
 
                     // Create melee options
-                    ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
-                    ModState.MeleeStates.SelectedState = ModState.MeleeStates.GetHighestTargetDamageState();
-                    
-                    meleeWeapon = attackingMech.MeleeWeapon;
-                    modifyAttack = true;
-                    isMelee = true;
-
-                    if (ModState.MeleeStates.SelectedState == ModState.MeleeStates.Charge)
+                    MeleeState meleeState = ModState.AddorUpdateMeleeState(attackingMech, attackPosition, targetActor);
+                    if (meleeState != null)
                     {
-                        isCharge = true;
+                        meleeAttack = meleeState.GetHighestDamageAttackForUI();
+                        ModState.AddOrUpdateSelectedAttack(attackingMech, meleeAttack);
+                        if (meleeAttack is ChargeAttack)
+                            isCharge = true;
+
+                        meleeWeapon = attackingMech.MeleeWeapon;
+                        modifyAttack = true;
+                        isMelee = true;
+
                     }
+
                 }
 
                 bool isDFA = false;
@@ -74,19 +77,22 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     Mod.AILog.Info?.Write($"Modifying {attackingMech.DistinctId()}'s DFA attack damage for utility");
 
                     // Create melee options
-                    ModState.MeleeStates = MeleeHelper.GetMeleeStates(attackingMech, attackPosition, targetActor);
-                    ModState.MeleeStates.SelectedState = ModState.MeleeStates.DFA;
-                
-                    meleeWeapon = attackingMech.DFAWeapon;
-                    modifyAttack = true;
-                    isDFA = true;
+                    MeleeState meleeState = ModState.AddorUpdateMeleeState(attackingMech, attackPosition, targetActor);
+                    if (meleeState != null)
+                    {
+                        meleeAttack = meleeState.DFA;
+                        ModState.AddOrUpdateSelectedAttack(attackingMech, meleeAttack);
+
+                        meleeWeapon = attackingMech.DFAWeapon;
+                        modifyAttack = true;
+                        isDFA = true;
+                    }
                 }
 
                 // No pathing dests for melee or DFA - skip
                 if (!isMelee && !isDFA) return;
 
-                meleeState = ModState.MeleeStates != null ? ModState.MeleeStates.SelectedState : null;
-                if (modifyAttack && meleeState == null || !meleeState.IsValid)
+                if (modifyAttack && meleeAttack == null || !meleeAttack.IsValid)
                 {
                     Mod.AILog.Info?.Write($"Failed to find a valid melee state, marking melee weapons as 1 damage.");
                     meleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, 0);
@@ -94,17 +100,17 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     return;
                 }
 
-                if (modifyAttack && meleeState != null && meleeState.IsValid)
+                if (modifyAttack && meleeAttack != null && meleeAttack.IsValid)
                 {
-                    Mod.AILog.Info?.Write($"Evaluating utility against state: {meleeState.Label}");
+                    Mod.AILog.Info?.Write($"Evaluating utility against state: {meleeAttack.Label}");
                     // Set the DFA weapon's damage to our expected damage
-                    float totalDamage = meleeState.TargetDamageClusters.Sum();
+                    float totalDamage = meleeAttack.TargetDamageClusters.Sum();
                     Mod.AILog.Info?.Write($" - totalDamage: {totalDamage}");
 
                     // Check to see if the attack will unsteady a target
                     float evasionBreakUtility = 0f;
                     if (targetMech != null && targetMech.EvasivePipsCurrent > 0 &&
-                         (meleeState.UnsteadyTargetOnHit || AttackHelper.WillUnsteadyTarget(meleeState.TargetInstability, targetMech))
+                         (meleeAttack.UnsteadyTargetOnHit || AttackHelper.WillUnsteadyTarget(meleeAttack.TargetInstability, targetMech))
                        )
                     {
                         // Target will lose their evasion pips
@@ -115,7 +121,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
 
                     float knockdownUtility = 0f;
                     if (targetMech != null && targetMech.pilot != null &&
-                        AttackHelper.WillKnockdownTarget(meleeState.TargetInstability, targetMech, meleeState.UnsteadyTargetOnHit))
+                        AttackHelper.WillKnockdownTarget(meleeAttack.TargetInstability, targetMech, meleeAttack.UnsteadyTargetOnHit))
                     {
                         float centerTorsoArmorAndStructure = targetMech.GetMaxArmor(ArmorLocation.CenterTorso) + targetMech.GetMaxStructure(ChassisLocations.CenterTorso);
                         if (AttackHelper.WillInjuriesKillTarget(targetMech, 1))
@@ -142,7 +148,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     int normedNewPips = (unit.EvasivePipsCurrent + newPips) > unit.StatCollection.GetValue<int>("MaxEvasivePips") ?
                         unit.StatCollection.GetValue<int>("MaxEvasivePips") : (unit.EvasivePipsCurrent + newPips);
                     float selfEvasionDamage = 0f;
-                    if (meleeState.UnsteadyAttackerOnHit || meleeState.UnsteadyAttackerOnMiss)
+                    if (meleeAttack.UnsteadyAttackerOnHit || meleeAttack.UnsteadyAttackerOnMiss)
                     {
                         // TODO: Should evaluate chance to hit, and apply these partial damage based upon success chances
                         selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipLostUtility;
@@ -151,9 +157,9 @@ namespace CBTBehaviorsEnhanced.Patches.AI
 
                     // Check to see how much damage the attacker will take
                     float selfDamage = 0f;
-                    if (meleeState.AttackerDamageClusters.Length > 0)
+                    if (meleeAttack.AttackerDamageClusters.Length > 0)
                     {
-                        selfDamage = meleeState.AttackerDamageClusters.Sum();
+                        selfDamage = meleeAttack.AttackerDamageClusters.Sum();
                         Mod.AILog.Info?.Write($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
                     }
 

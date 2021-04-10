@@ -2,6 +2,7 @@
 using BattleTech;
 using BattleTech.UI;
 using CBTBehaviorsEnhanced.MeleeStates;
+using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,10 +12,11 @@ namespace CBTBehaviorsEnhanced {
 
         public const int NO_ATTACK_SEQUENCE_ID = -1; // Attack sequences are always 0 or positive integers (see AttackDirector:44) Use -1 to signify 'no sequence'
 
-        // Melee weapon detection state
-        public static Weapon MeleeWeapon = null;
-        public static MeleeAttackType MeleeType = MeleeAttackType.NotSet;
-        public static MeleeState MeleeStates = null;
+        // Melee States
+        private static Dictionary<string, Dictionary<Vector3, MeleeState>> meleeStates = new Dictionary<string, Dictionary<Vector3, MeleeState>>();
+        private static Dictionary<string, MeleeAttack> selectedAttack = new Dictionary<string, MeleeAttack>();
+        private static Dictionary<int, (MeleeAttack, Weapon)> sequenceMeleeState = new Dictionary<int, (MeleeAttack, Weapon)>();
+        private static Dictionary<string, (Weapon, Weapon)> imaginaryWeapons = new Dictionary<string, (Weapon, Weapon)>();
 
         public static Vector3 MeleePreviewPos = Vector3.one;
         public static DamageTable ForceDamageTable = DamageTable.NONE;
@@ -39,13 +41,13 @@ namespace CBTBehaviorsEnhanced {
         // Per Unit or Position State
         public static Dictionary<string, ActorMeleeCondition> meleeConditionCache = new Dictionary<string, ActorMeleeCondition>();
 
-
         public static void Reset() {
 
             // Melee weapon state
-            MeleeWeapon = null;
-            MeleeType = MeleeAttackType.NotSet;
-            MeleeStates = null;
+            meleeStates.Clear();
+            selectedAttack.Clear();
+            sequenceMeleeState.Clear();
+            imaginaryWeapons.Clear();
             MeleePreviewPos = Vector3.one;
             CachedDFASelfDamage = 0f;
             ForceDamageTable = DamageTable.NONE;
@@ -69,7 +71,108 @@ namespace CBTBehaviorsEnhanced {
             meleeConditionCache.Clear();
         }
 
+        // == SEQUENCE CACHE FUNCTIONS ==
+        public static void AddOrUpdateMeleeSequenceState(int sequenceID, MeleeAttack attack, Weapon weapon)
+        {
+            sequenceMeleeState[sequenceID] = (attack, weapon);
+        }
 
+        public static (MeleeAttack, Weapon) GetMeleeSequenceState(int sequenceId)
+        {
+            (MeleeAttack attack, Weapon weapon) sequenceState;
+            sequenceMeleeState.TryGetValue(sequenceId, out sequenceState);
+            return sequenceState;
+        }
+
+
+        // == IMAGINARY WEAPON FUNCTIONS ==
+        public static (Weapon, Weapon) GetFakedWeapons(Mech attacker)
+        {
+            (Weapon melee, Weapon dfa) weapons;
+            imaginaryWeapons.TryGetValue(attacker.DistinctId(), out weapons);
+            if (weapons.melee == null && weapons.dfa == null)
+            {
+                if (attacker.MeleeWeapon != null)
+                {
+                    weapons.melee = new Weapon(attacker, SharedState.Combat, attacker.MeleeWeapon.mechComponentRef, "CBTBE_FAKE_MELEE");
+                    // Initialize a game representation to prevent warnings in CAC logs
+                    weapons.melee.InitGameRep(attacker.MeleeWeapon.baseComponentRef.prefabName,
+                        attacker.GetAttachTransform(attacker.MeleeWeapon.mechComponentRef.MountedLocation),
+                        attacker.LogDisplayName);
+                    
+                }
+
+                if (attacker.DFAWeapon != null)
+                {
+                    weapons.dfa = new Weapon(attacker, SharedState.Combat, attacker.DFAWeapon.mechComponentRef, "CBTBE_FAKE_MELEE");
+                    weapons.dfa.InitGameRep(attacker.DFAWeapon.baseComponentRef.prefabName,
+                        attacker.GetAttachTransform(attacker.DFAWeapon.mechComponentRef.MountedLocation),
+                        attacker.LogDisplayName);
+                }
+                imaginaryWeapons[attacker.DistinctId()] = weapons;
+            }
+
+            return weapons;
+        }
+
+        // == SELECTED ATTACK CACHE FUNCTIONS ==
+        public static MeleeAttack GetSelectedAttack(AbstractActor actor)
+        {
+            MeleeAttack selected;
+            selectedAttack.TryGetValue(actor?.DistinctId(), out selected);
+            return selected;
+        }
+
+        public static void AddOrUpdateSelectedAttack(AbstractActor actor, MeleeAttack attack)
+        {
+            selectedAttack[actor.DistinctId()] = attack;
+        }
+
+        // == MELEE STATE CACHE FUNCTIONS ==
+        public static MeleeState GetMeleeState(AbstractActor actor, Vector3 position)
+        {
+            Dictionary<Vector3, MeleeState> positionDict;
+            meleeStates.TryGetValue(actor?.DistinctId(), out positionDict);
+            if (positionDict == null)
+                return null;
+
+            MeleeState cachedState;
+            positionDict.TryGetValue(position, out cachedState);
+            return cachedState;
+        }
+
+        public static MeleeState AddorUpdateMeleeState(AbstractActor attacker, Vector3 attackPos, ICombatant target)
+        {
+            
+            Mech attackerMech = attacker as Mech;
+            if (attackerMech == null) return null;
+
+            AbstractActor targetActor = target as AbstractActor;
+            if (targetActor == null) return null;
+
+            MeleeState state = new MeleeState(attackerMech, attackPos, targetActor);
+            Dictionary<Vector3, MeleeState> positionDict;
+            meleeStates.TryGetValue(attacker?.DistinctId(), out positionDict);
+            if (positionDict == null)
+            {
+                // Add workflow
+                positionDict = new Dictionary<Vector3, MeleeState>();
+                meleeStates[attacker.DistinctId()] = positionDict;
+            }
+            positionDict[attackPos] = state;
+
+            return state;
+        }
+
+        public static void InvalidateMeleeStates(AbstractActor actor)
+        {
+            Dictionary<Vector3, MeleeState> positionDict;
+            meleeStates.TryGetValue(actor?.DistinctId(), out positionDict);
+            if (positionDict != null)
+                positionDict.Clear();
+        }
+
+        // == MELEE CONDITION CACHE FUNCTION ==
         public static ActorMeleeCondition GetMeleeCondition(AbstractActor actor)
         {
             ActorMeleeCondition condition;
@@ -85,9 +188,13 @@ namespace CBTBehaviorsEnhanced {
         // Invalidate all cache entries for the specified actor
         public static void InvalidateState(AbstractActor actor)
         {
-            if (actor is Mech mech && meleeConditionCache.ContainsKey(mech.DistinctId()))
+            if (actor is Mech mech)
             {
-                meleeConditionCache.Remove(mech.DistinctId());
+
+                if (meleeConditionCache.ContainsKey(mech.DistinctId()))
+                    meleeConditionCache.Remove(mech.DistinctId());
+
+                InvalidateMeleeStates(actor);
             }
         }
     }

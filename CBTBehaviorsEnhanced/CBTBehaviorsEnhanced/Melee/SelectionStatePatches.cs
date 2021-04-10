@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced.MeleeStates;
 using Harmony;
 using IRBTModUtils;
 using System.Collections.Generic;
@@ -15,12 +16,13 @@ namespace CBTBehaviorsEnhanced.Melee
         {
             Mod.Log.Trace?.Write("SSJ:PSFS - entered.");
 
-            if (__instance.SelectedActor is Mech selectedMech && ModState.MeleeStates?.SelectedState != null && __instance.PotentialMeleeTarget != null)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.SelectedActor);
+            if (__instance.SelectedActor is Mech selectedMech && selectedAttack != null && __instance.PotentialMeleeTarget != null)
             {
-                float newStability = selectedMech.CurrentStability + ModState.MeleeStates.SelectedState.AttackerInstability;
+                float newStability = selectedMech.CurrentStability + selectedAttack.AttackerInstability;
                 float minStability = selectedMech.GetMinStability(StabilityChangeSource.DFA, newStability);
                 Mod.Log.Debug?.Write($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
-                    $"current: {selectedMech.CurrentStability}  projectedNew: {ModState.MeleeStates.SelectedState.AttackerInstability}  " +
+                    $"current: {selectedMech.CurrentStability}  projectedNew: {selectedAttack.AttackerInstability}  " +
                     $"totalChange: {newStability}  afterDump: {minStability}");
                 __result = minStability;
             }
@@ -35,9 +37,10 @@ namespace CBTBehaviorsEnhanced.Melee
         {
             Mod.Log.Trace?.Write("SSM:PSFS - entered.");
 
-            if (__instance.SelectedActor is Mech selectedMech && ModState.MeleeStates?.SelectedState != null && __instance.PotentialMeleeTarget != null)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.SelectedActor);
+            if (__instance.SelectedActor is Mech selectedMech && selectedAttack != null && __instance.PotentialMeleeTarget != null)
             {
-                float newStability = selectedMech.CurrentStability + ModState.MeleeStates.SelectedState.AttackerInstability;
+                float newStability = selectedMech.CurrentStability + selectedAttack.AttackerInstability;
                 
                 List<WayPoint> waypoints = ActorMovementSequence.ExtractWaypointsFromPath(selectedMech, selectedMech.Pathing.CurrentPath, selectedMech.Pathing.ResultDestination, selectedMech.Pathing.CurrentMeleeTarget, selectedMech.Pathing.MoveType);
                 StabilityChangeSource changeSource = StabilityChangeSource.Moving;
@@ -47,7 +50,7 @@ namespace CBTBehaviorsEnhanced.Melee
                 }
                 float minStability = selectedMech.GetMinStability(changeSource, newStability);
                 Mod.Log.Debug?.Write($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
-                    $"current: {selectedMech.CurrentStability}  projectedNew: {ModState.MeleeStates.SelectedState.AttackerInstability}  " +
+                    $"current: {selectedMech.CurrentStability}  projectedNew: {selectedAttack.AttackerInstability}  " +
                     $"totalChange: {newStability}  afterDump: {minStability}");
                 __result = minStability;
             }
