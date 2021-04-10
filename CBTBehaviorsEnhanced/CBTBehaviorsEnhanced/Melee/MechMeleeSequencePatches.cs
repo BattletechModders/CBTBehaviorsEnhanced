@@ -208,34 +208,51 @@ namespace CBTBehaviorsEnhanced.Melee {
                     }
                 }
 
-                // Target stability and unsteady - only applies to mech targets
-                if (targetWasHit && __instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
+                if (targetWasHit)
                 {
-
-                    if (seqState.meleeAttack.TargetInstability != 0)
+                    // Target mech instability and unsteady 
+                    if (__instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
                     {
-                        Mod.MeleeLog.Info?.Write($" -- Adding {seqState.meleeAttack.TargetInstability} absolute instability to target.");
-                        targetMech.AddAbsoluteInstability(seqState.meleeAttack.TargetInstability, StabilityChangeSource.Attack, "-1");
+                        if (seqState.meleeAttack.TargetInstability != 0)
+                        {
+                            Mod.MeleeLog.Info?.Write($" -- Adding {seqState.meleeAttack.TargetInstability} absolute instability to target.");
+                            targetMech.AddAbsoluteInstability(seqState.meleeAttack.TargetInstability, StabilityChangeSource.Attack, "-1");
+                        }
+
+                        if (seqState.meleeAttack.OnTargetMechHitForceUnsteady)
+                        {
+                            Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
+                            targetMech.ApplyUnsteady();
+                        }
                     }
 
-                    if (seqState.meleeAttack.UnsteadyTargetOnHit)
+                    // Target vehicle evasion damage
+                    if (__instance.MeleeTarget is Vehicle targetVehicle)
                     {
-                        Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
-                        targetMech.ApplyUnsteady();
+                        if (seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved != 0 && targetVehicle.EvasivePipsCurrent > 0)
+                        {
+                            Mod.MeleeLog.Info?.Write($" -- Removing {seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved} from target vehicle.");
+                            int modifiedPips = targetVehicle.EvasivePipsCurrent - seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved;
+                            if (modifiedPips < 0) modifiedPips = 0;
+
+                            targetVehicle.EvasivePipsCurrent = modifiedPips;
+                            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(targetVehicle.GUID, targetVehicle.EvasivePipsCurrent));
+                        }
                     }
-                }
 
-                // Target cluster damage - first attack was applied through melee weapon
-                if (targetWasHit && seqState.meleeAttack.TargetDamageClusters.Length > 1 && !__instance.MeleeTarget.IsDead)
-                {
-                    // Make sure we use the targets's damage table
-                    ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
+                    // Target cluster damage
+                    if (seqState.meleeAttack.TargetDamageClusters.Length > 1 && !__instance.MeleeTarget.IsDead)
+                    {
+                        // Make sure we use the targets's damage table
+                        ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
 
-                    // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
-                    float[] clusterDamage = seqState.meleeAttack.TargetDamageClusters.SubArray(1, seqState.meleeAttack.TargetDamageClusters.Length);
-                    Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
-                    AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.MeleeTarget, __instance.SequenceGUID, clusterDamage,
-                        DamageType.Melee, seqState.meleeAttack.AttackAnimation);
+                        // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
+                        float[] clusterDamage = seqState.meleeAttack.TargetDamageClusters.SubArray(1, seqState.meleeAttack.TargetDamageClusters.Length);
+                        Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
+                        AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.MeleeTarget, __instance.SequenceGUID, clusterDamage,
+                            DamageType.Melee, seqState.meleeAttack.AttackAnimation);
+                    }
+
                 }
 
                 Mod.MeleeLog.Info?.Write($"== Done.");

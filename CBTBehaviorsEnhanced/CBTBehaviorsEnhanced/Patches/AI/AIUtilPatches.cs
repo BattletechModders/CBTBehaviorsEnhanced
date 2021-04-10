@@ -110,7 +110,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     // Check to see if the attack will unsteady a target
                     float evasionBreakUtility = 0f;
                     if (targetMech != null && targetMech.EvasivePipsCurrent > 0 &&
-                         (meleeAttack.UnsteadyTargetOnHit || AttackHelper.WillUnsteadyTarget(meleeAttack.TargetInstability, targetMech))
+                         (meleeAttack.OnTargetMechHitForceUnsteady || AttackHelper.WillUnsteadyTarget(meleeAttack.TargetInstability, targetMech))
                        )
                     {
                         // Target will lose their evasion pips
@@ -121,7 +121,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
 
                     float knockdownUtility = 0f;
                     if (targetMech != null && targetMech.pilot != null &&
-                        AttackHelper.WillKnockdownTarget(meleeAttack.TargetInstability, targetMech, meleeAttack.UnsteadyTargetOnHit))
+                        AttackHelper.WillKnockdownTarget(meleeAttack.TargetInstability, targetMech, meleeAttack.OnTargetMechHitForceUnsteady))
                     {
                         float centerTorsoArmorAndStructure = targetMech.GetMaxArmor(ArmorLocation.CenterTorso) + targetMech.GetMaxStructure(ChassisLocations.CenterTorso);
                         if (AttackHelper.WillInjuriesKillTarget(targetMech, 1))

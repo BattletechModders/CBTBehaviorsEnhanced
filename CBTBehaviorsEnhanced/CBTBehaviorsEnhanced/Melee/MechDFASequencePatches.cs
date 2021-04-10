@@ -196,7 +196,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                         targetMech.AddAbsoluteInstability(seqState.meleeAttack.TargetInstability, StabilityChangeSource.Attack, "-1");
                     }
 
-                    if (seqState.meleeAttack.UnsteadyTargetOnHit)
+                    if (seqState.meleeAttack.OnTargetMechHitForceUnsteady)
                     {
                         Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
                         targetMech.ApplyUnsteady();

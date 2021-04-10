@@ -359,6 +359,9 @@ namespace CBTBehaviorsEnhanced
         // If true use the delta of the piloting skills between the attacker and target for
         // a bonus/penalty
         public bool UsePilotingDelta = true;
+
+        // The number of pips to remove from vehicles when hit by this attack
+        public float TargetVehicleEvasionPipsRemoved = 4;
     }
 
     // BT Manual pg.37 
@@ -382,6 +385,9 @@ namespace CBTBehaviorsEnhanced
         // If true use the delta of the piloting skills between the attacker and target for
         // a bonus/penalty
         public bool UsePilotingDelta = true;
+
+        // The number of pips to remove from vehicles when hit by this attack
+        public float TargetVehicleEvasionPipsRemoved = 4;
     }
 
     public class KickMeleeOps
@@ -401,6 +407,9 @@ namespace CBTBehaviorsEnhanced
         public bool UnsteadyAttackerOnHit = false;
         public bool UnsteadyAttackerOnMiss = false;
         public bool UnsteadyTargetOnHit = false;
+
+        // The number of pips to remove from vehicles when hit by this attack
+        public float TargetVehicleEvasionPipsRemoved = 4;
     }
 
     public class PhysicalWeaponMeleeOps
@@ -413,6 +422,9 @@ namespace CBTBehaviorsEnhanced
         public bool DefaultUnsteadyAttackerOnHit = false;
         public bool DefaultUnsteadyAttackerOnMiss = false;
         public bool DefaultUnsteadyTargetOnHit = false;
+
+        // The number of pips to remove from vehicles when hit by this attack
+        public float TargetVehicleEvasionPipsRemoved = 0;
     }
 
     public class PunchMeleeOps
@@ -430,6 +442,9 @@ namespace CBTBehaviorsEnhanced
         public bool UnsteadyAttackerOnHit = false;
         public bool UnsteadyAttackerOnMiss = false;
         public bool UnsteadyTargetOnHit = false;
+
+        // The number of pips to remove from vehicles when hit by this attack
+        public float TargetVehicleEvasionPipsRemoved = 0;
     }
 
     public class TurretOpts
