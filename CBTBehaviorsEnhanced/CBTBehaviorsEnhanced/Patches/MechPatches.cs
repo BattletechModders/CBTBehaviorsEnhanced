@@ -281,10 +281,20 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    // Override max engage distance to be sprinting
     [HarmonyPatch(typeof(Mech), "DamageLocation")]
     [HarmonyPriority(Priority.Last)]
     public static class Mech_DamageLocation
+    {
+        public static void Prefix(Mech __instance)
+        {
+            // Invalidate any held state on damage
+            ModState.InvalidateState(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(Mech), "StandFromProne")]
+    [HarmonyPriority(Priority.Last)]
+    public static class Mech_StandFromProne
     {
         public static void Prefix(Mech __instance)
         {

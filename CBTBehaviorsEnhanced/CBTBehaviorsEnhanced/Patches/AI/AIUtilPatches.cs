@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using CBTBehaviorsEnhanced.MeleeStates;
 using Harmony;
 using IRBTModUtils.Extension;
 using System;
@@ -44,7 +45,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 }
 
                 bool modifyAttack = false;
-                MeleeState meleeState = null;
+                MeleeAttack meleeState = null;
                 Weapon meleeWeapon = null;
 
                 bool isCharge = false;

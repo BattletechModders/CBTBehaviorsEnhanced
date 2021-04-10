@@ -12,9 +12,9 @@ using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Objects
+namespace CBTBehaviorsEnhanced.MeleeStates
 {
-    public class KickMeleeState : MeleeState
+    public class KickAttack : MeleeAttack
     {
         // Per BT Manual pg.38,
         //   * target takes 1 pt. each 5 tons of attacker, rounded up
@@ -25,19 +25,18 @@ namespace CBTBehaviorsEnhanced.Objects
         //   *   +1 for foot actuator, +2 to hit for each upper/lower actuator hit
         //   *   -2 modifier if target is prone
 
-        public KickMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
-            HashSet<MeleeAttackType> validAnimations) : base(attacker)
+        public KickAttack(MeleeState state) : base(state)
         {
-            Mod.MeleeLog.Info?.Write($"Building KICK state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+            Mod.MeleeLog.Info?.Write($"Building KICK state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Kick];
-            this.IsValid = ValidateAttack(attacker, target, validAnimations);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations);
             if (IsValid)
             {
-                CalculateDamages(attacker, target);
-                CalculateInstability(attacker, target);
-                CalculateModifiers(attacker, target);
-                CreateDescriptions(attacker, target);
+                CalculateDamages(state.attacker, state.target);
+                CalculateInstability(state.attacker, state.target);
+                CalculateModifiers(state.attacker, state.target);
+                CreateDescriptions(state.attacker, state.target);
 
                 // Damage tables 
                 this.AttackerTable = DamageTable.NONE;
@@ -49,7 +48,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.UnsteadyTargetOnHit = Mod.Config.Melee.Kick.UnsteadyTargetOnHit;
 
                 // Set the animation type
-                if (target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;
+                if (state.target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;
                 else this.AttackAnimation = MeleeAttackType.Kick;
             }
         }
@@ -93,14 +92,10 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            // If distance > walkSpeed, disable kick/physical weapon/punch
-            float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
-            float maxWalkSpeed = attacker.ModifiedWalkDistance();
-            float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
-            if (distance > maxDistance)
+            // If distance > walkSpeed, disable kick/physical weapon/punch            
+            if (!state.HasWalkAttackNodes)
             {
-                Mod.MeleeLog.Info?.Write($"Cannot kick! Attack maxDistance: {maxDistance}m is greater than attacker walkSpeed: {maxWalkSpeed}m + " +
-                    $"reachRange: {Mod.Config.Melee.WalkAttackAdditionalRange}m.");
+                Mod.MeleeLog.Info?.Write($"No walking nodes found for melee attack!");
                 return false;
             }
 

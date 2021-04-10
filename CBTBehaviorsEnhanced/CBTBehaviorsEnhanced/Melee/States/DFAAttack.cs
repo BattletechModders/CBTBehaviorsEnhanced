@@ -4,14 +4,12 @@ using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using Localize;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Objects
+namespace CBTBehaviorsEnhanced.MeleeStates
 {
-    public class DFAMeleeState : MeleeState
+    public class DFAAttack : MeleeAttack
     {
 		// Per BT Manual pg.36,
 		//   * target takes 1 pt. each 10 tons of attacker, which is then multiplied by 3 and rounded up
@@ -26,25 +24,24 @@ namespace CBTBehaviorsEnhanced.Objects
 		//   *  -2 modifier if target is prone
 		//   * Attacker makes PSR with +4, target with +2 and fall
 
-		public DFAMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
-			HashSet<MeleeAttackType> validAnimations) : base(attacker)
-        {
-			Mod.MeleeLog.Info?.Write($"Building DFA state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+		public DFAAttack(MeleeState state) : base(state)
+		{
+			Mod.MeleeLog.Info?.Write($"Building DFA state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
-			this.IsValid = ValidateAttack(attacker, target);
+			this.IsValid = ValidateAttack(state.attacker, state.target);
 			if (IsValid)
 			{
 				this.UsePilotingDelta = Mod.Config.Melee.DFA.UsePilotingDelta;
 
-				CalculateDamages(attacker, target);
-				CalculateInstability(attacker, target);
-				CalculateModifiers(attacker, target);
-				CreateDescriptions(attacker, target);
+				CalculateDamages(state.attacker, state.target);
+				CalculateInstability(state.attacker, state.target);
+				CalculateModifiers(state.attacker, state.target);
+				CreateDescriptions(state.attacker, state.target);
 
 				// Damage tables
 				this.AttackerTable = DamageTable.KICK;
-				this.TargetTable = target.IsProne ? DamageTable.REAR : DamageTable.PUNCH;
+				this.TargetTable = state.target.IsProne ? DamageTable.REAR : DamageTable.PUNCH;
 
 				// Unsteady
 				this.UnsteadyAttackerOnHit = Mod.Config.Melee.DFA.UnsteadyAttackerOnHit;
@@ -62,17 +59,10 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private bool ValidateAttack(Mech attacker, AbstractActor target)
         {
-			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+			ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
+			if (!meleeCondition.CanDFA())
 			{
-				Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
-				return false;
-			}
-
-			// Animations will never include DFA, as that's only for selecting a random attack. Assume the UI has done the checking
-			//  to allow or prevent a DFA attack
-			if (!attacker.CanDFA)
-			{
-				Mod.MeleeLog.Info?.Write($"Attacker unable to DFA due to damage or inability.");
+				Mod.MeleeLog.Info?.Write($"Attacker cannot DFA, skipping.");
 				return false;
 			}
 

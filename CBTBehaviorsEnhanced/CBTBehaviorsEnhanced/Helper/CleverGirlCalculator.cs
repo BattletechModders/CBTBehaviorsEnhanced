@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace CBTBehaviorsEnhanced.Helper
         //     FindBestPositionToMeleeFrom
         public static void OptimizeMelee(Mech attacker, AbstractActor target, Vector3 attackPos, 
             List<Weapon> canFireInMeleeWeapons,
-            out List<Weapon> usableWeapons, out MeleeState selectedState, 
+            out List<Weapon> usableWeapons, out MeleeAttack selectedState, 
             out float virtualMeleeDamage, out float totalStateDamage)
         {
             usableWeapons = new List<Weapon>();
@@ -32,13 +33,13 @@ namespace CBTBehaviorsEnhanced.Helper
                     $"target: {target.DistinctId()} at attackPos: {attackPos} with {canFireInMeleeWeapons.Count} melee ranged weapons.");
 
                 Mod.AILog.Info?.Write($"Generating melee state - see melee log.");
-                MeleeStates meleeStates = MeleeHelper.GetMeleeStates(attacker, attackPos, target);
+                MeleeState meleeStates = MeleeHelper.GetMeleeStates(attacker, attackPos, target);
 
                 // Iterate each state, add physical and weapon damage and evaluate virtual benefit from the sum
                 Mod.AILog.Info?.Write($"Iterating non-DFA melee states.");
                 float highestStateDamage = 0f;
-                List<MeleeState> allStates = new List<MeleeState> { meleeStates.Charge, meleeStates.Kick, meleeStates.PhysicalWeapon, meleeStates.Punch };
-                foreach (MeleeState meleeState in allStates)
+                List<MeleeAttack> allStates = new List<MeleeAttack> { meleeStates.Charge, meleeStates.Kick, meleeStates.PhysicalWeapon, meleeStates.Punch };
+                foreach (MeleeAttack meleeState in allStates)
                 {
                     Mod.AILog.Info?.Write($"Evaluating damage for state: {meleeState.Label}");
                     if (!meleeState.IsValid)

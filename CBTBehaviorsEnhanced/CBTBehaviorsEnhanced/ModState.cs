@@ -1,6 +1,7 @@
 ﻿
 using BattleTech;
 using BattleTech.UI;
+using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace CBTBehaviorsEnhanced {
         // Melee weapon detection state
         public static Weapon MeleeWeapon = null;
         public static MeleeAttackType MeleeType = MeleeAttackType.NotSet;
-        public static MeleeStates MeleeStates = null;
+        public static MeleeState MeleeStates = null;
 
         public static Vector3 MeleePreviewPos = Vector3.one;
         public static DamageTable ForceDamageTable = DamageTable.NONE;

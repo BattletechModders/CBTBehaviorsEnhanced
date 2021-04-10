@@ -9,9 +9,9 @@ using System.Linq;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Objects
+namespace CBTBehaviorsEnhanced.MeleeStates
 {
-    public class ChargeMeleeState : MeleeState
+    public class ChargeAttack : MeleeAttack
     {
         // Per BT Manual pg.35,
         //   * attacker takes 1 pt. each 10 tons of target, rounded up
@@ -23,25 +23,24 @@ namespace CBTBehaviorsEnhanced.Objects
 		//	 *   Create instab damage instead
         //   * Modifier for attack is comparative skill
 
-        public ChargeMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, 
-			HashSet<MeleeAttackType> validAnimations) : base(attacker)
+        public ChargeAttack(MeleeState state) : base(state)
         {
-			Mod.MeleeLog.Info?.Write($"Building CHARGE state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+			Mod.MeleeLog.Info?.Write($"Building CHARGE state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
 			this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge];
-            this.IsValid = ValidateAttack(attacker, target, validAnimations);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations);
 			if (IsValid)
 			{
-				float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
+				float distance = (state.attacker.CurrentPosition - state.target.CurrentPosition).magnitude;
 				int hexesMoved = (int)Math.Ceiling(distance / Mod.Config.Move.MPMetersPerHex);
 				Mod.MeleeLog.Info?.Write($" - Hexes moved is {hexesMoved} = distance: {distance} / MPMetersPerHex: {Mod.Config.Move.MPMetersPerHex}");
 
 				this.UsePilotingDelta = Mod.Config.Melee.Charge.UsePilotingDelta;
 
-				CalculateDamages(attacker, target, hexesMoved);
-				CalculateInstability(attacker, target, hexesMoved);
-				CalculateModifiers(attacker, target);
-				CreateDescriptions(attacker, target);
+				CalculateDamages(state.attacker, state.target, hexesMoved);
+				CalculateInstability(state.attacker, state.target, hexesMoved);
+				CalculateModifiers(state.attacker, state.target);
+				CreateDescriptions(state.attacker, state.target);
 
 				// Damage tables 
 				this.AttackerTable = DamageTable.STANDARD;
@@ -53,7 +52,7 @@ namespace CBTBehaviorsEnhanced.Objects
 				this.UnsteadyTargetOnHit = Mod.Config.Melee.Charge.UnsteadyTargetOnHit;
 
 				// Set the animation type
-				if (target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;
+				if (state.target is Vehicle) this.AttackAnimation = MeleeAttackType.Stomp;
 				else this.AttackAnimation = MeleeAttackType.Tackle;
 			}
 		}
@@ -65,9 +64,10 @@ namespace CBTBehaviorsEnhanced.Objects
 
 		private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
 		{
-			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+			ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
+			if (!meleeCondition.CanCharge())
 			{
-				Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+				Mod.MeleeLog.Info?.Write($"Attacker cannot charge, skipping.");
 				return false;
 			}
 
@@ -75,13 +75,6 @@ namespace CBTBehaviorsEnhanced.Objects
 			if (!validAnimations.Contains(MeleeAttackType.Tackle) && !validAnimations.Contains(MeleeAttackType.Stomp))
 			{
 				Mod.MeleeLog.Info?.Write("Animations do not include a tackle or stomp, attacker cannot charge!");
-				return false;
-			}
-
-			// If attacker is unsteady - cannot charge
-			if (attacker.IsUnsteady)
-			{
-				Mod.MeleeLog.Info?.Write($"Attacker unable to charge target while unsteady.");
 				return false;
 			}
 
@@ -97,6 +90,13 @@ namespace CBTBehaviorsEnhanced.Objects
 				Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
 				return false;
             }
+
+			// If distance > walkSpeed, disable kick/physical weapon/punch            
+			if (!state.HasSprintAttackNodes)
+			{
+				Mod.MeleeLog.Info?.Write($"No sprinting nodes found for melee attack!");
+				return false;
+			}
 
 			Mod.MeleeLog.Info?.Write("CHARGE ATTACK validated");
 			return true;

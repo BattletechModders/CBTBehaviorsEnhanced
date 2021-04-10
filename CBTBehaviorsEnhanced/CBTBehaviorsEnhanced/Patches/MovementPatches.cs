@@ -9,7 +9,6 @@ using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced
 {
-
     public static class MovementPatches
     {
 
@@ -90,15 +89,6 @@ namespace CBTBehaviorsEnhanced
                 {
                     Mod.ActivationLog.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
                 }
-
-            }
-        }
-
-        [HarmonyPatch(typeof(AbstractActor), "DoneWithActor")]
-        static class AbstractActor_DoneWithActor
-        {
-            static void Postfix(AbstractActor __instance)
-            {
 
             }
         }

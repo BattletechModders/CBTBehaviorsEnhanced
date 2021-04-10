@@ -44,7 +44,6 @@ namespace CBTBehaviorsEnhanced
 			Mod.MeleeLog.Info?.Write($"Calculating melee condition for actor: {actor.DistinctId()}");
 			if (actor is Mech mech)
             {
-				canMelee = true;
 				foreach (MechComponent mc in mech.allComponents)
 				{
 					switch (mc.Location)
@@ -68,6 +67,28 @@ namespace CBTBehaviorsEnhanced
 				{
 					hasPhysicalAttack = true;
 				}
+
+				// Check various general melee states
+				if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+				{
+					Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+					canMelee = false;
+				} 
+				else if (mech.IsOrWillBeProne || mech.StoodUpThisRound || mech.IsFlaggedForKnockdown)
+                {
+					Mod.MeleeLog.Info?.Write("Cannot melee when you stand up or are being knocked down");
+					canMelee = false;
+				} 
+				else if (mech.IsDead || mech.IsFlaggedForDeath)
+                {
+					Mod.MeleeLog.Info?.Write("Cannot melee when dead");
+					canMelee = false;
+				}
+                else
+                {
+					canMelee = true;
+                }
+
 			}
 			else
             {
@@ -76,6 +97,7 @@ namespace CBTBehaviorsEnhanced
 			
         }
 
+		// Only used for testing... yeah, yeah I know
 		public ActorMeleeCondition(AbstractActor actor, 
 			bool leftHip, bool rightHip, int leftLeg, int rightLeg,
 			bool leftFoot, bool rightFoot, bool leftShoulder, bool rightShoulder, 
@@ -98,6 +120,26 @@ namespace CBTBehaviorsEnhanced
 			this.hasPhysicalAttack = hasPhysical;
         }
 
+		public bool CanCharge()
+        {
+			if (!canMelee) return false;
+
+			// Cannot charge while unsteady
+			if (actor.IsUnsteady) return false;
+
+			return true;
+		}
+
+		public bool CanDFA()
+        {
+			if (!canMelee) return false;
+
+			if (actor is Mech mech && !mech.CanDFA) return false;
+
+			return true;
+
+		}
+
 		// Public functions
 		public bool CanKick()
 		{
@@ -105,12 +147,6 @@ namespace CBTBehaviorsEnhanced
 
 			// Can't kick with damaged hip actuators
 			if (!leftHipIsFunctional || !rightHipIsFunctional) return false;
-
-			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
-			{
-				Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
-				return false;
-			}
 
 			return true;
 		}
@@ -136,12 +172,6 @@ namespace CBTBehaviorsEnhanced
 				return false;
 			}
 
-			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
-			{
-				Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
-				return false;
-			}
-
 			return true;
 		}
 
@@ -151,12 +181,6 @@ namespace CBTBehaviorsEnhanced
 
 			// Can't punch with damaged shoulders
 			if (!leftShoulderIsFunctional && !rightShoulderIsFunctional) return false;
-
-			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
-			{
-				Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
-				return false;
-			}
 
 			return true;
 		}

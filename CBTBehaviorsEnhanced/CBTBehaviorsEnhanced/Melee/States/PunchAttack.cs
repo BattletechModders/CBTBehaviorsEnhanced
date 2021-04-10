@@ -10,9 +10,9 @@ using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Objects
+namespace CBTBehaviorsEnhanced.MeleeStates
 {
-    public class PunchMeleeState : MeleeState
+    public class PunchAttack : MeleeAttack
     {
         // Per BT Manual pg.38,
         //   * target takes 1 pt. each 10 tons of attacker, rounded up
@@ -23,20 +23,19 @@ namespace CBTBehaviorsEnhanced.Objects
         //   *   +2 to hit if lower arm actuator missing
         //   *   -2 modifier if target is prone
 
-        public PunchMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
-            HashSet<MeleeAttackType> validAnimations) : base(attacker)
+        public PunchAttack(MeleeState state) : base(state)
         {
-            Mod.MeleeLog.Info?.Write($"Building PUNCH state for attacker: {attacker.DistinctId()} @ attackPos: {attackPos} vs. target: {target.DistinctId()}");
+            Mod.MeleeLog.Info?.Write($"Building PUNCH state for attacker: {state.attacker.DistinctId()} @ attackPos: {state.attackPos} vs. target: {state.target.DistinctId()}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Punch];
-            this.IsValid = ValidateAttack(attacker, target, validAnimations);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations);
             if (IsValid)
             {
 
-                CalculateDamages(attacker, target);
-                CalculateInstability(attacker, target);
-                CalculateModifiers(attacker, target);
-                CreateDescriptions(attacker, target);
+                CalculateDamages(state.attacker, state.target);
+                CalculateInstability(state.attacker, state.target);
+                CalculateModifiers(state.attacker, state.target);
+                CreateDescriptions(state.attacker, state.target);
 
                 // Damage tables 
                 this.AttackerTable = DamageTable.NONE;
@@ -48,7 +47,7 @@ namespace CBTBehaviorsEnhanced.Objects
                 this.UnsteadyTargetOnHit = Mod.Config.Melee.Punch.UnsteadyTargetOnHit;
 
                 // Set the animation type
-                this.AttackAnimation = validAnimations.Contains(MeleeAttackType.Punch) ? MeleeAttackType.Punch : MeleeAttackType.Tackle;
+                this.AttackAnimation = state.validAnimations.Contains(MeleeAttackType.Punch) ? MeleeAttackType.Punch : MeleeAttackType.Tackle;
             }
         }
         public override bool IsRangedWeaponAllowed(Weapon weapon)
@@ -96,14 +95,10 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            // If distance > walkSpeed, disable kick/physical weapon/punch
-            float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
-            float maxWalkSpeed = attacker.ModifiedWalkDistance();
-            float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
-            if (distance > maxDistance)
+            // If distance > walkSpeed, disable kick/physical weapon/punch            
+            if (!state.HasWalkAttackNodes)
             {
-                Mod.MeleeLog.Info?.Write($"Cannot punch! Attack maxDistance: {maxDistance}m is greater than attacker walkSpeed: {maxWalkSpeed}m + " +
-                    $"reachRange: {Mod.Config.Melee.WalkAttackAdditionalRange}m.");
+                Mod.MeleeLog.Info?.Write($"No walking nodes found for melee attack!");
                 return false;
             }
 

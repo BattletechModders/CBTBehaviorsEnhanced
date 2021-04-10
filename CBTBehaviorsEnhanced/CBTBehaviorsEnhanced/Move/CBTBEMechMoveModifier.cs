@@ -10,12 +10,8 @@ namespace CBTBehaviorsEnhanced.Move
 {
     public class CBTBEMechMoveModifier : MechMoveModifier
     {
-        public override float ModifyJumpSpeed(Mech mech)
-        {
-            return 0f;
-        }
 
-        public override float ModifyRunSpeed(Mech mech)
+        public override float RunSpeedModifier(Mech mech)
         {
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
             if (mech.IsLegged)
@@ -42,10 +38,10 @@ namespace CBTBehaviorsEnhanced.Move
             Mod.MoveLog.Debug?.Write($" delta is: {runDelta}");
 
             return runDelta;
-
+            
         }
 
-        public override float ModifyWalkSpeed(Mech mech)
+        public override float WalkSpeedModifier(Mech mech)
         {
             // By TT rules, a legged mech has a single MP. Return the minimum, which should allow 1 hex of movement.
             if (mech.IsLegged)

@@ -10,9 +10,9 @@ using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Objects
+namespace CBTBehaviorsEnhanced.MeleeStates
 {
-    public class PhysicalWeaponMeleeState : MeleeState
+    public class WeaponAttack : MeleeAttack
     {
         // Per BT Manual pg.38,
         //   * target takes 1 pt. each 4-10 tons of attacker, rounded up (varies by weapon)
@@ -24,43 +24,42 @@ namespace CBTBehaviorsEnhanced.Objects
         //   *   +2 to hit if lower or upper arm actuator missing
         //   *   -2 modifier if target is prone
 
-        public PhysicalWeaponMeleeState(Mech attacker, Vector3 attackPos, AbstractActor target,
-            HashSet<MeleeAttackType> validAnimations) : base(attacker)
+        public WeaponAttack(MeleeState state) : base(state)
         {
-            Mod.MeleeLog.Info?.Write($"Building PHYSICAL WEAPON state for attacker: {CombatantUtils.Label(attacker)} @ attackPos: {attackPos} vs. target: {CombatantUtils.Label(target)}");
+            Mod.MeleeLog.Info?.Write($"Building PHYSICAL WEAPON state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
-            this.IsValid = ValidateAttack(attacker, target, validAnimations);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations);
             if (IsValid)
             {
 
-                CalculateDamages(attacker, target);
-                CalculateInstability(attacker, target);
-                CalculateModifiers(attacker, target);
-                CreateDescriptions(attacker, target);
+                CalculateDamages(state.attacker, state.target);
+                CalculateInstability(state.attacker, state.target);
+                CalculateModifiers(state.attacker, state.target);
+                CreateDescriptions(state.attacker, state.target);
 
                 // Damage tables 
                 this.AttackerTable = DamageTable.NONE;
                 this.TargetTable = DamageTable.STANDARD;
-                if (attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponLocationTable))
+                if (state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponLocationTable))
                 {
-                    string tableName = attacker.StatCollection.GetValue<string>(ModStats.PhysicalWeaponLocationTable).ToUpper();
+                    string tableName = state.attacker.StatCollection.GetValue<string>(ModStats.PhysicalWeaponLocationTable).ToUpper();
                     if (tableName.Equals("KICK")) this.TargetTable = DamageTable.KICK;
                     else if (tableName.Equals("PUNCH")) this.TargetTable = DamageTable.PUNCH;
                     else if (tableName.Equals("STANDARD")) this.TargetTable = DamageTable.STANDARD;
                 }
 
                 // Unsteady
-                this.UnsteadyAttackerOnHit = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) ?
-                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) : 
+                this.UnsteadyAttackerOnHit = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) ?
+                    state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) : 
                     Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit;
 
-                this.UnsteadyAttackerOnMiss = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) ?
-                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) :
+                this.UnsteadyAttackerOnMiss = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) ?
+                    state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) :
                     Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss;
 
-                this.UnsteadyTargetOnHit = attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
-                    attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit) :
+                this.UnsteadyTargetOnHit = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
+                    state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit) :
                     Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit;
 
                 // Set the animation type
@@ -115,14 +114,10 @@ namespace CBTBehaviorsEnhanced.Objects
                 return false;
             }
 
-            // If distance > walkSpeed, disable kick/physical weapon/punch
-            float distance = (attacker.CurrentPosition - target.CurrentPosition).magnitude;
-            float maxWalkSpeed = attacker.ModifiedWalkDistance();
-            float maxDistance = maxWalkSpeed + Mod.Config.Melee.WalkAttackAdditionalRange;
-            if (distance > maxDistance)
+            // If distance > walkSpeed, disable kick/physical weapon/punch            
+            if (!state.HasWalkAttackNodes)
             {
-                Mod.MeleeLog.Info?.Write($"Cannot do physwep attack! Attack maxDistance: {maxDistance}m is greater than attacker walkSpeed: {maxWalkSpeed}m + " +
-                    $"reachRange: {Mod.Config.Melee.WalkAttackAdditionalRange}m.");
+                Mod.MeleeLog.Info?.Write($"No walking nodes found for melee attack!");
                 return false;
             }
 
