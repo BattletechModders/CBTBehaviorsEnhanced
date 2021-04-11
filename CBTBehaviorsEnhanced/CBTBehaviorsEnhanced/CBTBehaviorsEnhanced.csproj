@@ -51,6 +51,9 @@
     <Reference Include="CustomComponents">
       <HintPath>$(BattleTechGameDir)\Mods\CustomComponents\CustomComponents.dll</HintPath>
     </Reference>
+    <Reference Include="CustomUnits">
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\Mods\CustomUnits\CustomUnits.dll</HintPath>
+    </Reference>
     <Reference Include="IRBTModUtils, Version=1.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BattleTechGameDir)\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
