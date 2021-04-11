@@ -3,6 +3,7 @@ using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
+using CustomUnits;
 using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
@@ -49,6 +50,11 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                     else if (tableName.Equals("STANDARD")) this.TargetTable = DamageTable.STANDARD;
                 }
 
+                if (state.attacker is TrooperSquad)
+                {
+                    this.TargetTable = DamageTable.SWARM;
+                }
+
                 // Unsteady
                 this.UnsteadyAttackerOnHit = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) ?
                     state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) : 
@@ -61,6 +67,8 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 this.OnTargetMechHitForceUnsteady = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
                     state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit) :
                     Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit;
+
+                this.OnTargetVehicleHitEvasionPipsRemoved = Mod.Config.Melee.PhysicalWeapon.TargetVehicleEvasionPipsRemoved;
 
                 // Set the animation type
                 this.AttackAnimation = MeleeAttackType.Punch;

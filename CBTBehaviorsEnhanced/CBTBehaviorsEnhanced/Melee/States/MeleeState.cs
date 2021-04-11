@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Helper;
+using CustomUnits;
 using IRBTModUtils;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,21 +141,42 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return availableAttacks;
             }
 
-            Turret turret = target as Turret;
-            // HBS prevents you from punching a turret. Why? 
+            // HBS prevents you from punching a turret. Why? We're changing that 
             bool atPunchHeight = (validMeleeHeights & MeleeAttackHeight.High) != MeleeAttackHeight.None;
-            if (atPunchHeight && turret == null)
+            if (atPunchHeight)
             {
-                if (attacker.MechDef.Chassis.PunchesWithLeftArm && !attacker.IsLocationDestroyed(ChassisLocations.LeftArm))
+                if (attacker is TrooperSquad)
                 {
-                    Mod.MeleeLog.Info?.Write($" - Adding punch as left arm is not destroyed");
+                    Mod.MeleeLog.Info?.Write($" - attacker is a trooper, adding punch animation for physical attack");
                     availableAttacks.Add(MeleeAttackType.Punch);
                 }
-
-                if (!attacker.MechDef.Chassis.PunchesWithLeftArm && !attacker.IsLocationDestroyed(ChassisLocations.RightArm))
+                else
                 {
-                    Mod.MeleeLog.Info?.Write($" - Adding punch as right arm is not destroyed");
-                    availableAttacks.Add(MeleeAttackType.Punch);
+                    if (attacker.MechDef.Chassis.PunchesWithLeftArm)
+                    {
+                        if (!attacker.IsLocationDestroyed(ChassisLocations.LeftArm))
+                        {
+                            Mod.MeleeLog.Info?.Write($" - chassis requires left arm for punch anim, and it exists - adding");
+                            availableAttacks.Add(MeleeAttackType.Punch);
+                        }
+                        else
+                        {
+                            Mod.MeleeLog.Info?.Write($" - chassis requires left arm for punch anim, but is missing - cannot punch");
+                        }
+                    }
+                    else
+                    {
+                        if (!attacker.IsLocationDestroyed(ChassisLocations.RightArm))
+                        {
+                            Mod.MeleeLog.Info?.Write($" - chassis requires right arm for punch anim, and it exists - adding");
+                            availableAttacks.Add(MeleeAttackType.Punch);
+                        }
+                        else
+                        {
+                            Mod.MeleeLog.Info?.Write($" - chassis requires right arm for punch anim, but is missing - cannot punch");
+                        }
+
+                    }
                 }
             }
 

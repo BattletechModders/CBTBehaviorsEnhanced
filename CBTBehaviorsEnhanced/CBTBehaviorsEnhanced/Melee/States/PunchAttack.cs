@@ -44,7 +44,9 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 // Unsteady
                 this.UnsteadyAttackerOnHit = Mod.Config.Melee.Punch.UnsteadyAttackerOnHit;
                 this.UnsteadyAttackerOnMiss = Mod.Config.Melee.Punch.UnsteadyAttackerOnMiss;
+
                 this.OnTargetMechHitForceUnsteady = Mod.Config.Melee.Punch.UnsteadyTargetOnHit;
+                this.OnTargetVehicleHitEvasionPipsRemoved = Mod.Config.Melee.Punch.TargetVehicleEvasionPipsRemoved;
 
                 // Set the animation type
                 this.AttackAnimation = state.validAnimations.Contains(MeleeAttackType.Punch) ? MeleeAttackType.Punch : MeleeAttackType.Tackle;

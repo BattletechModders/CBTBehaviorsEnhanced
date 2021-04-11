@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using CustomComponents;
+using CustomUnits;
 using IRBTModUtils.Extension;
 
 namespace CBTBehaviorsEnhanced
@@ -65,27 +66,29 @@ namespace CBTBehaviorsEnhanced
 				if (mech.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) &&
 					mech.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
 				{
+					Mod.MeleeLog.Info?.Write(" -- unit has physical weapon");
 					hasPhysicalAttack = true;
 				}
 
 				// Check various general melee states
 				if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
 				{
-					Mod.MeleeLog.Info?.Write("Invalidated by developer flag.");
+					Mod.MeleeLog.Info?.Write(" -- melee invalidated by developer flag.");
 					canMelee = false;
 				} 
 				else if (mech.IsOrWillBeProne || mech.StoodUpThisRound || mech.IsFlaggedForKnockdown)
                 {
-					Mod.MeleeLog.Info?.Write("Cannot melee when you stand up or are being knocked down");
+					Mod.MeleeLog.Info?.Write(" -- cannot melee when you stand up or are being knocked down");
 					canMelee = false;
 				} 
 				else if (mech.IsDead || mech.IsFlaggedForDeath)
                 {
-					Mod.MeleeLog.Info?.Write("Cannot melee when dead");
+					Mod.MeleeLog.Info?.Write(" -- Cannot melee when dead");
 					canMelee = false;
 				}
                 else
                 {
+					Mod.MeleeLog.Info?.Write(" -- unit can melee");
 					canMelee = true;
                 }
 
@@ -124,6 +127,9 @@ namespace CBTBehaviorsEnhanced
         {
 			if (!canMelee) return false;
 
+			// Troopers can only use physical attacks
+			if (actor is TrooperSquad) return false;
+
 			// Cannot charge while unsteady
 			if (actor.IsUnsteady) return false;
 
@@ -133,6 +139,9 @@ namespace CBTBehaviorsEnhanced
 		public bool CanDFA()
         {
 			if (!canMelee) return false;
+
+			// Troopers can only use physical attacks
+			if (actor is TrooperSquad) return false;
 
 			if (actor is Mech mech && !mech.CanDFA) return false;
 
@@ -144,6 +153,9 @@ namespace CBTBehaviorsEnhanced
 		public bool CanKick()
 		{
 			if (!canMelee) return false;
+
+			// Troopers can only use physical attacks
+			if (actor is TrooperSquad) return false;
 
 			// Can't kick with damaged hip actuators
 			if (!leftHipIsFunctional || !rightHipIsFunctional) return false;
@@ -162,13 +174,17 @@ namespace CBTBehaviorsEnhanced
 
 			Statistic ignoreActuatorsStat = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
 			if (ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>())
+            {
+				Mod.MeleeLog.Debug?.Write($"Actor has ignoreActuators set, allowing use of physical attack");
 				return true;
+			}
 
 			// Damage check - shoulder and hand
 			bool leftArmIsFunctional = leftShoulderIsFunctional && leftHandIsFunctional;
 			bool rightArmIsFunctional = rightShoulderIsFunctional && rightHandIsFunctional;
 			if (!leftArmIsFunctional && !rightArmIsFunctional)
 			{
+				Mod.MeleeLog.Debug?.Write($"Both left and right shoulder & hands are non-functional, cannot use physical attack.");
 				return false;
 			}
 
@@ -179,8 +195,15 @@ namespace CBTBehaviorsEnhanced
 		{
 			if (!canMelee) return false;
 
-			// Can't punch with damaged shoulders
-			if (!leftShoulderIsFunctional && !rightShoulderIsFunctional) return false;
+			// Troopers can only use physical attacks
+			if (actor is TrooperSquad) return false;
+
+			// Check for mech
+			if (actor is Mech)
+            {
+				// Can't punch with damaged shoulders
+				if (!leftShoulderIsFunctional && !rightShoulderIsFunctional) return false;
+			}
 
 			return true;
 		}
