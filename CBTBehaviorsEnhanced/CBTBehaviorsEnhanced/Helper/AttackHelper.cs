@@ -176,6 +176,49 @@ namespace CBTBehaviorsEnhanced.Helper
             return damageClusters;
         }
 
+        // Yes, this is stupid sloppy.
+        public static ArmorLocation GetSwarmLocationForMech()
+        {
+            int randomIdx = Mod.Random.Next(0, Mod.Config.Melee.Swarm.MechLocationsTotalWeight);
+            int currentIdx = 0;
+            ArmorLocation selectedLocation = ArmorLocation.CenterTorso;
+            foreach (KeyValuePair<ArmorLocation, int> kvp in Mod.Config.Melee.Swarm.MechLocations)
+            {
+                if (randomIdx <= currentIdx + kvp.Value)
+                {
+                    Mod.Log.Debug?.Write($"randomIdx: {randomIdx} is <= currentIdx: {currentIdx} + weight: {kvp.Value}, using location: {kvp.Key}");
+                    selectedLocation = kvp.Key;
+                    break;
+                }
+                else
+                    currentIdx += kvp.Value;                    
+            }
+
+            Mod.Log.Debug?.Write($"Returning randomly selected swarm location: {selectedLocation}");
+            return selectedLocation;
+        }
+
+        public static VehicleChassisLocations GetSwarmLocationForVehicle()
+        {
+            int randomIdx = Mod.Random.Next(0, Mod.Config.Melee.Swarm.VehicleLocationsTotalWeight);
+            int currentIdx = 0;
+            VehicleChassisLocations selectedLocation = VehicleChassisLocations.Rear;
+            foreach (KeyValuePair<VehicleChassisLocations, int> kvp in Mod.Config.Melee.Swarm.VehicleLocations)
+            {
+                if (randomIdx <= currentIdx + kvp.Value)
+                {
+                    Mod.Log.Debug?.Write($"randomIdx: {randomIdx} is <= currentIdx: {currentIdx} + weight: {kvp.Value}, using location: {kvp.Key}");
+                    selectedLocation = kvp.Key;
+                    break;
+                }
+                else
+                    currentIdx += kvp.Value;
+            }
+
+            Mod.Log.Debug?.Write($"Returning randomly selected swarm location: {selectedLocation}");
+            return selectedLocation;
+        }
+
         public static bool WillInjuriesKillTarget(AbstractActor target, int numInjuries)
         {
             Mech targetMech = target as Mech;

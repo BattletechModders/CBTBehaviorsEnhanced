@@ -28,6 +28,8 @@ namespace CBTBehaviorsEnhanced
         public const string FT_Auto_Fail = "AUTO_FAIL";
         public const string FT_Hull_Breach = "HULL_BREACH";
 
+        public const string FT_Swarm_Attack = "SWARM_ATTACK";
+
         // Localized Floaties
         public Dictionary<string, string> Floaties = new Dictionary<string, string> {
             { FT_Shutdown_Override, "Passed Shutdown Override" },
@@ -53,7 +55,9 @@ namespace CBTBehaviorsEnhanced
             { FT_Fall_After_Jump, "Jumped with Damage" },
 
             { FT_Auto_Fail, "Automatic Failure" },
-            { FT_Hull_Breach, "Hull Breach Check" }
+            { FT_Hull_Breach, "Hull Breach Check" },
+
+            { FT_Swarm_Attack, "Swarm Attack!" }
         };
 
         // CombatHUDTooltip Localization 

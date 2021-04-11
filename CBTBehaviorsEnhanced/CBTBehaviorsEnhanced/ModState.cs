@@ -166,6 +166,8 @@ namespace CBTBehaviorsEnhanced {
 
         public static void InvalidateMeleeStates(AbstractActor actor)
         {
+            if (actor == null) return;
+
             Dictionary<Vector3, MeleeState> positionDict;
             meleeStates.TryGetValue(actor?.DistinctId(), out positionDict);
             if (positionDict != null)
@@ -188,6 +190,8 @@ namespace CBTBehaviorsEnhanced {
         // Invalidate all cache entries for the specified actor
         public static void InvalidateState(AbstractActor actor)
         {
+            if (actor == null) return;
+
             if (actor is Mech mech)
             {
 

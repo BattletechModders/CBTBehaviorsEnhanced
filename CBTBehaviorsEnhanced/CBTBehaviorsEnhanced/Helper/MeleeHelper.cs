@@ -55,10 +55,7 @@ namespace CBTBehaviorsEnhanced.Helper
 				return new MeleeState();
 			}
 
-
 			Mod.MeleeLog.Info?.Write($"Building melee state for attacker: {CombatantUtils.Label(attacker)} against target: {CombatantUtils.Label(target)}");
-
-
 
 			MeleeState states = new MeleeState(attackerMech, attackPos, targetActor);
 			Mod.MeleeLog.Info?.Write($" - valid attacks => charge: {states.Charge.IsValid}  dfa: {states.DFA.IsValid}  kick: {states.Kick.IsValid}  " +
@@ -67,8 +64,5 @@ namespace CBTBehaviorsEnhanced.Helper
 			return states;
 			
         }
-
-  
-
 	}
 }
