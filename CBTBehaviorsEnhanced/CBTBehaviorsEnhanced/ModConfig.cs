@@ -1,5 +1,7 @@
 ﻿
 
+using BattleTech;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -104,34 +106,47 @@ namespace CBTBehaviorsEnhanced
             Mod.Log.Info?.Write("=== MELEE OPTIONS ===");
             Mod.Log.Info?.Write($"  ExtraHitsAverageAllDamage: {this.Melee.ExtraHitsAverageAllDamage}  ProneTargetAttackModifier: {this.Melee.ProneTargetAttackModifier}  " +
                 $"FilterCanUseInMeleeWeaponsByAttack: {this.Melee.FilterCanUseInMeleeWeaponsByAttack}");
+
             Mod.Log.Info?.Write("  -- CHARGE OPTIONS --");
             Mod.Log.Info?.Write($"  AttackerDamagePerTargetTon: {this.Melee.Charge.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
             Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Charge.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
             Mod.Log.Info?.Write($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}");
             Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Charge.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Charge.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Charge.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write($"  TargetVehicleEvasionPipsRemoved: {this.Melee.Charge.TargetVehicleEvasionPipsRemoved}");
+            Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("  -- DFA OPTIONS --");
             Mod.Log.Info?.Write($"  AttackerDamagePerTargetTon: {this.Melee.DFA.AttackerDamagePerTargetTon}  AttackerInstabilityPerTargetTon: {this.Melee.DFA.AttackerInstabilityPerTargetTon}");
             Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.DFA.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.DFA.TargetInstabilityPerAttackerTon}");
             Mod.Log.Info?.Write($"  DamageClusterDivisor: {this.Melee.DFA.DamageClusterDivisor}");
             Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.DFA.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.DFA.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.DFA.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write($"  TargetVehicleEvasionPipsRemoved: {this.Melee.DFA.TargetVehicleEvasionPipsRemoved}");
+            Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("  -- KICK OPTIONS --");
             Mod.Log.Info?.Write($"  BaseAttackBonus: {this.Melee.Kick.BaseAttackBonus}  LegActuatorDamageMalus: {this.Melee.Kick.LegActuatorDamageMalus}  FootActuatorDamageMalus: {this.Melee.Kick.FootActuatorDamageMalus}");
             Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Kick.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Kick.TargetInstabilityPerAttackerTon}");
             Mod.Log.Info?.Write($"  LegActuatorDamageReduction: {this.Melee.Kick.LegActuatorDamageReduction}");
             Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Kick.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Kick.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Kick.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write($"  TargetVehicleEvasionPipsRemoved: {this.Melee.Kick.TargetVehicleEvasionPipsRemoved}");
+            Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("  -- PHYSICAL WEAPON OPTIONS --");
             Mod.Log.Info?.Write($"  DefaultDamagePerAttackTon: {this.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon}  DefaultInstabilityPerAttackerTon: {this.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon}");
             Mod.Log.Info?.Write($"  ArmActuatorDamageMalus: {this.Melee.PhysicalWeapon.ArmActuatorDamageMalus}");
             Mod.Log.Info?.Write($"  Unsteady Default => AttackerOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write($"  TargetVehicleEvasionPipsRemoved: {this.Melee.PhysicalWeapon.TargetVehicleEvasionPipsRemoved}");
+            Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("  -- PUNCH OPTIONS --");
             Mod.Log.Info?.Write($"  TargetDamagePerAttackerTon: {this.Melee.Punch.TargetDamagePerAttackerTon}  TargetInstabilityPerAttackerTon: {this.Melee.Punch.TargetInstabilityPerAttackerTon}");
             Mod.Log.Info?.Write($"  ArmActuatorDamageMalus: {this.Melee.Punch.ArmActuatorDamageMalus}  HandActuatorDamageMalus: {this.Melee.Punch.HandActuatorDamageMalus}");
             Mod.Log.Info?.Write($"  ArmActuatorDamageReduction: {this.Melee.Punch.ArmActuatorDamageReduction}");
             Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Punch.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Punch.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Punch.UnsteadyTargetOnHit}");
+            Mod.Log.Info?.Write($"  TargetVehicleEvasionPipsRemoved: {this.Melee.Punch.TargetVehicleEvasionPipsRemoved}");
+            Mod.Log.Info?.Write("");
+
+            Mod.Log.Info?.Write("  -- SWARM OPTIONS --");
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("=== MOVE OPTIONS ===");
@@ -248,6 +263,90 @@ namespace CBTBehaviorsEnhanced
                 this.CustomCategories.LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
             if (this.CustomCategories.HandActuatorCategoryId.Length == 0)
                 this.CustomCategories.HandActuatorCategoryId = new string[] { "ArmHandActuator" };
+
+            // == Init Swarm hit locations
+            if (this.Melee.Swarm.MechWeights.Count == 0)
+            {
+                // Skip the weight dictionary and populate the locations dict
+                this.Melee.Swarm.MechLocations = new Dictionary<ArmorLocation, int>()
+                {
+                    { ArmorLocation.Head, 8 },
+                    { ArmorLocation.CenterTorso, 16 },
+                    { ArmorLocation.CenterTorsoRear, 16 },
+                    { ArmorLocation.LeftTorso, 16 },
+                    { ArmorLocation.LeftTorsoRear, 16 },
+                    { ArmorLocation.RightTorso, 16 },
+                    { ArmorLocation.RightTorsoRear, 16 }
+                };
+                this.Melee.Swarm.MechLocationsTotalWeight = 8 + 16 + 16 + 16 + 16 + 16 + 16;
+            }
+            else
+            {
+                
+                foreach (KeyValuePair<string, int> kvp in this.Melee.Swarm.MechWeights)
+                {
+                    if (string.Equals("Head", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.Head, kvp.Value);
+                    else if (string.Equals("CenterTorso", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.CenterTorso, kvp.Value);
+                    else if (string.Equals("CenterTorsoRear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.CenterTorsoRear, kvp.Value);
+                    else if (string.Equals("LeftTorso", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftTorso, kvp.Value);
+                    else if (string.Equals("LeftTorsoRear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftTorsoRear, kvp.Value);
+                    else if (string.Equals("RightTorso", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightTorso, kvp.Value);
+                    else if (string.Equals("RightTorsoRear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightTorsoRear, kvp.Value);
+                    else if (string.Equals("LeftArm", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftArm, kvp.Value);
+                    else if (string.Equals("RightArm", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightArm, kvp.Value);
+                    else if (string.Equals("LeftLeg", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftLeg, kvp.Value);
+                    else if (string.Equals("RightLeg", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightLeg, kvp.Value);
+                    else
+                        Mod.Log.Error?.Write($"Key {kvp.Key} is invalid! Mech swarm locations are misconfigured and will likely error out!");
+
+                    this.Melee.Swarm.MechLocationsTotalWeight += kvp.Value;
+                }
+            }
+
+            if (this.Melee.Swarm.VehicleLocations.Count == 0)
+            {
+                // Skip the weight dictionary and populate the locations dict
+                this.Melee.Swarm.VehicleLocations = new Dictionary<VehicleChassisLocations, int>()
+                {
+                    { VehicleChassisLocations.Turret, 40 },
+                    { VehicleChassisLocations.Left, 16 },
+                    { VehicleChassisLocations.Right, 16 },
+                    { VehicleChassisLocations.Rear, 40 }
+                };
+                this.Melee.Swarm.MechLocationsTotalWeight = 40 + 16 + 16 + 40;
+            }
+            else
+            {
+                foreach (KeyValuePair<string, int> kvp in this.Melee.Swarm.VehicleWeights)
+                {
+                    if (string.Equals("Turret", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Turret, kvp.Value);
+                    else if (string.Equals("Front", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Front, kvp.Value);
+                    else if (string.Equals("Left", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Left, kvp.Value);
+                    else if (string.Equals("Right", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Right, kvp.Value);
+                    else if (string.Equals("Rear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
+                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Rear, kvp.Value);
+                    else
+                        Mod.Log.Error?.Write($"Key {kvp.Key} is invalid! Vehicle swarm locations are misconfigured and will likely error out!");
+
+                    this.Melee.Swarm.VehicleLocationsTotalWeight += kvp.Value;
+
+                }
+            }
         }
     }
 
@@ -361,7 +460,7 @@ namespace CBTBehaviorsEnhanced
         public bool UsePilotingDelta = true;
 
         // The number of pips to remove from vehicles when hit by this attack
-        public float TargetVehicleEvasionPipsRemoved = 4;
+        public int TargetVehicleEvasionPipsRemoved = 4;
     }
 
     // BT Manual pg.37 
@@ -387,7 +486,7 @@ namespace CBTBehaviorsEnhanced
         public bool UsePilotingDelta = true;
 
         // The number of pips to remove from vehicles when hit by this attack
-        public float TargetVehicleEvasionPipsRemoved = 4;
+        public int TargetVehicleEvasionPipsRemoved = 4;
     }
 
     public class KickMeleeOps
@@ -409,7 +508,7 @@ namespace CBTBehaviorsEnhanced
         public bool UnsteadyTargetOnHit = false;
 
         // The number of pips to remove from vehicles when hit by this attack
-        public float TargetVehicleEvasionPipsRemoved = 4;
+        public int TargetVehicleEvasionPipsRemoved = 4;
     }
 
     public class PhysicalWeaponMeleeOps
@@ -424,7 +523,7 @@ namespace CBTBehaviorsEnhanced
         public bool DefaultUnsteadyTargetOnHit = false;
 
         // The number of pips to remove from vehicles when hit by this attack
-        public float TargetVehicleEvasionPipsRemoved = 0;
+        public int TargetVehicleEvasionPipsRemoved = 0;
     }
 
     public class PunchMeleeOps
@@ -444,7 +543,15 @@ namespace CBTBehaviorsEnhanced
         public bool UnsteadyTargetOnHit = false;
 
         // The number of pips to remove from vehicles when hit by this attack
-        public float TargetVehicleEvasionPipsRemoved = 0;
+        public int TargetVehicleEvasionPipsRemoved = 0;
+    }
+
+    public class SwarmWeights
+    {
+        public int LeftTorso = 34;
+        public int CenterTorso = 34;
+        public int RightTorso = 34;
+        public int Head = 16;
     }
 
     public class TurretOpts
@@ -453,6 +560,22 @@ namespace CBTBehaviorsEnhanced
         public float LightTonnage = 60;
         public float MediumTonnage = 80;
         public float HeavyTonnage = 100;
+    }
+
+    public class SwarmOpts
+    {
+        public Dictionary<string, int> MechWeights = new Dictionary<string, int>();
+        [JsonIgnore]
+        public Dictionary<ArmorLocation, int> MechLocations = new Dictionary<ArmorLocation, int>();
+        [JsonIgnore]
+        public int MechLocationsTotalWeight = 0;
+        
+        public Dictionary<string, int> VehicleWeights = new Dictionary<string, int>();
+        [JsonIgnore]
+        public Dictionary<VehicleChassisLocations, int> VehicleLocations = new Dictionary<VehicleChassisLocations, int>();
+        [JsonIgnore]
+        public int VehicleLocationsTotalWeight = 0;
+
     }
 
     // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
@@ -478,8 +601,7 @@ namespace CBTBehaviorsEnhanced
         public PhysicalWeaponMeleeOps PhysicalWeapon = new PhysicalWeaponMeleeOps();
         public PunchMeleeOps Punch = new PunchMeleeOps();
         public TurretOpts Turrets = new TurretOpts();
-
-
+        public SwarmOpts Swarm = new SwarmOpts();
     }
 
     // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%
