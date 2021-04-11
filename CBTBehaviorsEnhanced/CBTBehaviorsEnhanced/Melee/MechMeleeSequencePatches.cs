@@ -1,9 +1,11 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
+using CustomUnits;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
 using IRBTModUtils;
+using Localize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,6 +122,18 @@ namespace CBTBehaviorsEnhanced.Melee {
             {
                 Mod.MeleeLog.Info?.Write($" -- Adding {seqState.meleeAttack.AttackerInstability} absolute instability to attacker.");
                 __instance.OwningMech.AddAbsoluteInstability(seqState.meleeAttack.AttackerInstability, StabilityChangeSource.Attack, "-1");
+            }
+
+            // Publish a floatie warning of the swarm attack on the target
+            if (ModState.ForceDamageTable == DamageTable.SWARM)
+            {
+                string swarmAttackText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Swarm_Attack]).ToString();
+                MultiSequence showInfoSequence = new ShowActorInfoSequence(__instance.MeleeTarget, swarmAttackText, FloatieMessage.MessageNature.Debuff, false)
+                {
+                    RootSequenceGUID = __instance.SequenceGUID
+                };
+                SharedState.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
+                Mod.Log.Info?.Write(" -- published fall sequence.");
             }
         }
     }
@@ -258,8 +272,13 @@ namespace CBTBehaviorsEnhanced.Melee {
                 Mod.MeleeLog.Info?.Write($"== Done.");
             }
 
-            // Reset melee state
-            ModState.ForceDamageTable = DamageTable.NONE;
+            // Reset damage table for mechs only; troops need to persist through to the end
+            if (!(__instance.OwningMech is TrooperSquad))
+            {
+                Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
+                ModState.ForceDamageTable = DamageTable.NONE;
+            }
+
         }
     }
 
@@ -269,8 +288,6 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechMeleeSequence __instance)
         {
-            // Reset melee state
-            ModState.ForceDamageTable = DamageTable.NONE;
 
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
             Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
@@ -285,6 +302,10 @@ namespace CBTBehaviorsEnhanced.Melee {
                 BuildWeaponDirectorSequenceT.GetValue();
                 Mod.MeleeLog.Debug?.Write(" -- Done!");
             }
+
+            // Reset damage table 
+            ModState.ForceDamageTable = DamageTable.NONE;
+
         }
     }
 
