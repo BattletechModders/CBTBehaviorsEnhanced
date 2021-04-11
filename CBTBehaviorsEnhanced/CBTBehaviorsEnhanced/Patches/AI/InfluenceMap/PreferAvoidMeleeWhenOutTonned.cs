@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CustomUnits;
 using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Extension;
 using UnityEngine;
@@ -17,7 +18,12 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
             Mod.AILog.Debug?.Write($"Evaluating PreferAvoidStationaryWhenOutTonned for unit: {unit.DistinctId()} at position: {position}");
 
             float factor = 0f;
-            if (unit is Mech mech)
+            if (unit is TrooperSquad)
+            {
+                // Troopers don't care about being out-tonned, they are geared for that
+                return -500;
+            }
+            else if (unit is Mech mech)
             {
                 float opforTonnage = 0;
                 foreach (AbstractActor enemyActor in unit.Combat.AllEnemies)
