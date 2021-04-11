@@ -2,14 +2,13 @@
     "Name": "CBTBehaviorsEnhanced",
     "Enabled": true,
 	"Hidden": true,
-    "Version": "0.7.0",
+    "Version": "0.8.0",
     "Description": "Provides TableTop like behaviors for heat, movement, and more",
     "Author": "FrostRaptor",
     "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
     "Contact": "",
     "DLL": "CBTBehaviorsEnhanced.dll",
-	"DLLEntryPoint": "CBTBehaviorsEnhanced.Mod.Init",
-    "DependsOn" : [ "IRBTModUtils", "MechEngineer", "CustomComponents", "Custom Ammo Categories" ],
+    "DependsOn" : [ "IRBTModUtils", "MechEngineer", "CustomComponents", "Custom Ammo Categories", "CustomUnits" ],
    	"OptionallyDependsOn": [ "BetterAI" ],
 	"ConflictsWith" : [ "CharlesB" ],
     "Settings": {
@@ -125,11 +124,28 @@
                 "MediumTonnage" : 50.0,
                 "HeavyTonnage" : 75.0
             },
+			
+			"Swarm" : {
+				"MechWeights" : {
+					"Head" : 8,
+					"CenterTorso" : 16,
+					"CenterTorsoRear" : 16,
+					"LeftTorso" : 16,
+					"LeftTorsoRear" : 16,
+					"RightTorso" : 16,
+					"RightTorsoRear" : 16
+				},
+				"VehicleWeights" : {
+					"Turret" : 40,
+					"Left" : 16,
+					"Right" : 16,
+					"Rear" : 40
+				}
+			},
 
             "AllowMeleeFromSprint" : true,
             "ProneTargetAttackModifier" : -2,
-            "FilterCanUseInMeleeWeaponsByAttack" : true,
-            "WalkAttackAdditionalRange" : 18.0
+            "FilterCanUseInMeleeWeaponsByAttack" : true
         },
         
         "Move" : {

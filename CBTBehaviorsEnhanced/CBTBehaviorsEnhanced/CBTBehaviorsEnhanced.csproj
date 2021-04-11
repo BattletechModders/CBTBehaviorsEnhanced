@@ -128,9 +128,6 @@
     <Compile Include="Move\CBTBEMechMoveModifier.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
-    <Compile Include="Patches\AI\BehaviorNodes\CanMoveAndShootWithoutOverheatingNodePatches.cs" />
-    <Compile Include="Patches\AI\BehaviorNodes\ShootAtHighestPriorityEnemyNodePatches.cs" />
-    <Compile Include="Patches\AI\BehaviorNodes\CanDFAHostileTargetsNodePatches.cs" />
     <Compile Include="Patches\AI\BehaviorNodes\CanMeleeHostileTargetsNodePatches.cs" />
     <Compile Include="Patches\AI\InfluenceMap\PreferAvoidMeleeWhenOutTonned.cs" />
     <Compile Include="Patches\AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
