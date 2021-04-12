@@ -118,6 +118,8 @@ namespace CBTBehaviorsEnhanced {
         // == SELECTED ATTACK CACHE FUNCTIONS ==
         public static MeleeAttack GetSelectedAttack(AbstractActor actor)
         {
+            if (actor == null) return null;
+
             MeleeAttack selected;
             selectedAttack.TryGetValue(actor?.DistinctId(), out selected);
             return selected;

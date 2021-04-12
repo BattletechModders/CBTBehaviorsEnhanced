@@ -2,6 +2,7 @@
 using CBTBehaviorsEnhanced.Helper;
 using CustomUnits;
 using IRBTModUtils;
+using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -112,7 +113,6 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             // If everything remains zero, check charge
             if (selectedDamage == 0 && Charge.IsValid)
             {
-                selectedDamage = Charge.TargetDamageClusters.Sum();
                 selectedState = Charge;
             }
 
@@ -205,8 +205,8 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         // Duplication of HBS code for improved readability and logging
         private static MeleeAttackHeight GetValidMeleeHeights(Mech attacker, Vector3 attackPosition, ICombatant target)
         {
-            Mod.MeleeLog.Info?.Write($"Evaluating melee attack height for {CombatantUtils.Label(attacker)} at position: {attackPosition} " +
-                $"vs. target: {CombatantUtils.Label(target)}");
+            Mod.MeleeLog.Info?.Write($"Evaluating melee attack height for {attacker.DistinctId()} at position: {attackPosition} " +
+                $"vs. target: {target.DistinctId()}");
 
             MeleeAttackHeight meleeAttackHeight = MeleeAttackHeight.None;
             AbstractActor abstractActor = target as AbstractActor;
@@ -293,6 +293,9 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         //  Patch the HBS code to allow both walking and running grids
         public static List<PathNode> GetMeleeDestsForTarget(AbstractActor attacker, AbstractActor target, bool useWalkGrid = true)
         {
+            Mod.MeleeLog.Info?.Write($"Evaluating melee dests for attacker: {attacker.DistinctId()} at postion: {attacker.CurrentPosition}" +
+                $"vs  target: {target.DistinctId()} at position: {target.CurrentPosition}. UseWalkGrid? : {useWalkGrid}");
+
             VisibilityLevel visibilityLevel = attacker.VisibilityToTargetUnit(target);
             if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost)
             {
@@ -301,13 +304,24 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
             PathNodeGrid attackGrid = useWalkGrid ? attacker.Pathing.getGrid(MoveType.Walking) : attacker.Pathing.getGrid(MoveType.Sprinting);
             List<Vector3> adjacentPoints = SharedState.Combat.HexGrid.GetAdjacentPointsOnGrid(target.CurrentPosition);
-            List<PathNode> pathNodesForPoints = Pathing.GetPathNodesForPoints(adjacentPoints, attacker.Pathing.getGrid(MoveType.Walking));
+            foreach (Vector3 adjPoint in adjacentPoints)
+            {
+                Mod.MeleeLog.Debug?.Write($" -- target has adjacent point: {adjPoint}");
+            }
+
+            List<PathNode> pathNodesForPoints = Pathing.GetPathNodesForPoints(adjacentPoints, attackGrid);
             for (int num = pathNodesForPoints.Count - 1; num >= 0; num--)
             {
-                if (Mathf.Abs(pathNodesForPoints[num].Position.y - target.CurrentPosition.y) > SharedState.Combat.Constants.MoveConstants.MaxMeleeVerticalOffset ||
-                    attackGrid.FindBlockerReciprocal(pathNodesForPoints[num].Position, target.CurrentPosition))
+                bool isGreaterThanMaxMeleeOffset = Mathf.Abs(pathNodesForPoints[num].Position.y - target.CurrentPosition.y) > SharedState.Combat.Constants.MoveConstants.MaxMeleeVerticalOffset;
+                bool hasBlockingNode = attackGrid.FindBlockerReciprocal(pathNodesForPoints[num].Position, target.CurrentPosition);
+                if (isGreaterThanMaxMeleeOffset || hasBlockingNode)
                 {
+                    Mod.MeleeLog.Debug?.Write($"NodeIdx: {num} hasBlockingNode: {hasBlockingNode} or isGreaterThanMeleeOffset: {isGreaterThanMaxMeleeOffset} - discarding.");
                     pathNodesForPoints.RemoveAt(num);
+                }
+                else
+                {
+                    Mod.MeleeLog.Debug?.Write($"NodeIdx: {num} is valid point at position: {pathNodesForPoints[num].Position}");
                 }
             }
 
@@ -315,26 +329,35 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             {
                 if (SharedState.Combat.Constants.MoveConstants.SortMeleeHexesByPathingCost)
                 {
+                    Mod.MeleeLog.Debug?.Write($" -- sorting nodes by pathing cost");
                     pathNodesForPoints.Sort((PathNode a, PathNode b) => a.CostToThisNode.CompareTo(b.CostToThisNode));
                 }
                 else
                 {
+                    Mod.MeleeLog.Debug?.Write($" -- sorting nodes by raw distance");
                     pathNodesForPoints.Sort((PathNode a, PathNode b) => Vector3.Distance(a.Position, attacker.CurrentPosition).CompareTo(Vector3.Distance(b.Position, attacker.CurrentPosition)));
                 }
 
-                int num2 = SharedState.Combat.Constants.MoveConstants.NumMeleeDestinationChoices;
+                int numSelections = SharedState.Combat.Constants.MoveConstants.NumMeleeDestinationChoices;
                 Vector3 vector = attacker.CurrentPosition - pathNodesForPoints[0].Position;
                 vector.y = 0f;
                 if (vector.magnitude < 10f)
                 {
-                    num2 = 1;
+                    Mod.MeleeLog.Debug?.Write($" -- attacker less than 10m from target, allowing one node only!");
+                    numSelections = 1;
                 }
 
-                while (pathNodesForPoints.Count > num2)
+                while (pathNodesForPoints.Count > numSelections)
                 {
+                    Mod.MeleeLog.Debug?.Write($"  -- removing pathnode as we already have : {pathNodesForPoints.Count} selections.");
                     pathNodesForPoints.RemoveAt(pathNodesForPoints.Count - 1);
                 }
             }
+            else
+            {
+                Mod.MeleeLog.Info?.Write($" -- No pathnodes found!");
+            }
+
             return pathNodesForPoints;
         }
     }
