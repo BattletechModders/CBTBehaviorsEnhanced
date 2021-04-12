@@ -60,7 +60,8 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
-            if (__instance == null || ___displayedWeapon == null || !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
+            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null ||
+                !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
             if (selectedAttack != null)
@@ -88,7 +89,7 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
-            if (__instance == null || ___displayedWeapon == null) return;
+            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UMW entered");
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
@@ -100,8 +101,6 @@ namespace CBTBehaviorsEnhanced.Patches
                 __instance.WeaponText.SetText(weaponLabel);
 
                 Mech parentMech = ___displayedWeapon.parent as Mech;
-
-                ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(parentMech);
 
                 float kickDam = parentMech.KickDamage();               
                 float punchDam = parentMech.PunchDamage();
@@ -127,7 +126,6 @@ namespace CBTBehaviorsEnhanced.Patches
                     new object[] { attackName }
                     ).ToString();
                 __instance.WeaponText.SetText(weaponLabel);
-
 
                 float totalDamage = selectedAttack.TargetDamageClusters.Sum();
                 if (selectedAttack.TargetDamageClusters.Length > 1)
@@ -156,7 +154,7 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
-            if (__instance == null || ___displayedWeapon == null) return;
+            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UDFAW entered");
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
@@ -197,7 +195,7 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, int ___displayedHeat)
         {
 
-            if (__instance == null || ___displayedWeapon == null) return;
+            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
 
             Mod.UILog.Trace?.Write("CHUDWS:GTTS entered");
 
