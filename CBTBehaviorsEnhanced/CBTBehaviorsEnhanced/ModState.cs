@@ -160,6 +160,7 @@ namespace CBTBehaviorsEnhanced {
                 // Add workflow
                 positionDict = new Dictionary<Vector3, MeleeState>();
                 meleeStates[attacker.DistinctId()] = positionDict;
+                Mod.MeleeLog.Info?.Write($"Created meleeState for attacker: {attacker.DistinctId()} at pos: {attackPos}");
             }
             positionDict[attackPos] = state;
 
@@ -170,10 +171,16 @@ namespace CBTBehaviorsEnhanced {
         {
             if (actor == null) return;
 
+            // States dictionary
             Dictionary<Vector3, MeleeState> positionDict;
             meleeStates.TryGetValue(actor?.DistinctId(), out positionDict);
             if (positionDict != null)
                 positionDict.Clear();
+
+            // Selected attack dict
+            selectedAttack[actor.DistinctId()] = null;
+
+            Mod.MeleeLog.Info?.Write($"Invalidated meleeStates for actor: {actor.DistinctId()}");
         }
 
         // == MELEE CONDITION CACHE FUNCTION ==

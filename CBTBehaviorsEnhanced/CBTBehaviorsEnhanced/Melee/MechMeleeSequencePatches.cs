@@ -5,6 +5,7 @@ using CustomUnits;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
 using IRBTModUtils;
+using IRBTModUtils.Extension;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,17 @@ namespace CBTBehaviorsEnhanced.Melee {
             {
                 Mod.Log.Error?.Write(e, $"Failed to initialize Melee sequence {__instance.SequenceGUID}!");
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(MechMeleeSequence), "OnAdded")]
+    [HarmonyBefore("io.mission.modrepuation")]
+    static class MechMeleeSequence_OnAdded
+    {
+        static void Prefix(MechMeleeSequence __instance)
+        {
+            Mod.MeleeLog.Info?.Write($"MeleeSequence added for attacker: {__instance.OwningMech.DistinctId()} from position: {__instance.DesiredMeleePosition}  " +
+                $"against target: {__instance.MeleeTarget}");
         }
     }
 
@@ -323,6 +335,8 @@ namespace CBTBehaviorsEnhanced.Melee {
                 __instance.OwningMech.CheckForInstability();
                 __instance.OwningMech.HandleKnockdown(__instance.RootSequenceGUID, __instance.owningActor.GUID, Vector2.one, null);
             }
+
+            ModState.InvalidateMeleeStates(__instance.OwningMech);
         }
     }
 }

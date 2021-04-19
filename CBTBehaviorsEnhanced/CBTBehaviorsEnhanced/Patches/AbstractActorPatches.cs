@@ -27,6 +27,9 @@ namespace CBTBehaviorsEnhanced.Patches
                 $"Setting CanShootAfterSprinting: {__instance.Combat.TurnDirector.IsInterleaved}");
             //This is an easy place to put this where it will always be checked. This is the key to full non-interleaved combat.
             __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, __instance.Combat.TurnDirector.IsInterleaved);
+
+            // Invalidate their melee state
+            ModState.InvalidateMeleeStates(__instance);
         }
     }
 
@@ -47,8 +50,8 @@ namespace CBTBehaviorsEnhanced.Patches
             Traverse backwardGridT = Traverse.Create(__instance.Pathing).Property("BackwardGrid");
             PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
 
-            Mod.MoveLog.Info?.Write($" -- after reset, actor: {__instance.DistinctId()} has maxDistance => " +
-                $" walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+            Mod.MoveLog.Info?.Write($" -- after aa:orp reset, actor: {__instance.DistinctId()} has costLeft: {__instance.Pathing.CostLeft}  " + 
+                $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
         }
     }
 
@@ -69,8 +72,8 @@ namespace CBTBehaviorsEnhanced.Patches
             Traverse backwardGridT = Traverse.Create(__instance.Pathing).Property("BackwardGrid");
             PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
 
-            Mod.MoveLog.Info?.Write($" -- after reset, actor: {__instance.DistinctId()} has maxDistance => " +
-                $" walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+            Mod.MoveLog.Info?.Write($" -- after aa:rp reset, actor: {__instance.DistinctId()} has costLeft: {__instance.Pathing.CostLeft}  " +
+                $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
         }
     }
 
@@ -91,8 +94,8 @@ namespace CBTBehaviorsEnhanced.Patches
             Traverse backwardGridT = Traverse.Create(__instance).Property("BackwardGrid");
             PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
 
-            Mod.MoveLog.Info?.Write($" -- after reset, actor: {actor.DistinctId()} has maxDistance => " +
-                $" walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+            Mod.MoveLog.Info?.Write($" -- after p:rpg reset, actor: {actor.DistinctId()} has costLeft: {__instance.CostLeft}  " +
+                $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
         }
     }
 }

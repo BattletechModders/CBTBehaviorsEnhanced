@@ -4,6 +4,7 @@ using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.MeleeStates;
 using Harmony;
 using IRBTModUtils;
+using IRBTModUtils.Extension;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     foreach (KeyValuePair<string, int> kvp in selectedAttack.AttackModifiers)
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
-                        Mod.MeleeLog.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
+                        Mod.UILog.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
                         addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
                     }
                 }
@@ -66,18 +67,25 @@ namespace CBTBehaviorsEnhanced.Patches
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
             if (selectedAttack != null)
             {
+                Mod.UILog.Debug?.Write($"Checking ranged weapons attacker: {___HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
+
                 // Check if the weapon can fire according to the select melee type
                 bool isAllowed = selectedAttack.IsRangedWeaponAllowed(___displayedWeapon);
-                Mod.MeleeLog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
+                Mod.UILog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
 
                 if (!isAllowed)
                 {
-                    Mod.MeleeLog.Debug?.Write($"Disabling weapon from selection");
+                    Mod.UILog.Debug?.Write($"Disabling weapon from selection");
                     __instance.ToggleButton.isChecked = false;
                     Traverse showDisabledHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
                     showDisabledHexT.GetValue();
                 }
             }
+            //else
+            //{
+            //    // No selected attack, so revert the weapon to the state it should have
+            //    __instance.ToggleButton.isChecked = ___displayedWeapon.IsEnabled && !___displayedWeapon.IsDisabled;
+            //}
         }
     }
 

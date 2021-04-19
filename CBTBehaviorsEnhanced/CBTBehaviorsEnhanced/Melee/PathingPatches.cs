@@ -2,24 +2,29 @@
 using CustAmmoCategories;
 using Harmony;
 using IRBTModUtils.Extension;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Melee {
+namespace CBTBehaviorsEnhanced.Melee
+{
 
     [HarmonyPatch(typeof(Pathing), "GetMeleeDestsForTarget")]
-    public static class Pathing_GetMeleeDestsForTarget {
+    public static class Pathing_GetMeleeDestsForTarget
+    {
 
         // WARNING: Prefix false code here!
         // Allow the player to move if they are already in combat. Vanilla normally disables this.
-        public static bool Prefix(Pathing __instance, AbstractActor target, ref List<PathNode> __result) {
+        public static bool Prefix(Pathing __instance, AbstractActor target, ref List<PathNode> __result)
+        {
             Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} to target: {CombatantUtils.Label(target)}");
-            
+
             // If the target isn't visible, prevent building any path to them.
             VisibilityLevel visibilityLevel = __instance.OwningActor.VisibilityToTargetUnit(target);
-            if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost) {
+            if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost)
+            {
                 __result = new List<PathNode>();
                 return false;
             }
@@ -30,7 +35,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 Mod.Log.Info?.Write($"Target: {target.DistinctId()} is unaffected by pathing - cannot be meleed!");
                 __result = new List<PathNode>();
                 return false;
-            }    
+            }
 
             // Get the Melee and Sprinting grids
             Traverse walkingGridT = Traverse.Create(__instance).Property("WalkingGrid");
@@ -43,19 +48,25 @@ namespace CBTBehaviorsEnhanced.Melee {
                 target.Combat.HexGrid.GetAdjacentPointsOnGrid(target.CurrentPosition), sprintingGrid);
 
             // Remove any that have blockers, or are beyond the max vertical offset
-            for (int i = pathNodesForPoints.Count - 1; i >= 0; i--) {
-                if (Mathf.Abs(pathNodesForPoints[i].Position.y - target.CurrentPosition.y) > target.Combat.Constants.MoveConstants.MaxMeleeVerticalOffset || 
-                    walkingGrid.FindBlockerReciprocal(pathNodesForPoints[i].Position, target.CurrentPosition)) {
+            for (int i = pathNodesForPoints.Count - 1; i >= 0; i--)
+            {
+                if (Mathf.Abs(pathNodesForPoints[i].Position.y - target.CurrentPosition.y) > target.Combat.Constants.MoveConstants.MaxMeleeVerticalOffset ||
+                    walkingGrid.FindBlockerReciprocal(pathNodesForPoints[i].Position, target.CurrentPosition))
+                {
                     pathNodesForPoints.RemoveAt(i);
                 }
             }
             Mod.MeleeLog.Debug?.Write($"  found {pathNodesForPoints.Count} nodes that are not blocked and within height");
 
-            if (pathNodesForPoints.Count > 1) {
+            if (pathNodesForPoints.Count > 1)
+            {
                 // Sort the nodes either by pathing cost, or current distance from attacker
-                if (target.Combat.Constants.MoveConstants.SortMeleeHexesByPathingCost) {
+                if (target.Combat.Constants.MoveConstants.SortMeleeHexesByPathingCost)
+                {
                     pathNodesForPoints.Sort((PathNode a, PathNode b) => a.CostToThisNode.CompareTo(b.CostToThisNode));
-                } else {
+                }
+                else
+                {
                     pathNodesForPoints.Sort(
                         (PathNode a, PathNode b) => Vector3.Distance(a.Position, __instance.OwningActor.CurrentPosition)
                         .CompareTo(Vector3.Distance(b.Position, __instance.OwningActor.CurrentPosition))
@@ -74,7 +85,8 @@ namespace CBTBehaviorsEnhanced.Melee {
                 //    maxChoices = 1;
                 //}
 
-                while (pathNodesForPoints.Count > maxChoices) {
+                while (pathNodesForPoints.Count > maxChoices)
+                {
                     pathNodesForPoints.RemoveAt(pathNodesForPoints.Count - 1);
                 }
             }
@@ -86,8 +98,10 @@ namespace CBTBehaviorsEnhanced.Melee {
     }
 
     [HarmonyPatch(typeof(Pathing), "getGrid")]
-    public static class Pathing_getGrid {
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+    static class Pathing_getGrid
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
             MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
             MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
             instructions = instructions.MethodReplacer(miold, minew);
@@ -97,12 +111,56 @@ namespace CBTBehaviorsEnhanced.Melee {
 
     // If melee from sprint is enable, use a transpile to swap the grids used to calculate the path
     [HarmonyPatch(typeof(Pathing), "SetMeleeTarget")]
-    public static class Pathing_SetMeleeTarget {
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+    public static class Pathing_SetMeleeTarget
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
             MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
             MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
             instructions = instructions.MethodReplacer(miold, minew);
             return instructions;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pathing), "UpdateMeleePath")]
+    [HarmonyBefore("io.mission.customunits")]
+    static class Pathing_UpdateMeleePath
+    {
+        private static Vector3 resultDest = Vector3.zero;
+
+        static void Postfix(Pathing __instance, bool calledFromUI)
+        {
+            try
+            {
+                if (__instance.ResultDestination == null || __instance.CurrentPath == null || __instance.OwningActor == null || __instance.CurrentGrid == null)
+                {
+                    Mod.Log.Warn?.Write($"UpdateMeleePath diagnostics failed - CU patch may NRE shortly!");
+                    Mod.Log.Warn?.Write($"  -- OwningActor != null? {(__instance.OwningActor != null)}  owningActor: {__instance.OwningActor.DistinctId()}");
+                    Mod.Log.Warn?.Write($"  -- CurrentGrid != null? {(__instance.CurrentGrid != null)}  ResultDestination != null? {(__instance.ResultDestination != null)}");
+                    Mod.Log.Warn?.Write($"  -- CurrentPath != null? {(__instance.CurrentPath != null)}");
+                }
+
+                if (__instance.CurrentPath != null)
+                {
+                    foreach (PathNode node in __instance.CurrentPath)
+                    {
+                        if (node.Position == null)
+                        {
+                            Mod.Log.Warn?.Write($"Found a path node with no position! This should not happen!");
+                            Mod.Log.Warn?.Write($"  -- nodeIndex: {node.Index}  occupyingActor: {node.OccupyingActor}");
+                        }
+
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Mod.Log.Warn?.Write(e, $"UpdateMeleePath diagnostics failed - CU patch may NRE shortly!");
+                Mod.Log.Warn?.Write(e, $"  -- OwningActor != null? {(__instance.OwningActor != null)}  owningActor: {__instance.OwningActor.DistinctId()}");
+                Mod.Log.Warn?.Write(e, $"  -- CurrentGrid != null? {(__instance.CurrentGrid != null)}  ResultDestination != null? {(__instance.ResultDestination != null)}");
+                Mod.Log.Warn?.Write(e, $"  -- CurrentPath != null? {(__instance.CurrentPath != null)}");
+            }
         }
     }
 }

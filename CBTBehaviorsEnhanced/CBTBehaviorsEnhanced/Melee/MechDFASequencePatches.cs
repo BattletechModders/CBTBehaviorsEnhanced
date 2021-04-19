@@ -4,6 +4,7 @@ using CBTBehaviorsEnhanced.MeleeStates;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
 using IRBTModUtils;
+using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +67,18 @@ namespace CBTBehaviorsEnhanced.Melee {
             }
         }
     }
+
+    [HarmonyPatch(typeof(MechDFASequence), "OnAdded")]
+    [HarmonyBefore("io.mission.modrepuation")]
+    static class MechDFASequence_OnAdded
+    {
+        static void Prefix(MechMeleeSequence __instance)
+        {
+            Mod.MeleeLog.Info?.Write($"DFASequence added for attacker: {__instance.OwningMech.DistinctId()} from position: {__instance.DesiredMeleePosition}  " +
+                $"against target: {__instance.MeleeTarget}");
+        }
+    }
+
 
 
     [HarmonyPatch(typeof(MechDFASequence), "BuildMeleeDirectorSequence")]
@@ -282,6 +295,8 @@ namespace CBTBehaviorsEnhanced.Melee {
 
             // Invalidate our melee state as we're done
             ModState.ForceDamageTable = DamageTable.NONE;
+
+            ModState.InvalidateMeleeStates(__instance.OwningMech);
         }
     }
 }
