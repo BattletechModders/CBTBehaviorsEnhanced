@@ -119,7 +119,7 @@ namespace CBTBehaviorsEnhanced.Patches
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
             {
-                if (SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos != ModState.MeleePreviewPos)
+                if (SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos != ModState.MeleePreviewPos)
                 {
                     ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
 
@@ -144,98 +144,108 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Postfix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
             ref string additionalDetails, bool showHeatWarnings)
         {
-            // Disable the melee container if there's no active state
-            if (SharedState.CombatHUD.SelectionHandler.ActiveState == null)
+            try
             {
-                Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
-                ModState.MeleeAttackContainer.SetActive(false);
-                return;
-            }
-
-            Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode}");
-
-            if (mode == CombatHUDFireButton.FireMode.Engage)
-            {
-                Mod.UILog.Trace?.Write($"Enabling all CHUD_Fire_Buttons");
-                ModState.MeleeAttackContainer.SetActive(true);
-
-                MeleeState meleeState = ModState.GetMeleeState(
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos);
-
-                // Toggle each button by available state
-                ToggleStateButtons(meleeState);
-
-                // Autoselect best option
-                MeleeAttack autoselectedAttack = meleeState.GetHighestDamageAttackForUI();
-                if (autoselectedAttack != null)
-                    Mod.UILog.Info?.Write($"Autoselecting state of type: '{autoselectedAttack.Label}' as most damaging.");
-                else
-                    Mod.UILog.Info?.Write("No highest damaging state - no melee options!");
-
-                // Final check - if everything is disabled, disable the button
-                bool hasValidAttack = meleeState.Charge.IsValid || meleeState.Kick.IsValid ||
-                    meleeState.PhysicalWeapon.IsValid || meleeState.Punch.IsValid;
-                if (!hasValidAttack)
+                // Disable the melee container if there's no active state
+                if (SharedState.CombatHUD?.SelectionHandler?.ActiveState == null ||
+                    SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor == null ||
+                    SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos == null)
                 {
-                    Mod.UILog.Info?.Write("NO VALID MELEE ATTACKS, DISABLING!");
-                    __instance.FireButton.SetState(ButtonState.Disabled);
-                    __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
-                    __instance.DescriptionContainer.SetActive(false);
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.BackOut();
-                    __instance.ForceRefreshImmediate();
+                    Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
+                    ModState.MeleeAttackContainer.SetActive(false);
+                    return;
+                }
+
+                Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode}");
+
+                if (mode == CombatHUDFireButton.FireMode.Engage)
+                {
+                    Mod.UILog.Trace?.Write($"Enabling all CHUD_Fire_Buttons");
+                    ModState.MeleeAttackContainer.SetActive(true);
+
+                    MeleeState meleeState = ModState.GetMeleeState(
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos);
+
+                    // Toggle each button by available state
+                    ToggleStateButtons(meleeState);
+
+                    // Autoselect best option
+                    MeleeAttack autoselectedAttack = meleeState.GetHighestDamageAttackForUI();
+                    if (autoselectedAttack != null)
+                        Mod.UILog.Info?.Write($"Autoselecting state of type: '{autoselectedAttack.Label}' as most damaging.");
+                    else
+                        Mod.UILog.Info?.Write("No highest damaging state - no melee options!");
+
+                    // Final check - if everything is disabled, disable the button
+                    bool hasValidAttack = meleeState.Charge.IsValid || meleeState.Kick.IsValid ||
+                        meleeState.PhysicalWeapon.IsValid || meleeState.Punch.IsValid;
+                    if (!hasValidAttack)
+                    {
+                        Mod.UILog.Info?.Write("NO VALID MELEE ATTACKS, DISABLING!");
+                        __instance.FireButton.SetState(ButtonState.Disabled);
+                        __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                        __instance.DescriptionContainer.SetActive(false);
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.BackOut();
+                        __instance.ForceRefreshImmediate();
+                    }
+                    else
+                    {
+                        Mod.UILog.Info?.Write($" CHECKING FOR VALID ATTACKS: hasValidAttack=>{hasValidAttack}" +
+                            $"  charge=>{meleeState.Charge.IsValid}" +
+                            $"  kick=>{meleeState.Kick.IsValid}" +
+                            $"  punch=>{meleeState.Punch.IsValid}" +
+                            $"  weapon=>{meleeState.PhysicalWeapon.IsValid}" +
+                            $"");
+                    }
                 }
                 else
                 {
-                    Mod.UILog.Info?.Write($" CHECKING FOR VALID ATTACKS: hasValidAttack=>{hasValidAttack}" +
-                        $"  charge=>{meleeState.Charge.IsValid}" +
-                        $"  kick=>{meleeState.Kick.IsValid}" +
-                        $"  punch=>{meleeState.Punch.IsValid}" +
-                        $"  weapon=>{meleeState.PhysicalWeapon.IsValid}" +
-                        $"");
+                    Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
+                    ModState.MeleeAttackContainer.SetActive(false);
+                    if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                    if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+
+                    ModState.InvalidateMeleeStates(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor);
                 }
-            }
-            else
-            {
-                Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
-                ModState.MeleeAttackContainer.SetActive(false);
-                if (ModState.ChargeFB != null) ModState.ChargeFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
-                if (ModState.KickFB != null) ModState.KickFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
-                if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
-                if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
 
-                ModState.InvalidateMeleeStates(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor);
-            }
-
-            // Handle the DFA button here
-            if (mode == CombatHUDFireButton.FireMode.DFA)
-            {
-
-                MeleeState meleeState = ModState.GetMeleeState(
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos);
-
-                // Check for valid attack
-                if (!meleeState.DFA.IsValid)
+                // Handle the DFA button here
+                if (mode == CombatHUDFireButton.FireMode.DFA)
                 {
-                    Mod.UILog.Info?.Write($"DFA attack failed validation, disabling button.");
-                    __instance.FireButton.SetState(ButtonState.Disabled);
-                    __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
-                    __instance.DescriptionContainer.SetActive(false);
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.BackOut();
-                    __instance.ForceRefreshImmediate();
+
+                    MeleeState meleeState = ModState.GetMeleeState(
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos);
+
+                    // Check for valid attack
+                    if (!meleeState.DFA.IsValid)
+                    {
+                        Mod.UILog.Info?.Write($"DFA attack failed validation, disabling button.");
+                        __instance.FireButton.SetState(ButtonState.Disabled);
+                        __instance.FireButton.CurrentFireMode = CombatHUDFireButton.FireMode.None;
+                        __instance.DescriptionContainer.SetActive(false);
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.BackOut();
+                        __instance.ForceRefreshImmediate();
+                    }
+
+                    HashSet<string> descriptonNotes = meleeState.DFA.DescriptionNotes;
+                    additionalDetails = String.Join(", ", descriptonNotes);
+                    Mod.UILog.Info?.Write($"Aggregate description is: {additionalDetails}");
+
+                    // Select state here as a click will validate 
+                    ModState.AddOrUpdateSelectedAttack(
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                        meleeState.DFA
+                        );
                 }
-
-                HashSet<string> descriptonNotes = meleeState.DFA.DescriptionNotes;
-                additionalDetails = String.Join(", ", descriptonNotes);
-                Mod.UILog.Info?.Write($"Aggregate description is: {additionalDetails}");
-
-                // Select state here as a click will validate 
-                ModState.AddOrUpdateSelectedAttack(
-                    SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
-                    meleeState.DFA
-                    );
             }
+            catch (Exception e)
+            {
+                Mod.Log.Warn?.Write(e, "Failed to update the CombatButton states - warn Frost!");
+            }
+            
         }
 
         private static void ToggleStateButtons(MeleeState meleeState)

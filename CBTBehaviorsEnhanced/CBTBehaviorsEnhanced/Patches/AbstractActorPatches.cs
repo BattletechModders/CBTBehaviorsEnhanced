@@ -43,15 +43,21 @@ namespace CBTBehaviorsEnhanced.Patches
 
         static void Postfix(AbstractActor __instance)
         {
-            Traverse walkGridT = Traverse.Create(__instance.Pathing).Property("WalkingGrid");
-            PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
-            Traverse sprintGridT = Traverse.Create(__instance.Pathing).Property("SprintingGrid");
-            PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
-            Traverse backwardGridT = Traverse.Create(__instance.Pathing).Property("BackwardGrid");
-            PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+            if (__instance.Pathing != null)
+            {
+                Traverse pathingT = Traverse.Create(__instance.Pathing);
 
-            Mod.MoveLog.Info?.Write($" -- after aa:orp reset, actor: {__instance.DistinctId()} has costLeft: {__instance.Pathing.CostLeft}  " + 
-                $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+                Traverse walkGridT = pathingT.Property("WalkingGrid");
+                PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
+                Traverse sprintGridT = pathingT.Property("SprintingGrid");
+                PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
+                Traverse backwardGridT = pathingT.Property("BackwardGrid");
+                PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+
+                Mod.MoveLog.Info?.Write($" -- after aa:orp reset, actor: {__instance.DistinctId()} has costLeft: {__instance?.Pathing.CostLeft}  " +
+                    $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+            }
+
         }
     }
 
@@ -65,15 +71,20 @@ namespace CBTBehaviorsEnhanced.Patches
 
         static void Postfix(AbstractActor __instance)
         {
-            Traverse walkGridT = Traverse.Create(__instance.Pathing).Property("WalkingGrid");
-            PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
-            Traverse sprintGridT = Traverse.Create(__instance.Pathing).Property("SprintingGrid");
-            PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
-            Traverse backwardGridT = Traverse.Create(__instance.Pathing).Property("BackwardGrid");
-            PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+            if (__instance.Pathing != null)
+            {
+                Traverse pathingT = Traverse.Create(__instance.Pathing);
 
-            Mod.MoveLog.Info?.Write($" -- after aa:rp reset, actor: {__instance.DistinctId()} has costLeft: {__instance.Pathing.CostLeft}  " +
-                $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+                Traverse walkGridT = pathingT.Property("WalkingGrid");
+                PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
+                Traverse sprintGridT = pathingT.Property("SprintingGrid");
+                PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
+                Traverse backwardGridT = pathingT.Property("BackwardGrid");
+                PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+
+                Mod.MoveLog.Info?.Write($" -- after aa:rp reset, actor: {__instance.DistinctId()} has costLeft: {__instance?.Pathing.CostLeft}  " +
+                    $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
+            }
         }
     }
 
@@ -87,11 +98,14 @@ namespace CBTBehaviorsEnhanced.Patches
 
         static void Postfix(Pathing __instance, Vector3 origin, float beginAngle, AbstractActor actor, bool justStoodUp)
         {
-            Traverse walkGridT = Traverse.Create(__instance).Property("WalkingGrid");
+
+            Traverse instanceT = Traverse.Create(__instance);
+            
+            Traverse walkGridT = instanceT.Property("WalkingGrid");
             PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
-            Traverse sprintGridT = Traverse.Create(__instance).Property("SprintingGrid");
+            Traverse sprintGridT = instanceT.Property("SprintingGrid");
             PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
-            Traverse backwardGridT = Traverse.Create(__instance).Property("BackwardGrid");
+            Traverse backwardGridT = instanceT.Property("BackwardGrid");
             PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
 
             Mod.MoveLog.Info?.Write($" -- after p:rpg reset, actor: {actor.DistinctId()} has costLeft: {__instance.CostLeft}  " +
