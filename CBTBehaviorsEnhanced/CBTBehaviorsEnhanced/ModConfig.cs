@@ -419,6 +419,7 @@ namespace CBTBehaviorsEnhanced
         // When to show the shutdown warning and when to where to place the 'overheated' bar
         public int MaxHeat = 150;
         public int WarnAtHeat = 42;
+
     }
 
     public class AIMeleeOpts

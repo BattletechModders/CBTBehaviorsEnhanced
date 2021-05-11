@@ -127,7 +127,7 @@ namespace CBTBehaviorsEnhanced.Melee
     static class Pathing_UpdateMeleePath
     {
         private static Vector3 resultDest = Vector3.zero;
-
+        
         static void Postfix(Pathing __instance, bool calledFromUI)
         {
             try

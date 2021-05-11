@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
@@ -415,6 +416,110 @@ namespace CBTBehaviorsEnhanced.Extensions
             return final;
         }
 
+        // AI Helper functions below
+
+        // Return of MaxHeat means no limit from this effect
+        public static int AcceptableHeatForAIFromVolatileAmmo(this Mech mech, float heatCheckMod, float bhvarAcceptableHeatFraction)
+        {
+            int acceptableHeat = Mod.Config.Heat.MaxHeat;
+
+            Mod.AILog.Info?.Write($"-- Checking volatile ammo ");
+            AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(mech, true);
+            if (mostDamagingVolatile != null)
+            {
+                // We have volatile ammo, success chances will be lower because of the greater chance of an ammo explosion
+                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
+                {
+                    if (kvp.Value == -1f)
+                    {
+                        // Guaranteed explosion, return one less than this value
+                        acceptableHeat = kvp.Key - 1;
+                        break;
+                    }
+
+                    float rawExplosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
+                    Mod.AILog.Info?.Write($"  heat: {kvp.Key} has rawChance: {kvp.Value} - pilotMod: {heatCheckMod} => raw explosionChance: {rawExplosionChance}");
+                    float successChance = 1.0f - rawExplosionChance;
+                    float compoundChance = successChance * successChance;
+                    float finalExplosionChance = 1.0f - compoundChance;
+                    Mod.AILog.Info?.Write($"  1.0f - compoundChance: {compoundChance} => finalExplosionChance: {finalExplosionChance}");
+                    if (finalExplosionChance <= bhvarAcceptableHeatFraction)
+                        acceptableHeat = kvp.Key;
+                    else
+                        break;
+
+                }
+            }
+            else
+            {
+                Mod.AILog.Info?.Write($"  No volatile ammo, skipping");
+            }
+
+            Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from volatile ammo due to behVar: {bhvarAcceptableHeatFraction}.");
+            return acceptableHeat;
+        }
+
+        // Return of MaxHeat means no limit from this effect
+        public static int AcceptableHeatForAIFromRegularAmmo(this Mech mech, float heatCheckMod, float bhvarAcceptableHeatFraction)
+        {
+            int acceptableHeat = Mod.Config.Heat.MaxHeat;
+
+            Mod.AILog.Info?.Write($"-- Checking regular ammo ");
+            AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(mech, false);
+            if (mostDamaging != null)
+            {
+                // We have regular ammo, so success chances are as on tin
+                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
+                {
+                    if (kvp.Value == -1f)
+                    {
+                        // Guaranteed explosion, return one less than this value
+                        acceptableHeat = kvp.Key - 1;
+                        break;
+                    }
+
+                    float explosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
+                    Mod.AILog.Info?.Write($"  heat: {kvp.Key} has rawChance: {kvp.Value} - pilotMod: {heatCheckMod} => explosionChance: {explosionChance}");
+                    if (explosionChance <= bhvarAcceptableHeatFraction)
+                        acceptableHeat = kvp.Key;
+                    else
+                        break;
+
+                }
+            }
+            else
+            {
+                Mod.AILog.Info?.Write($"  No regular ammo, skipping");
+            }
+
+            Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from regular ammo due to behVar: {bhvarAcceptableHeatFraction}.");
+            return acceptableHeat;
+        }
+
+        // Return of MaxHeat means no limit from this effect
+        public static int AcceptableHeatForAIFromShutdown(this Mech mech, float heatCheckMod, float bhvarAcceptableHeatFraction)
+        {
+            int acceptableHeat = Mod.Config.Heat.MaxHeat;
+            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown)
+            {
+                if (kvp.Value == -1f)
+                {
+                    // Guaranteed shutdown, return one less than this value
+                    acceptableHeat = kvp.Key - 1;
+                    break;
+                }
+
+                float shutdownChance = Math.Max(0f, kvp.Value - heatCheckMod);
+                if (shutdownChance <= bhvarAcceptableHeatFraction)
+                    acceptableHeat = kvp.Key;
+                else
+                    break;
+
+            }
+
+            Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from shutdown due to behVar: {bhvarAcceptableHeatFraction}.");
+            return acceptableHeat;
+        }
     }
 
 }

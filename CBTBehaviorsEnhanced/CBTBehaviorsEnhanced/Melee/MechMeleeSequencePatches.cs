@@ -20,6 +20,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List <Weapon>), typeof(Vector3)})]
     static class MechMeleeSequence_ctor
     {
+
         static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, 
             List<Weapon> requestedWeapons, Vector3 desiredMeleePosition)
         {
@@ -74,8 +75,9 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechMeleeSequence __instance)
         {
-            Mod.MeleeLog.Info?.Write($"MeleeSequence added for attacker: {__instance.OwningMech.DistinctId()} from position: {__instance.DesiredMeleePosition}  " +
-                $"against target: {__instance.MeleeTarget}");
+            Mod.MeleeLog.Info?.Write($"MeleeSequence added for attacker: {__instance.OwningMech.DistinctId()} from " +
+                $"desired position: {__instance.DesiredMeleePosition} " +
+                $"against target: {__instance.MeleeTarget.DistinctId()}");
         }
     }
 

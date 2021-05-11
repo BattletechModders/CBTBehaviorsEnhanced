@@ -200,102 +200,19 @@ namespace CBTBehaviorsEnhanced.Patches.AI
         // float GetAcceptableHeatLevelForMech(Mech mech)
         static bool Prefix(Mech mech, ref float __result)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            float bhvarAcceptableHeatFraction = UnitHelper.GetBehaviorVariableValue(mech.BehaviorTree, BehaviorVariableName.Float_AcceptableHeatLevel).FloatVal;
-            Mod.AILog.Info?.Write($"== Unit: {mech.DistinctId()} has heatRiskRatio: {bhvarAcceptableHeatFraction} and currentHeat: {mech.CurrentHeat}");
-
-            int acceptableHeat = 0;
             float heatCheckMod = mech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
+            float bhvarAcceptableHeatFraction = UnitHelper.GetBehaviorVariableValue(mech.BehaviorTree, BehaviorVariableName.Float_AcceptableHeatLevel).FloatVal;
+            Mod.AILog.Info?.Write($"== Unit: {mech.DistinctId()} has heatCheckMod: {heatCheckMod}  heatRiskRatio: {bhvarAcceptableHeatFraction}  currentHeat: {mech.CurrentHeat}");
 
-            // TODO: Check explosion chance; volatile is essentially double chance
-            AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(mech, true);
-            if (mostDamagingVolatile != null)
-            {
-                Mod.AILog.Info?.Write($"-- Checking volatile ammo ");
-                // We have volatile ammo, success chances will be lower because of the greater chance of an ammo explosion
-                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
-                {
-                    if (kvp.Value == -1f)
-                    {
-                        // Guaranteed explosion, return one less than this value
-                        acceptableHeat = kvp.Key - 1;
-                        break;
-                    }
+            int acceptableHeatFromVolatileAmmo = mech.AcceptableHeatForAIFromVolatileAmmo(heatCheckMod, bhvarAcceptableHeatFraction);
+            int acceptableHeatFromRegularAmmo = mech.AcceptableHeatForAIFromRegularAmmo(heatCheckMod, bhvarAcceptableHeatFraction);
+            int acceptableHeatFromShutdown = mech.AcceptableHeatForAIFromShutdown(heatCheckMod, bhvarAcceptableHeatFraction);
 
-                    float rawExplosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                    Mod.AILog.Info?.Write($" -- heat: {kvp.Key} has rawChance: {kvp.Value} - pilotMod: {heatCheckMod} => raw explosionChance: {rawExplosionChance}");
-                    float successChance = 1.0f - rawExplosionChance;
-                    float compoundChance = successChance * successChance;
-                    float finalExplosionChance = 1.0f - compoundChance;
-                    Mod.AILog.Info?.Write($" -- 1.0f - compoundChance: {compoundChance} => finalExplosionChance: {finalExplosionChance}");
-                    if (finalExplosionChance <= bhvarAcceptableHeatFraction)
-                        acceptableHeat = kvp.Key;
-                    else
-                        break;
-                        
-                }
+            List<int> acceptableHeats = new List<int>() { acceptableHeatFromVolatileAmmo, acceptableHeatFromRegularAmmo, acceptableHeatFromShutdown };
+            acceptableHeats.Sort();
 
-                sw.Stop();
-                Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from volatile ammo due to behVar: {bhvarAcceptableHeatFraction}. (think time: {sw.ElapsedMilliseconds})");
-                __result = acceptableHeat;
-                return false;
-            }
-
-            AmmunitionBox mostDamaging = HeatHelper.FindMostDamagingAmmoBox(mech, false);
-            if (mostDamaging != null)
-            {
-                Mod.AILog.Info?.Write($"-- Checking regular ammo ");
-                // We have regular ammo, so success chances are as on tin
-                foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
-                {
-                    if (kvp.Value == -1f)
-                    {
-                        // Guaranteed explosion, return one less than this value
-                        acceptableHeat = kvp.Key - 1;
-                        break;
-                    }
-
-                    float explosionChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                    Mod.AILog.Info?.Write($" -- heat: {kvp.Key} has rawChance: {kvp.Value} - pilotMod: {heatCheckMod} => explosionChance: {explosionChance}");
-                    if (explosionChance <= bhvarAcceptableHeatFraction)
-                        acceptableHeat = kvp.Key;
-                    else
-                        break;
-
-                }
-
-                sw.Stop();
-                Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from ammo due to behVar: {bhvarAcceptableHeatFraction}. (think time: {sw.ElapsedMilliseconds})");
-                __result = acceptableHeat;
-                return false;
-            }
-
-            // TODO: Compare max move to heat; fast mechs should avoid high heat to avoid losing evasion
-            // TODO: Compare heat to firing modifier; limit heat based upon modifier
-
-            // If we've gotten this far, check shutdown
-            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown)
-            {
-                if (kvp.Value == -1f)
-                {
-                    // Guaranteed shutdown, return one less than this value
-                    acceptableHeat = kvp.Key - 1;
-                    break;
-                }
-
-                float shutdownChance = Math.Max(0f, kvp.Value - heatCheckMod);
-                if (shutdownChance <= bhvarAcceptableHeatFraction)
-                    acceptableHeat = kvp.Key;
-                else
-                    break;
-
-            }
-
-            sw.Stop();
-            __result = acceptableHeat;
-            Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from shutdown due to behVar: {bhvarAcceptableHeatFraction}. (think time: {sw.ElapsedMilliseconds})");
+            __result = acceptableHeats.First<int>();
+            Mod.AILog.Info?.Write($"  using lowest acceptable heat value of: {__result}");
             return false;
         }
 

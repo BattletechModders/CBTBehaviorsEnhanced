@@ -5,6 +5,7 @@ using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace CBTBehaviorsEnhanced {
@@ -40,6 +41,10 @@ namespace CBTBehaviorsEnhanced {
 
         // Per Unit or Position State
         public static Dictionary<string, ActorMeleeCondition> meleeConditionCache = new Dictionary<string, ActorMeleeCondition>();
+
+        // Roleplayer Integration
+        public static object RolePlayerBehaviorVarManager;
+        public static MethodInfo RolePlayerGetBehaviorVar;
 
         public static void Reset() {
 

@@ -1,4 +1,5 @@
-﻿using CBTBehaviorsEnhanced.CAC;
+﻿using BattleTech;
+using CBTBehaviorsEnhanced.CAC;
 using CustAmmoCategories;
 using Harmony;
 using IRBTModUtils.Logging;
@@ -96,8 +97,51 @@ namespace CBTBehaviorsEnhanced
 
         public static void FinishedLoading()
         {
-            //DamageModifiersCache.RegisterDamageModifier("CBTBE_UnitState_Invalidator", "CBTBE_UnitState_Invalidator", 
-            //    true, true, true, true, true, InvalidateUnitStateOnDamage.NoopDamageModifier, null);
+            // Check for RolePlayer and use it's BehaviorVar link instead
+            InitRoleplayerLink();
+        }
+
+        private static void InitRoleplayerLink()
+        {
+            try
+            {
+                Mod.Log.Info?.Write(" -- Checking for RolePlayer Integration -- ");
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in assemblies)
+                {
+                    if (assembly.FullName.StartsWith("RolePlayer"))
+                    {
+                        // Find the manager and pull it's singleton instance
+                        Type managerType = assembly.GetType("RolePlayer.BehaviorVariableManager");
+                        if (managerType == null)
+                        {
+                            Mod.Log.Warn?.Write("  Failed to find RolePlayer.BehaviorVariableManager.getBehaviourVariable - RP behavior variables will be ignored!");
+                            return;
+                        }
+
+                        PropertyInfo instancePropertyType = managerType.GetProperty("Instance");
+                        ModState.RolePlayerBehaviorVarManager = instancePropertyType.GetValue(null);
+                        if (ModState.RolePlayerBehaviorVarManager == null)
+                        {
+                            Mod.Log.Warn?.Write("  Failed to get RolePlayer.BehaviorVariableManager instance!");
+                            return;
+                        }
+
+                        // Find the method
+                        ModState.RolePlayerGetBehaviorVar = managerType.GetMethod("getBehaviourVariable", new Type[] { typeof(AbstractActor), typeof(BehaviorVariableName) });
+
+                        if (ModState.RolePlayerGetBehaviorVar != null)
+                            Mod.Log.Info?.Write("  Successfully linked with RolePlayer");
+                        else
+                            Mod.Log.Warn?.Write("  Failed to find RolePlayer.BehaviorVariableManager.getBehaviourVariable - RP behavior variables will be ignored!");
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Mod.Log.Error?.Write(e, "Error trying to initialize RolePlayer link!");
+            }
         }
     }
 }
