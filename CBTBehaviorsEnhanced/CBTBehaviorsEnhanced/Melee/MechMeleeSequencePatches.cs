@@ -18,8 +18,9 @@ namespace CBTBehaviorsEnhanced.Melee {
 
     [HarmonyPatch(typeof(MechMeleeSequence), MethodType.Constructor)]
     [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List <Weapon>), typeof(Vector3)})]
-    static class MechMeleeSequence_ctor
+    public static class MechMeleeSequence_ctor
     {
+        public static bool isValid = false;
 
         static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, 
             List<Weapon> requestedWeapons, Vector3 desiredMeleePosition)
@@ -60,7 +61,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 }
                 Mod.MeleeLog.Info?.Write($"  -- Initial requested weapons: {sb}");
 
-
+                isValid = true;
             }
             catch (Exception e)
             {
@@ -73,11 +74,34 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_OnAdded
     {
+        private enum FakeMeleeSequenceState
+        {
+            None,
+            Weapons,
+            Moving,
+            Melee,
+            Finished
+        }
+
         static void Prefix(MechMeleeSequence __instance)
         {
+            if (!MechMeleeSequence_ctor.isValid)
+            {
+                Mod.MeleeLog.Info?.Write($"  -- Invalid sequence in OnAdded, skipping!");
+
+                Traverse meleeTargetT = Traverse.Create(__instance).Property("MeleeTarget");
+                meleeTargetT.SetValue(null);
+
+                Traverse setStateT = Traverse.Create(__instance).Method("setState");
+                setStateT.GetValue(new object[] { FakeMeleeSequenceState.Finished });
+
+                return;
+            }
+
             Mod.MeleeLog.Info?.Write($"MeleeSequence added for attacker: {__instance.OwningMech.DistinctId()} from " +
                 $"desired position: {__instance.DesiredMeleePosition} " +
                 $"against target: {__instance.MeleeTarget.DistinctId()}");
+
         }
     }
 
@@ -87,6 +111,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechMeleeSequence __instance, List<Weapon> ___requestedWeapons)
         {
+
             // TODO: If this happens before the above... need to grab the selected melee type from state
             Mod.MeleeLog.Info?.Write($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon.UIName}");
 
@@ -131,6 +156,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechMeleeSequence __instance)
         {
+
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
             if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0)
             {
@@ -302,7 +328,6 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Prefix(MechMeleeSequence __instance)
         {
-
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
             Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
             if (BuildWeaponDirectorSequenceT == null)
@@ -329,6 +354,12 @@ namespace CBTBehaviorsEnhanced.Melee {
     {
         static void Postfix(MechMeleeSequence __instance)
         {
+            if (!MechMeleeSequence_ctor.isValid)
+            {
+                Mod.MeleeLog.Info?.Write($"  -- Invalid sequence in OnAdded, skipping!");
+                return;
+            }
+
             Mod.MeleeLog.Trace?.Write("MMS:CO - entered.");
 
             // Base method checks for target knockdown. Do the same for the attacker.
