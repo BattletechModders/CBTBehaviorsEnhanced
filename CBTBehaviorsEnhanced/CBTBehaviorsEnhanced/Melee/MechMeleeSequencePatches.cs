@@ -92,8 +92,12 @@ namespace CBTBehaviorsEnhanced.Melee {
                 Traverse meleeTargetT = Traverse.Create(__instance).Property("MeleeTarget");
                 meleeTargetT.SetValue(null);
 
-                Traverse setStateT = Traverse.Create(__instance).Method("setState");
-                setStateT.GetValue(new object[] { FakeMeleeSequenceState.Finished });
+                // This apparently throws NREs in some cases... so skip
+                //Traverse setStateT = Traverse.Create(__instance).Method("setState");
+                //setStateT.GetValue(new object[] { FakeMeleeSequenceState.Finished });
+
+                Traverse ordersAreCompleteT = Traverse.Create(__instance).Property("OrdersAreComplete");
+                ordersAreCompleteT.SetValue(true);
 
                 return;
             }
