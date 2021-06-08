@@ -172,7 +172,7 @@ namespace CBTBehaviorsEnhanced {
             return state;
         }
 
-        public static void InvalidateMeleeStates(AbstractActor actor)
+        private static void InvalidateMeleeStates(AbstractActor actor)
         {
             if (actor == null) return;
 

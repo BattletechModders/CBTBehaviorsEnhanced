@@ -29,7 +29,7 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.Set(ModStats.CanShootAfterSprinting, __instance.Combat.TurnDirector.IsInterleaved);
 
             // Invalidate their melee state
-            ModState.InvalidateMeleeStates(__instance);
+            ModState.InvalidateState(__instance);
         }
     }
 

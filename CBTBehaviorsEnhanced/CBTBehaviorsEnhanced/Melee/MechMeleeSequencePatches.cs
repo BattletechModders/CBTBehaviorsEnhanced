@@ -373,7 +373,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 __instance.OwningMech.HandleKnockdown(__instance.RootSequenceGUID, __instance.owningActor.GUID, Vector2.one, null);
             }
 
-            ModState.InvalidateMeleeStates(__instance.OwningMech);
+            ModState.InvalidateState(__instance.OwningMech);
         }
     }
 }

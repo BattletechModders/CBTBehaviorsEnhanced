@@ -296,7 +296,7 @@ namespace CBTBehaviorsEnhanced.Melee {
             // Invalidate our melee state as we're done
             ModState.ForceDamageTable = DamageTable.NONE;
 
-            ModState.InvalidateMeleeStates(__instance.OwningMech);
+            ModState.InvalidateState(__instance.OwningMech);
         }
     }
 }

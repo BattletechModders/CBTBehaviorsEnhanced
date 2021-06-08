@@ -137,7 +137,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else
             {
-                ModState.InvalidateMeleeStates(SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor);
+                ModState.InvalidateState(SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor);
             }
         }
 
@@ -208,7 +208,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     if (ModState.PhysicalWeaponFB != null) ModState.PhysicalWeaponFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
                     if (ModState.PunchFB != null) ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
 
-                    ModState.InvalidateMeleeStates(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor);
+                    ModState.InvalidateState(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor);
                 }
 
                 // Handle the DFA button here

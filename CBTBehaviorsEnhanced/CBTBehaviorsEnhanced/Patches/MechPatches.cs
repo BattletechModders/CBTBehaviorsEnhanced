@@ -184,7 +184,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
             // Invalidate any melee state the actor may have set
-            ModState.InvalidateMeleeStates(__instance);
+            ModState.InvalidateState(__instance);
 
             // Make the checks for ammo explosions, etc
             float heatCheck = __instance.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
