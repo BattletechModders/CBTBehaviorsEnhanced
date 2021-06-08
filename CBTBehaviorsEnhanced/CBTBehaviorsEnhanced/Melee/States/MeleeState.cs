@@ -64,7 +64,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             float selectedDamage = 0;
             foreach (MeleeAttack attack in attacks)
             {
-                if (attack != null)
+                if (attack != null && attack.IsValid)
                 {
                     // TODO: Include attack modifiers for EV style calculaion
                     float typeDamage = attack.TargetDamageClusters.Sum();
@@ -74,11 +74,22 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                         selectedAttack = attack;
                     }
                 }
+                else
+                {
+                    Mod.MeleeLog.Debug?.Write($"Attack: {attack?.Label} is null or invalid, skipping.");
+                }
             }
 
             // If everything remains zero, check charge
-            if (selectedDamage == 0 && Charge.IsValid)
+            if (selectedAttack == null && Charge.IsValid)
+            {
+                Mod.MeleeLog.Debug?.Write($"Selecting charge as there is no selected attack.");
                 selectedAttack = Charge;
+            }
+            else
+            {
+                Mod.MeleeLog.Debug?.Write($"Already selected attack: {selectedAttack?.Label} or charge is invalid.");
+            }
 
             return selectedAttack;
         }
