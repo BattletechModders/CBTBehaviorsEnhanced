@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -519,6 +520,20 @@ namespace CBTBehaviorsEnhanced.Extensions
 
             Mod.AILog.Info?.Write($"Unit: {mech.DistinctId()} has acceptableHeat: {acceptableHeat} from shutdown due to behVar: {bhvarAcceptableHeatFraction}.");
             return acceptableHeat;
+        }
+
+        public static void ForceUnsteady(this Mech mech)
+        {
+            Mod.Log.Debug?.Write($"Forcing mech: {mech.DistinctId()} to be unsteady");
+            // Force us to be unstead
+            mech.IsUnsteady = true;
+
+            Mod.Log.Debug?.Write($"  -- removing {mech.EvasivePipsCurrent} evasivePips");
+            mech.EvasivePipsCurrent = 0;
+            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(mech.GUID, mech.EvasivePipsCurrent));
+
+            SharedState.Combat.MessageCenter.PublishMessage(new UnsteadyChangedMessage(mech.GUID));
+            Mod.Log.Debug?.Write($"  -- done");
         }
     }
 

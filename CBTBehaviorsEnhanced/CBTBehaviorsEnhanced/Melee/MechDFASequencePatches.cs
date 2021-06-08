@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
 using FluffyUnderware.DevTools.Extensions;
@@ -177,12 +178,12 @@ namespace CBTBehaviorsEnhanced.Melee {
 
                 if (!__instance.OwningMech.IsOrWillBeProne)
                 {
-                    // Target stability and unsteady - always applies as we're always a mech
+                    // Attacker stability and unsteady - always applies as we're always a mech
                     if ((targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnHit) ||
                         (!targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnMiss))
                     {
                         Mod.MeleeLog.Info?.Write(" -- Forcing attacker to become unsteady from attack!");
-                        __instance.OwningMech.ApplyUnsteady();
+                        __instance.OwningMech.ForceUnsteady();
                     }
 
                 }
@@ -216,7 +217,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                         if (seqState.meleeAttack.OnTargetMechHitForceUnsteady)
                         {
                             Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
-                            targetMech.ApplyUnsteady();
+                            targetMech.ForceUnsteady();
                         }
 
                     }
