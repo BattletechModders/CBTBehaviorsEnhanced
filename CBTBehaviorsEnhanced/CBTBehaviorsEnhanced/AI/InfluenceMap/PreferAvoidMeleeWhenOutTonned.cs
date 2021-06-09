@@ -25,6 +25,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
             }
             else if (unit is Mech mech)
             {
+                // TODO: SHould be vehicle OR mech, since both can move
                 float opforTonnage = 0;
                 foreach (AbstractActor enemyActor in unit.Combat.AllEnemies)
                 {
@@ -36,6 +37,9 @@ namespace CBTBehaviorsEnhanced.Patches.AI.InfluenceMap
                         }
                     }
                 }
+
+                // TODO: Should incorporate check for ranged shots. This may be priortizing nodes outside of effective weapon range?
+                //  Maybe should be a position with lots of shots instead? Seperate InfluenceMapPositionFactor
 
                 float ratio = -1 * opforTonnage / mech.tonnage;
                 Mod.AILog.Debug?.Write($"  - ratio: {ratio} from opfor tonnage: {opforTonnage} / mech tonnage: {mech.tonnage}");
