@@ -130,8 +130,8 @@
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
     <Compile Include="Patches\AI\BehaviorNodes\CanMeleeHostileTargetsNodePatches.cs" />
-    <Compile Include="Patches\AI\InfluenceMap\PreferAvoidMeleeWhenOutTonned.cs" />
-    <Compile Include="Patches\AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
+    <Compile Include="AI\InfluenceMap\PreferAvoidMeleeWhenOutTonned.cs" />
+    <Compile Include="AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
     <Compile Include="Patches\AI\MechStartupNodePatches.cs" />
     <Compile Include="Patches\TurretPatches.cs" />
     <Compile Include="Patches\VehiclePatches.cs" />
