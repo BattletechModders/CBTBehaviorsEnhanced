@@ -124,7 +124,8 @@ namespace CBTBehaviorsEnhanced.Patches
                     ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
 
                     // Update melee states
-                    ModState.AddorUpdateMeleeState(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                    ModState.AddorUpdateMeleeState(
+                        SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant);
                     Mod.UILog.Debug?.Write($"Updated melee state for position: {ModState.MeleePreviewPos}");

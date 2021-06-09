@@ -37,8 +37,8 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             this.target = target;
 
             this.validAnimations = AvailableAttacks(attacker, attackPos, target);
-            this.walkNodes = GetMeleeDestsForTarget(attacker, target, true);
-            this.sprintNodes = GetMeleeDestsForTarget(attacker, target, false);
+            this.walkNodes = GetMeleeDestsForTarget(attacker, attackPos, target, true);
+            this.sprintNodes = GetMeleeDestsForTarget(attacker, attackPos, target, false);
 
             Charge = new ChargeAttack(this);
             DFA = new DFAAttack(this);
@@ -302,10 +302,10 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         }
 
         //  Patch the HBS code to allow both walking and running grids
-        public static List<PathNode> GetMeleeDestsForTarget(AbstractActor attacker, AbstractActor target, bool useWalkGrid = true)
+        public static List<PathNode> GetMeleeDestsForTarget(AbstractActor attacker, Vector3 attackPos, AbstractActor target, bool useWalkGrid = true)
         {
-            Mod.MeleeLog.Info?.Write($"Evaluating melee dests for attacker: {attacker.DistinctId()} at postion: {attacker.CurrentPosition}" +
-                $"vs  target: {target.DistinctId()} at position: {target.CurrentPosition}. UseWalkGrid? : {useWalkGrid}");
+            Mod.MeleeLog.Info?.Write($"Evaluating melee dests for attacker: {attacker.DistinctId()} at postion: {attackPos}" +
+                $" vs target: {target.DistinctId()} at position: {target.CurrentPosition}. UseWalkGrid? : {useWalkGrid}");
 
             VisibilityLevel visibilityLevel = attacker.VisibilityToTargetUnit(target);
             if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost)
@@ -346,11 +346,11 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 else
                 {
                     Mod.MeleeLog.Debug?.Write($" -- sorting nodes by raw distance");
-                    pathNodesForPoints.Sort((PathNode a, PathNode b) => Vector3.Distance(a.Position, attacker.CurrentPosition).CompareTo(Vector3.Distance(b.Position, attacker.CurrentPosition)));
+                    pathNodesForPoints.Sort((PathNode a, PathNode b) => Vector3.Distance(a.Position, attackPos).CompareTo(Vector3.Distance(b.Position, attackPos)));
                 }
 
                 int numSelections = SharedState.Combat.Constants.MoveConstants.NumMeleeDestinationChoices;
-                Vector3 vector = attacker.CurrentPosition - pathNodesForPoints[0].Position;
+                Vector3 vector = attackPos - pathNodesForPoints[0].Position;
                 vector.y = 0f;
                 if (vector.magnitude < 10f)
                 {

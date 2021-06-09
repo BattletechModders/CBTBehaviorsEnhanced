@@ -19,7 +19,8 @@ namespace CBTBehaviorsEnhanced.Melee
         // Allow the player to move if they are already in combat. Vanilla normally disables this.
         public static bool Prefix(Pathing __instance, AbstractActor target, ref List<PathNode> __result)
         {
-            Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} to target: {CombatantUtils.Label(target)}");
+            Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} at pos: {__instance.OwningActor.CurrentPosition} rot: {__instance.OwningActor.CurrentRotation} " +
+                $"to target: {CombatantUtils.Label(target)} at pos: {target.CurrentPosition} rot: {target.CurrentRotation}");
 
             // If the target isn't visible, prevent building any path to them.
             VisibilityLevel visibilityLevel = __instance.OwningActor.VisibilityToTargetUnit(target);

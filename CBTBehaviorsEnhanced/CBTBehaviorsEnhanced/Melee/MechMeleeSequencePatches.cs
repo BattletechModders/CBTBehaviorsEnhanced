@@ -102,9 +102,9 @@ namespace CBTBehaviorsEnhanced.Melee {
                 return;
             }
 
-            Mod.MeleeLog.Info?.Write($"MeleeSequence added for attacker: {__instance.OwningMech.DistinctId()} from " +
-                $"desired position: {__instance.DesiredMeleePosition} " +
-                $"against target: {__instance.MeleeTarget.DistinctId()}");
+            Mod.MeleeLog.Info?.Write($"MeleeSequence added for " +
+                $"attacker: {__instance.OwningMech.DistinctId()} from pos: {__instance.DesiredMeleePosition}" +
+                $"against target: {__instance.MeleeTarget.DistinctId()} at pos: {__instance.MeleeTarget.CurrentPosition}");
 
         }
     }

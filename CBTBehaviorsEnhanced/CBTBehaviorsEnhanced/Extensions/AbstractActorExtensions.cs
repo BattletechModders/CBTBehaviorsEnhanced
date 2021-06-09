@@ -79,6 +79,18 @@ namespace CBTBehaviorsEnhanced.Extensions
             return adjusted;
 
         }
+
+        public static float MaxShootingRange(AbstractActor actor)
+        {
+            float maxRange = 0;
+            foreach (Weapon wep in actor.Weapons)
+            {
+                if (wep.CanFire && wep.MaxRange > maxRange)
+                    maxRange = wep.MaxRange;
+            }
+
+            return maxRange;
+        }
     }
 
 }
