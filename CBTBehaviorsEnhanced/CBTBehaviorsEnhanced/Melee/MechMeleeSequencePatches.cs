@@ -212,7 +212,11 @@ namespace CBTBehaviorsEnhanced.Melee {
             return false;
         }
     }
-
+    
+    // TODO: Applying all the self-damage and instab reduction here feels weird, as it could interact with the
+    //   weapons fire poorly. Maybe these should be largely moved to the end?
+    //   Also means weapons won't benefit from evasion strip when they are fired. Seems like a problem and won't be reflected
+    //   in the UI when estimating
     [HarmonyPatch(typeof(MechMeleeSequence), "OnMeleeComplete")]
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_OnMeleeComplete
@@ -224,6 +228,7 @@ namespace CBTBehaviorsEnhanced.Melee {
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
             Mod.MeleeLog.Info?.Write($"== Resolving cluster damage, instability, and unsteady on melee attacker: {CombatantUtils.Label(__instance.OwningMech)} and target: {CombatantUtils.Label(__instance.MeleeTarget)}.");
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
+
             if (attackCompleteMessage.stackItemUID == ___meleeSequence.SequenceGUID && seqState.meleeAttack != null)
             {
                 // Check to see if the target was hit

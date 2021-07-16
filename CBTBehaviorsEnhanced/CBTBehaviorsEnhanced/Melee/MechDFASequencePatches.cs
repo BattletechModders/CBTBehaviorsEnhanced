@@ -159,6 +159,7 @@ namespace CBTBehaviorsEnhanced.Melee {
             Mod.MeleeLog.Info?.Write($"== Resolving cluster damage, instability, and unsteady on DFA attacker: {CombatantUtils.Label(__instance.OwningMech)} and " +
                 $"target: {CombatantUtils.Label(__instance.DFATarget)}.");
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
+
             if (attackCompleteMessage.stackItemUID == ___meleeSequence.SequenceGUID && seqState.meleeAttack != null)
             {
                 // Check to see if the target was hit

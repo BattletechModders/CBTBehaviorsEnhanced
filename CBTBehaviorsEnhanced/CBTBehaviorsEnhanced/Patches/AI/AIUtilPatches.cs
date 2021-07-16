@@ -66,7 +66,6 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                         meleeWeapon = attackingMech.MeleeWeapon;
                         modifyAttack = true;
                         isMelee = true;
-
                     }
 
                 }
