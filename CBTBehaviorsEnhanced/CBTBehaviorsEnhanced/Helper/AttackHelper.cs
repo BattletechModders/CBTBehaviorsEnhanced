@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CustAmmoCategories;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -62,6 +63,14 @@ namespace CBTBehaviorsEnhanced.Helper
         public static void CreateImaginaryAttack(Mech attacker, Weapon attackWeapon, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters, 
             DamageType damageType, MeleeAttackType attackType)
         {
+            Mod.Log.Info?.Write($"  Creating imaginary attack for attacker: {attacker.DistinctId()} at position: {attacker?.CurrentPosition} and rot: {attacker?.CurrentRotation}  " +
+                $"vs. target: {target.DistinctId()} at position: {target?.CurrentPosition} and rot: {target?.CurrentRotation}  " +
+                $"using weapon =>  isNull: {attackWeapon == null}  name: {attackWeapon?.Name}  damageType: {damageType}  attackType: {attackType}");
+            
+            if (attackWeapon.ammo() == null) Mod.Log.Error?.Write($"AMMO is null!");
+            if (attackWeapon.mode() == null) Mod.Log.Error?.Write($"Mode is null!");
+            if (attackWeapon.exDef() == null) Mod.Log.Error?.Write($"exDef is null!");
+
             AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(0, attacker, target, 
                 attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attackWeapon }, 
                 attackType, 0, false
