@@ -364,7 +364,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                     pathNodesForPoints.RemoveAt(pathNodesForPoints.Count - 1);
                 }
             }
-            else
+            else if (pathNodesForPoints.Count < 1)
             {
                 Mod.MeleeLog.Info?.Write($" -- No pathnodes found!");
             }
