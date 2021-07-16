@@ -129,6 +129,7 @@
     <Compile Include="Move\CBTBEMechMoveModifier.cs" />
     <Compile Include="Patches\AbstractActorPatches.cs" />
     <Compile Include="Patches\AI\AIUtilPatches.cs" />
+    <Compile Include="Patches\AI\AttackEvaluatorPatches.cs" />
     <Compile Include="Patches\AI\BehaviorNodes\CanMeleeHostileTargetsNodePatches.cs" />
     <Compile Include="AI\InfluenceMap\PreferAvoidMeleeWhenOutTonned.cs" />
     <Compile Include="AI\InfluenceMap\PreferStationaryWithMeleeWeapon.cs" />
