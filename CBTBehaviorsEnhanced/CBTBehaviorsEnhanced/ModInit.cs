@@ -69,6 +69,7 @@ namespace CBTBehaviorsEnhanced
                 Mod.LocalizedText = new ModText();
                 Log.Error?.Write(e, $"Failed to read localizations from: {localizationPath} due to error!");
             }
+            Mod.LocalizedText.InitUnsetValues();
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);

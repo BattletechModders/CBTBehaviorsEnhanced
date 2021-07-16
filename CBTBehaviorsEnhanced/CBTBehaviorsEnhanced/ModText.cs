@@ -194,50 +194,70 @@ namespace CBTBehaviorsEnhanced
         };
 
         // In-game quips that can be displayed
-        public class QipsConfig
+        public class QuipsConfig
         {
-            public List<string> Breach = new List<string>() {
-                "Shit, explosive decompression!",
-                "Hull breach detected!",
-                "I've lost something to atmo!",
-                "I hope life support holds up",
-                "I cant breathe!",
-                "There are cracks in my cockpit!",
-                "Components crippled by vacuum",
-                "Alot of red from that hit",
-                "Damn, lost alot of gear"
-            };
-
-            public List<string> Knockdown = new List<string>() {
-                "Oh .. shit!",
-                "FML",
-                "This is going to hurt..",
-                "Can't keep her steady!",
-                "Gyro's not compensating!",
-                "Screw you gravity!",
-                "Going down!",
-                "You're a bastard Newton",
-                "Stability lost, controls unresponsive!",
-                "Controls are locked up, can't stop the fall!",
-                "Past the critical point, she's going down!",
-                "Bracing for ground impact",
-                "Impact protection don't fail",
-                "Dampening neurohelm feedback",
-                "Hope the armor takes it",
-                "About to bite the dust!"
-            };
-
-            public List<string> Startup = new List<string> {
-                "Start damn you",
-                "Can't see through this heat",
-                "Where is the start button?",
-                "Override damn it, override!",
-                "Time to void the warranty",
-                "Why won't you turn on",
-                "I put in the startup sequence!"
-            };
+            public List<string> Breach = new List<string>();
+            public List<string> Knockdown = new List<string>() {};
+            public List<string> Startup = new List<string> {};
         }
-        public QipsConfig Qips = new QipsConfig();
+        public QuipsConfig Quips = new QuipsConfig();
 
+        // Newtonsoft seems to merge values into existing dictionaries instead of replacing them entirely. So instead
+        //   populate default values in dictionaries through this call instead
+        public void InitUnsetValues()
+        {
+            if (this.Quips.Breach.Count == 0)
+            {
+                this.Quips.Breach = new List<string>() 
+                {
+                    "Shit, explosive decompression!",
+                    "Hull breach detected!",
+                    "I've lost something to atmo!",
+                    "I hope life support holds up",
+                    "I cant breathe!",
+                    "There are cracks in my cockpit!",
+                    "Components crippled by vacuum",
+                    "Alot of red from that hit",
+                    "Damn, lost alot of gear"
+                };
+            }
+
+            if (this.Quips.Knockdown.Count == 0)
+            {
+                this.Quips.Knockdown = new List<string>() 
+                {
+                    "Oh .. shit!",
+                    "FML",
+                    "This is going to hurt..",
+                    "Can't keep her steady!",
+                    "Gyro's not compensating!",
+                    "Screw you gravity!",
+                    "Going down!",
+                    "You're a bastard Newton",
+                    "Stability lost, controls unresponsive!",
+                    "Controls are locked up, can't stop the fall!",
+                    "Past the critical point, she's going down!",
+                    "Bracing for ground impact",
+                    "Impact protection don't fail",
+                    "Dampening neurohelm feedback",
+                    "Hope the armor takes it",
+                    "About to bite the dust!"
+                };
+            }
+
+            if (this.Quips.Start.Count == 0) 
+            {
+                this.Quips.Startup = new List<string> 
+                {
+                    "Start damn you",
+                    "Can't see through this heat",
+                    "Where is the start button?",
+                    "Override damn it, override!",
+                    "Time to void the warranty",
+                    "Why won't you turn on",
+                    "I put in the startup sequence!"
+                };
+            }
+        }
     }
 }
