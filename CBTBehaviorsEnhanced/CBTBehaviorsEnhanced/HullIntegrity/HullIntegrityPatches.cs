@@ -158,7 +158,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     }
                 }
             }
-            if (needsQuip) { QuipHelper.PublishQuip(targetMech, Mod.LocalizedText.Qips.Breach); }
+            if (needsQuip) { QuipHelper.PublishQuip(targetMech, Mod.LocalizedText.Quips.Breach); }
         }
 
         // Resolve turret hits - any hull breach kill the unit
@@ -206,7 +206,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     targetTurret.HandleDeath("0");
                 }
             }
-            if (needsQuip) { QuipHelper.PublishQuip(targetTurret, Mod.LocalizedText.Qips.Breach); }
+            if (needsQuip) { QuipHelper.PublishQuip(targetTurret, Mod.LocalizedText.Quips.Breach); }
         }
 
         private static void ResolveVehicleHullBreaches(Vehicle targetVehicle) {
@@ -257,7 +257,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     break;
                 }
             }
-            if (needsQuip) { QuipHelper.PublishQuip(targetVehicle, Mod.LocalizedText.Qips.Breach); }
+            if (needsQuip) { QuipHelper.PublishQuip(targetVehicle, Mod.LocalizedText.Quips.Breach); }
         }
     }
 

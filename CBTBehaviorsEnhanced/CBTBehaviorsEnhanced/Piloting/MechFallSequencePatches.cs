@@ -12,7 +12,7 @@ namespace CBTBehaviorsEnhanced.Piloting {
     public class MechFallSequence_OnAdded {
         public static void Postfix(MechFallSequence __instance) {
             Mod.Log.Trace?.Write("MFS:OnAdded - entered.");
-            QuipHelper.PublishQuip(__instance.OwningMech, Mod.LocalizedText.Qips.Knockdown);            
+            QuipHelper.PublishQuip(__instance.OwningMech, Mod.LocalizedText.Quips.Knockdown);            
         }
     }
 

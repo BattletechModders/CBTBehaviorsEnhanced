@@ -52,7 +52,7 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck);
                     if (failedVolatileAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass volatile ammo explosion check!");
 
-                    QuipHelper.PublishQuip(mech, Mod.LocalizedText.Qips.Startup);
+                    QuipHelper.PublishQuip(mech, Mod.LocalizedText.Quips.Startup);
                 }
                 else
                 {

@@ -51,7 +51,7 @@ namespace CBTBehaviorsEnhanced.Heat
             MechHeatSequence mechHeatSequence = new MechHeatSequence(OwningMech: mech, performHeatSinkStep: true, applyStartupHeatSinks: false, instigatorID: "STARTUP");
             doneWithActorSequence.AddChildSequence(mechHeatSequence, mechHeatSequence.MessageIndex);
 
-            QuipHelper.PublishQuip(mech, Mod.LocalizedText.Qips.Startup);
+            QuipHelper.PublishQuip(mech, Mod.LocalizedText.Quips.Startup);
 
             InvocationStackSequenceCreated message = new InvocationStackSequenceCreated(doneWithActorSequence, __instance);
             combatGameState.MessageCenter.PublishMessage(message);
