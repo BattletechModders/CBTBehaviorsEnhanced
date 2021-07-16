@@ -104,12 +104,11 @@ namespace CBTBehaviorsEnhanced {
                     weapons.melee.InitGameRep(attacker.MeleeWeapon.baseComponentRef.prefabName,
                         attacker.GetAttachTransform(attacker.MeleeWeapon.mechComponentRef.MountedLocation),
                         attacker.LogDisplayName);
-                    
                 }
 
                 if (attacker.DFAWeapon != null)
                 {
-                    weapons.dfa = new Weapon(attacker, SharedState.Combat, attacker.DFAWeapon.mechComponentRef, "CBTBE_FAKE_MELEE");
+                    weapons.dfa = new Weapon(attacker, SharedState.Combat, attacker.DFAWeapon.mechComponentRef, "CBTBE_FAKE_DFA");
                     weapons.dfa.InitGameRep(attacker.DFAWeapon.baseComponentRef.prefabName,
                         attacker.GetAttachTransform(attacker.DFAWeapon.mechComponentRef.MountedLocation),
                         attacker.LogDisplayName);
