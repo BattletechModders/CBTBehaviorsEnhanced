@@ -245,7 +245,7 @@ namespace CBTBehaviorsEnhanced
                 };
             }
 
-            if (this.Quips.Start.Count == 0) 
+            if (this.Quips.Startup.Count == 0) 
             {
                 this.Quips.Startup = new List<string> 
                 {
