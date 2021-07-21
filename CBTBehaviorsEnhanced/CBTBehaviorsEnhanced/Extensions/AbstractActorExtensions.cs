@@ -1,4 +1,6 @@
 ﻿using BattleTech;
+using IRBTModUtils;
+using IRBTModUtils.Extension;
 using System;
 
 namespace CBTBehaviorsEnhanced.Extensions
@@ -90,6 +92,22 @@ namespace CBTBehaviorsEnhanced.Extensions
             }
 
             return maxRange;
+        }
+
+        public static void DumpEvasion(this AbstractActor actor, bool forceUnsteady=true)
+        {
+            Mod.Log.Debug?.Write($"Dumping {actor.EvasivePipsCurrent} evasion pips on actor: {actor.DistinctId()}");
+
+            actor.EvasivePipsCurrent = 0;
+            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(actor.GUID, actor.EvasivePipsCurrent));
+            
+            // If we are a mech, force unsteady
+            if (forceUnsteady && actor is Mech mech)
+            {
+                mech.IsUnsteady = true;
+                SharedState.Combat.MessageCenter.PublishMessage(new UnsteadyChangedMessage(actor.GUID));
+                Mod.Log.Debug?.Write($"Actor: {actor.DistinctId()} was forced unsteady: {mech.IsUnsteady}");
+            }
         }
     }
 
