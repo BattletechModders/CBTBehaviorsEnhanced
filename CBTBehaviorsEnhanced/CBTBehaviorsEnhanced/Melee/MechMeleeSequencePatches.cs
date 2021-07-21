@@ -1,6 +1,9 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
+using CustAmmoCategories;
+using CustomAmmoCategoriesPatches;
 using CustomUnits;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
@@ -246,14 +249,14 @@ namespace CBTBehaviorsEnhanced.Melee {
                     }
                 }
 
-                if (!__instance.OwningMech.IsOrWillBeProne)
+                if (__instance.OwningMech.isHasStability() && !__instance.OwningMech.IsOrWillBeProne)
                 {
                     // Target stability and unsteady - always applies as we're always a mech
                     if ((targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnHit) ||
                         (!targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnMiss))
                     { 
                         Mod.MeleeLog.Info?.Write(" -- Forcing attacker to become unsteady from attack!");
-                        __instance.OwningMech.ApplyUnsteady();
+                        __instance.OwningMech.DumpEvasion();
                     }            
                 }
 
@@ -281,7 +284,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 if (targetWasHit)
                 {
                     // Target mech instability and unsteady 
-                    if (__instance.MeleeTarget is Mech targetMech && !targetMech.IsProne)
+                    if (__instance.MeleeTarget is Mech targetMech && targetMech.isHasStability() && !targetMech.IsProne)
                     {
                         if (seqState.meleeAttack.TargetInstability != 0)
                         {
@@ -292,21 +295,22 @@ namespace CBTBehaviorsEnhanced.Melee {
                         if (seqState.meleeAttack.OnTargetMechHitForceUnsteady)
                         {
                             Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
-                            targetMech.ApplyUnsteady();
+                            targetMech.DumpEvasion();
                         }
                     }
 
                     // Target vehicle evasion damage
-                    if (__instance.MeleeTarget is Vehicle targetVehicle)
+                    if (__instance.MeleeTarget is Vehicle || __instance.MeleeTarget.FakeVehicle() || __instance.MeleeTarget.NavalUnit())
                     {
-                        if (seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved != 0 && targetVehicle.EvasivePipsCurrent > 0)
+                        AbstractActor targetActor = __instance.MeleeTarget as AbstractActor;
+                        if (seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved != 0 && targetActor.EvasivePipsCurrent > 0)
                         {
                             Mod.MeleeLog.Info?.Write($" -- Removing {seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved} from target vehicle.");
-                            int modifiedPips = targetVehicle.EvasivePipsCurrent - seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved;
+                            int modifiedPips = targetActor.EvasivePipsCurrent - seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved;
                             if (modifiedPips < 0) modifiedPips = 0;
 
-                            targetVehicle.EvasivePipsCurrent = modifiedPips;
-                            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(targetVehicle.GUID, targetVehicle.EvasivePipsCurrent));
+                            targetActor.EvasivePipsCurrent = modifiedPips;
+                            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(targetActor.GUID, targetActor.EvasivePipsCurrent));
                         }
                     }
 

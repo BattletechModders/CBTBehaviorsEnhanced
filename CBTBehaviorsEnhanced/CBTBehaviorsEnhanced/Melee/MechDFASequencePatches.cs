@@ -2,6 +2,8 @@
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
+using CustAmmoCategories;
+using CustomAmmoCategoriesPatches;
 using FluffyUnderware.DevTools.Extensions;
 using Harmony;
 using IRBTModUtils;
@@ -177,14 +179,14 @@ namespace CBTBehaviorsEnhanced.Melee {
                     }
                 }
 
-                if (!__instance.OwningMech.IsOrWillBeProne)
+                if (__instance.OwningMech.isHasStability() && !__instance.OwningMech.IsOrWillBeProne)
                 {
                     // Attacker stability and unsteady - always applies as we're always a mech
                     if ((targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnHit) ||
                         (!targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnMiss))
                     {
                         Mod.MeleeLog.Info?.Write(" -- Forcing attacker to become unsteady from attack!");
-                        __instance.OwningMech.ForceUnsteady();
+                        __instance.OwningMech.DumpEvasion();
                     }
 
                 }
@@ -194,7 +196,6 @@ namespace CBTBehaviorsEnhanced.Melee {
                 {
                     // Make sure we use the attackers's damage table
                     ModState.ForceDamageTable = seqState.meleeAttack.AttackerTable;
-
                     if (seqState.meleeAttack.AttackerDamageClusters.Length > 0)
                     {
                         try
@@ -214,7 +215,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 {
 
                     // Target mech stability and unsteady
-                    if (__instance.DFATarget is Mech targetMech && !targetMech.IsProne)
+                    if (__instance.DFATarget is Mech targetMech && targetMech.isHasStability() && !targetMech.IsProne)
                     {
                         if (seqState.meleeAttack.TargetInstability != 0)
                         {
@@ -225,22 +226,23 @@ namespace CBTBehaviorsEnhanced.Melee {
                         if (seqState.meleeAttack.OnTargetMechHitForceUnsteady)
                         {
                             Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
-                            targetMech.ForceUnsteady();
+                            targetMech.DumpEvasion();
                         }
 
                     }
 
                     // Target vehicle evasion damage
-                    if (__instance.DFATarget is Vehicle targetVehicle)
+                    if (__instance.DFATarget is Vehicle || __instance.DFATarget.FakeVehicle() || __instance.DFATarget.NavalUnit())
                     {
-                        if (seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved != 0 && targetVehicle.EvasivePipsCurrent > 0)
+                        AbstractActor targetActor = __instance.DFATarget as AbstractActor;
+                        if (seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved != 0 && targetActor.EvasivePipsCurrent > 0)
                         {
                             Mod.MeleeLog.Info?.Write($" -- Removing {seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved} from target vehicle.");
-                            int modifiedPips = targetVehicle.EvasivePipsCurrent - seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved;
+                            int modifiedPips = targetActor.EvasivePipsCurrent - seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved;
                             if (modifiedPips < 0) modifiedPips = 0;
 
-                            targetVehicle.EvasivePipsCurrent = modifiedPips;
-                            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(targetVehicle.GUID, targetVehicle.EvasivePipsCurrent));
+                            targetActor.EvasivePipsCurrent = modifiedPips;
+                            SharedState.Combat.MessageCenter.PublishMessage(new EvasiveChangedMessage(targetActor.GUID, targetActor.EvasivePipsCurrent));
                         }
                     }
 
