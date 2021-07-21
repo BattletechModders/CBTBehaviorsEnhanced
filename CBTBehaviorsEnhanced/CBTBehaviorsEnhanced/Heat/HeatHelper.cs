@@ -3,7 +3,9 @@ using BattleTech;
 using CBTBehaviorsEnhanced.Components;
 using CustAmmoCategories;
 using CustomComponents;
+#if !NO_ME
 using MechEngineer.Features.ComponentExplosions;
+#endif
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -201,6 +203,8 @@ namespace CBTBehaviorsEnhanced {
         }
 
         public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isVolatile) {
+#if !NO_ME
+
             float totalDamage = 0f;
             AmmunitionBox mostDangerousBox = null;
             foreach (AmmunitionBox ammoBox in mech.ammoBoxes) {
@@ -214,13 +218,14 @@ namespace CBTBehaviorsEnhanced {
                     continue; 
                 }
 
-                if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp)) {
-                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
+                if (!ammoBox.mechComponentRef.Is<VolatileAmmo>(out VolatileAmmo vAmmo) && isVolatile)
+                {
+                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not a volatile ammo, skipping.");
                     continue;
                 }
 
-                if (!ammoBox.mechComponentRef.Is<VolatileAmmo>(out VolatileAmmo vAmmo) && isVolatile) {
-                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not a volatile ammo, skipping.");
+                if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp)) {
+                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
                     continue;
                 }
 
@@ -234,13 +239,18 @@ namespace CBTBehaviorsEnhanced {
                     $"heat/ammo: {compExp.HeatDamagePerAmmo} stab/ammo: {compExp.StabilityDamagePerAmmo} weight: {vAmmo?.damageWeighting} " +
                     $"for {boxDamage} total damage.");
 
-                if (boxDamage > totalDamage) {
+                if (boxDamage > totalDamage)
+                {
                     mostDangerousBox = ammoBox;
                     totalDamage = boxDamage;
                 }
             }
 
             return mostDangerousBox;
+# else
+            return null;
+#endif
+
         } 
 
     }
