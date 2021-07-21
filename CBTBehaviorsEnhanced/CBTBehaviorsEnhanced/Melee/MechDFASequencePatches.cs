@@ -197,9 +197,16 @@ namespace CBTBehaviorsEnhanced.Melee {
 
                     if (seqState.meleeAttack.AttackerDamageClusters.Length > 0)
                     {
-                        Mod.MeleeLog.Info?.Write($" -- Applying {seqState.meleeAttack.AttackerDamageClusters.Sum()} damage to attacker as {seqState.meleeAttack.AttackerDamageClusters.Length} clusters.");
-                        AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.OwningMech, __instance.SequenceGUID,
-                            seqState.meleeAttack.AttackerDamageClusters, DamageType.Melee, MeleeAttackType.Kick);
+                        try
+                        {
+                            Mod.MeleeLog.Info?.Write($" -- Applying {seqState.meleeAttack.AttackerDamageClusters.Sum()} damage to attacker as {seqState.meleeAttack.AttackerDamageClusters.Length} clusters.");
+                            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.OwningMech, __instance.SequenceGUID,
+                                seqState.meleeAttack.AttackerDamageClusters, DamageType.Melee, MeleeAttackType.Kick);
+                        }
+                        catch (Exception e)
+                        {
+                            Mod.Log.Error?.Write(e, "FAILED TO APPLY DFA DAMAGE TO ATTACKER");
+                        }
                     }
                 }
 
@@ -240,14 +247,21 @@ namespace CBTBehaviorsEnhanced.Melee {
                     // Target cluster damage - first attack was applied through melee weapon
                     if (seqState.meleeAttack.TargetDamageClusters.Length > 1 && !__instance.DFATarget.IsDead)
                     {
-                        // Make sure we use the attackers's damage table
-                        ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
+                        try
+                        {
+                            // Make sure we use the attackers's damage table
+                            ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
 
-                        // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
-                        float[] clusterDamage = seqState.meleeAttack.TargetDamageClusters.SubArray(1, seqState.meleeAttack.TargetDamageClusters.Length);
-                        Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
-                        AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.DFATarget, __instance.SequenceGUID, clusterDamage,
-                            DamageType.Melee, MeleeAttackType.DFA);
+                            // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
+                            float[] clusterDamage = seqState.meleeAttack.TargetDamageClusters.SubArray(1, seqState.meleeAttack.TargetDamageClusters.Length);
+                            Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
+                            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.DFATarget, __instance.SequenceGUID, clusterDamage,
+                                DamageType.Melee, MeleeAttackType.DFA);
+                        }
+                        catch (Exception e)
+                        {
+                            Mod.Log.Error?.Write(e, "FAILED TO APPLY DFA DAMAGE TO TARGET");
+                        }
                     }
                 }
 

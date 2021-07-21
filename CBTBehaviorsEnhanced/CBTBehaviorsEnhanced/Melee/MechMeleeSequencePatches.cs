@@ -265,9 +265,16 @@ namespace CBTBehaviorsEnhanced.Melee {
 
                     if (seqState.meleeAttack.AttackerDamageClusters.Length > 0)
                     {
-                        Mod.MeleeLog.Info?.Write($" -- Applying {seqState.meleeAttack.AttackerDamageClusters.Sum()} damage to attacker as {seqState.meleeAttack.AttackerDamageClusters.Length} clusters.");
-                        AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.OwningMech, __instance.SequenceGUID,
-                            seqState.meleeAttack.AttackerDamageClusters, DamageType.Melee, seqState.meleeAttack.AttackAnimation);
+                        try
+                        {
+                            Mod.MeleeLog.Info?.Write($" -- Applying {seqState.meleeAttack.AttackerDamageClusters.Sum()} damage to attacker as {seqState.meleeAttack.AttackerDamageClusters.Length} clusters.");
+                            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.OwningMech, __instance.SequenceGUID,
+                                seqState.meleeAttack.AttackerDamageClusters, DamageType.Melee, seqState.meleeAttack.AttackAnimation);
+                        }
+                        catch (Exception e)
+                        {
+                            Mod.Log.Error?.Write(e, "FAILED TO APPLY MELEE DAMAGE TO ATTACKER!");
+                        }
                     }
                 }
 
@@ -306,14 +313,22 @@ namespace CBTBehaviorsEnhanced.Melee {
                     // Target cluster damage
                     if (seqState.meleeAttack.TargetDamageClusters.Length > 1 && !__instance.MeleeTarget.IsDead)
                     {
-                        // Make sure we use the targets's damage table
-                        ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
+                        try
+                        {
+                            // Make sure we use the targets's damage table
+                            ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
 
-                        // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
-                        float[] clusterDamage = seqState.meleeAttack.TargetDamageClusters.SubArray(1, seqState.meleeAttack.TargetDamageClusters.Length);
-                        Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
-                        AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.MeleeTarget, __instance.SequenceGUID, clusterDamage,
-                            DamageType.Melee, seqState.meleeAttack.AttackAnimation);
+                            // The target already got hit by the first cluster as the weapon damage. Only add the additional hits
+                            float[] clusterDamage = seqState.meleeAttack.TargetDamageClusters.SubArray(1, seqState.meleeAttack.TargetDamageClusters.Length);
+                            Mod.MeleeLog.Info?.Write($" -- Applying {clusterDamage.Sum()} damage to target as {clusterDamage.Length} clusters.");
+                            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, seqState.fakeWeapon, __instance.MeleeTarget, __instance.SequenceGUID, clusterDamage,
+                                DamageType.Melee, seqState.meleeAttack.AttackAnimation);
+
+                        }
+                        catch (Exception e)
+                        {
+                            Mod.Log.Error?.Write(e, "FAILED TO APPLY MELEE DAMAGE TO TARGET!");
+                        }
                     }
 
                 }

@@ -41,8 +41,15 @@ namespace CBTBehaviorsEnhanced.Piloting {
 
             Mod.Log.Info?.Write($"FALLING DAMAGE: TT damage: {damagePointsTT} => {damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons} falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
-            (Weapon melee, Weapon dfa) fakeWeapons = ModState.GetFakedWeapons(__instance.OwningMech);
-            AttackHelper.CreateImaginaryAttack(__instance.OwningMech, fakeWeapons.melee, __instance.OwningMech, __instance.SequenceGUID, locationDamage.ToArray(), DamageType.KnockdownSelf, MeleeAttackType.NotSet);
+            try
+            {
+                (Weapon melee, Weapon dfa) fakeWeapons = ModState.GetFakedWeapons(__instance.OwningMech);
+                AttackHelper.CreateImaginaryAttack(__instance.OwningMech, fakeWeapons.melee, __instance.OwningMech, __instance.SequenceGUID, locationDamage.ToArray(), DamageType.KnockdownSelf, MeleeAttackType.NotSet);
+            }
+            catch (Exception e)
+            {
+                Mod.Log.Error?.Write(e, "FAILED TO APPLY FALL DAMAGE");
+            }
         }
     }
 }
