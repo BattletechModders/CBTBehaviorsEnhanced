@@ -50,11 +50,6 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                     else if (tableName.Equals("STANDARD")) this.TargetTable = DamageTable.STANDARD;
                 }
 
-                if (state.attacker is TrooperSquad)
-                {
-                    this.TargetTable = DamageTable.SWARM;
-                }
-
                 // Unsteady
                 this.UnsteadyAttackerOnHit = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) ?
                     state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) : 

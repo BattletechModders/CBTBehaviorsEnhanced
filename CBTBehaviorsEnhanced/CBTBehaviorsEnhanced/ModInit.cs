@@ -138,6 +138,7 @@ namespace CBTBehaviorsEnhanced
 
                     }
                 }
+                Mod.Log.Info?.Write(" -- Done");
             }
             catch (Exception e)
             {

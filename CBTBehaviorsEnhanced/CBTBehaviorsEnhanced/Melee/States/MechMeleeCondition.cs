@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using CBTBehaviorsEnhanced.Helper;
 using CustomComponents;
 using CustomUnits;
 using IRBTModUtils.Extension;
@@ -43,8 +44,65 @@ namespace CBTBehaviorsEnhanced
         {
 			this.actor = actor;
 			Mod.MeleeLog.Info?.Write($"Calculating melee condition for actor: {actor.DistinctId()}");
+
+			if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
+			{
+				Mod.MeleeLog.Info?.Write(" -- melee invalidated by developer flag.");
+				canMelee = false;
+				return;
+			}
+			else if (actor.IsDead || actor.IsFlaggedForDeath)
+			{
+				Mod.MeleeLog.Info?.Write(" -- Cannot melee when dead");
+				canMelee = false;
+				return;
+			}
+			
+			// Vehicles can charge so long as they have movement, don't look for movement crits
+			if (actor.IsVehicle() || actor.IsNaval())
+            {
+				if (Mod.Config.Melee.DisableMeleeForVehicles)
+                {
+					Mod.MeleeLog.Info?.Write(" -- melee for vehicles disabled by configuration");
+					canMelee = false;
+					return;
+				}
+
+				Mech fakeMech = actor as Mech;
+				UnitCustomInfo customInfo = fakeMech?.GetCustomInfo();
+				if (customInfo != null && customInfo.FlyingHeight > 2f)
+				{
+					Mod.MeleeLog.Info?.Write(" -- actor is vehicle or naval with flying height > 2.0, cannot melee");
+					canMelee = false;
+					return;
+				}
+
+				if (actor.MaxSpeed > 0f)
+				{
+					Mod.MeleeLog.Info?.Write(" -- actor is vehicle or naval with movement, can charge");
+					canMelee = true;
+				}
+				return;
+            }
+
+			// Troopers can always physweap attack, but cannot make any other attacks
+			if (actor.IsTrooper())
+            {
+				Mod.MeleeLog.Info?.Write(" -- actor is trooper, can always physical weapon attack");
+				canMelee = true;
+				return;
+            }
+
+			// Fake vehicles should already be caught by this point
 			if (actor is Mech mech)
             {
+				if (mech.IsOrWillBeProne || mech.StoodUpThisRound || mech.IsFlaggedForKnockdown)
+				{
+					Mod.MeleeLog.Info?.Write(" -- cannot melee when you stand up or are being knocked down");
+					canMelee = false;
+					return;
+				}
+
 				foreach (MechComponent mc in mech.allComponents)
 				{
 					switch (mc.Location)
@@ -71,22 +129,7 @@ namespace CBTBehaviorsEnhanced
 				}
 
 				// Check various general melee states
-				if (Mod.Config.Developer.ForceInvalidateAllMeleeAttacks)
-				{
-					Mod.MeleeLog.Info?.Write(" -- melee invalidated by developer flag.");
-					canMelee = false;
-				} 
-				else if (mech.IsOrWillBeProne || mech.StoodUpThisRound || mech.IsFlaggedForKnockdown)
-                {
-					Mod.MeleeLog.Info?.Write(" -- cannot melee when you stand up or are being knocked down");
-					canMelee = false;
-				} 
-				else if (mech.IsDead || mech.IsFlaggedForDeath)
-                {
-					Mod.MeleeLog.Info?.Write(" -- Cannot melee when dead");
-					canMelee = false;
-				}
-                else
+			    else
                 {
 					Mod.MeleeLog.Info?.Write(" -- unit can melee");
 					canMelee = true;
@@ -95,7 +138,7 @@ namespace CBTBehaviorsEnhanced
 			}
 			else
             {
-				Mod.MeleeLog.Info?.Write($"  - actor is not a mech, cannot use melee attacks.");
+				Mod.MeleeLog.Warn?.Write($"  - actor is not a vehicle, naval, trooper, or mech, WTF? Marking is as no melee");
 			}
 			
         }
@@ -130,6 +173,14 @@ namespace CBTBehaviorsEnhanced
 			// Troopers can only use physical attacks
 			if (actor is TrooperSquad) return false;
 
+			// Vehicles can charge if they have speed to make an attack
+			if (actor.IsVehicle() || actor.IsNaval())
+            {
+
+				if (actor.MaxSpeed > 0f) return true;
+				else return false;
+            }
+
 			// Cannot charge while unsteady
 			if (actor.IsUnsteady) return false;
 
@@ -143,6 +194,13 @@ namespace CBTBehaviorsEnhanced
 			// Troopers can only use physical attacks
 			if (actor is TrooperSquad) return false;
 
+			// Vehicles can charge if they have speed to make an attack
+			if (actor.IsVehicle() || actor.IsNaval())
+			{
+				// TODO: Support the Kanga doing the bongo
+				return false;
+			}
+
 			if (actor is Mech mech && !mech.CanDFA) return false;
 
 			return true;
@@ -154,8 +212,8 @@ namespace CBTBehaviorsEnhanced
 		{
 			if (!canMelee) return false;
 
-			// Troopers can only use physical attacks
-			if (actor is TrooperSquad) return false;
+			// Troopers can only use physical attacks. Naval and vehicles cannot punch.
+			if (actor.IsVehicle() || actor.IsNaval() || actor.IsTrooper()) return false;
 
 			// Can't kick with damaged hip actuators
 			if (!leftHipIsFunctional || !rightHipIsFunctional) return false;
@@ -168,6 +226,12 @@ namespace CBTBehaviorsEnhanced
 			if (!canMelee) return false;
 
 			if (!hasPhysicalAttack) return false;
+
+			// Even if you have a physical attack... just no.
+			if (actor.IsVehicle() || actor.IsNaval()) return false;
+
+			// Quad mechs have no physical attacks
+			if (actor.IsQuadMech()) return false;
 
 			// If the ignore actuators stat is set, allow the attack regardless of actuator damage
 			Mech mech = actor as Mech;
@@ -193,10 +257,14 @@ namespace CBTBehaviorsEnhanced
 
 		public bool CanPunch()
 		{
+
 			if (!canMelee) return false;
 
-			// Troopers can only use physical attacks
-			if (actor is TrooperSquad) return false;
+			// Troopers can only use physical attacks. Naval and vehicles cannot punch.
+			if (actor.IsVehicle() || actor.IsNaval() || actor.IsTrooper()) return false;
+
+			// Quad mechs cannot punch
+			if (actor.IsQuadMech()) return false;
 
 			// Check for mech
 			if (actor is Mech)

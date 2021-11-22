@@ -37,7 +37,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         {
 
             int rawSkill = gutsSkill ? mech.SkillGuts : mech.SkillPiloting;
-            int actorSkill = SkillUtils.NormalizeSkill(rawSkill);
+            int actorSkill = gutsSkill ? SkillUtils.GetGutsModifier(mech.pilot) : SkillUtils.GetPilotingModifier(mech.pilot);
             Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(mech)} has rawSkill: {actorSkill} normalized to {actorSkill}");
 
             int malus = 0;

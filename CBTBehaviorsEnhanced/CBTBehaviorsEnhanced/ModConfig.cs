@@ -263,90 +263,7 @@ namespace CBTBehaviorsEnhanced
                 this.CustomCategories.LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
             if (this.CustomCategories.HandActuatorCategoryId.Length == 0)
                 this.CustomCategories.HandActuatorCategoryId = new string[] { "ArmHandActuator" };
-
-            // == Init Swarm hit locations
-            if (this.Melee.Swarm.MechWeights.Count == 0)
-            {
-                // Skip the weight dictionary and populate the locations dict
-                this.Melee.Swarm.MechLocations = new Dictionary<ArmorLocation, int>()
-                {
-                    { ArmorLocation.Head, 8 },
-                    { ArmorLocation.CenterTorso, 16 },
-                    { ArmorLocation.CenterTorsoRear, 16 },
-                    { ArmorLocation.LeftTorso, 16 },
-                    { ArmorLocation.LeftTorsoRear, 16 },
-                    { ArmorLocation.RightTorso, 16 },
-                    { ArmorLocation.RightTorsoRear, 16 }
-                };
-                this.Melee.Swarm.MechLocationsTotalWeight = 8 + 16 + 16 + 16 + 16 + 16 + 16;
-            }
-            else
-            {
-                
-                foreach (KeyValuePair<string, int> kvp in this.Melee.Swarm.MechWeights)
-                {
-                    if (string.Equals("Head", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.Head, kvp.Value);
-                    else if (string.Equals("CenterTorso", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.CenterTorso, kvp.Value);
-                    else if (string.Equals("CenterTorsoRear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.CenterTorsoRear, kvp.Value);
-                    else if (string.Equals("LeftTorso", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftTorso, kvp.Value);
-                    else if (string.Equals("LeftTorsoRear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftTorsoRear, kvp.Value);
-                    else if (string.Equals("RightTorso", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightTorso, kvp.Value);
-                    else if (string.Equals("RightTorsoRear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightTorsoRear, kvp.Value);
-                    else if (string.Equals("LeftArm", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftArm, kvp.Value);
-                    else if (string.Equals("RightArm", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightArm, kvp.Value);
-                    else if (string.Equals("LeftLeg", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.LeftLeg, kvp.Value);
-                    else if (string.Equals("RightLeg", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.MechLocations.Add(ArmorLocation.RightLeg, kvp.Value);
-                    else
-                        Mod.Log.Error?.Write($"Key {kvp.Key} is invalid! Mech swarm locations are misconfigured and will likely error out!");
-
-                    this.Melee.Swarm.MechLocationsTotalWeight += kvp.Value;
-                }
-            }
-
-            if (this.Melee.Swarm.VehicleLocations.Count == 0)
-            {
-                // Skip the weight dictionary and populate the locations dict
-                this.Melee.Swarm.VehicleLocations = new Dictionary<VehicleChassisLocations, int>()
-                {
-                    { VehicleChassisLocations.Turret, 40 },
-                    { VehicleChassisLocations.Left, 16 },
-                    { VehicleChassisLocations.Right, 16 },
-                    { VehicleChassisLocations.Rear, 40 }
-                };
-                this.Melee.Swarm.MechLocationsTotalWeight = 40 + 16 + 16 + 40;
-            }
-            else
-            {
-                foreach (KeyValuePair<string, int> kvp in this.Melee.Swarm.VehicleWeights)
-                {
-                    if (string.Equals("Turret", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Turret, kvp.Value);
-                    else if (string.Equals("Front", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Front, kvp.Value);
-                    else if (string.Equals("Left", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Left, kvp.Value);
-                    else if (string.Equals("Right", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Right, kvp.Value);
-                    else if (string.Equals("Rear", kvp.Key, StringComparison.InvariantCultureIgnoreCase))
-                        this.Melee.Swarm.VehicleLocations.Add(VehicleChassisLocations.Rear, kvp.Value);
-                    else
-                        Mod.Log.Error?.Write($"Key {kvp.Key} is invalid! Vehicle swarm locations are misconfigured and will likely error out!");
-
-                    this.Melee.Swarm.VehicleLocationsTotalWeight += kvp.Value;
-
-                }
-            }
+           
         }
     }
 
@@ -419,7 +336,6 @@ namespace CBTBehaviorsEnhanced
         // When to show the shutdown warning and when to where to place the 'overheated' bar
         public int MaxHeat = 150;
         public int WarnAtHeat = 42;
-
     }
 
     public class AIMeleeOpts
@@ -591,6 +507,9 @@ namespace CBTBehaviorsEnhanced
         // Should weapons by filtered by location
         public bool FilterCanUseInMeleeWeaponsByAttack = false;
 
+        // Should melee always be disabled for vehicles (even fake ones)
+        public bool DisableMeleeForVehicles = false;
+
         public AIMeleeOpts AI = new AIMeleeOpts();
         public ChargeMeleeOpts Charge = new ChargeMeleeOpts();
         public DFAMeleeOpts DFA = new DFAMeleeOpts();
@@ -598,7 +517,6 @@ namespace CBTBehaviorsEnhanced
         public PhysicalWeaponMeleeOps PhysicalWeapon = new PhysicalWeaponMeleeOps();
         public PunchMeleeOps Punch = new PunchMeleeOps();
         public TurretOpts Turrets = new TurretOpts();
-        public SwarmOpts Swarm = new SwarmOpts();
     }
 
     // 4+ => 91.66%, 6+ => 72.22%, 8+ => 41.67%, 10+ => 16.67%, 12+ => 2.78%

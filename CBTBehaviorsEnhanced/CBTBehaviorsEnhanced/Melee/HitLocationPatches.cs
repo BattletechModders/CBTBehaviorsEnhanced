@@ -92,18 +92,6 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                     __result.Add(VehicleChassisLocations.Right, 8);
                 }
             }
-            else if (ModState.ForceDamageTable == DamageTable.SWARM)
-            {
-                Mod.Log.Info?.Write($"Attack against VEHICLE will use the SWARM damage table");
-                __result = new Dictionary<VehicleChassisLocations, int>();
-                __result.Add(AttackHelper.GetSwarmLocationForVehicle(), 100);
-                
-                //__result.Add(VehicleChassisLocations.Turret, 40);
-                //__result.Add(VehicleChassisLocations.Left, 16);
-                //__result.Add(VehicleChassisLocations.Front, 8);
-                //__result.Add(VehicleChassisLocations.Right, 16);
-                //__result.Add(VehicleChassisLocations.Rear, 16);
-            }
             else
             {
                 return;
@@ -160,19 +148,6 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                 __result = new Dictionary<ArmorLocation, int>();
                 __result.Add(ArmorLocation.LeftLeg, 50);
                 __result.Add(ArmorLocation.RightLeg, 50);
-            }
-            else if (ModState.ForceDamageTable == DamageTable.SWARM)
-            {
-                Mod.Log.Info?.Write($"Attack against MECH will use the SWARM damage table");
-                __result = new Dictionary<ArmorLocation, int>();
-                __result.Add(AttackHelper.GetSwarmLocationForMech(), 100);
-                //__result.Add(ArmorLocation.LeftTorso, 17);
-                //__result.Add(ArmorLocation.LeftTorsoRear, 17);
-                //__result.Add(ArmorLocation.CenterTorso, 16);
-                //__result.Add(ArmorLocation.CenterTorsoRear, 16);
-                //__result.Add(ArmorLocation.RightTorso, 17);
-                //__result.Add(ArmorLocation.RightTorsoRear, 17);
-                //__result.Add(ArmorLocation.Head, 16);
             }
             else
             {

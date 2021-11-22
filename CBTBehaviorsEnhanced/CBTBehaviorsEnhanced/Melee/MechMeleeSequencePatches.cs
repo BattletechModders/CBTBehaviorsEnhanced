@@ -165,22 +165,11 @@ namespace CBTBehaviorsEnhanced.Melee {
         {
 
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
-            if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0)
+            if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0 && __instance.OwningMech.isHasStability())
             {
+
                 Mod.MeleeLog.Info?.Write($" -- Adding {seqState.meleeAttack.AttackerInstability} absolute instability to attacker.");
                 __instance.OwningMech.AddAbsoluteInstability(seqState.meleeAttack.AttackerInstability, StabilityChangeSource.Attack, "-1");
-            }
-
-            // Publish a floatie warning of the swarm attack on the target
-            if (ModState.ForceDamageTable == DamageTable.SWARM)
-            {
-                string swarmAttackText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Swarm_Attack]).ToString();
-                MultiSequence showInfoSequence = new ShowActorInfoSequence(__instance.MeleeTarget, swarmAttackText, FloatieMessage.MessageNature.Debuff, false)
-                {
-                    RootSequenceGUID = __instance.SequenceGUID
-                };
-                SharedState.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(showInfoSequence));
-                Mod.Log.Info?.Write(" -- published fall sequence.");
             }
         }
     }

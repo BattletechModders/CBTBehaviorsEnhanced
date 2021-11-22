@@ -57,7 +57,6 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         STANDARD, 
         REAR,
         PUNCH, 
-        KICK,
-        SWARM
+        KICK
     }
 }

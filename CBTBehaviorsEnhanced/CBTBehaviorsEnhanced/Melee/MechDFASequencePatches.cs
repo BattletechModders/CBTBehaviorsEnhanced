@@ -141,7 +141,7 @@ namespace CBTBehaviorsEnhanced.Melee {
         static void Prefix(MechDFASequence __instance)
         {
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
-            if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0)
+            if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0 && __instance.OwningMech.isHasStability())
             {
                 Mod.MeleeLog.Info?.Write($" -- Adding {seqState.meleeAttack.AttackerInstability} absolute instability to attacker.");
                 __instance.OwningMech.AddAbsoluteInstability(seqState.meleeAttack.AttackerInstability, StabilityChangeSource.Attack, "-1");
