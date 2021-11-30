@@ -128,13 +128,8 @@ namespace CBTBehaviorsEnhanced
 					hasPhysicalAttack = true;
 				}
 
-				// Check various general melee states
-			    else
-                {
-					Mod.MeleeLog.Info?.Write(" -- unit can melee");
-					canMelee = true;
-                }
-
+				Mod.MeleeLog.Info?.Write(" -- unit can melee");
+				canMelee = true;
 			}
 			else
             {
