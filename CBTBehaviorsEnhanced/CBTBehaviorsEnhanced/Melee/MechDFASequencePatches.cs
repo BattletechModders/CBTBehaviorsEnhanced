@@ -232,7 +232,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                     }
 
                     // Target vehicle evasion damage
-                    if (__instance.DFATarget is Vehicle || __instance.DFATarget.FakeVehicle() || __instance.DFATarget.NavalUnit())
+                    if (__instance.DFATarget is Vehicle)
                     {
                         AbstractActor targetActor = __instance.DFATarget as AbstractActor;
                         if (seqState.meleeAttack.OnTargetVehicleHitEvasionPipsRemoved != 0 && targetActor.EvasivePipsCurrent > 0)
