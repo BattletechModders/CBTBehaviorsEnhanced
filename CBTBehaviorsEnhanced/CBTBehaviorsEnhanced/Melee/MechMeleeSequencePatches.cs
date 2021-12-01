@@ -144,8 +144,12 @@ namespace CBTBehaviorsEnhanced.Melee {
                     {
                         if (seqState.meleeAttack.IsRangedWeaponAllowed(weapon))
                         {
-                            Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed by melee type.");
+                            Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed");
                             allowedWeapons.Add(weapon);
+                        }
+                        else
+                        {
+                            Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} cannot be used");
                         }
                     }
                     ___requestedWeapons.Clear();
