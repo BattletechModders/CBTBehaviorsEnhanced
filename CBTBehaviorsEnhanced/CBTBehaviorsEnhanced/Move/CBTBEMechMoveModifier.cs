@@ -30,7 +30,7 @@ namespace CBTBehaviorsEnhanced.Move
             Mod.MoveLog.Debug?.Write($" Using a final run multiplier of x{runMulti} (from base: {Mod.Config.Move.RunMulti})");
 
             // Per Battletech Manual, Running MP is always rounded up. Follow that principle here as well.
-            float walkSpeed = mech.ModifiedWalkDistance();
+            float walkSpeed = mech.WalkSpeed;
             float runSpeed = (float)Math.Ceiling(walkSpeed * runMulti);
             Mod.MoveLog.Debug?.Write($" Mech: {mech.DistinctId()} has RunSpeed of {runSpeed} from walkSpeed: {walkSpeed} x runMulti: {runMulti}");
             
