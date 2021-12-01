@@ -61,20 +61,23 @@ namespace CBTBehaviorsEnhanced.Helper
         }
 
         public static void CreateImaginaryAttack(Mech attacker, Weapon attackWeapon, ICombatant target, int weaponHitInfoStackItemUID, float[] damageClusters, 
-            DamageType damageType, MeleeAttackType attackType)
+            DamageType damageType, MeleeAttackType meleeAttackType)
         {
-            Mod.Log.Info?.Write($"  Creating imaginary attack for attacker: {attacker.DistinctId()} at position: {attacker?.CurrentPosition} and rot: {attacker?.CurrentRotation}  " +
-                $"vs. target: {target.DistinctId()} at position: {target?.CurrentPosition} and rot: {target?.CurrentRotation}  " +
-                $"using weapon =>  isNull: {attackWeapon == null}  name: {attackWeapon?.Name}  damageType: {damageType}  attackType: {attackType}");
-            
-            if (attackWeapon.ammo() == null) Mod.Log.Error?.Write($"AMMO is null!");
-            if (attackWeapon.mode() == null) Mod.Log.Error?.Write($"Mode is null!");
-            if (attackWeapon.exDef() == null) Mod.Log.Error?.Write($"exDef is null!");
+            Mod.Log.Info?.Write($"  Creating imaginary attack for attackType: {meleeAttackType}  damageType: {damageType}");
+            Mod.Log.Info?.Write($"    attacker: {attacker.DistinctId()} => currentPos: {attacker?.CurrentPosition} currentRot: {attacker?.CurrentRotation}");
+            Mod.Log.Info?.Write($"    target: {target.DistinctId()} => currentPos: {target?.CurrentPosition} currentRot: {target?.CurrentRotation}  targetPos: {target?.TargetPosition}");
+            Mod.Log.Info?.Write($"    weapon =>  isNull: {attackWeapon == null}  name: {attackWeapon?.Name}  uid: {attackWeapon?.uid}  " +
+                $"ammo.IsNull: {attackWeapon.ammo() == null}  mode.IsNull: {attackWeapon.mode() == null}  exDef.IsNull: {attackWeapon.exDef() == null}  " +
+                $"indirectFireCapable: {attackWeapon.IndirectFireCapable}");
 
-            AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(0, attacker, target, 
-                attacker.CurrentPosition, attacker.CurrentRotation, 0, new List<Weapon>() { attackWeapon }, 
-                attackType, 0, false
+            List<Weapon> attackWeapons = new List<Weapon>() { attackWeapon };
+            AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(
+                stackItemUID: 0, attacker: attacker, target: target, 
+                attackPosition: attacker.CurrentPosition, attackRotation: attacker.CurrentRotation, 
+                attackSequenceIdx: 0, selectedWeapons: attackWeapons, 
+                meleeAttackType: meleeAttackType, calledShotLocation: 0, isMoraleAttack: false
                 );
+            Mod.Log.Debug?.Write("  -- created attack sequence");
 
             AttackDirection[] attackDirections = new AttackDirection[damageClusters.Length];
             WeaponHitInfo hitInfo = new WeaponHitInfo(0, attackSequence.id, 0, 0, attacker.GUID, target.GUID, 1,
@@ -89,7 +92,8 @@ namespace CBTBehaviorsEnhanced.Helper
                 hitPositions = new Vector3[damageClusters.Length],
                 hitQualities = new AttackImpactQuality[damageClusters.Length]
             };
-            
+            Mod.Log.Debug?.Write("  -- created weaponHitInfo ");
+
             AttackDirection attackDirection = attacker.Combat.HitLocation.GetAttackDirection(attacker, target);
             Mod.Log.Info?.Write($"  Attack direction is: {attackDirection}");
 
@@ -138,9 +142,11 @@ namespace CBTBehaviorsEnhanced.Helper
 
                 i++;
             }
+            Mod.Log.Debug?.Write("  -- done with damage cluster iteration");
 
             // Cleanup after myself
             target.Combat.AttackDirector.RemoveAttackSequence(attackSequence);
+            Mod.Log.Debug?.Write("  -- removed attack sequence");
         }
         public static float[] CreateDamageClustersWithExtraAttacks(AbstractActor attacker, float totalDamage,
             string extraHitsCountStat)
