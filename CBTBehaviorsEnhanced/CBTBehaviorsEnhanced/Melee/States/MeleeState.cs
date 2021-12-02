@@ -60,7 +60,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         {
             MeleeAttack selectedAttack = null;
             
-            List<MeleeAttack> attacks = new List<MeleeAttack> { Kick, PhysicalWeapon, Punch };
+            List<MeleeAttack> attacks = new List<MeleeAttack> { PhysicalWeapon, Kick, Punch };
             float selectedDamage = 0;
             foreach (MeleeAttack attack in attacks)
             {
