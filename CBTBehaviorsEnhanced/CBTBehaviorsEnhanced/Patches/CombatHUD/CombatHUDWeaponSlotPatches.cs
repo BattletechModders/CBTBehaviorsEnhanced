@@ -76,25 +76,20 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (!isAllowed)
                 {
                     Mod.UILog.Trace?.Write($"Disabling weapon from selection");
-                    ___displayedWeapon.StatCollection.Set("TemporarilyDisabled", true);
+                    ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, true);
                     __instance.ToggleButton.isChecked = false;
                     Traverse showHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
                     showHexT.GetValue();
                 } 
                 else
                 {
-                    ___displayedWeapon.StatCollection.Set("TemporarilyDisabled", false);
+                    ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, false);
                     __instance.ToggleButton.isChecked = true;
                     Traverse showHexT = Traverse.Create(__instance).Method("ShowDefaultHex");
                     showHexT.GetValue();
 
                 }
             }
-            //else
-            //{
-            //    // No selected attack, so revert the weapon to the state it should have
-            //    __instance.ToggleButton.isChecked = ___displayedWeapon.IsEnabled && !___displayedWeapon.IsDisabled;
-            //}
         }
     }
 
