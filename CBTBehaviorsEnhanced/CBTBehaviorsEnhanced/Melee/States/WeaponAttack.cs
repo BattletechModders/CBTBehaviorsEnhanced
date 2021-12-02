@@ -51,17 +51,9 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 }
 
                 // Unsteady
-                this.UnsteadyAttackerOnHit = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) ?
-                    state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit) : 
-                    Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit;
-
-                this.UnsteadyAttackerOnMiss = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) ?
-                    state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss) :
-                    Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss;
-
-                this.OnTargetMechHitForceUnsteady = state.attacker.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponUnsteadyTargetOnHit) ?
-                    state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit) :
-                    Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit;
+                this.UnsteadyAttackerOnHit = state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit);
+                this.UnsteadyAttackerOnMiss = state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss);
+                this.OnTargetMechHitForceUnsteady = state.attacker.StatCollection.GetValue<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit);
 
                 this.OnTargetVehicleHitEvasionPipsRemoved = Mod.Config.Melee.PhysicalWeapon.TargetVehicleEvasionPipsRemoved;
 
