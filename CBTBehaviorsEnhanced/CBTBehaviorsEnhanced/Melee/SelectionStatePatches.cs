@@ -66,7 +66,6 @@ namespace CBTBehaviorsEnhanced.Melee
             if (__instance == null || __result == null) return;
             if (__instance.SelectedActor == null || !(__instance.SelectedActor is Mech)) return;
 
-
             // If there are valid results, check for any melee state that would prevent attacks
             if (__result != null && __result.Count > 0)
             {
@@ -85,11 +84,12 @@ namespace CBTBehaviorsEnhanced.Melee
                             meleeState.PhysicalWeapon.IsValid || meleeState.Punch.IsValid;
                         if (!hasValidAttack)
                         {
-                            Mod.MeleeLog.Debug?.Write($" -- No valid attack detected, removing melee candidate");
+                            Mod.MeleeLog.Debug?.Write($" -- No valid attack detected, removing target as melee candidate");
                         }
                         else
                         {
-                            Mod.MeleeLog.Debug?.Write($"  -- Valid attaks, keeping candidate");
+                            Mod.MeleeLog.Debug?.Write($"  -- Valid attacks, keeping target as candidate for attacks =>  " +
+                                $"charge: {meleeState.Charge.IsValid}  kick: {meleeState.Kick.IsValid}  punch: {meleeState.Punch.IsValid}  weapon: {meleeState.PhysicalWeapon.IsValid}");
                             filteredList.Add(targetActor);
                         }
                     }
