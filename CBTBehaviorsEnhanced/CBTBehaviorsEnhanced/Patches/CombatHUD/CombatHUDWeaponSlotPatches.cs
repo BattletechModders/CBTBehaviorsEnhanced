@@ -64,32 +64,33 @@ namespace CBTBehaviorsEnhanced.Patches
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null ||
                 !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
 
-            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
-            if (selectedAttack != null)
+            if (ModState.MeleeAttackContainer?.activeInHierarchy == true)
             {
-                Mod.UILog.Debug?.Write($"Checking ranged weapons attacker: {___HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
-
-                // Check if the weapon can fire according to the select melee type
-                bool isAllowed = selectedAttack.IsRangedWeaponAllowed(___displayedWeapon);
-                Mod.UILog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
-
-                if (!isAllowed)
+                MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+                if (selectedAttack != null)
                 {
-                    Mod.UILog.Trace?.Write($"Disabling weapon from selection");
-                    ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, true);
-                    __instance.ToggleButton.isChecked = false;
-                    Traverse showHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
-                    showHexT.GetValue();
-                } 
-                else
-                {
-                    ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, false);
-                    __instance.ToggleButton.isChecked = true;
-                    Traverse showHexT = Traverse.Create(__instance).Method("ShowDefaultHex");
-                    showHexT.GetValue();
+                    Mod.UILog.Debug?.Write($"Checking ranged weapons attacker: {___HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
 
+                    // Check if the weapon can fire according to the select melee type
+                    bool isAllowed = selectedAttack.IsRangedWeaponAllowed(___displayedWeapon);
+                    Mod.UILog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
+
+                    if (!isAllowed)
+                    {
+                        Mod.UILog.Trace?.Write($"Disabling weapon from selection");
+                        ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, true);
+                        __instance.ToggleButton.isChecked = false;
+                        Traverse showDisabledHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
+                        showDisabledHexT.GetValue();
+                        return;
+                    }
                 }
             }
+
+            ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, false);
+            __instance.ToggleButton.isChecked = true;
+            Traverse showHexT = Traverse.Create(__instance).Method("ShowDefaultHex");
+            showHexT.GetValue();
         }
     }
 
