@@ -58,7 +58,7 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
     static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
     {
-        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Prefix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
         {
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null ||
@@ -75,10 +75,19 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 if (!isAllowed)
                 {
-                    Mod.UILog.Debug?.Write($"Disabling weapon from selection");
+                    ___displayedWeapon.DisableWeapon();
+                    Mod.UILog.Trace?.Write($"Disabling weapon from selection");
                     __instance.ToggleButton.isChecked = false;
-                    Traverse showDisabledHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
-                    showDisabledHexT.GetValue();
+                    Traverse showHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
+                    showHexT.GetValue();
+                } 
+                else
+                {
+                    ___displayedWeapon.EnableWeapon();
+                    __instance.ToggleButton.isChecked = true;
+                    Traverse showHexT = Traverse.Create(__instance).Method("ShowDefaultHex");
+                    showHexT.GetValue();
+
                 }
             }
             //else
@@ -168,7 +177,7 @@ namespace CBTBehaviorsEnhanced.Patches
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
             if (selectedAttack == null || !(selectedAttack is DFAAttack))
             {
-                Mod.UILog.Debug?.Write("Defaulting DFA damage.");
+                Mod.UILog.Trace?.Write("Defaulting DFA damage.");
 
                 Mech parentMech = ___displayedWeapon.parent as Mech;
                 float targetDamage = parentMech.DFATargetDamage();

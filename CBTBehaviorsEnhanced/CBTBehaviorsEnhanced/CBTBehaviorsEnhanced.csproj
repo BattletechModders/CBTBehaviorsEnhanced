@@ -153,6 +153,7 @@
     <Compile Include="Patches\PilotingPatches.cs" />
     <Compile Include="Patches\TeamPatches.cs" />
     <Compile Include="Patches\TurnDirectorPatches.cs" />
+    <Compile Include="Patches\WeaponPatches.cs" />
     <Compile Include="Piloting\MechFallSequencePatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModConfig.cs" />
