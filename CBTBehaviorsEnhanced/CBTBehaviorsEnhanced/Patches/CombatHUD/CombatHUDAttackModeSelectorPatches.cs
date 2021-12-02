@@ -5,6 +5,7 @@ using CBTBehaviorsEnhanced.MeleeStates;
 using CustomAmmoCategoriesLog;
 using Harmony;
 using IRBTModUtils;
+using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -114,7 +115,7 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
             ref string additionalDetails, bool showHeatWarnings)
         {
-            Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode}");
+            Mod.UILog.Debug?.Write($"ShowFireButton called with mode: {mode}");
 
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
@@ -122,6 +123,9 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos != ModState.MeleePreviewPos)
                 {
                     ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
+                    Mod.UILog.Debug?.Write($"  - previewing for actor: {SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor.DistinctId()} at " +
+                        $"pos: {SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos} vs " +
+                        $"target: {SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant}");
 
                     // Update melee states
                     ModState.AddorUpdateMeleeState(
@@ -150,14 +154,17 @@ namespace CBTBehaviorsEnhanced.Patches
                 // Disable the melee container if there's no active state
                 if (SharedState.CombatHUD?.SelectionHandler?.ActiveState == null ||
                     SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor == null ||
-                    SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos == null)
+                    SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos == null ||
+                    SharedState.CombatHUD?.SelectionHandler?.ActiveState?.TargetedCombatant == null)
                 {
                     Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
                     ModState.MeleeAttackContainer.SetActive(false);
                     return;
                 }
 
-                Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode}");
+                Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode} for " +
+                    $"actor: {SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor?.DistinctId()}  " +
+                    $"at pos: {SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos}");
 
                 if (mode == CombatHUDFireButton.FireMode.Engage)
                 {
@@ -167,6 +174,14 @@ namespace CBTBehaviorsEnhanced.Patches
                     MeleeState meleeState = ModState.GetMeleeState(
                         SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos);
+                    if (meleeState == null)
+                    {
+                        meleeState = ModState.AddorUpdateMeleeState(
+                            SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                            SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
+                            SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
+                            );
+                    }
 
                     // Toggle each button by available state
                     ToggleStateButtons(meleeState);
@@ -181,6 +196,13 @@ namespace CBTBehaviorsEnhanced.Patches
                     // Final check - if everything is disabled, disable the button
                     bool hasValidAttack = meleeState.Charge.IsValid || meleeState.Kick.IsValid ||
                         meleeState.PhysicalWeapon.IsValid || meleeState.Punch.IsValid;
+                    Mod.UILog.Info?.Write($" CHECKING FOR VALID ATTACKS: hasValidAttack=>{hasValidAttack}" +
+                        $"  charge=>{meleeState.Charge.IsValid}" +
+                        $"  kick=>{meleeState.Kick.IsValid}" +
+                        $"  punch=>{meleeState.Punch.IsValid}" +
+                        $"  weapon=>{meleeState.PhysicalWeapon.IsValid}" +
+                        $"");
+
                     if (!hasValidAttack)
                     {
                         Mod.UILog.Info?.Write("NO VALID MELEE ATTACKS, DISABLING!");
@@ -191,13 +213,25 @@ namespace CBTBehaviorsEnhanced.Patches
                         __instance.ForceRefreshImmediate();
                     }
                     else
-                    {
-                        Mod.UILog.Info?.Write($" CHECKING FOR VALID ATTACKS: hasValidAttack=>{hasValidAttack}" +
-                            $"  charge=>{meleeState.Charge.IsValid}" +
-                            $"  kick=>{meleeState.Kick.IsValid}" +
-                            $"  punch=>{meleeState.Punch.IsValid}" +
-                            $"  weapon=>{meleeState.PhysicalWeapon.IsValid}" +
-                            $"");
+                    {                        
+                        if (autoselectedAttack != null)
+                        {
+                            CombatHUDAttackModeSelector selector = SharedState.CombatHUD.AttackModeSelector;
+                            Mod.UILog.Debug?.Write("Enabling description container for melee attack");
+                            selector.DescriptionContainer.SetActive(true);
+                            selector.DescriptionContainer.gameObject.SetActive(true);
+
+                            HashSet<string> descriptonNotes = autoselectedAttack.DescriptionNotes;
+                            string description = String.Join(", ", descriptonNotes);
+                            Mod.UILog.Debug?.Write($"Aggregate description is: {description}");
+
+                            selector.DescriptionText.SetText(description);
+                            selector.DescriptionText.ForceMeshUpdate(true);
+
+                            // Update the weapon strings
+                            ModState.AddOrUpdateSelectedAttack(SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor, autoselectedAttack);
+                            SharedState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
+                        }
                     }
                 }
                 else
