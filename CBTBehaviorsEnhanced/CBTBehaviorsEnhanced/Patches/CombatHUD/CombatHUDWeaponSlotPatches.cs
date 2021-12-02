@@ -75,15 +75,15 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 if (!isAllowed)
                 {
-                    ___displayedWeapon.DisableWeapon();
                     Mod.UILog.Trace?.Write($"Disabling weapon from selection");
+                    ___displayedWeapon.StatCollection.Set("TemporarilyDisabled", true);
                     __instance.ToggleButton.isChecked = false;
                     Traverse showHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
                     showHexT.GetValue();
                 } 
                 else
                 {
-                    ___displayedWeapon.EnableWeapon();
+                    ___displayedWeapon.StatCollection.Set("TemporarilyDisabled", false);
                     __instance.ToggleButton.isChecked = true;
                     Traverse showHexT = Traverse.Create(__instance).Method("ShowDefaultHex");
                     showHexT.GetValue();
