@@ -101,11 +101,13 @@ namespace CBTBehaviorsEnhanced.Helper
                             else
                             {
                                 // Attack won't kill, so only apply a fraction equal to the totalHeath 
-                                float injuryFraction = (targetMech.pilot.TotalHealth - 1) - (targetMech.pilot.Injuries + 1);
-                                knockdownUtility = (centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility) / injuryFraction;
+                                float injuryDivisor = targetMech.pilot.TotalHealth - (targetMech.pilot.Injuries + 1);
+                                if (injuryDivisor <= 0) injuryDivisor = 1;
+
+                                knockdownUtility = (centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility) / injuryDivisor;
                                 Mod.AILog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
                                     $"(centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}) " +
-                                    $"/ injuryFraction: {injuryFraction}");
+                                    $"/ injuryDivisor: {injuryDivisor}");
                             }
                         }
 
