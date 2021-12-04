@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
+using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using Harmony;
 using IRBTModUtils;
@@ -189,6 +190,8 @@ namespace CBTBehaviorsEnhanced.Patches
             // Invalidate any melee state the actor may have set
             ModState.InvalidateState(__instance);
 
+            if (__instance.IsVehicle() || __instance.IsNaval() || __instance.IsTrooper()) return; // Nothing to do, continue
+
             // Make the checks for ammo explosions, etc
             float heatCheck = __instance.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
             float pilotCheck = __instance.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
@@ -217,9 +220,6 @@ namespace CBTBehaviorsEnhanced.Patches
                         FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
                     MechEmergencyShutdownSequence mechShutdownSequence = new MechEmergencyShutdownSequence(__instance);
-                    //{
-                    //    RootSequenceGUID = __instance.SequenceGUID
-                    //};
                     sequence.AddChildSequence(mechShutdownSequence, sequence.ChildSequenceCount - 1);
 
                     if (__instance.IsOrWillBeProne)
@@ -234,9 +234,6 @@ namespace CBTBehaviorsEnhanced.Patches
                                 FloatieMessage.MessageNature.Debuff, true), sequence.ChildSequenceCount - 1);
 
                             MechFallSequence mfs = new MechFallSequence(__instance, "Overheat", new Vector2(0f, -1f));
-                            //{
-                            //    RootSequenceGUID = __instance.SequenceGUID
-                            //};
                             sequence.AddChildSequence(mfs, sequence.ChildSequenceCount - 1);
                         }
                         else
