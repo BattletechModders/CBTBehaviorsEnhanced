@@ -106,10 +106,11 @@ namespace CBTBehaviorsEnhanced
         {
             try
             {
-                Mod.Log.Info?.Write(" -- Checking for RolePlayer Integration -- ");
+                Mod.Log.Info?.Write(" -- Checking for RolePlayer and MechEngineer Integration -- ");
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 foreach (Assembly assembly in assemblies)
                 {
+                    Mod.Log.Trace?.Write($"  -- found assembly : {assembly.FullName}");
                     if (assembly.FullName.StartsWith("RolePlayer"))
                     {
                         // Find the manager and pull it's singleton instance
@@ -117,7 +118,7 @@ namespace CBTBehaviorsEnhanced
                         if (managerType == null)
                         {
                             Mod.Log.Warn?.Write("  Failed to find RolePlayer.BehaviorVariableManager.getBehaviourVariable - RP behavior variables will be ignored!");
-                            return;
+                            continue;
                         }
 
                         PropertyInfo instancePropertyType = managerType.GetProperty("Instance");
@@ -125,7 +126,7 @@ namespace CBTBehaviorsEnhanced
                         if (ModState.RolePlayerBehaviorVarManager == null)
                         {
                             Mod.Log.Warn?.Write("  Failed to get RolePlayer.BehaviorVariableManager instance!");
-                            return;
+                            continue;
                         }
 
                         // Find the method
@@ -136,14 +137,29 @@ namespace CBTBehaviorsEnhanced
                         else
                             Mod.Log.Warn?.Write("  Failed to find RolePlayer.BehaviorVariableManager.getBehaviourVariable - RP behavior variables will be ignored!");
 
+                    } 
+                    else if (assembly.FullName.StartsWith("MechEngineer"))
+                    {
+                        // Find the ComponentExplosion type 
+                        Type explosionType = assembly.GetType("MechEngineer.Features.ComponentExplosions.ComponentExplosion");
+                        if (explosionType != null)
+                        {
+                            ModState.MEIsLoaded = true;
+                            Mod.Log.Info?.Write("  Successfully linked with MechEngineer");
+                        }
                     }
                 }
                 Mod.Log.Info?.Write(" -- Done");
             }
             catch (Exception e)
             {
-                Mod.Log.Error?.Write(e, "Error trying to initialize RolePlayer link!");
+                Mod.Log.Error?.Write(e, "Error trying to find RolePlayer and ME types!");
             }
+
+            if (ModState.MEIsLoaded == false)
+            {
+                Mod.Log.Warn?.Write("Failed to link with MechEngineer, skipping ME component explosions");
+            }            
         }
     }
 }

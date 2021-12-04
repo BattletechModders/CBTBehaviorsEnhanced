@@ -3,9 +3,8 @@ using BattleTech;
 using CBTBehaviorsEnhanced.Components;
 using CustAmmoCategories;
 using CustomComponents;
-#if !NO_ME
+using IRBTModUtils.Extension;
 using MechEngineer.Features.ComponentExplosions;
-#endif
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -203,41 +202,39 @@ namespace CBTBehaviorsEnhanced {
         }
 
         public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isVolatile) {
-#if !NO_ME
-
+            Mod.HeatLog.Debug?.Write($"Checking mech: {mech.DistinctId()} for ammo w/ isVolatile: {isVolatile}");
             float totalDamage = 0f;
             AmmunitionBox mostDangerousBox = null;
             foreach (AmmunitionBox ammoBox in mech.ammoBoxes) {
+                Mod.HeatLog.Debug?.Write($" -- ammoBox: {ammoBox.UIName}");
+
                 if (ammoBox.IsFunctional == false) {
-                    Mod.HeatLog.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' is not functional, skipping."); 
+                    Mod.HeatLog.Debug?.Write($" -- ammobox is not functional, skipping."); 
                     continue; 
                 }
 
                 if (ammoBox.CurrentAmmo <= 0) {
-                    Mod.HeatLog.Debug?.Write($" AmmoBox: '{ammoBox.UIName}' has no ammo, skipping.");
+                    Mod.HeatLog.Debug?.Write($" -- ammobox  has no ammo, skipping.");
                     continue; 
                 }
 
                 if (!ammoBox.mechComponentRef.Is<VolatileAmmo>(out VolatileAmmo vAmmo) && isVolatile)
                 {
-                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not a volatile ammo, skipping.");
+                    Mod.HeatLog.Debug?.Write($"  -- ammobox  is not a volatile ammo, skipping.");
                     continue;
                 }
 
-                if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp)) {
-                    Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
-                    continue;
+                // TODO: Make a config setting
+                float boxDamage = ammoBox.CurrentAmmo * 1;
+                if (ModState.MEIsLoaded)
+                {
+                    boxDamage = CalcMEAmmoDamage(ammoBox);
                 }
 
-                float boxDamage = ammoBox.CurrentAmmo * compExp.HeatDamagePerAmmo + ammoBox.CurrentAmmo * compExp.ExplosionDamagePerAmmo + ammoBox.CurrentAmmo * compExp.StabilityDamagePerAmmo;
-                // Multiply box damage by the 
+                // Multiply box damage by the volatile weighting
                 if (vAmmo != null) {
                     boxDamage *= vAmmo.damageWeighting;
                 }
-
-                Mod.HeatLog.Debug?.Write($" AmmoBox: {ammoBox.UIName} has {ammoBox.CurrentAmmo} rounds with explosion/ammo: {compExp.ExplosionDamagePerAmmo} " +
-                    $"heat/ammo: {compExp.HeatDamagePerAmmo} stab/ammo: {compExp.StabilityDamagePerAmmo} weight: {vAmmo?.damageWeighting} " +
-                    $"for {boxDamage} total damage.");
 
                 if (boxDamage > totalDamage)
                 {
@@ -247,11 +244,27 @@ namespace CBTBehaviorsEnhanced {
             }
 
             return mostDangerousBox;
-# else
-            return null;
-#endif
-
         } 
 
+        // This method is separated out from the main flow to prevent the ME assembly from being loaded. 
+        //   C# IL won't load a type outside of a method invocation. Isolating the compile-time linkage in this
+        //   method means we can gate the invocation with a hasME flag successfully.
+        private static float CalcMEAmmoDamage(AmmunitionBox ammoBox)
+        {
+            float damage = ammoBox.CurrentAmmo * 1;
+
+            if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp))
+            {
+                Mod.HeatLog.Debug?.Write($" AmmoBox: {ammoBox.UIName} has {ammoBox.CurrentAmmo} rounds with explosion/ammo: {compExp.ExplosionDamagePerAmmo} " +
+                    $"heat/ammo: {compExp.HeatDamagePerAmmo} stab/ammo: {compExp.StabilityDamagePerAmmo}");
+            }
+            else
+            {
+                Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
+            }
+
+
+            return damage;
+        }
     }
 }

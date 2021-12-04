@@ -4,6 +4,7 @@ using BattleTech.UI;
 using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -45,6 +46,7 @@ namespace CBTBehaviorsEnhanced {
         // Roleplayer Integration
         public static object RolePlayerBehaviorVarManager;
         public static MethodInfo RolePlayerGetBehaviorVar;
+        public static bool MEIsLoaded;
 
         public static void Reset() {
 
