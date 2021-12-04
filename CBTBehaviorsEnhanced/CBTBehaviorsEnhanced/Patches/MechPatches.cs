@@ -31,6 +31,10 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<float>(ModStats.RunMultiMod, 0f);
             __instance.StatCollection.AddStatistic<bool>(ModStats.HullBreachImmunity, true);
 
+            __instance.StatCollection.AddStatistic<float>(ModStats.AmmoCheckMod, 0f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.InjuryCheckMod, 0f);
+            __instance.StatCollection.AddStatistic<float>(ModStats.SystemFailureCheckMod, 0f);
+
             // Setup melee stats
 
             // --- CHARGE STATS ---
@@ -195,8 +199,17 @@ namespace CBTBehaviorsEnhanced.Patches
             Mod.HeatLog.Debug?.Write($" Actor: {__instance.DistinctId()} has heatCheckMod: {heatCheck}  pilotingCheckMod: {pilotCheck}");
 
             MultiSequence sequence = new MultiSequence(__instance.Combat);
+
+            float injuryCheckMod = __instance.StatCollection.GetValue<float>(ModStats.InjuryCheckMod);
+            Mod.HeatLog.Debug?.Write($"  -- injuryCheck = skill: {heatCheck} + mod: {injuryCheckMod}");
             bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(__instance, __instance.CurrentHeat, sequence.RootSequenceGUID, sequence.SequenceGUID, heatCheck);
+
+            float systemCheckMod = __instance.StatCollection.GetValue<float>(ModStats.SystemFailureCheckMod);
+            Mod.HeatLog.Debug?.Write($"  -- systemFailureCheck = skill: {heatCheck} + mod: {systemCheckMod}");
             bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
+
+            float ammoCheckMod = __instance.StatCollection.GetValue<float>(ModStats.AmmoCheckMod);
+            Mod.HeatLog.Debug?.Write($"  -- ammoCheck = skill: {heatCheck} + mod: {ammoCheckMod}");
             bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
             bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(__instance, __instance.CurrentHeat, sequence.SequenceGUID, heatCheck);
             Mod.HeatLog.Info?.Write($"  failedInjuryCheck: {failedInjuryCheck}  failedSystemFailureCheck: {failedSystemFailureCheck}  " +

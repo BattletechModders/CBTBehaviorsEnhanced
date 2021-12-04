@@ -19,6 +19,10 @@ namespace CBTBehaviorsEnhanced
         public const string RunMultiMod = "CBTBE_RunMultiMod"; // float
         public const string HullBreachImmunity = "CBTBE_HullBreachImmunity";
 
+        public const string AmmoCheckMod = "CBTBE_Ammo_Check_Mod";
+        public const string InjuryCheckMod = "CBTBE_Injury_Check_Mod";
+        public const string SystemFailureCheckMod = "CBTBE_SystemFailure_Check_Mod";
+
         // This value is set by the ME DamageIgnore feature - see https://github.com/BattletechModders/MechEngineer/blob/master/source/Features/DamageIgnore/DamageIgnoreHelper.cs
         public const string ME_IgnoreDamage = "ignore_damage";
 
@@ -31,6 +35,7 @@ namespace CBTBehaviorsEnhanced
         public const string HBS_Received_Instability_Multi = "ReceivedInstabilityMultiplier";
         public const string HBS_Ignore_Pilot_Injuries = "IgnorePilotInjuries";
         public const string HBS_Mech_Current_Heat = "CurrentHeat";
+        
 
         // --- CHARGE STATS ---
         public const string ChargeAttackMod = "CBTBE_Charge_Attack_Mod"; // int - a straight modifier to the attack roll

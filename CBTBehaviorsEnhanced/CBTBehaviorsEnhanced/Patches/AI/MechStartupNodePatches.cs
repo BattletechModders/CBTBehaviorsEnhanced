@@ -40,16 +40,22 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                     newResult.orderInfo = new OrderInfo(OrderType.Stand);
                     __result = newResult;
 
-                    bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, futureHeat, -1, -1, heatCheck);
+                    float injuryCheckMod = mech.StatCollection.GetValue<float>(ModStats.InjuryCheckMod);
+                    Mod.HeatLog.Debug?.Write($"  -- injuryCheck = skill: {heatCheck} + mod: {injuryCheckMod}");
+                    bool failedInjuryCheck = CheckHelper.ResolvePilotInjuryCheck(mech, futureHeat, -1, -1, heatCheck + injuryCheckMod);
                     if (failedInjuryCheck) Mod.Log.Info?.Write("  -- unit did not pass injury check!");
 
-                    bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, futureHeat, -1, heatCheck);
+                    float systemCheckMod = mech.StatCollection.GetValue<float>(ModStats.SystemFailureCheckMod);
+                    Mod.HeatLog.Debug?.Write($"  -- systemFailureCheck = skill: {heatCheck} + mod: {systemCheckMod}");
+                    bool failedSystemFailureCheck = CheckHelper.ResolveSystemFailureCheck(mech, futureHeat, -1, heatCheck + systemCheckMod);
                     if (failedSystemFailureCheck) Mod.Log.Info?.Write("  -- unit did not pass system failure check!");
 
-                    bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, futureHeat, -1, heatCheck);
+                    float ammoCheckMod = mech.StatCollection.GetValue<float>(ModStats.AmmoCheckMod);
+                    Mod.HeatLog.Debug?.Write($"  -- ammoCheck = skill: {heatCheck} + mod: {ammoCheckMod}");
+                    bool failedAmmoCheck = CheckHelper.ResolveRegularAmmoCheck(mech, futureHeat, -1, heatCheck + ammoCheckMod);
                     if (failedAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass ammo explosion check!");
 
-                    bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck);
+                    bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck + ammoCheckMod);
                     if (failedVolatileAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass volatile ammo explosion check!");
 
                     QuipHelper.PublishQuip(mech, Mod.LocalizedText.Quips.Startup);
