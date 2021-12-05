@@ -253,16 +253,16 @@ namespace CBTBehaviorsEnhanced {
         {
             float damage = ammoBox.CurrentAmmo * 1;
 
-            if (!ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp))
+            if (ammoBox.mechComponentRef.Is<ComponentExplosion>(out ComponentExplosion compExp))
             {
                 Mod.HeatLog.Debug?.Write($" AmmoBox: {ammoBox.UIName} has {ammoBox.CurrentAmmo} rounds with explosion/ammo: {compExp.ExplosionDamagePerAmmo} " +
                     $"heat/ammo: {compExp.HeatDamagePerAmmo} stab/ammo: {compExp.StabilityDamagePerAmmo}");
+                damage = (ammoBox.CurrentAmmo * compExp.HeatDamagePerAmmo) + (ammoBox.CurrentAmmo * compExp.ExplosionDamagePerAmmo) + (ammoBox.CurrentAmmo * compExp.StabilityDamagePerAmmo);
             }
             else
             {
                 Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
             }
-
 
             return damage;
         }
