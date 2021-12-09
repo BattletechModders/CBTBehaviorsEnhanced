@@ -86,10 +86,21 @@ namespace CBTBehaviorsEnhanced
             }
 
 			// Troopers can always physweap attack, but cannot make any other attacks
+			bool punchIsPhysicalWeapon = actor.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon);
 			if (actor.IsTrooper())
             {
-				Mod.MeleeLog.Info?.Write(" -- actor is trooper, can always physical weapon attack");
-				canMelee = true;
+				// Check that unit has a physical attack
+				if (punchIsPhysicalWeapon)
+				{
+					Mod.MeleeLog.Info?.Write(" -- actor is trooper with physical weapon");
+					hasPhysicalAttack = true;
+					canMelee = true;
+				}
+				else
+                {
+					Mod.MeleeLog.Warn?.Write(" -- actor is trooper but has no physical weapon, disabling melee!");
+					canMelee = false;
+				}
 				return;
             }
 
@@ -103,26 +114,45 @@ namespace CBTBehaviorsEnhanced
 					return;
 				}
 
-				foreach (MechComponent mc in mech.allComponents)
-				{
-					switch (mc.Location)
+				if (ModState.MEIsLoaded)
+                {
+					foreach (MechComponent mc in mech.allComponents)
 					{
-						case (int)ChassisLocations.LeftArm:
-						case (int)ChassisLocations.RightArm:
-							EvaluateArmComponent(mc);
-							break;
-						case (int)ChassisLocations.LeftLeg:
-						case (int)ChassisLocations.RightLeg:
-							EvaluateLegComponent(mc);
-							break;
-						default:
-							break;
+						switch (mc.Location)
+						{
+							case (int)ChassisLocations.LeftArm:
+							case (int)ChassisLocations.RightArm:
+								EvaluateArmComponent(mc);
+								break;
+							case (int)ChassisLocations.LeftLeg:
+							case (int)ChassisLocations.RightLeg:
+								EvaluateLegComponent(mc);
+								break;
+							default:
+								break;
+						}
 					}
 				}
+				else
+                {
+					// Vanilla has no concept of actuators, so mark everything as present. 
+					this.leftHipIsFunctional = true;
+					this.rightHipIsFunctional = true;
+					this.leftLegActuatorsCount = 2;
+					this.rightLegActuatorsCount = 2;
+					this.leftFootIsFunctional = true;
+					this.rightFootIsFunctional = true;
+					this.leftShoulderIsFunctional = true;
+					this.rightShoulderIsFunctional = true;
+					this.leftArmActuatorsCount = 2;
+					this.rightArmActuatorsCount = 2;
+					this.leftHandIsFunctional = true;
+					this.rightHandIsFunctional = true;
+				}
+
 
 				// Check that unit has a physical attack
-				if (mech.StatCollection.ContainsStatistic(ModStats.PunchIsPhysicalWeapon) &&
-					mech.StatCollection.GetValue<bool>(ModStats.PunchIsPhysicalWeapon))
+				if (punchIsPhysicalWeapon)
 				{
 					Mod.MeleeLog.Info?.Write(" -- unit has physical weapon");
 					hasPhysicalAttack = true;
@@ -166,7 +196,7 @@ namespace CBTBehaviorsEnhanced
 			if (!canMelee) return false;
 
 			// Troopers can only use physical attacks
-			if (actor is TrooperSquad) return false;
+			if (actor.IsTrooper()) return false;
 
 			// Vehicles can charge if they have speed to make an attack
 			if (actor.IsVehicle() || actor.IsNaval())
@@ -187,7 +217,7 @@ namespace CBTBehaviorsEnhanced
 			if (!canMelee) return false;
 
 			// Troopers can only use physical attacks
-			if (actor is TrooperSquad) return false;
+			if (actor.IsTrooper()) return false;
 
 			// Vehicles can charge if they have speed to make an attack
 			if (actor.IsVehicle() || actor.IsNaval())
@@ -221,6 +251,9 @@ namespace CBTBehaviorsEnhanced
 			if (!canMelee) return false;
 
 			if (!hasPhysicalAttack) return false;
+
+			// If we have a physical weapon, and we're a trooper squad, we can melee
+			if (actor.IsTrooper()) return true;
 
 			// Even if you have a physical attack... just no.
 			if (actor.IsVehicle() || actor.IsNaval()) return false;
