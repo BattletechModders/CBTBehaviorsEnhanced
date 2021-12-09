@@ -1,10 +1,12 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.CAC;
+using CBTBehaviorsEnhanced.Move;
 using CustAmmoCategories;
 using Harmony;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -96,10 +98,25 @@ namespace CBTBehaviorsEnhanced
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-        public static void FinishedLoading()
+        public static void FinishedLoading(List<string> loadOrder, Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
         {
             // Check for RolePlayer and use it's BehaviorVar link instead
             InitRoleplayerLink();
+
+            foreach (string name in loadOrder) 
+            {
+                if (name.Equals("MechEngineer"))
+                {
+                    ModState.MEIsLoaded = true;
+                }
+
+                if (name.Equals("IRBTModUtils", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(Heat_MoveModifier.Name, Heat_MoveModifier.Priority, Heat_MoveModifier.WalkMod, Heat_MoveModifier.RunMod);
+                    IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(RunMultiMod_MoveModifier.Name, RunMultiMod_MoveModifier.Priority, RunMultiMod_MoveModifier.WalkMod, RunMultiMod_MoveModifier.RunMod);
+                    IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(Legged_MoveModifier.Name, Legged_MoveModifier.Priority, Legged_MoveModifier.WalkMod, Legged_MoveModifier.RunMod);
+                }
+            }
         }
 
         private static void InitRoleplayerLink()
@@ -137,16 +154,6 @@ namespace CBTBehaviorsEnhanced
                         else
                             Mod.Log.Warn?.Write("  Failed to find RolePlayer.BehaviorVariableManager.getBehaviourVariable - RP behavior variables will be ignored!");
 
-                    } 
-                    else if (assembly.FullName.StartsWith("MechEngineer"))
-                    {
-                        // Find the ComponentExplosion type 
-                        Type explosionType = assembly.GetType("MechEngineer.Features.ComponentExplosions.ComponentExplosion");
-                        if (explosionType != null)
-                        {
-                            ModState.MEIsLoaded = true;
-                            Mod.Log.Info?.Write("  Successfully linked with MechEngineer");
-                        }
                     }
                 }
                 Mod.Log.Info?.Write(" -- Done");
@@ -155,11 +162,6 @@ namespace CBTBehaviorsEnhanced
             {
                 Mod.Log.Error?.Write(e, "Error trying to find RolePlayer and ME types!");
             }
-
-            if (ModState.MEIsLoaded == false)
-            {
-                Mod.Log.Warn?.Write("Failed to link with MechEngineer, skipping ME component explosions");
-            }            
         }
     }
 }

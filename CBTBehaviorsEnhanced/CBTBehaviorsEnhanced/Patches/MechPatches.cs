@@ -290,7 +290,7 @@ namespace CBTBehaviorsEnhanced.Patches
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
-                __result = __instance.ModifiedRunDistanceExt(true);
+                __result = __instance.ModifiedRunDistanceExt(false);
         }
     }
 
