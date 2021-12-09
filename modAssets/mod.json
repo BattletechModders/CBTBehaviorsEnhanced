@@ -9,8 +9,20 @@
     "Contact": "",
     "DLL": "CBTBehaviorsEnhanced.dll",
     "DependsOn" : [ "IRBTModUtils", "CustomComponents", "Custom Ammo Categories", "CustomUnits" ],
-    "OptionallyDependsOn": [ "BetterAI", "MechEngineer" ],
-	"ConflictsWith" : [ "CharlesB" ],
+    "OptionallyDependsOn": [ "BetterAI", "MechEngineer", "CustomBundleDebugContent" ],
+    "ConflictsWith": [ "CharlesB" ],
+	"Manifest" : [
+		{
+			"Type" : "ChassisDef",
+			"Path" : "test/chassis",
+			"AddToDB" : true
+		},
+		{
+			"Type" : "UpgradeDef",
+			"Path" : "test/upgrade",
+			"AddToDB" : true
+		},
+	],
     "Settings": {
         "Debug" : false,
         "Trace" : false,

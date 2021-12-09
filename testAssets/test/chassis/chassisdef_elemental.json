@@ -1,0 +1,310 @@
+{
+  "CustomParts": {
+    "SquadInfo": {
+      "Troopers":5,
+      "UnitSize": 0.3,
+      "DeadUnitToHitMod": 9,
+      "Hardpoints":{
+        "Energy": "RightArm",
+        "Missile": "LeftTorso",
+        "AntiPersonnel": "LeftArm"
+      }
+    },
+    "MeleeWeaponOverride":{
+      "DefaultWeapon": "Weapon_MeleeAttackBattleClaw"
+    }
+  },
+  "Description": {
+    "Cost": 1900000,
+    "Rarity": 0,
+    "Purchasable": true,
+    "Manufacturer": "",
+    "Model": "",
+    "UIName": "Elemental",
+    "Id": "chassisdef_elemental",
+    "Name": "Elemental",
+    "Details": "Elemental",
+    "Icon": "uixTxrIcon_urbanmech"
+  },
+  "MovementCapDefID": "movedef_urbanmech_UM-R90",
+  "PathingCapDefID": "pathingdef_light",
+  "HardpointDataDefID": "hardpointdatadef_battlemaster",
+  "PrefabIdentifier": "chrPrfMech_battlemasterBase-001",
+  "PrefabBase": "battlemaster",
+  "VariantName": "EL-A",
+  "StockRole": "Heavy Defender",
+  "YangsThoughts": "Elemental",
+  "Tonnage": 5,
+  "InitialTonnage": 0,
+  "weightClass": "LIGHT",
+  "Heatsinks": 0,
+  "TopSpeed": 85,
+  "TurnRadius": 90,
+  "MaxJumpjets": 5,
+  "Stability": 100,
+  "StabilityDefenses": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "SpotterDistanceMultiplier": 1,
+  "VisibilityMultiplier": 1,
+  "SensorRangeMultiplier": 1,
+  "Signature": 0,
+  "Radius": 4,
+  "PunchesWithLeftArm": false,
+  "MeleeDamage": 40,
+  "MeleeInstability": 30,
+  "MeleeToHitModifier": 0,
+  "DFADamage": 40,
+  "DFAToHitModifier": 0,
+  "DFASelfDamage": 40,
+  "DFAInstability": 40,
+  "ChassisTags": {
+    "items": [ ],
+    "tagSetSourceFile": ""
+  },
+  "Locations": [
+    {
+      "Location": "Head",
+      "Hardpoints": [
+        {
+          "WeaponMount": "Energy",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "Missile",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "AntiPersonnel",
+          "Omni": false
+        }
+      ],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 80,
+      "MaxRearArmor": -1,
+      "InternalStructure": 20
+    },
+    {
+      "Location": "CenterTorso",
+      "Hardpoints": [
+        {
+          "WeaponMount": "Energy",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "Missile",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "AntiPersonnel",
+          "Omni": false
+        }
+      ],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 80,
+      "MaxRearArmor": 0,
+      "InternalStructure": 20
+    },
+    {
+      "Location": "LeftTorso",
+      "Hardpoints": [
+        {
+          "WeaponMount": "Energy",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "Missile",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "AntiPersonnel",
+          "Omni": false
+        }
+      ],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 80,
+      "MaxRearArmor": 0,
+      "InternalStructure": 20
+    },
+    {
+      "Location": "RightTorso",
+      "Hardpoints": [
+        {
+          "WeaponMount": "Energy",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "Missile",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "AntiPersonnel",
+          "Omni": false
+        }
+      ],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 80,
+      "MaxRearArmor": 0,
+      "InternalStructure": 20
+    },
+    {
+      "Location": "LeftArm",
+      "Hardpoints": [
+        {
+          "WeaponMount": "Energy",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "Missile",
+          "Omni": false
+        },
+        {
+          "WeaponMount": "AntiPersonnel",
+          "Omni": false
+        }
+      ],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 80,
+      "MaxRearArmor": 0,
+      "InternalStructure": 20
+    },
+    {
+      "Location": "RightArm",
+      "Hardpoints": [],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 0,
+      "MaxRearArmor": -1,
+      "InternalStructure": 1
+    },
+    {
+      "Location": "LeftLeg",
+      "Hardpoints": [],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 0,
+      "MaxRearArmor": -1,
+      "InternalStructure": 1
+    },
+    {
+      "Location": "RightLeg",
+      "Hardpoints": [],
+      "Tonnage": 0,
+      "InventorySlots": 5,
+      "MaxArmor": 0,
+      "MaxRearArmor": -1,
+      "InternalStructure": 1
+    }
+  ],
+  "LOSSourcePositions": [
+    {
+      "x": 0,
+      "y": 9.5,
+      "z": 0.5
+    },
+    {
+      "x": -2.5,
+      "y": 8.5,
+      "z": -0.5
+    },
+    {
+      "x": 2.5,
+      "y": 8.5,
+      "z": -0.5
+    }
+  ],
+  "LOSTargetPositions": [
+    {
+      "x": 0,
+      "y": 9.5,
+      "z": 0.5
+    },
+    {
+      "x": -2.5,
+      "y": 8.5,
+      "z": -0.5
+    },
+    {
+      "x": 2.5,
+      "y": 8.5,
+      "z": -0.5
+    },
+    {
+      "x": -1.5,
+      "y": 3,
+      "z": 0.5
+    },
+    {
+      "x": 1.5,
+      "y": 3,
+      "z": 0.5
+    }
+  ],
+  "FixedEquipment": [
+	{
+		"MountedLocation": "Head",
+		"ComponentDefID": "Gear_Battle_Armor_Claw",
+		"SimGameUID": null,
+		"ComponentDefType": "Upgrade",
+		"HardpointSlot": 0,
+		"GUID": null,
+		"DamageLevel": "Functional",
+		"prefabName": null,
+		"hasPrefabName": false
+	},
+	{
+		"MountedLocation": "LeftTorso",
+		"ComponentDefID": "Gear_Battle_Armor_Claw",
+		"SimGameUID": null,
+		"ComponentDefType": "Upgrade",
+		"HardpointSlot": 0,
+		"GUID": null,
+		"DamageLevel": "Functional",
+		"prefabName": null,
+		"hasPrefabName": false
+	},
+	{
+		"MountedLocation": "CenterTorso",
+		"ComponentDefID": "Gear_Battle_Armor_Claw",
+		"SimGameUID": null,
+		"ComponentDefType": "Upgrade",
+		"HardpointSlot": 0,
+		"GUID": null,
+		"DamageLevel": "Functional",
+		"prefabName": null,
+		"hasPrefabName": false
+	},
+	{
+		"MountedLocation": "RightTorso",
+		"ComponentDefID": "Gear_Battle_Armor_Claw",
+		"SimGameUID": null,
+		"ComponentDefType": "Upgrade",
+		"HardpointSlot": 0,
+		"GUID": null,
+		"DamageLevel": "Functional",
+		"prefabName": null,
+		"hasPrefabName": false
+	},
+	{
+		"MountedLocation": "LeftArm",
+		"ComponentDefID": "Gear_Battle_Armor_Claw",
+		"SimGameUID": null,
+		"ComponentDefType": "Upgrade",
+		"HardpointSlot": 0,
+		"GUID": null,
+		"DamageLevel": "Functional",
+		"prefabName": null,
+		"hasPrefabName": false
+	}	
+  ]
+}
