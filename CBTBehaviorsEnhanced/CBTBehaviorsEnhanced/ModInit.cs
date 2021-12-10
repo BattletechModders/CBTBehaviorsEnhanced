@@ -98,8 +98,10 @@ namespace CBTBehaviorsEnhanced
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-        public static void FinishedLoading(List<string> loadOrder, Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
+        public static void FinishedLoading(List<string> loadOrder) 
         {
+            Mod.Log.Info?.Write("Invoking FinishedLoading");
+
             // Check for RolePlayer and use it's BehaviorVar link instead
             InitRoleplayerLink();
 
@@ -107,15 +109,30 @@ namespace CBTBehaviorsEnhanced
             {
                 if (name.Equals("MechEngineer"))
                 {
+                    Mod.Log.Info?.Write($"Enabling MechEngineer functionality");
                     ModState.MEIsLoaded = true;
                 }
 
                 if (name.Equals("IRBTModUtils", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(Heat_MoveModifier.Name, Heat_MoveModifier.Priority, Heat_MoveModifier.WalkMod, Heat_MoveModifier.RunMod);
-                    IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(RunMultiMod_MoveModifier.Name, RunMultiMod_MoveModifier.Priority, RunMultiMod_MoveModifier.WalkMod, RunMultiMod_MoveModifier.RunMod);
-                    IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(Legged_MoveModifier.Name, Legged_MoveModifier.Priority, Legged_MoveModifier.WalkMod, Legged_MoveModifier.RunMod);
+                    Mod.Log.Info?.Write($"Initializing IRBTModUtils movement feature modifiers.");
+                    List<IRBTModUtilMoveModifier> moveMods = new List<IRBTModUtilMoveModifier>()
+                    {
+                        new TTRun_MoveModifier(),
+                        new Heat_MoveModifier(),
+                        new Legged_MoveModifier()
+                    };
+                    foreach (IRBTModUtilMoveModifier moveMod in moveMods)
+                    {
+                        IRBTModUtils.Feature.MovementFeature.RegisterMoveDistanceModifier(moveMod.Name, moveMod.Priority, moveMod.WalkMod, moveMod.RunMod);
+                    }
                 }
+
+                if (name.Equals("CleverGirl"))
+                {
+                    Mod.Log.Info?.Write($"Initializing CleverGirl extensions");
+                }
+
             }
         }
 
