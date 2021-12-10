@@ -18,10 +18,28 @@ namespace CBTBehaviorsEnhanced.Move
     }
 
     // Should be first if at all possible
-    internal class TTRun_MoveModifier : IRBTModUtilMoveModifier
+    internal class TTReset_MoveModifier : IRBTModUtilMoveModifier
     {
         public override int Priority { get { return 0; } }
-        public override string Name { get { return "CBTBE_TTRun"; } }
+        public override string Name { get { return "CBTBE_TTReset"; } }
+
+        public override float WalkMod(Mech mech, float current)
+        {
+            // Reset the speed to eliminate the MoveMultiplier
+            return mech.WalkSpeed;
+        }
+
+        public override float RunMod(Mech mech, float current)
+        {
+            return current;
+        }
+    }
+
+
+    internal class CBTBE_RunMultiMod_MoveModifier : IRBTModUtilMoveModifier
+    {
+        public override int Priority { get { return 5; } }
+        public override string Name { get { return "CBTBE_RunMultiMod"; } }
 
         public override float WalkMod(Mech mech, float current)
         {
@@ -30,7 +48,7 @@ namespace CBTBehaviorsEnhanced.Move
 
         public override float RunMod(Mech mech, float current)
         {
-            if (mech.IsVehicle() || mech.IsNaval() || mech.IsTrooper()) return current;
+            if (mech.IsVehicle() || mech.IsNaval()) return current;
 
             float runMultiMod = mech.StatCollection.GetValue<float>(ModStats.RunMultiMod);
             float runMulti = Mod.Config.Move.RunMulti;
@@ -40,8 +58,9 @@ namespace CBTBehaviorsEnhanced.Move
             }
             Mod.MoveLog.Debug?.Write($"run mod => {runMulti} from CBTBE_RunMultiMod: {runMultiMod} + modConfig: {Mod.Config.Move.RunMulti}");
 
-            float resetSpeed = mech.WalkSpeed * runMulti;
-            Mod.MoveLog.Debug?.Write($"Resetting runSpeed to {resetSpeed} for actor: {mech.DistinctId()}");
+            float modifiedWalk = mech.ModifiedWalkDistanceExt(false);
+            float resetSpeed = modifiedWalk * runMulti;
+            Mod.MoveLog.Debug?.Write($"Resetting runSpeed to {resetSpeed} for actor: {mech.DistinctId()} from walkSpeed: {modifiedWalk} x {runMulti}");
 
             return resetSpeed;
         }
@@ -49,7 +68,7 @@ namespace CBTBehaviorsEnhanced.Move
 
     internal class Heat_MoveModifier : IRBTModUtilMoveModifier
     {
-        public override int Priority { get { return 0; } }
+        public override int Priority { get { return 1; } }
         public override string Name { get { return "CBTBE_Heat"; } }
 
         public override float WalkMod(Mech mech, float current)
@@ -68,35 +87,21 @@ namespace CBTBehaviorsEnhanced.Move
             }
 
             float movePenaltyDist = movePenalty * Mod.Config.Move.HeatMovePenalty;
-            Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has walk heat movePenalty: {movePenaltyDist}");
-            return current - movePenaltyDist;
+            float newSpeed = current - movePenaltyDist;
+            Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has walk heat movePenalty: {movePenaltyDist}, new speed is: {newSpeed}");
+            return newSpeed;
         }
 
         public override float RunMod(Mech mech, float current)
         {
-            if (mech.IsVehicle() || mech.IsNaval() || mech.IsTrooper()) return current;
-            if (mech.CurrentHeat == 0) return current;
-
-            // Check for overheat penalties
-            int movePenaltyKey = 0;
-            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Movement)
-            {
-                if (mech.CurrentHeat >= kvp.Key)
-                {
-                    movePenaltyKey = kvp.Value;
-                }
-            }
-
-            float movePenaltyDist = movePenaltyKey * Mod.Config.Move.HeatMovePenalty * Mod.Config.Move.RunMulti;
-            Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has run heat movePenalty: {movePenaltyDist}");
-            return current - movePenaltyDist;
+            return current;
         }
     }
 
     // Should be last if possible
     internal class Legged_MoveModifier : IRBTModUtilMoveModifier
     {
-        public override int Priority { get { return 100; } }
+        public override int Priority { get { return 6; } }
         public override string Name { get { return "CBTBE_Legged"; } }
 
         public override float WalkMod(Mech mech, float current)
@@ -108,11 +113,11 @@ namespace CBTBehaviorsEnhanced.Move
 
             if (mech.IsQuadMech())
             {
-                if (destroyedLegs < 3)
+                if (destroyedLegs == 1)
                 {
-                    float moveMalus = Mod.Config.Move.MPMetersPerHex * destroyedLegs;
+                    float moveMalus = Mod.Config.Move.MPMetersPerHex;
                     Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has lost {destroyedLegs} of 4 legs, applying speed penalty: " +
-                        $"{moveMalus} => metersPerHex: {Mod.Config.Move.MPMetersPerHex} * destroyedLegs: {destroyedLegs}");
+                        $"{moveMalus} => metersPerHex: {Mod.Config.Move.MPMetersPerHex}");
                     return moveMalus;
                 }
                 else
@@ -131,32 +136,7 @@ namespace CBTBehaviorsEnhanced.Move
 
         public override float RunMod(Mech mech, float current)
         {
-            if (mech.IsVehicle() || mech.IsNaval() || mech.IsTrooper()) return current;
-
-            int destroyedLegs = DestroyedLegsCount(mech);
-            if (destroyedLegs == 0) return current;
-
-            if (mech.IsQuadMech())
-            {
-                if (destroyedLegs < 3)
-                {
-                    // We are running, add the RunMulti
-                    float moveMalus = Mod.Config.Move.MPMetersPerHex * destroyedLegs * Mod.Config.Move.RunMulti;
-                    Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has lost {destroyedLegs} of 4 legs, applying speed penalty: " +
-                        $"{moveMalus} => metersPerHex: {Mod.Config.Move.MPMetersPerHex} * destroyedLegs: {destroyedLegs} * runMulti: {Mod.Config.Move.RunMulti}");
-                    return moveMalus;
-                }
-                else
-                {
-                    Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has lost {destroyedLegs} of 4 legs, returning a minimum speed of: {Mod.Config.Move.MinimumMove}m");
-                    return Mod.Config.Move.MinimumMove;
-                }
-            }
-            else
-            {
-                Mod.MoveLog.Debug?.Write($"Mech: {mech.DistinctId()} has lost 1 of 2 legs, returning a minimum speed of: {Mod.Config.Move.MinimumMove}m");
-                return Mod.Config.Move.MinimumMove;
-            }
+            return current;
         }
 
         private static int DestroyedLegsCount(Mech mech)
