@@ -1,8 +1,10 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.CAC;
 using CBTBehaviorsEnhanced.Move;
+using CBTBehaviorsEnhanced.Patches.AI.InfluenceMap;
 using CustAmmoCategories;
 using Harmony;
+using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
@@ -103,7 +105,7 @@ namespace CBTBehaviorsEnhanced
             Mod.Log.Info?.Write("Invoking FinishedLoading");
 
             // Check for RolePlayer and use it's BehaviorVar link instead
-            InitRoleplayerLink();
+            //InitRoleplayerLink();
 
             foreach (string name in loadOrder) 
             {
@@ -118,7 +120,8 @@ namespace CBTBehaviorsEnhanced
                     Mod.Log.Info?.Write($"Initializing IRBTModUtils movement feature modifiers.");
                     List<IRBTModUtilMoveModifier> moveMods = new List<IRBTModUtilMoveModifier>()
                     {
-                        new TTRun_MoveModifier(),
+                        new TTReset_MoveModifier(),
+                        new CBTBE_RunMultiMod_MoveModifier(),
                         new Heat_MoveModifier(),
                         new Legged_MoveModifier()
                     };
@@ -131,6 +134,20 @@ namespace CBTBehaviorsEnhanced
                 if (name.Equals("CleverGirl"))
                 {
                     Mod.Log.Info?.Write($"Initializing CleverGirl extensions");
+                    List<CustomInfluenceMapPositionFactor> customPositionFactors = new List<CustomInfluenceMapPositionFactor>()
+                    {
+                        new PreferAvoidMeleeWhenOutTonned(),
+                        new PreferStationaryWithMeleeWeapon()
+
+                    };
+                    CustomFactors.Register("CBTBE", customPositionFactors);
+                    // no ally factors to register
+                    // no hostile factors to register
+                }
+
+                if (name.Equals("RolePlayer", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    InitRoleplayerLink();
                 }
 
             }
