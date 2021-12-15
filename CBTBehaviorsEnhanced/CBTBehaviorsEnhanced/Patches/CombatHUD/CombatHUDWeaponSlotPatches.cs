@@ -55,7 +55,9 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
+    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", 
+        new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
+    [HarmonyAfter("io.mission.modrepuation", "io.mission.customunits")]
     static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
     {
         static void Prefix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
@@ -65,7 +67,11 @@ namespace CBTBehaviorsEnhanced.Patches
                 !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
 
             if (!(___weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
+            {
+                Mod.UILog.Debug?.Write($"RefreshDisplayedWeapon:PRE - Updating {___HUD.SelectedActor.DistinctId()} " +
+                    $"melee or dfa weapon with text: {__instance.DamageText.text}");
                 return; // Skip melee and dfa weapons, let normal processing handle them
+            }
 
             if (ModState.MeleeAttackContainer?.activeInHierarchy == true)
             {
@@ -82,18 +88,22 @@ namespace CBTBehaviorsEnhanced.Patches
                     {
                         Mod.UILog.Trace?.Write($"Disabling weapon from selection");
                         ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, true);
-                        __instance.ToggleButton.isChecked = false;
-                        Traverse showDisabledHexT = Traverse.Create(__instance).Method("ShowDisabledHex");
-                        showDisabledHexT.GetValue();
                         return;
                     }
                 }
             }
 
             ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, false);
-            __instance.ToggleButton.isChecked = true;
-            Traverse showHexT = Traverse.Create(__instance).Method("ShowDefaultHex");
-            showHexT.GetValue();
+        }
+
+        static void Postfix(CombatHUDWeaponSlot __instance, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
+        {
+            if (!(___weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
+            {
+                Mod.UILog.Debug?.Write($"RefreshDisplayedWeapon:POST - Updating {___HUD.SelectedActor.DistinctId()} " +
+                    $"melee or dfa weapon with text: {__instance.DamageText.text}");
+            }
+
         }
     }
 
@@ -107,6 +117,8 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UMW entered");
+            Mod.UILog.Debug?.Write($"UpdateMeleeWeapon called for: {___HUD.SelectedActor.DistinctId()} using " +
+                $"weapon: {___displayedWeapon.UIName}_{___displayedWeapon.uid}");
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
             if (selectedAttack == null || selectedAttack is DFAAttack)
@@ -125,6 +137,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     new object[] { weapDam, punchDam, kickDam }
                     ).ToString();
                 __instance.DamageText.SetText(damageText);
+                Mod.UILog.Debug?.Write($"  -- default attackType has no damage, using damageText: {damageText}");
             }
             else if (selectedAttack is ChargeAttack || selectedAttack is KickAttack || selectedAttack is PunchAttack || selectedAttack is WeaponAttack)
             {
@@ -143,20 +156,24 @@ namespace CBTBehaviorsEnhanced.Patches
                     ).ToString();
                 __instance.WeaponText.SetText(weaponLabel);
 
+
                 float totalDamage = selectedAttack.TargetDamageClusters.Sum();
-                if (selectedAttack.TargetDamageClusters.Length > 1)
-                {
-                    int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
-                    __instance.DamageText.SetText($"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})");
-                }
-                else
-                {
-                    __instance.DamageText.SetText($"{totalDamage}");
-                }
+                Mod.UILog.Debug?.Write($" -- attackState: {attackName} has targetDamageClusters: {selectedAttack.TargetDamageClusters.Length}" +
+                    $"  with totalDamage: {totalDamage}");
 
                 ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, totalDamage);
                 ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, selectedAttack.TargetInstability);
                 CustAmmoCategories.DamageModifiersCache.ClearDamageCache(___displayedWeapon);
+
+                string damageTextS = $"{totalDamage}";
+                if (selectedAttack.TargetDamageClusters.Length > 1)
+                {
+                    int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
+                    damageTextS = $"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})";
+                }
+                Mod.UILog.Debug?.Write($"  -- using damageText: {damageTextS}");
+                __instance.DamageText.SetText(damageTextS);
+
             }
         }
     }
