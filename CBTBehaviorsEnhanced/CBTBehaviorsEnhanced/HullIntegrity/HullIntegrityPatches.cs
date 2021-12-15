@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
-            Mod.Log.Debug?.Write("AD:OASB - entered.");
+            Mod.Log.Trace?.Write("AD:OASB - entered.");
 
             AttackSequenceBeginMessage asbMessage = message as AttackSequenceBeginMessage;
             if (__instance == null || asbMessage == null) return;
@@ -43,7 +43,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
-            Mod.Log.Debug?.Write("AD:OASE - entered.");
+            Mod.Log.Trace?.Write("AD:OASE - entered.");
 
             // Nothing to do
             if (ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) return;
@@ -94,7 +94,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             ModState.BreachHitsTurret.Clear();
             ModState.BreachHitsVehicle.Clear();
 
-            Mod.Log.Debug?.Write("AD:OASE - exiting.");
+            Mod.Log.Trace?.Write("AD:OASE - exiting.");
         }
 
         // Resolve mech hits - mark components invalid, but kill the pilot on a head-hit
