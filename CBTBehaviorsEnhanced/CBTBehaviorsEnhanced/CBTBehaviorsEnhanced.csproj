@@ -65,7 +65,7 @@
     </Reference>
     <Reference Include="CustomUnits">
       <HintPath>$(BattleTechGameDir)\Mods\CustomUnits\CustomUnits.dll</HintPath>
-    </Reference>	
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Newtonsoft.Json.dll</HintPath>
@@ -108,7 +108,7 @@
     <Compile Include="Helper\QuipHelper.cs" />
     <Compile Include="Helper\UnitHelper.cs" />
     <Compile Include="HullIntegrity\HullIntegrityPatches.cs" />
-    <Compile Include="Melee\MechDFASequencePatches.cs" />
+    <Compile Include="Melee\Sequence\MechDFASequencePatches.cs" />
     <Compile Include="Melee\SelectionStatePatches.cs" />
     <Compile Include="Melee\HitLocationPatches.cs" />
     <Compile Include="Melee\States\MeleeState.cs" />
@@ -120,14 +120,14 @@
     <Compile Include="Heat\MechEmergencyShutdownSequence.cs" />
     <Compile Include="Helper\CheckHelper.cs" />
     <Compile Include="Helper\MechHelper.cs" />
-    <Compile Include="Melee\MechMeleeSequencePatches.cs" />
+    <Compile Include="Melee\Sequence\MechMeleeSequencePatches.cs" />
     <Compile Include="Melee\PathingPatches.cs" />
     <Compile Include="ModText.cs" />
     <Compile Include="Melee\States\DFAAttack.cs" />
     <Compile Include="Melee\States\WeaponAttack.cs" />
     <Compile Include="Melee\States\PunchAttack.cs" />
     <Compile Include="Melee\States\KickAttack.cs" />
-    <Compile Include="Melee\States\MechMeleeCondition.cs" />
+    <Compile Include="Melee\States\ActorMeleeCondition.cs" />
     <Compile Include="Melee\States\ChargeAttack.cs" />
     <Compile Include="Melee\States\MeleeAttack.cs" />
     <Compile Include="Move\CBTBEMechMoveModifier.cs" />
