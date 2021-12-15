@@ -97,21 +97,28 @@ namespace CBTBehaviorsEnhanced {
             imaginaryWeapons.TryGetValue(attacker.DistinctId(), out weapons);
             if (weapons.melee == null && weapons.dfa == null)
             {
+                Mod.MeleeLog.Info?.Write($"Creating faked weapons for actor: {attacker.DistinctId()}");
                 if (attacker.MeleeWeapon != null)
                 {
                     weapons.melee = new Weapon(attacker, SharedState.Combat, attacker.MeleeWeapon.mechComponentRef, "CBTBE_FAKE_MELEE");
                     // Initialize a game representation to prevent warnings in CAC logs
+                    weapons.melee.Init();
+                    weapons.melee.InitStats();
                     weapons.melee.InitGameRep(attacker.MeleeWeapon.baseComponentRef.prefabName,
                         attacker.GetAttachTransform(attacker.MeleeWeapon.mechComponentRef.MountedLocation),
                         attacker.LogDisplayName);
+                    Mod.MeleeLog.Info?.Write($"  -- created melee weapon");
                 }
 
                 if (attacker.DFAWeapon != null)
                 {
                     weapons.dfa = new Weapon(attacker, SharedState.Combat, attacker.DFAWeapon.mechComponentRef, "CBTBE_FAKE_DFA");
+                    weapons.dfa.Init();
+                    weapons.dfa.InitStats();
                     weapons.dfa.InitGameRep(attacker.DFAWeapon.baseComponentRef.prefabName,
                         attacker.GetAttachTransform(attacker.DFAWeapon.mechComponentRef.MountedLocation),
                         attacker.LogDisplayName);
+                    Mod.MeleeLog.Info?.Write($"  -- created DFA weapon");
                 }
                 imaginaryWeapons[attacker.DistinctId()] = weapons;
             }
