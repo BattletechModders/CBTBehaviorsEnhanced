@@ -15,6 +15,9 @@ namespace CBTBehaviorsEnhanced.Patches
             if (__instance == null || !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return; // nothing to do
             if (__result == false || !__instance.IsEnabled) return; // nothing to do
 
+            if (__instance.WeaponSubType == WeaponSubType.Melee || __instance.WeaponSubType == WeaponSubType.DFA)
+                return; // nothing to do
+
             // Check for an active attack sequence and attack
             if (SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor != null)
             {
