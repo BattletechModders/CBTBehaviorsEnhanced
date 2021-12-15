@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     if (!selectedAttack.IsRangedWeaponAllowed(__instance))
                     {
-                        Mod.UILog.Debug?.Write($"Weapon: {__instance.UIName} can NOT be used with melee state: {selectedAttack?.Label} on " +
+                        Mod.UILog.Trace?.Write($"Weapon: {__instance.UIName} can NOT be used with melee state: {selectedAttack?.Label} on " +
                             $"actor: {SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor.DistinctId()}");
                         __result = false;
                     }
