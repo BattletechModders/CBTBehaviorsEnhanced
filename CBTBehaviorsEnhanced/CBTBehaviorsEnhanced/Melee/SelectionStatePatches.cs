@@ -50,7 +50,7 @@ namespace CBTBehaviorsEnhanced.Melee
                     changeSource = StabilityChangeSource.RemainingStationary;
                 }
                 float minStability = selectedMech.GetMinStability(changeSource, newStability);
-                Mod.Log.Debug?.Write($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
+                Mod.Log.Trace?.Write($"Stability change for {CombatantUtils.Label(selectedMech)} => " +
                     $"current: {selectedMech.CurrentStability}  projectedNew: {selectedAttack.AttackerInstability}  " +
                     $"totalChange: {newStability}  afterDump: {minStability}");
                 __result = minStability;
