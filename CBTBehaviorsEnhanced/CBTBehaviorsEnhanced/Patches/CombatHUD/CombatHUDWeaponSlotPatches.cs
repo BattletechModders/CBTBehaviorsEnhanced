@@ -58,11 +58,14 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
     static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
     {
-        static void Prefix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Prefix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
         {
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null ||
                 !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
+
+            if (!(___weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
+                return; // Skip melee and dfa weapons, let normal processing handle them
 
             if (ModState.MeleeAttackContainer?.activeInHierarchy == true)
             {
