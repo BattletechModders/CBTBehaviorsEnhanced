@@ -217,8 +217,11 @@ namespace CBTBehaviorsEnhanced
 			if (!canMelee) return false;
 
 			// Troopers can only use physical attacks
-			if (actor.IsTrooper()) return false;
-
+			if (actor.IsTrooper())
+            {
+				return Mod.Config.Melee.DFA.EnableTrooperDFAButSeriouslyGetOnStratOpsAlready;
+			}
+				
 			// Vehicles can charge if they have speed to make an attack
 			if (actor.IsVehicle() || actor.IsNaval())
 			{

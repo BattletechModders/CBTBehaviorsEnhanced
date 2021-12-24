@@ -404,6 +404,8 @@ namespace CBTBehaviorsEnhanced
 
         // The number of pips to remove from vehicles when hit by this attack
         public int TargetVehicleEvasionPipsRemoved = 4;
+
+        public bool EnableTrooperDFAButSeriouslyGetOnStratOpsAlready = false;
     }
 
     public class KickMeleeOps
