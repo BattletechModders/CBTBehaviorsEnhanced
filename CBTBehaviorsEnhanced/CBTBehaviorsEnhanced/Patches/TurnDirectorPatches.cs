@@ -73,7 +73,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     Mod.Log.Debug?.Write($" -- TEAM: {teamActor.Name} --");
                     foreach (AbstractActor actor in teamActor.units)
                     {
-                        Mod.Log.Debug?.Write($" ---- UNIT: {actor}");
+                        Mod.Log.Debug?.Write($" ---- UNIT: {actor.DistinctId()}");
                     }
                 }
                 else if (turnActor is AITeam aiTeam)
@@ -81,7 +81,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     Mod.Log.Debug?.Write($" -- AI TEAM: {aiTeam.Name} --");
                     foreach (AbstractActor actor in aiTeam.units)
                     {
-                        Mod.Log.Debug?.Write($" ---- UNIT: {actor}");
+                        Mod.Log.Debug?.Write($" ---- UNIT: {actor.DistinctId()}");
                     }
                 }
                 else if ("EFFECT MANAGER SINGLETON".Equals(turnActor.GUID, StringComparison.InvariantCultureIgnoreCase))
