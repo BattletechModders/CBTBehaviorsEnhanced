@@ -58,7 +58,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float ChargeAttackerDamage(this Mech mech, float targetTonnage)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerDamagePerTargetTon * targetTonnage);
-            Mod.MeleeLog.Debug?.Write($"Charge Attacker baseDamage: {Mod.Config.Melee.Charge.AttackerDamagePerTargetTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"Charge Attacker: {mech.DistinctId()} baseDamage: {Mod.Config.Melee.Charge.AttackerDamagePerTargetTon} x " +
                 $"target tonnage: {targetTonnage} = {raw}");
 
             // Modifiers
@@ -67,7 +67,7 @@ namespace CBTBehaviorsEnhanced.Extensions
             float multi = mech.StatCollection.ContainsStatistic(ModStats.ChargeAttackerDamageMulti) ?
                 mech.StatCollection.GetValue<float>(ModStats.ChargeAttackerDamageMulti) : 1f;
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Attacker damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Attacker damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -75,7 +75,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float ChargeTargetDamage(this Mech mech, int hexesMoved)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.TargetDamagePerAttackerTon * mech.tonnage * hexesMoved);
-            Mod.MeleeLog.Debug?.Write($"Charge Target baseDamage: {Mod.Config.Melee.Charge.TargetDamagePerAttackerTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"Charge Target {mech.DistinctId()} baseDamage: {Mod.Config.Melee.Charge.TargetDamagePerAttackerTon} x " +
                 $"mech tonnage: {mech.tonnage} x hexesMoved: {hexesMoved} = {raw}");
 
             // Modifiers
@@ -85,7 +85,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.ChargeTargetDamageMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -93,7 +93,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float ChargeAttackerInstability(this Mech mech, float targetTonnage, int hexesMoved)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon * targetTonnage * hexesMoved);
-            Mod.MeleeLog.Debug?.Write($"Charge Attacker instability: {Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"Charge Attacker {mech.DistinctId()} instability: {Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon} x " +
                 $"target tonnage: {targetTonnage} x hexesMoved: {hexesMoved} = {raw}");
 
             // Modifiers
@@ -103,7 +103,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.ChargeAttackerInstabilityMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Attacker instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Attacker instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -111,7 +111,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float ChargeTargetInstability(this Mech mech, float targetTonnage, int hexesMoved)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.TargetInstabilityPerAttackerTon * mech.tonnage * hexesMoved);
-            Mod.MeleeLog.Debug?.Write($"Charge Target instability: {Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"Charge Target {mech.DistinctId()} instability: {Mod.Config.Melee.Charge.AttackerInstabilityPerTargetTon} x " +
                 $"target tonnage: {targetTonnage} x hexesMoved: {hexesMoved} = {raw}");
 
             // Modifiers
@@ -121,7 +121,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.ChargeTargetInstabilityMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -129,7 +129,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float DFAAttackerDamage(this Mech mech, float targetTonnage)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.AttackerDamagePerTargetTon * targetTonnage);
-            Mod.MeleeLog.Debug?.Write($"DFA Attacker baseDamage: {Mod.Config.Melee.DFA.AttackerDamagePerTargetTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"DFA Attacker {mech.DistinctId()} baseDamage: {Mod.Config.Melee.DFA.AttackerDamagePerTargetTon} x " +
                 $"target tonnage: {targetTonnage} = {raw}");
 
             // Modifiers
@@ -139,7 +139,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveAttackerDamageMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Attacker damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Attacker damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -147,7 +147,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float DFATargetDamage(this Mech mech)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetDamagePerAttackerTon * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"DFA Target baseDamage: {Mod.Config.Melee.DFA.TargetDamagePerAttackerTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"DFA Target {mech.DistinctId()} baseDamage: {Mod.Config.Melee.DFA.TargetDamagePerAttackerTon} x " +
                 $"mech tonnage: {mech.tonnage} = {raw}");
 
             // Modifiers
@@ -157,7 +157,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetDamageMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Target damage => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -166,7 +166,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         {
             // Resolve attacker instability
             float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.AttackerInstabilityPerTargetTon * targetTonnage);
-            Mod.MeleeLog.Debug?.Write($"DFA Attacker instability: {Mod.Config.Melee.DFA.AttackerInstabilityPerTargetTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"DFA Attacker {mech.DistinctId()} instability: {Mod.Config.Melee.DFA.AttackerInstabilityPerTargetTon} x " +
                 $"target tonnage: {targetTonnage} = {raw}");
 
             // Modifiers
@@ -176,7 +176,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveAttackerInstabilityMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Attacker instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Attacker instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -184,7 +184,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float DFATargetInstability(this Mech mech)
         {
             float raw = (float)Math.Ceiling(Mod.Config.Melee.DFA.TargetInstabilityPerAttackerTon * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"DFA target instability: {Mod.Config.Melee.DFA.TargetInstabilityPerAttackerTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"DFA target {mech.DistinctId()} instability: {Mod.Config.Melee.DFA.TargetInstabilityPerAttackerTon} x " +
                 $"mech tonnage: {mech.tonnage} = {raw}");
 
             // Modifiers
@@ -194,7 +194,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 mech.StatCollection.GetValue<float>(ModStats.DeathFromAboveTargetInstabilityMulti) : 1f;
 
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -205,7 +205,7 @@ namespace CBTBehaviorsEnhanced.Extensions
             if (!attackerCondition.CanKick()) return 0;
 
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetDamagePerAttackerTon * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"KICK baseDamage: {Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"KICK {mech.DistinctId()} baseDamage: {Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon} x " +
                 $"mech tonnage: {mech.tonnage} = {raw}");
 
             // Modifiers
@@ -218,19 +218,19 @@ namespace CBTBehaviorsEnhanced.Extensions
             float leftLegReductionMulti = 1f;
             int damagedLeftActuators = 2 - attackerCondition.LeftLegActuatorsCount;
             for (int i = 0; i < damagedLeftActuators; i++) leftLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Left leg actuator damage multi is: {leftLegReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Left leg actuator damage multi is: {leftLegReductionMulti}");
 
             float rightLegReductionMulti = 1f;
             int damagedRightActuators = 2 - attackerCondition.RightLegActuatorsCount;
             for (int i = 0; i < damagedRightActuators; i++) rightLegReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Right leg actuator damage multi is: {rightLegReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Right leg actuator damage multi is: {rightLegReductionMulti}");
 
             float actuatorMulti = leftLegReductionMulti >= rightLegReductionMulti ? leftLegReductionMulti : rightLegReductionMulti;
-            Mod.MeleeLog.Debug?.Write($" - Using leg actuator damage multi of: {actuatorMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Using leg actuator damage multi of: {actuatorMulti}");
 
             // Roll up final damage
             float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
-            Mod.MeleeLog.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
+            Mod.MeleeDamageLog.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x actuatorMulti: {actuatorMulti}");
 
             return final;
@@ -242,7 +242,7 @@ namespace CBTBehaviorsEnhanced.Extensions
             if (!attackerCondition.CanKick()) return 0;
 
             float raw = (float)Math.Ceiling(Mod.Config.Melee.Kick.TargetInstabilityPerAttackerTon * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"KICK baseStability: {Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon} x " +
+            Mod.MeleeDamageLog.Debug?.Write($"KICK {mech.DistinctId()} baseStability: {Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon} x " +
                 $"attacker tonnage: {mech.tonnage} = {raw}");
 
             // Modifiers
@@ -255,19 +255,19 @@ namespace CBTBehaviorsEnhanced.Extensions
             float leftReductionMulti = 1f;
             int damagedLeftCount = 2 - attackerCondition.LeftLegActuatorsCount;
             for (int i = 0; i < damagedLeftCount; i++) leftReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Left actuator damage multi is: {leftReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Left actuator damage multi is: {leftReductionMulti}");
 
             float rightReductionMulti = 1f;
             int damagedRight = 2 - attackerCondition.RightLegActuatorsCount;
             for (int i = 0; i < damagedRight; i++) rightReductionMulti *= Mod.Config.Melee.Kick.LegActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Right actuator damage multi is: {rightReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Right actuator damage multi is: {rightReductionMulti}");
 
             float actuatorMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.MeleeLog.Debug?.Write($" - Using actuator damage multi of: {actuatorMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Using actuator damage multi of: {actuatorMulti}");
 
             // Roll up instability
             float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
-            Mod.MeleeLog.Debug?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
+            Mod.MeleeDamageLog.Debug?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x actuatorMulti: {actuatorMulti}");
 
             return final;
@@ -286,7 +286,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 Mod.Config.Melee.PhysicalWeapon.DefaultDamagePerAttackerTon;
 
             float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"PHYSICAL WEAPON damage => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
+            Mod.MeleeDamageLog.Debug?.Write($"PHYSICAL WEAPON {mech.DistinctId()} damage => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetDamageMod) ?
@@ -296,7 +296,7 @@ namespace CBTBehaviorsEnhanced.Extensions
 
             // Roll up final damage
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -313,7 +313,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 Mod.Config.Melee.PhysicalWeapon.DefaultInstabilityPerAttackerTon;
 
             float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"PHYSICAL WEAPON instability => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
+            Mod.MeleeDamageLog.Debug?.Write($"PHYSICAL WEAPON {mech.DistinctId()} instability => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.PhysicalWeaponTargetInstabilityMod) ?
@@ -323,7 +323,7 @@ namespace CBTBehaviorsEnhanced.Extensions
 
             // Roll up final damage
             float final = (float)Math.Ceiling((raw + mod) * multi);
-            Mod.MeleeLog.Debug?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x multi: {multi}");
 
             return final;
         }
@@ -345,7 +345,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 Mod.Config.Melee.Punch.TargetDamagePerAttackerTon;
 
             float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"PUNCH damage => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
+            Mod.MeleeDamageLog.Debug?.Write($"PUNCH {mech.DistinctId()} damage => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetDamageMod) ?
@@ -357,19 +357,19 @@ namespace CBTBehaviorsEnhanced.Extensions
             float leftReductionMulti = 1f;
             int damagedLeftActuators = 2 - attackerCondition.LeftArmActuatorsCount;
             for (int i = 0; i < damagedLeftActuators; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Left arm actuator damage is: {leftReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Left arm actuator damage is: {leftReductionMulti}");
 
             float rightReductionMulti = 1f;
             int damagedRightActuators = 2 - attackerCondition.RightArmActuatorsCount;
             for (int i = 0; i < damagedRightActuators; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Right arm actuator damage is: {rightReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Right arm actuator damage is: {rightReductionMulti}");
 
             float reductionMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.MeleeLog.Debug?.Write($" - Using arm actuator damage reduction of: {reductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Using arm actuator damage reduction of: {reductionMulti}");
 
             // Roll up final damage
             float final = (float)Math.Ceiling((raw + mod) * multi * reductionMulti);
-            Mod.MeleeLog.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
+            Mod.MeleeDamageLog.Debug?.Write($" - Target damage per strike => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x reductionMulti: {reductionMulti}");
 
             return final;
@@ -387,7 +387,7 @@ namespace CBTBehaviorsEnhanced.Extensions
                 Mod.Config.Melee.Punch.TargetInstabilityPerAttackerTon;
 
             float raw = (float)Math.Ceiling(tonnageMulti * mech.tonnage);
-            Mod.MeleeLog.Debug?.Write($"PUNCH instability => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
+            Mod.MeleeDamageLog.Debug?.Write($"PUNCH {mech.DistinctId()} instability => tonnageMulti: {tonnageMulti} x attacker tonnage: {mech.tonnage} = raw: {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.PunchTargetInstabilityMod) ?
@@ -399,19 +399,19 @@ namespace CBTBehaviorsEnhanced.Extensions
             float leftReductionMulti = 1f;
             int damagedLeftCount = 2 - attackerCondition.LeftArmActuatorsCount;
             for (int i = 0; i < damagedLeftCount; i++) leftReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Left actuator damage multi is: {leftReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Left actuator damage multi is: {leftReductionMulti}");
 
             float rightReductionMulti = 1f;
             int damagedRightCount = 2 - attackerCondition.RightArmActuatorsCount;
             for (int i = 0; i < damagedRightCount; i++) rightReductionMulti *= Mod.Config.Melee.Punch.ArmActuatorDamageReduction;
-            Mod.MeleeLog.Debug?.Write($" - Right actuator damage multi is: {rightReductionMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Right actuator damage multi is: {rightReductionMulti}");
 
             float actuatorMulti = leftReductionMulti >= rightReductionMulti ? leftReductionMulti : rightReductionMulti;
-            Mod.MeleeLog.Debug?.Write($" - Using actuator damage multi of: {actuatorMulti}");
+            Mod.MeleeDamageLog.Debug?.Write($" - Using actuator damage multi of: {actuatorMulti}");
 
             // Roll up instability
             float final = (float)Math.Ceiling((raw + mod) * multi * actuatorMulti);
-            Mod.MeleeLog.Info?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
+            Mod.MeleeDamageLog.Info?.Write($" - Target instability => final: {final} = (raw: {raw} + mod: {mod}) x " +
                 $"multi: {multi} x actuatorMulti: {actuatorMulti}");
 
             return final;

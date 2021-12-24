@@ -25,7 +25,9 @@ namespace CBTBehaviorsEnhanced
         public static DeferringLogger Log;
         public static DeferringLogger HeatLog;
         public static DeferringLogger MeleeLog;
+        public static DeferringLogger MeleeDamageLog;
         public static DeferringLogger ActivationLog;
+        public static DeferringLogger HullBreachLog;
         public static DeferringLogger MoveLog;
         public static DeferringLogger AILog;
         public static DeferringLogger UILog;
@@ -56,7 +58,9 @@ namespace CBTBehaviorsEnhanced
             Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
             HeatLog = new DeferringLogger(modDirectory, LogName + "_heat", LogLabel, Config.Debug, Config.Trace);
             MeleeLog = new DeferringLogger(modDirectory, LogName + "_melee", LogLabel, Config.Debug, Config.Trace);
+            MeleeDamageLog = new DeferringLogger(modDirectory, LogName + "_meleedamage", LogLabel, Config.Debug, Config.Trace);
             ActivationLog = new DeferringLogger(modDirectory, LogName + "_activation", LogLabel, Config.Debug, Config.Trace);
+            HullBreachLog = new DeferringLogger(modDirectory, LogName + "_hullbreach", LogLabel, Config.Debug, Config.Trace);
             AILog = new DeferringLogger(modDirectory, LogName + "_ai", LogLabel, Config.Debug, Config.Trace);
             MoveLog = new DeferringLogger(modDirectory, LogName + "_move", LogLabel, Config.Debug, Config.Trace);
             UILog = new DeferringLogger(modDirectory, LogName + "_ui", LogLabel, Config.Debug, Config.Trace);

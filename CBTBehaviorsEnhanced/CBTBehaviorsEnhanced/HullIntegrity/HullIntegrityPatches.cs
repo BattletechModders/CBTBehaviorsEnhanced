@@ -16,7 +16,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
-            Mod.Log.Trace?.Write("AD:OASB - entered.");
+            Mod.HullBreachLog.Trace?.Write("AD:OASB - entered.");
 
             AttackSequenceBeginMessage asbMessage = message as AttackSequenceBeginMessage;
             if (__instance == null || asbMessage == null) return;
@@ -26,14 +26,14 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
 
             if (attackSequence == null)
             {
-                Mod.Log.Debug?.Write($"AttackSequence not found - created by a mod or CAC watchdog killed it. Skipping!");
+                Mod.HullBreachLog.Debug?.Write($"AttackSequence not found - created by a mod or CAC watchdog killed it. Skipping!");
                 ModState.BreachAttackId = ModState.NO_ATTACK_SEQUENCE_ID;
             }
 
             // No chosen target, nothing to damage
             if (attackSequence.chosenTarget == null) return;
 
-            Mod.Log.Debug?.Write($"Recording attackSequence: {attackSequence.id} for possible hull breaches.");
+            Mod.HullBreachLog.Debug?.Write($"Recording attackSequence: {attackSequence.id} for possible hull breaches.");
             ModState.BreachAttackId = attackSequence.id;
         }
     }
@@ -43,7 +43,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(AttackDirector __instance, MessageCenterMessage message) {
-            Mod.Log.Trace?.Write("AD:OASE - entered.");
+            Mod.HullBreachLog.Trace?.Write("AD:OASE - entered.");
 
             // Nothing to do
             if (ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) return;
@@ -56,7 +56,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             AttackDirector.AttackSequence attackSequence = __instance.GetAttackSequence(sequenceId);
 
             if (attackSequence == null) {
-                Mod.Log.Info?.Write($"Could not find attack sequence with id: {sequenceId}. CAC may have killed it, or there's an error in processing. Skipping hull breach checks.");
+                Mod.HullBreachLog.Info?.Write($"Could not find attack sequence with id: {sequenceId}. CAC may have killed it, or there's an error in processing. Skipping hull breach checks.");
                 return;
             }
 
@@ -64,27 +64,27 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             if (attackSequence.chosenTarget == null) return;
 
             if (ModState.BreachAttackId != attackSequence.id) {
-                Mod.Log.Debug?.Write($"Attack sequence ID {attackSequence.id} does not match Hull Breach Attack Id - skipping hull breach resolution.");
+                Mod.HullBreachLog.Debug?.Write($"Attack sequence ID {attackSequence.id} does not match Hull Breach Attack Id - skipping hull breach resolution.");
                 return;
             }
 
             float structureDamage = attackSequence.GetStructureDamageDealt(attackSequence.chosenTarget.GUID);
-            Mod.Log.Debug?.Write($"Attack sequence {sequenceId} did {structureDamage} structure damage to target: {attackSequence.chosenTarget.GUID}");
+            Mod.HullBreachLog.Debug?.Write($"Attack sequence {sequenceId} did {structureDamage} structure damage to target: {attackSequence.chosenTarget.GUID}");
             if (structureDamage == 0f) {
-                Mod.Log.Debug?.Write($"Attack did no structure damage, skipping.");
+                Mod.HullBreachLog.Debug?.Write($"Attack did no structure damage, skipping.");
                 return;
             }
 
             if (attackSequence.chosenTarget is Mech targetMech) {
-                Mod.Log.Debug?.Write($"Checking hull breaches for targetMech: {CombatantUtils.Label(targetMech)}");
+                Mod.HullBreachLog.Debug?.Write($"Checking hull breaches for targetMech: {CombatantUtils.Label(targetMech)}");
                 ResolveMechHullBreaches(targetMech);
             }
             if (attackSequence.chosenTarget is Turret targetTurret) {
-                Mod.Log.Debug?.Write($"Checking hull breaches for targetTurret: {CombatantUtils.Label(targetTurret)}");
+                Mod.HullBreachLog.Debug?.Write($"Checking hull breaches for targetTurret: {CombatantUtils.Label(targetTurret)}");
                 ResolveTurretHullBreaches(targetTurret);
             }
             if (attackSequence.chosenTarget is Vehicle targetVehicle) {
-                Mod.Log.Debug?.Write($"Checking hull breaches for targetVehicle: {CombatantUtils.Label(targetVehicle)}");
+                Mod.HullBreachLog.Debug?.Write($"Checking hull breaches for targetVehicle: {CombatantUtils.Label(targetVehicle)}");
                 ResolveVehicleHullBreaches(targetVehicle);
             }
 
@@ -94,7 +94,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             ModState.BreachHitsTurret.Clear();
             ModState.BreachHitsVehicle.Clear();
 
-            Mod.Log.Trace?.Write("AD:OASE - exiting.");
+            Mod.HullBreachLog.Trace?.Write("AD:OASE - exiting.");
         }
 
         // Resolve mech hits - mark components invalid, but kill the pilot on a head-hit
@@ -109,7 +109,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 bool hasImmunity = false;
                 foreach (MechComponent mc in componentsInLocation) {
                     if (mc.StatCollection.ContainsStatistic(ModStats.HullBreachImmunity)) {
-                        Mod.Log.Info?.Write($"  Component: {mc.UIName} grants hull breach immunity to {CombatantUtils.Label(targetMech)}, skipping!");
+                        Mod.HullBreachLog.Info?.Write($"  Component: {mc.UIName} grants hull breach immunity to {CombatantUtils.Label(targetMech)}, skipping!");
                         hasImmunity = true;
                         break;
                     }
@@ -122,13 +122,13 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 // TODO: Number of trials is way too rough, and can make breaches extremely common. Weakening to flat percentage chance.
                 float sequencePassChance = Mathf.Pow(passChance, 1);
                 float sequenceThreshold = 1f - sequencePassChance;
-                Mod.Log.Debug?.Write($" For pass chance: {passChance} with n trials: {ModState.BreachHitsMech[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
+                Mod.HullBreachLog.Debug?.Write($" For pass chance: {passChance} with n trials: {ModState.BreachHitsMech[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
                 // Check for failure
                 bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetMech, 0f, Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]);
-                Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(targetMech)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
+                Mod.HullBreachLog.Debug?.Write($"Actor: {CombatantUtils.Label(targetMech)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
-                    Mod.Log.Info?.Write($" Mech {CombatantUtils.Label(targetMech)} suffers a hull breach in location: {hitLocation}");
+                    Mod.HullBreachLog.Info?.Write($" Mech {CombatantUtils.Label(targetMech)} suffers a hull breach in location: {hitLocation}");
 
                     string floatieText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetMech, floatieText, FloatieMessage.MessageNature.Debuff, false);
@@ -139,18 +139,18 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                     if (hitLocation <= ChassisLocations.RightTorso) {
                         switch (hitLocation) {
                             case ChassisLocations.Head:
-                                Mod.Log.Info?.Write($"  Head structure damage taken, killing pilot!");
+                                Mod.HullBreachLog.Info?.Write($"  Head structure damage taken, killing pilot!");
                                 targetMech.GetPilot().KillPilot(targetMech.Combat.Constants, "", 0, DamageType.Enemy, null, null);
                                 break;
                             case ChassisLocations.CenterTorso:
                             default:
                                 if (hitLocation == ChassisLocations.CenterTorso) 
                                 { 
-                                    Mod.Log.Info?.Write($"  Center Torso hull breach, unit should die from damage processing!"); 
+                                    Mod.HullBreachLog.Info?.Write($"  Center Torso hull breach, unit should die from damage processing!"); 
                                 }
                                 // Walk the location and disable every component in it
                                 foreach (MechComponent mc in componentsInLocation) {
-                                    Mod.Log.Info?.Write($"  Marking component: {mc.defId} of type: {mc.componentDef.Description.Name} nonfunctional due to hull breach.");
+                                    Mod.HullBreachLog.Info?.Write($"  Marking component: {mc.defId} of type: {mc.componentDef.Description.Name} nonfunctional due to hull breach.");
                                     mc.DamageComponent(default(WeaponHitInfo), ComponentDamageLevel.NonFunctional, true);
                                 }
                                 break;
@@ -171,7 +171,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
             bool hasImmunity = false;
             foreach (MechComponent mc in components) {
                 if (mc.StatCollection.ContainsStatistic(ModStats.HullBreachImmunity)) {
-                    Mod.Log.Debug?.Write($"  Component: {mc.UIName} grants hull breach immunity, skipping!");
+                    Mod.HullBreachLog.Debug?.Write($"  Component: {mc.UIName} grants hull breach immunity, skipping!");
                     hasImmunity = true;
                     break;
                 }
@@ -185,13 +185,13 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 // TODO: Number of trials is way too rough, and can make breaches extremely common. Weakening to flat percentage chance.
                 float sequencePassChance = Mathf.Pow(passChance, 1);
                 float sequenceThreshold = 1f - sequencePassChance;
-                Mod.Log.Debug?.Write($" For pass chance: {passChance} with n trials: {ModState.BreachHitsTurret[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
+                Mod.HullBreachLog.Debug?.Write($" For pass chance: {passChance} with n trials: {ModState.BreachHitsTurret[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
                 // Check for failure
                 bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetTurret, 0f, Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]);
-                Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(targetTurret)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
+                Mod.HullBreachLog.Debug?.Write($"Actor: {CombatantUtils.Label(targetTurret)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
-                    Mod.Log.Info?.Write($" Turret {CombatantUtils.Label(targetTurret)} suffers a hull breach in location: {hitLocation}");
+                    Mod.HullBreachLog.Info?.Write($" Turret {CombatantUtils.Label(targetTurret)} suffers a hull breach in location: {hitLocation}");
 
                     string floatieText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetTurret, floatieText, FloatieMessage.MessageNature.Debuff, false);
@@ -221,7 +221,7 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 bool hasImmunity = false;
                 foreach (MechComponent mc in componentsInLocation) {
                     if (mc.StatCollection.ContainsStatistic(ModStats.HullBreachImmunity)) {
-                        Mod.Log.Debug?.Write($"  Component: {mc.UIName} grants hull breach immunity, skipping!");
+                        Mod.HullBreachLog.Debug?.Write($"  Component: {mc.UIName} grants hull breach immunity, skipping!");
                         hasImmunity = true;
                         break;
                     }
@@ -235,13 +235,13 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
                 float sequencePassChance = Mathf.Pow(passChance, 1);
 
                 float sequenceThreshold = 1f - sequencePassChance;
-                Mod.Log.Debug?.Write($" For pass chance: {passChance} with n trials: {ModState.BreachHitsVehicle[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
+                Mod.HullBreachLog.Debug?.Write($" For pass chance: {passChance} with n trials: {ModState.BreachHitsVehicle[hitLocation]} has sequencePassChance: {sequencePassChance} => sequenceThreshold: {sequenceThreshold}");
 
                 // Check for failure
                 bool passedCheck = CheckHelper.DidCheckPassThreshold(sequenceThreshold, targetVehicle, 0f, Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]);
-                Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(targetVehicle)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
+                Mod.HullBreachLog.Debug?.Write($"Actor: {CombatantUtils.Label(targetVehicle)} HULL BREACH check: {passedCheck} for location: {hitLocation}");
                 if (!passedCheck) {
-                    Mod.Log.Info?.Write($" Vehicle {CombatantUtils.Label(targetVehicle)} suffers a hull breach in location: {hitLocation}");
+                    Mod.HullBreachLog.Info?.Write($" Vehicle {CombatantUtils.Label(targetVehicle)} suffers a hull breach in location: {hitLocation}");
 
                     string floatieText = new Text(Mod.LocalizedText.Floaties[ModText.FT_Hull_Breach]).ToString();
                     MultiSequence showInfoSequence = new ShowActorInfoSequence(targetVehicle, floatieText, FloatieMessage.MessageNature.Debuff, false);
@@ -266,15 +266,15 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(Mech __instance, ChassisLocations location, float damage, WeaponHitInfo hitInfo) {
-            Mod.Log.Trace?.Write("M:ASSD - entered.");
+            Mod.HullBreachLog.Trace?.Write("M:ASSD - entered.");
 
             if (ModState.BreachCheck == 0f || ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) { return; } // nothing to do
             if (hitInfo.attackSequenceId != ModState.BreachAttackId) {
-                Mod.Log.Warn?.Write($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
+                Mod.HullBreachLog.Warn?.Write($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
                 return;
             }
             
-            Mod.Log.Debug?.Write($" --- Location: {location} needs breach check.");
+            Mod.HullBreachLog.Debug?.Write($" --- Location: {location} needs breach check.");
             if (ModState.BreachHitsMech.ContainsKey(location)) {
                 ModState.BreachHitsMech[location]++;
             } else {
@@ -288,15 +288,15 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(Turret __instance, BuildingLocation location, float damage, WeaponHitInfo hitInfo) {
-            Mod.Log.Trace?.Write("T:ASSD - entered.");
+            Mod.HullBreachLog.Trace?.Write("T:ASSD - entered.");
 
             if (ModState.BreachCheck == 0f || ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) { return; } // nothing to do
             if (hitInfo.attackSequenceId != ModState.BreachAttackId) {
-                Mod.Log.Warn?.Write($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
+                Mod.HullBreachLog.Warn?.Write($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
                 return;
             }
 
-            Mod.Log.Debug?.Write($" --- Location: {location} needs breach check.");
+            Mod.HullBreachLog.Debug?.Write($" --- Location: {location} needs breach check.");
             if (ModState.BreachHitsTurret.ContainsKey(location)) {
                 ModState.BreachHitsTurret[location]++;
             } else {
@@ -311,15 +311,15 @@ namespace CBTBehaviorsEnhanced.HullIntegrity {
         public static bool Prepare() { return Mod.Config.Features.BiomeBreaches; }
 
         public static void Postfix(Vehicle __instance, VehicleChassisLocations location, float damage, WeaponHitInfo hitInfo) {
-            Mod.Log.Trace?.Write("V:ASSD - entered.");
+            Mod.HullBreachLog.Trace?.Write("V:ASSD - entered.");
 
             if (ModState.BreachCheck == 0f || ModState.BreachAttackId == ModState.NO_ATTACK_SEQUENCE_ID) { return; } // nothing to do
             if (hitInfo.attackSequenceId != ModState.BreachAttackId) {
-                Mod.Log.Warn?.Write($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
+                Mod.HullBreachLog.Warn?.Write($"AttackSequenceId: {hitInfo.attackSequenceId} does not match hull breach attack sequence id: {ModState.BreachAttackId}... wasn't expecting this, skipping!");
                 return;
             }
 
-            Mod.Log.Debug?.Write($" --- Location: {location} needs breach check.");
+            Mod.HullBreachLog.Debug?.Write($" --- Location: {location} needs breach check.");
             if (ModState.BreachHitsVehicle.ContainsKey(location)) {
                 ModState.BreachHitsVehicle[location]++;
             } else {
