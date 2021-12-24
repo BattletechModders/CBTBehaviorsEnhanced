@@ -152,6 +152,8 @@ namespace CBTBehaviorsEnhanced.Melee {
                             Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} cannot be used");
                         }
                     }
+                    Mod.MeleeLog.Debug?.Write($"  -- After filtering {allowedWeapons.Count} waepons will be used.");
+
                     ___requestedWeapons.Clear();
                     ___requestedWeapons.AddRange(allowedWeapons);
                 }
@@ -242,15 +244,17 @@ namespace CBTBehaviorsEnhanced.Melee {
                     }
                 }
 
-                if (__instance.OwningMech.isHasStability() && !__instance.OwningMech.IsOrWillBeProne)
+                // Attacker unsteady is interpreted as 'dump evasion' for vehicles
+                if ((targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnHit) ||
+                    (!targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnMiss))
                 {
-                    // Target stability and unsteady - always applies as we're always a mech
-                    if ((targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnHit) ||
-                        (!targetWasHit && seqState.meleeAttack.UnsteadyAttackerOnMiss))
-                    { 
+                    bool forceAttackerUnsteady = false;
+                    if (__instance.OwningMech.isHasStability() && !__instance.OwningMech.IsOrWillBeProne)
+                    {
                         Mod.MeleeLog.Info?.Write(" -- Forcing attacker to become unsteady from attack!");
-                        __instance.OwningMech.DumpEvasion();
-                    }            
+                        forceAttackerUnsteady = true;
+                    }
+                    __instance.OwningMech.DumpEvasion(forceUnsteady: forceAttackerUnsteady);
                 }
 
                 // Attacker cluster damage
@@ -288,7 +292,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                         if (seqState.meleeAttack.OnTargetMechHitForceUnsteady)
                         {
                             Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
-                            targetMech.DumpEvasion();
+                            targetMech.DumpEvasion(forceUnsteady: true);
                         }
                     }
 
