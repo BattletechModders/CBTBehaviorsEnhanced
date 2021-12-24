@@ -35,7 +35,7 @@ namespace CBTBehaviorsEnhanced
         public const string HBS_Received_Instability_Multi = "ReceivedInstabilityMultiplier";
         public const string HBS_Ignore_Pilot_Injuries = "IgnorePilotInjuries";
         public const string HBS_Mech_Current_Heat = "CurrentHeat";
-        
+        public const string HBS_Weapon_Temporarily_Disabled = "TemporarilyDisabled";
 
         // --- CHARGE STATS ---
         public const string ChargeAttackMod = "CBTBE_Charge_Attack_Mod"; // int - a straight modifier to the attack roll
@@ -136,6 +136,5 @@ namespace CBTBehaviorsEnhanced
         public const string Turret_Tag_Class_Medium = "unit_medium";
         public const string Turret_tag_Class_Heavy = "unit_heavy";
 
-        public const string HBS_Weapon_Temporarily_Disabled = "TemporarilyDisabled";
     }
 }

@@ -65,7 +65,7 @@ namespace CBTBehaviorsEnhanced.Helper
             int weaponHitInfoStackItemUID, float[] damageClusters, 
             DamageType damageType, MeleeAttackType meleeAttackType)
         {
-            Mod.Log.Warn?.Write($"DOING IMAGINARY ATTACK FOR: {attacker.DistinctId()} USING: {attackWeapon.Name}_{attackWeapon.GUID}");
+            Mod.Log.Warn?.Write($"DOING IMAGINARY ATTACK FOR: {attacker.DistinctId()} USING: {attackWeapon.Name}_{attackWeapon.uid}");
 
             Mod.Log.Info?.Write($"  Creating imaginary attack for attackType: {meleeAttackType}  damageType: {damageType}");
             Mod.Log.Info?.Write($"    attacker: {attacker.DistinctId()} => currentPos: {attacker?.CurrentPosition} currentRot: {attacker?.CurrentRotation}");
