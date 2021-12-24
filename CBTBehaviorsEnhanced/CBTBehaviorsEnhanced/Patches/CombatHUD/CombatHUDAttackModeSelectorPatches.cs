@@ -115,7 +115,17 @@ namespace CBTBehaviorsEnhanced.Patches
         static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
             ref string additionalDetails, bool showHeatWarnings)
         {
-            Mod.UILog.Debug?.Write($"ShowFireButton called with mode: {mode}");
+            Mod.UILog.Debug?.Write($"ShowFireButton:PRE called with mode: {mode}");
+
+            if (SharedState.CombatHUD == null || 
+                SharedState.CombatHUD.SelectionHandler == null ||
+                 SharedState.CombatHUD.SelectionHandler.ActiveState == null) 
+                return; // Nothing to do
+
+            if (SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos == null ||
+                SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor == null ||
+                SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant == null)
+                return; // nothing to do
 
             // Intentionally regen the meleeStates everytime the button changes, to make sure different positions calculate properly
             if (mode == CombatHUDFireButton.FireMode.Engage || mode == CombatHUDFireButton.FireMode.DFA)
@@ -125,7 +135,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     ModState.MeleePreviewPos = SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos;
                     Mod.UILog.Debug?.Write($"  - previewing for actor: {SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor.DistinctId()} at " +
                         $"pos: {SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos} vs " +
-                        $"target: {SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant}");
+                        $"target: {SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant.DistinctId()}");
 
                     // Update melee states
                     ModState.AddorUpdateMeleeState(
@@ -157,12 +167,12 @@ namespace CBTBehaviorsEnhanced.Patches
                     SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos == null ||
                     SharedState.CombatHUD?.SelectionHandler?.ActiveState?.TargetedCombatant == null)
                 {
-                    Mod.UILog.Trace?.Write($"Disabling all CHUD_Fire_Buttons");
+                    Mod.UILog.Debug?.Write($"Disabling all CHUD_Fire_Buttons");
                     ModState.MeleeAttackContainer.SetActive(false);
                     return;
                 }
 
-                Mod.UILog.Trace?.Write($"ShowFireButton called with mode: {mode} for " +
+                Mod.UILog.Debug?.Write($"ShowFireButton:POST called with mode: {mode} for " +
                     $"actor: {SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor?.DistinctId()}  " +
                     $"at pos: {SharedState.CombatHUD?.SelectionHandler?.ActiveState?.PreviewPos}");
 
@@ -250,9 +260,18 @@ namespace CBTBehaviorsEnhanced.Patches
                 if (mode == CombatHUDFireButton.FireMode.DFA)
                 {
 
+                    Mod.UILog.Debug?.Write($" -- handling DFA mode");
                     MeleeState meleeState = ModState.GetMeleeState(
                         SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
                         SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos);
+                    if (meleeState == null)
+                    {
+                        meleeState = ModState.AddorUpdateMeleeState(
+                            SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
+                            SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos,
+                            SharedState.CombatHUD.SelectionHandler.ActiveState.TargetedCombatant
+                            );
+                    }
 
                     // Check for valid attack
                     if (!meleeState.DFA.IsValid)
@@ -275,6 +294,8 @@ namespace CBTBehaviorsEnhanced.Patches
                         meleeState.DFA
                         );
                 }
+
+                Mod.UILog.Trace?.Write(" == ShowFireButton DONE");
             }
             catch (Exception e)
             {
