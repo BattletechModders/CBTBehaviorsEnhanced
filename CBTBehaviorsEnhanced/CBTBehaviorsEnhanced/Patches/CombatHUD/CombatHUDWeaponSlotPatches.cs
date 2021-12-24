@@ -33,7 +33,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 SharedState.CombatHUD?.SelectionHandler?.ActiveState is SelectionStateJump))
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
-                Mod.UILog.Debug?.Write($" Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
+                Mod.UILog.Trace?.Write($"Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
                 addToolTipDetailT.GetValue(new object[] { localText, Mod.Config.ToHitSelfJumped });
             }
 
@@ -68,42 +68,36 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (!(___weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
             {
-                Mod.UILog.Debug?.Write($"RefreshDisplayedWeapon:PRE - Updating {___HUD.SelectedActor.DistinctId()} " +
+                Mod.UILog.Trace?.Write($"RefreshDisplayedWeapon:PRE - Updating {___HUD.SelectedActor.DistinctId()} " +
                     $"melee or dfa weapon with text: {__instance.DamageText.text}");
                 return; // Skip melee and dfa weapons, let normal processing handle them
             }
 
-            if (ModState.MeleeAttackContainer?.activeInHierarchy == true)
+            
+            if (ModState.MeleeAttackContainer?.activeInHierarchy == true || // Handle normal melee states
+                SharedState.CombatHUD?.AttackModeSelector?.FireButton?.CurrentFireMode == CombatHUDFireButton.FireMode.DFA) // Handle DFA state
             {
                 MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
                 if (selectedAttack != null)
                 {
-                    Mod.UILog.Debug?.Write($"Checking ranged weapons attacker: {___HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
+                    Mod.UILog.Trace?.Write($"Checking ranged weapons attacker: {___HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
 
                     // Check if the weapon can fire according to the select melee type
                     bool isAllowed = selectedAttack.IsRangedWeaponAllowed(___displayedWeapon);
-                    Mod.UILog.Debug?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
+                    Mod.UILog.Trace?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
 
                     if (!isAllowed)
                     {
                         Mod.UILog.Trace?.Write($"Disabling weapon from selection");
-                        ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, true);
+                        ___displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, true);
                         return;
                     }
                 }
             }
 
-            ___displayedWeapon.StatCollection.Set(ModConsts.HBS_Weapon_Temporarily_Disabled, false);
-        }
+            
 
-        static void Postfix(CombatHUDWeaponSlot __instance, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
-        {
-            if (!(___weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
-            {
-                Mod.UILog.Debug?.Write($"RefreshDisplayedWeapon:POST - Updating {___HUD.SelectedActor.DistinctId()} " +
-                    $"melee or dfa weapon with text: {__instance.DamageText.text}");
-            }
-
+            ___displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, false);
         }
     }
 
@@ -117,7 +111,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UMW entered");
-            Mod.UILog.Debug?.Write($"UpdateMeleeWeapon called for: {___HUD.SelectedActor.DistinctId()} using " +
+            Mod.UILog.Trace?.Write($"UpdateMeleeWeapon called for: {___HUD.SelectedActor.DistinctId()} using " +
                 $"weapon: {___displayedWeapon.UIName}_{___displayedWeapon.uid}");
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
@@ -137,7 +131,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     new object[] { weapDam, punchDam, kickDam }
                     ).ToString();
                 __instance.DamageText.SetText(damageText);
-                Mod.UILog.Debug?.Write($"  -- default attackType has no damage, using damageText: {damageText}");
+                Mod.UILog.Trace?.Write($"  -- default attackType has no damage, using damageText: {damageText}");
             }
             else if (selectedAttack is ChargeAttack || selectedAttack is KickAttack || selectedAttack is PunchAttack || selectedAttack is WeaponAttack)
             {
@@ -171,7 +165,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
                     damageTextS = $"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})";
                 }
-                Mod.UILog.Debug?.Write($"  -- using damageText: {damageTextS}");
+                Mod.UILog.Trace?.Write($"  -- using damageText: {damageTextS}");
                 __instance.DamageText.SetText(damageTextS);
 
             }
@@ -201,7 +195,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else if (selectedAttack is DFAAttack)
             {
-                Mod.UILog.Debug?.Write("Updating labels for DFA state.");
+                Mod.UILog.Trace?.Write("Updating labels for DFA state.");
 
                 float totalDamage = selectedAttack.TargetDamageClusters.Sum();
                 if (selectedAttack.TargetDamageClusters.Length > 1)
@@ -214,7 +208,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 else
                 {
                     __instance.DamageText.SetText($"{totalDamage}");
-                    Mod.UILog.Debug?.Write($"  - damageS is: {totalDamage}");
+                    Mod.UILog.Trace?.Write($"  - damageS is: {totalDamage}");
                 }
             }
         }
