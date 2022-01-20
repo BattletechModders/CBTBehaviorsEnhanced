@@ -229,6 +229,8 @@ namespace CBTBehaviorsEnhanced {
                 if (ModState.MEIsLoaded)
                 {
                     boxDamage = CalcMEAmmoDamage(ammoBox);
+                    if (boxDamage == -1)
+                        continue;
                 }
 
                 // Multiply box damage by the volatile weighting
@@ -262,9 +264,12 @@ namespace CBTBehaviorsEnhanced {
             else
             {
                 Mod.HeatLog.Debug?.Write($"  AmmoBox: {ammoBox.UIName} is not configured as a ME ComponentExplosion, skipping.");
+                //  A return value of -1 means this isn't a valid ME ammo box, and it should be skipped
+                damage = -1;
             }
 
             return damage;
         }
+
     }
 }
