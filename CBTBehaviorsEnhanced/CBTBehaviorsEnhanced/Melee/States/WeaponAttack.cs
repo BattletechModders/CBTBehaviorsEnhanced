@@ -65,7 +65,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         public override bool IsRangedWeaponAllowed(Weapon weapon)
         {
             // TODO: Add conditional for bolt-ons; waiting on Harkonnen
-            if (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm)
+            if (!weapon.parent.IsTrooper() && (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm))
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon because it is in the arms.");
                 return false;
