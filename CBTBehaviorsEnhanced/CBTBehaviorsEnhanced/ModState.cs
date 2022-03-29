@@ -50,6 +50,8 @@ namespace CBTBehaviorsEnhanced {
 
         public static void Reset() {
 
+            Mod.Log.Info?.Write($"RESETTING MOD STATE!");
+
             // Melee weapon state
             meleeStates.Clear();
             selectedAttack.Clear();
