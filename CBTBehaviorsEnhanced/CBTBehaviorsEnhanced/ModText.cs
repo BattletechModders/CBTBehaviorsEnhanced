@@ -137,13 +137,15 @@ namespace CBTBehaviorsEnhanced
         // Labels for weapon tooltips
         public const string LT_Label_Actuator_Damage = "ATK_MOD_ACTUATOR_DAMAGE";
         public const string LT_Label_Attacker_Jumped = "ATK_MOD_ATTACKER_JUMPED";
-        public const string LT_Label_Charge_Attack_Mod = "ATK_MOD_CHARGE_MOD";
         public const string LT_Label_ComparativeSkill_Piloting = "ATK_MOD_COMPARATIVE_PILOTING";
         public const string LT_Label_Easy_to_Kick = "ATK_MOD_EASY_TO_KICK";
+        public const string LT_Label_Target_Prone = "ATK_MOD_TARGET_PRONE";
+
+        public const string LT_Label_Charge_Attack_Mod = "ATK_MOD_CHARGE_MOD";
         public const string LT_Label_Kick_Attack_Mod = "ATK_MOD_KICK_MOD";
         public const string LT_Label_Punch_Attack_Mod = "ATK_MOD_PUNCH_MOD";
         public const string LT_Label_Physical_Weapon_Attack_Mod = "ATK_MOD_PHYS_WEP_MOD";
-        public const string LT_Label_Target_Prone = "ATK_MOD_TARGET_PRONE";
+        public const string LT_Label_DFA_Attack_Mod = "ATK_MOD_DFA_MOD";
 
         public const string LT_Label_Weapon_Hover_Damage = "WEAPON_HOVER_DAMAGE";
         public const string LT_Label_Weapon_Hover_Instability = "WEAPON_HOVER_INSTABILITY";
@@ -166,13 +168,15 @@ namespace CBTBehaviorsEnhanced
             // Attack labels
             { LT_Label_Actuator_Damage, "ACTUATOR DAMAGE" },
             { LT_Label_Attacker_Jumped, "ATTACKER JUMPED" },
-            { LT_Label_Charge_Attack_Mod, "CHARGE MOD" },
             { LT_Label_ComparativeSkill_Piloting, "PILOTING DELTA" },
             { LT_Label_Easy_to_Kick, "EASY TO KICK" },
+            { LT_Label_Target_Prone, "PRONE MELEE TARGET" },
+
+            { LT_Label_Charge_Attack_Mod, "CHARGE MOD" },
             { LT_Label_Kick_Attack_Mod, "KICK MOD" },
             { LT_Label_Punch_Attack_Mod, "PUNCH MOD" },
             { LT_Label_Physical_Weapon_Attack_Mod, "P.WEAP MOD" },
-            { LT_Label_Target_Prone, "PRONE MELEE TARGET" },
+            { LT_Label_DFA_Attack_Mod, "DFA MOD" },
 
             // Weapon hover labels
             { LT_Label_Weapon_Hover_Damage, "{0} dmg" },

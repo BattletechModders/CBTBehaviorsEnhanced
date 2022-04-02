@@ -113,6 +113,13 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 				this.AttackModifiers.Add(ModText.LT_Label_ComparativeSkill_Piloting, comparativeSkill);
 			}
 
+			// Check for attack modifier statistic
+			int dfaAttackMod = attacker.StatCollection.GetValue<int>(ModStats.DeathFromAboveAttackMod);
+			if (dfaAttackMod != 0)
+			{
+				this.AttackModifiers.Add(ModText.LT_Label_DFA_Attack_Mod, dfaAttackMod);
+			}
+
 			// Check for prone targets
 			if (target.IsProne) this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
