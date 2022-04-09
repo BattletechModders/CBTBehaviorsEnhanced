@@ -287,7 +287,8 @@ namespace CBTBehaviorsEnhanced.Patches
                     HashSet<string> descriptonNotes = meleeState.DFA.DescriptionNotes;
                     additionalDetails = String.Join(", ", descriptonNotes);
                     Mod.UILog.Info?.Write($"Aggregate description is: {additionalDetails}");
-
+                    __instance.DescriptionText.SetText(additionalDetails);
+                    __instance.DescriptionText.ForceMeshUpdate(true);
                     // Select state here as a click will validate 
                     ModState.AddOrUpdateSelectedAttack(
                         SharedState.CombatHUD.SelectionHandler.ActiveState.SelectedActor,
