@@ -2,6 +2,7 @@
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
+using CustomComponents;
 using Localize;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,18 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
 		public override bool IsRangedWeaponAllowed(Weapon weapon)
 		{
+			if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
+			{
+				Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed as it can never be used in melee");
+				return false;
+			}
+
+			if (weapon.componentDef.IsCategory(ModConsts.CC_Category_AlwaysMelee))
+			{
+				Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} marked with AlwaysMelee category, force-enabling");
+				return true;
+			}
+
 			return false;
 		}
 

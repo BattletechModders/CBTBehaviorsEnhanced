@@ -64,7 +64,26 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         public override bool IsRangedWeaponAllowed(Weapon weapon)
         {
-            // TODO: Add conditional for bolt-ons; waiting on Harkonnen
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed as it can never be used in melee");
+                return false;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_AlwaysMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} marked with AlwaysMelee category, force-enabling");
+                return true;
+            }
+
+            if (base.state.attacker.IsTrooper())
+            {
+
+                Mod.MeleeLog.Debug?.Write($"Attacker is trooper, enabling weapons.");
+                return true;
+            }
+
+            // Mech only considerations
             if (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm)
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon because it is in the arms.");
@@ -74,12 +93,6 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_NoArmMelee))
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon as it is a handheld that requires hands");
-                return false;
-            }
-
-            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
-            {
-                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon as it can never be used in melee");
                 return false;
             }
 

@@ -57,15 +57,21 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         public override bool IsRangedWeaponAllowed(Weapon weapon)
         {
-            if (weapon.Location == (int)ChassisLocations.LeftLeg || weapon.Location == (int)ChassisLocations.RightLeg)
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
             {
-                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for kick because it is in the legs.");
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed as it can never be used in melee");
                 return false;
             }
 
-            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_AlwaysMelee))
             {
-                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for kick as it can never be used in melee");
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} marked with AlwaysMelee category, force-enabling");
+                return true;
+            }
+
+            if (weapon.Location == (int)ChassisLocations.LeftLeg || weapon.Location == (int)ChassisLocations.RightLeg)
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for kick because it is in the legs.");
                 return false;
             }
 
