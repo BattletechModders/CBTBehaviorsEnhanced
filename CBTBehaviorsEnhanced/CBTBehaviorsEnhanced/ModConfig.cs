@@ -304,6 +304,7 @@ namespace CBTBehaviorsEnhanced
     // https://github.com/Bohica/BattletechCombatMachine/wiki/HEAT or Tactical Operations pg. 105
     public class HeatOptions
     {
+        public bool EnableHeatMovementMods = true;
         // 5:-1, 10:-2, 15:-3, 20:-4, 25:-5, 31:-6, 37:-7, 43:-8, 49:-9
         public SortedDictionary<int, int> Movement = new SortedDictionary<int, int>();
 

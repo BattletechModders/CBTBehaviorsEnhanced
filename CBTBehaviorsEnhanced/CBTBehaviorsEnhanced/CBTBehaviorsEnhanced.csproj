@@ -101,6 +101,7 @@
     <Compile Include="CAC\InvalidateUnitStateOnDamage.cs" />
     <Compile Include="Extensions\AbstractActorExtensions.cs" />
     <Compile Include="Extensions\TurretExtensions.cs" />
+    <Compile Include="Heat\MoveHeatModifierPatches.cs" />
     <Compile Include="Heat\MechStartupSequencePatches.cs" />
     <Compile Include="Helper\AttackHelper.cs" />
     <Compile Include="Helper\CleverGirlCalculator.cs" />

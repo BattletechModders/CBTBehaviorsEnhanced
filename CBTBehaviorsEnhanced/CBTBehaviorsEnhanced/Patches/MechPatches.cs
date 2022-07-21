@@ -36,6 +36,14 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<float>(ModStats.InjuryCheckMod, 0f);
             __instance.StatCollection.AddStatistic<float>(ModStats.SystemFailureCheckMod, 0f);
 
+            // Initialize movement heat modifier stats
+            if (Mod.Config.Heat.EnableHeatMovementMods)
+            {
+                __instance.StatCollection.AddStatistic<float>(ModStats.WalkHeatMult, 1f);
+                __instance.StatCollection.AddStatistic<float>(ModStats.SprintHeatMult, 1f);
+                __instance.StatCollection.AddStatistic<float>(ModStats.WalkHeatMod, 0f);
+                __instance.StatCollection.AddStatistic<float>(ModStats.SprintHeatMod, 0f);
+            }
             // Setup melee stats
 
             // --- CHARGE STATS ---
@@ -136,7 +144,6 @@ namespace CBTBehaviorsEnhanced.Patches
             // Disable default heat penalties
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatToHitPenalties, false);
             __instance.StatCollection.Set<bool>(ModStats.IgnoreHeatMovementPenalties, false);
-
         }
     }
 

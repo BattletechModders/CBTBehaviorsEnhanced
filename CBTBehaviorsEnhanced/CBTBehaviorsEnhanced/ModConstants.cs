@@ -10,6 +10,10 @@ namespace CBTBehaviorsEnhanced
         public const string MeleeHitPushBackPhases = "MeleeHitPushBackPhases";
         public const string OverHeatLevel = "OverheatLevel";
         public const string MaxHeat = "MaxHeat";
+        public const string WalkHeatMult = "WalkHeatMult";
+        public const string SprintHeatMult = "SprintHeatMult";
+        public const string WalkHeatMod = "WalkHeatMod";
+        public const string SprintHeatMod = "SprintHeatMod";
 
         public const string MovementPenalty = "CBTBE_MovePenalty"; // int
         public const string FiringPenalty = "CBTBE_FirePenalty"; // int
