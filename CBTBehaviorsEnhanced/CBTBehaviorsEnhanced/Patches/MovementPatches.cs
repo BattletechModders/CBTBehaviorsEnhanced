@@ -110,11 +110,7 @@ namespace CBTBehaviorsEnhanced
                 if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0)
                 {
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
-                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
-                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.SkillChecks.ModPerPointOfPiloting;
-                    float checkMod = sourceSkillMulti + damagePenalty;
-                    Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
-
+                    float checkMod = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
                     bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Run);
                     if (!sourcePassed)
                     {
@@ -186,10 +182,7 @@ namespace CBTBehaviorsEnhanced
                 if (__instance.OwningMech.ActuatorDamageMalus() != 0 || Mod.Config.Developer.ForceFallAfterJump)
                 {
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
-                    float sourceSkillMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
-                    float damagePenalty = __instance.OwningMech.ActuatorDamageMalus() * Mod.Config.SkillChecks.ModPerPointOfPiloting;
-                    float checkMod = sourceSkillMulti + damagePenalty;
-                    Mod.Log.Debug?.Write($"  moveSkillMulti:{sourceSkillMulti} - damagePenalty: {damagePenalty} = checkMod: {checkMod}");
+                    float checkMod = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
 
                     bool sourcePassed = Mod.Config.Developer.ForceFallAfterJump ? false : 
                         CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterJumpChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Jump);

@@ -22,6 +22,11 @@ namespace CBTBETests
                 "CBTBE_tests_melee", "CBTBETEST", true, true);
 
             Mod.Config = new ModConfig();
+
+            // Needed for a few pilot check tests
+            IRBTModUtils.Mod.Log = new DeferringLogger(testContext.TestResultsDirectory,
+                "IRBTModUtils", "IRBTMU", true, true);
+
         }
 
         [AssemblyCleanup]

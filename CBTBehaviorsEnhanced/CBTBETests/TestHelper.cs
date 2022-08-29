@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace CBTBETests
 {
@@ -33,6 +34,9 @@ namespace CBTBETests
             mechDefT.SetValue(mechDef);
 
             mech = (Mech)InitAbstractActor(mech);
+
+            Traverse pilotT = Traverse.Create(mech).Property("pilot");
+            pilotT.SetValue(BuildTestPilot());
 
             return mech;
         }
@@ -84,18 +88,39 @@ namespace CBTBETests
 
             // Vanilla
             actor.StatCollection.AddStatistic<float>("SensorSignatureModifier", 1.0f);
-
+            
             return actor;
         }
 
         private static Pilot BuildTestPilot()
         {
+            HumanDescriptionDef pilotDescDef = new HumanDescriptionDef();
+            Traverse pilotDescNameT = Traverse.Create(pilotDescDef).Property("Name");
+            pilotDescNameT.SetValue("PilotFoo");
+
             PilotDef pilotDef = new PilotDef();
             Guid guid = new Guid();
+            Traverse pilotDescT = Traverse.Create(pilotDef).Property("Description");
+            pilotDescT.SetValue(pilotDescDef);
+
+            Traverse pilotTagsT = Traverse.Create(pilotDef).Property("PilotTags");
+            pilotTagsT.SetValue(new HBS.Collections.TagSet());
 
             Pilot pilot = new Pilot(pilotDef, guid.ToString(), false);
 
+            // IRTweaks ExtendedStats integration
+            pilot.StatCollection.SetValidator<int>("Piloting", new Statistic.Validator<int>(CustomPilotAttributeValidator<int>));
+            pilot.StatCollection.SetValidator<int>("Gunnery", new Statistic.Validator<int>(CustomPilotAttributeValidator<int>));
+            pilot.StatCollection.SetValidator<int>("Guts", new Statistic.Validator<int>(CustomPilotAttributeValidator<int>));
+            pilot.StatCollection.SetValidator<int>("Tactics", new Statistic.Validator<int>(CustomPilotAttributeValidator<int>));
+
             return pilot;
+        }
+
+        static bool CustomPilotAttributeValidator<T>(ref int newValue)
+        {
+            newValue = Mathf.Clamp(newValue, 1, 20);
+            return true;
         }
 
         public static Weapon BuildTestWeapon(float minRange = 0f, float shortRange = 0f,

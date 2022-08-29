@@ -12,13 +12,7 @@ namespace CBTBehaviorsEnhanced.Extensions
 
         public static int ActuatorDamageMalus(this Mech mech)
         {
-            int malus = 0;
-            if (mech.StatCollection != null &&
-                mech.StatCollection.ContainsStatistic(ModStats.ActuatorDamageMalus))
-            {
-                malus = mech.StatCollection.GetStatistic(ModStats.ActuatorDamageMalus).Value<int>();
-            }
-            return malus;
+            return mech.StatCollection.GetValue<int>(ModStats.ActuatorDamageMalus);
         }
 
         public static float PilotCheckMod(this Mech mech, float multi)
@@ -47,11 +41,11 @@ namespace CBTBehaviorsEnhanced.Extensions
                 malus += mech.ActuatorDamageMalus();
             }
 
-            float adjustedSkill = actorSkill - malus > 0f ? actorSkill - malus : 0f;
-            Mod.Log.Info?.Write($"  AdjustedSkill: {adjustedSkill} = actorSkill: {actorSkill} - malus: {malus}.");
+            float adjustedSkill = actorSkill + malus > 0f ? actorSkill + malus : 0f;
+            Mod.Log.Debug?.Write($"  AdjustedSkill: {adjustedSkill} = actorSkill: {actorSkill} - malus: {malus}.");
 
             float checkMod = adjustedSkill * multi;
-            Mod.Log.Info?.Write($"  CheckMod: {checkMod} = adjustedSkill: {adjustedSkill} * multi: {multi}");
+            Mod.Log.Debug?.Write($"  CheckMod: {checkMod} = adjustedSkill: {adjustedSkill} * multi: {multi}");
             return checkMod;
         }
 
