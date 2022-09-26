@@ -5,6 +5,7 @@ using Harmony;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System.Collections.Generic;
+using CBTBehaviorsEnhanced.Helper;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced
@@ -109,6 +110,9 @@ namespace CBTBehaviorsEnhanced
                 // Movement - check for damage after a sprint, and if so force a piloting check
                 if (__instance.OwningMech != null && __instance.isSprinting && __instance.OwningMech.ActuatorDamageMalus() != 0)
                 {
+                    // Vehicles, Naval unit & BA do not fall over
+                    if (__instance.OwningMech.IsVehicle() || __instance.OwningMech.IsNaval() ||
+                        __instance.OwningMech.IsTrooper()) return;
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float checkMod = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
                     bool sourcePassed = CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterRunChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Run);
