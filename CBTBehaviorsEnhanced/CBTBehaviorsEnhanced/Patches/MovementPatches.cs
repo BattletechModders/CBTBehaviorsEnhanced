@@ -185,6 +185,10 @@ namespace CBTBehaviorsEnhanced
                 // Movement - check for damage after a jump, and if so force a piloting check
                 if (__instance.OwningMech.ActuatorDamageMalus() != 0 || Mod.Config.Developer.ForceFallAfterJump)
                 {
+                    // Vehicles, Naval unit & BA do not fall over
+                    if (__instance.OwningMech.IsVehicle() || __instance.OwningMech.IsNaval() ||
+                        __instance.OwningMech.IsTrooper()) return;
+                    
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float checkMod = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
 
