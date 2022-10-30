@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Helper;
+using CustAmmoCategories;
 using CustomUnits;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
@@ -227,15 +228,17 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return (MeleeAttackHeight.Low | MeleeAttackHeight.Medium | MeleeAttackHeight.High);
             }
 
-            float attackerBase_Y = attacker.CurrentPosition.y;
-            float attackerLOS_Y = attacker.LOSSourcePositions[0].y;
+            // CU integration; subtract flying height from current Position.
+            //   Treat both units as if they were 'on the ground'
+            float attackerBase_Y = attacker.CurrentPosition.y - attacker.FlyingHeight();
+            float attackerLOS_Y = attacker.LOSSourcePositions[0].y;            
             float attackerHeightBaseToLOS = attackerLOS_Y - attackerBase_Y;
-
+            
             attackerBase_Y = attackPosition.y;
             attackerLOS_Y = attackerBase_Y + attackerHeightBaseToLOS;
             Mod.MeleeLog.Info?.Write($" - attackerBase_Y: {attackerBase_Y} attackerLOS_Y: {attackerLOS_Y} attackerHeightBaseToLOS: {attackerHeightBaseToLOS}");
 
-            float targetBase_Y = target.CurrentPosition.y;
+            float targetBase_Y = target.CurrentPosition.y - target.FlyingHeight(); 
             float targetLOS_Y = ((AbstractActor)target).LOSSourcePositions[0].y;
             Mod.MeleeLog.Info?.Write($" - targetBase_Y: {targetBase_Y} targetLOS_Y: {targetLOS_Y }");
 
