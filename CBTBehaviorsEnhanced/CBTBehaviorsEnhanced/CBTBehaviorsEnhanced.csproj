@@ -163,9 +163,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" (
+    <PostBuildEvent>if exist "$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced" (
 time /t
-xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\CBTBehaviorsEnhanced" /y
+xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced" /y
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

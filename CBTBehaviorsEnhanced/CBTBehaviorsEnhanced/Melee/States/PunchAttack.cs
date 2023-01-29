@@ -78,6 +78,12 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
             }
 
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_AlwaysArmMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} enabled for physical weapon, hand-held that should always be used");
+                return true;
+            }
+
             return true;
         }
 

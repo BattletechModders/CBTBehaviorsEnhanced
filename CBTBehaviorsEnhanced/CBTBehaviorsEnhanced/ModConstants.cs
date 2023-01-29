@@ -136,6 +136,7 @@ namespace CBTBehaviorsEnhanced
         public const string CC_Category_AlwaysMelee = "AlwaysMelee";
         public const string CC_Category_NeverMelee = "NeverMelee";
         public const string CC_Category_HandHeld_NoArmMelee = "HandHeldNoArmMelee";
+        public const string CC_Category_HandHeld_AlwaysArmMelee = "HandHeldAlwaysArmMelee";
 
         public const string Turret_Tag_Class_Light = "unit_light";
         public const string Turret_Tag_Class_Medium = "unit_medium";

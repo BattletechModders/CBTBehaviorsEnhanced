@@ -1,6 +1,7 @@
 ﻿using BattleTech;
 using CustAmmoCategories;
 using Harmony;
+using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -44,15 +45,23 @@ namespace CBTBehaviorsEnhanced.Melee
             Traverse sprintingGridT = Traverse.Create(__instance).Property("SprintingGrid");
             PathNodeGrid sprintingGrid = sprintingGridT.GetValue<PathNodeGrid>();
 
+            PathNodeGrid meleeGrid = sprintingGrid;
+            if (__instance.OwningActor.MaxWalkDistance > __instance.OwningActor.MaxSprintDistance)
+            {
+                Mod.MeleeLog.Info?.Write($"Using walkingGrid to find all possible nodes");
+                meleeGrid = walkingGrid;
+            }
+
             // Calculate all possible nodes
             List<PathNode> pathNodesForPoints = Pathing.GetPathNodesForPoints(
-                target.Combat.HexGrid.GetAdjacentPointsOnGrid(target.CurrentPosition), sprintingGrid);
+                target.Combat.HexGrid.GetAdjacentPointsOnGrid(target.CurrentPosition), meleeGrid);
 
             // Remove any that have blockers, or are beyond the max vertical offset
             for (int i = pathNodesForPoints.Count - 1; i >= 0; i--)
             {
-                if (Mathf.Abs(pathNodesForPoints[i].Position.y - target.CurrentPosition.y) > target.Combat.Constants.MoveConstants.MaxMeleeVerticalOffset ||
-                    walkingGrid.FindBlockerReciprocal(pathNodesForPoints[i].Position, target.CurrentPosition))
+                bool beyondMaxVerticalOffset = Mathf.Abs(pathNodesForPoints[i].Position.y - target.CurrentPosition.y) > target.Combat.Constants.MoveConstants.MaxMeleeVerticalOffset;
+                bool isBlocked = meleeGrid.FindBlockerReciprocal(pathNodesForPoints[i].Position, target.CurrentPosition);
+                if (beyondMaxVerticalOffset || isBlocked)
                 {
                     pathNodesForPoints.RemoveAt(i);
                 }
@@ -98,15 +107,31 @@ namespace CBTBehaviorsEnhanced.Melee
         }
     }
 
+    // TODO: New code
+
     [HarmonyPatch(typeof(Pathing), "getGrid")]
     static class Pathing_getGrid
     {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        static void Postfix(Pathing __instance, MoveType moveType, ref PathNodeGrid __result)
         {
-            MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-            instructions = instructions.MethodReplacer(miold, minew);
-            return instructions;
+            if (moveType == MoveType.Melee)
+            {
+                Mod.MeleeLog.Info?.Write($"{__instance.OwningActor.DistinctId()} has " +
+                    $"maxWalkDistance: {__instance.OwningActor.MaxWalkDistance}  " +
+                    $"maxSprintDistance: {__instance.OwningActor.MaxSprintDistance} ");
+
+                if (__instance.OwningActor.MaxSprintDistance > __instance.OwningActor.MaxWalkDistance)
+                {
+                    Mod.MeleeLog.Info?.Write($"Setting meleeGrid to SprintingGrid");
+
+                    Traverse sprintingGridT = Traverse.Create(__instance).Property("SprintingGrid");
+                    __result = sprintingGridT.GetValue<PathNodeGrid>();
+                }
+                else
+                {
+                    Mod.MeleeLog.Info?.Write($"Setting meleeGrid to meleeGrid");
+                }
+            }
         }
     }
 
@@ -114,14 +139,82 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyPatch(typeof(Pathing), "SetMeleeTarget")]
     public static class Pathing_SetMeleeTarget
     {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        static bool Prefix(Pathing __instance, AbstractActor target)
         {
-            MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-            instructions = instructions.MethodReplacer(miold, minew);
-            return instructions;
+            __instance.UnlockPosition();
+
+            Traverse moveTypeT = Traverse.Create(__instance).Property("MoveType");
+            moveTypeT.SetValue(MoveType.Melee);
+            
+            Traverse currentMeleeTargetT = Traverse.Create(__instance).Property("CurrentMeleeTarget");
+            currentMeleeTargetT.SetValue(target);
+            Traverse currentDestinationT = Traverse.Create(__instance).Property("CurrentDestination");
+            currentDestinationT.SetValue(target.CurrentPosition);
+
+            Traverse hasMeleeDestSelectionT = Traverse.Create(__instance).Property("HasMeleeDestSelection");
+            hasMeleeDestSelectionT.SetValue(false);
+            if (target != null)
+            {
+                List<AbstractActor> allActors = SharedState.Combat.AllActors;
+                allActors.Remove(__instance.OwningActor);
+                allActors.Remove(target);
+                if (__instance.GetMeleeDestination(target, allActors, out var endNode, out __instance.ResultDestination, out __instance.ResultAngle))
+                {
+                    Traverse meleeGridT = Traverse.Create(__instance).Property("MeleeGrid");
+                    Traverse sprintingGridT = Traverse.Create(__instance).Property("SprintingGrid");
+                    PathNodeGrid pathNodeGrid = __instance.OwningActor.MaxSprintDistance > __instance.OwningActor.MaxWalkDistance ? 
+                        sprintingGridT.GetValue<PathNodeGrid>() : meleeGridT.GetValue<PathNodeGrid>();
+
+                    Mod.MeleeLog.Info?.Write($"{__instance.OwningActor.DistinctId()} has " +
+                        $"maxWalkDistance: {__instance.OwningActor.MaxWalkDistance}  " +
+                        $"maxSprintDistance: {__instance.OwningActor.MaxSprintDistance} ");
+
+                    __instance.CurrentPath = pathNodeGrid.BuildPathFromEnd(endNode, 
+                        __instance.OwningActor.MaxMeleeEngageRangeDistance, __instance.ResultDestination, 
+                        target.CurrentPosition, target, out var _, 
+                        out __instance.ResultDestination, out __instance.ResultAngle);
+                }
+                else
+                {
+                    Mod.MeleeLog.Info?.Write($"{__instance.OwningActor.DistinctId()} attempted to melee a target that could not be pathed to!");
+                }
+            }
+            else
+            {
+                Mod.MeleeLog.Warn?.Write($"{__instance.OwningActor.DistinctId()} is attemping to melee a building. WTF?");
+            }
+            __instance.LockPosition();
+
+            return false;
         }
     }
+
+    //[HarmonyPatch(typeof(Pathing), "getGrid")]
+    //static class Pathing_getGrid
+    //{
+    //    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    //    {
+    //        MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+    //        MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+    //        instructions = instructions.MethodReplacer(miold, minew);
+    //        return instructions;
+    //    }
+    //}
+
+    // If melee from sprint is enable, use a transpile to swap the grids used to calculate the path
+    //[HarmonyPatch(typeof(Pathing), "SetMeleeTarget")]
+    //public static class Pathing_SetMeleeTarget
+    //{
+    //    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    //    {
+    //        MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+    //        MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+    //        instructions = instructions.MethodReplacer(miold, minew);
+    //        return instructions;
+    //    }
+    //}
+
+
 
     [HarmonyPatch(typeof(Pathing), "UpdateMeleePath")]
     [HarmonyBefore("io.mission.customunits")]
