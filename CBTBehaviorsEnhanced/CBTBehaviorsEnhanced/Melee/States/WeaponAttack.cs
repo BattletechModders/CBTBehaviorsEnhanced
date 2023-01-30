@@ -128,6 +128,12 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
             }
 
+            if (target.IsQuadMech())
+            {
+                Mod.MeleeLog.Info?.Write($"Attacker is a quad, cannot make physical weapon attack.");
+                return false;
+            }
+
             // If distance > walkSpeed, disable kick/physical weapon/punch            
             if (!state.HasWalkAttackNodes)
             {

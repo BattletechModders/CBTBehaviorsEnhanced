@@ -60,9 +60,21 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
             }
 
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_NoArmMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for punch as it is a handheld that requires hands");
+                return false;
+            }
+
             if (weapon.componentDef.IsCategory(ModConsts.CC_Category_AlwaysMelee))
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} marked with AlwaysMelee category, force-enabling");
+                return true;
+            }
+
+            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_AlwaysArmMelee))
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} enabled for physical weapon, hand-held that should always be used");
                 return true;
             }
 
@@ -70,18 +82,6 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for punch because it is in the arms.");
                 return false;
-            }
-
-            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_NoArmMelee))
-            {
-                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for punch as it is a handheld that requires hands");
-                return false;
-            }
-
-            if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_AlwaysArmMelee))
-            {
-                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} enabled for physical weapon, hand-held that should always be used");
-                return true;
             }
 
             return true;
@@ -106,6 +106,12 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             if (target.UnaffectedPathing())
             {
                 Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
+                return false;
+            }
+
+            if (target.IsQuadMech())
+            {
+                Mod.MeleeLog.Info?.Write($"Attacker is a quad, cannot punch.");
                 return false;
             }
 

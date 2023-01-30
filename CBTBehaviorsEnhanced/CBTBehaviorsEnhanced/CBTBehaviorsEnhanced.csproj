@@ -50,21 +50,21 @@
     </Reference>
     <Reference Include="CustomAmmoCategories, Version=0.0.1.59, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\Mods\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\Core\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
     </Reference>
     <Reference Include="CustomComponents">
-      <HintPath>$(BattleTechGameDir)\Mods\CustomComponents\CustomComponents.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\Core\CustomComponents\CustomComponents.dll</HintPath>
     </Reference>
     <Reference Include="IRBTModUtils, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\Mods\IRBTModUtils\IRBTModUtils.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\Core\IRBTModUtils\IRBTModUtils.dll</HintPath>
     </Reference>
     <Reference Include="MechEngineer, Version=2.3.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\Mods\MechEngineer\MechEngineer.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\Core\MechEngineer\MechEngineer.dll</HintPath>
     </Reference>
     <Reference Include="CustomUnits">
-      <HintPath>$(BattleTechGameDir)\Mods\CustomUnits\CustomUnits.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\Mods\Core\CustomUnits\CustomUnits.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
