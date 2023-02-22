@@ -21,7 +21,7 @@ namespace CBTBehaviorsEnhanced {
         private static Dictionary<string, (Weapon, Weapon)> imaginaryWeapons = new Dictionary<string, (Weapon, Weapon)>();
 
         public static Vector3 MeleePreviewPos = Vector3.one;
-        public static DamageTable ForceDamageTable = DamageTable.NONE;
+        public static DamageTable ForceDamageTable { get; set; } = DamageTable.NONE;
 
         public static float CachedDFASelfDamage = 0f;
         public static float OriginalDFASelfDamage = 0f;

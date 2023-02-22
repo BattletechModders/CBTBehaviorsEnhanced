@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,11 +37,15 @@
     <DefineConstants>NO_ME</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.3.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
+    <Reference Include="Assembly-CSharp" Publicize="true">
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
@@ -162,10 +167,9 @@
     <Compile Include="ModConstants.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if exist "$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced" (
-time /t
-xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced" /y
-)</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced" Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods_CBDE\Core\CBTBehaviorsEnhanced" Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods_CBDE\Core\CBTBehaviorsEnhanced')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RogueTechRepo)\Core\CBTBehaviorsEnhanced" Condition="'$(RogueTechRepo)' != '' And Exists('$(RogueTechRepo)\Core\CBTBehaviorsEnhanced')" />
+  </Target>
 </Project>

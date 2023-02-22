@@ -6,13 +6,14 @@ using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace CBTBehaviorsEnhanced.Helper
 {
     public static class AttackHelper
     {
-
+        public static readonly string SPECIAL_HIT_TABLE_NAME = "CAC_SPECIAL_HIT_TABLE";
         private static void ShowDamageFloatie(Mech mech, ArmorLocation location, float damage,
             string sourceGUID)
         {
@@ -102,6 +103,7 @@ namespace CBTBehaviorsEnhanced.Helper
             Mod.Log.Info?.Write($"  Attack direction is: {attackDirection}");
 
             int i = 0;
+            if(ModState.ForceDamageTable != MeleeStates.DamageTable.NONE) Thread.CurrentThread.pushToStack<string>(SPECIAL_HIT_TABLE_NAME, $"CBTBE_MELEE_{ModState.ForceDamageTable.ToString()}");
             foreach (int damage in damageClusters)
             {
                 // Set hit qualities
@@ -146,6 +148,7 @@ namespace CBTBehaviorsEnhanced.Helper
 
                 i++;
             }
+            if (ModState.ForceDamageTable != MeleeStates.DamageTable.NONE) Thread.CurrentThread.popFromStack<string>(SPECIAL_HIT_TABLE_NAME);
             Mod.Log.Debug?.Write("  -- done with damage cluster iteration");
 
             // Cleanup after myself
