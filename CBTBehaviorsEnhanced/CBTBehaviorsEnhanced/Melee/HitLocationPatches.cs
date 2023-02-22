@@ -1,11 +1,249 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
+using CustAmmoCategories;
+using CustomUnits;
 using Harmony;
+using System;
 using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced.Patches.Melee
 {
+    [HarmonyPatch(typeof(CombatGameConstants))]
+    [HarmonyPatch(MethodType.Normal)]
+    [HarmonyPatch("OnDataLoaded")]
+    [HarmonyAfter("io.mission.modrepuation")]
+    [HarmonyPatch(new Type[] { typeof(string), typeof(string) })]
+    public static class CombatGameConstants_OnDataLoaded {
+      public static void Postfix(CombatGameConstants __instance, string id, string json) {
+        try {
+          CustomHitTableDef PUNCH_mech_table = new CustomHitTableDef();
+          PUNCH_mech_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() {
+            { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.LeftTorso, 34 },
+                { ArmorLocation.CenterTorso, 16 },
+                { ArmorLocation.LeftArm, 34},
+                { ArmorLocation.Head, 16 }
+              }
+            },
+            { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.LeftArm, 17 },
+                { ArmorLocation.LeftTorsoRear, 17 },
+                { ArmorLocation.CenterTorsoRear, 16},
+                { ArmorLocation.RightTorsoRear, 17},
+                { ArmorLocation.RightArm, 17},
+                { ArmorLocation.Head, 16}
+              }
+            },
+            { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.RightTorso, 34 },
+                { ArmorLocation.CenterTorso, 16 },
+                { ArmorLocation.RightArm, 34},
+                { ArmorLocation.Head, 16 }
+              }
+            },
+            { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.LeftArm, 17 },
+                { ArmorLocation.LeftTorso, 17 },
+                { ArmorLocation.CenterTorso, 16},
+                { ArmorLocation.RightTorso, 17},
+                { ArmorLocation.RightArm, 17},
+                { ArmorLocation.Head, 16}
+              }
+            },
+            { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.LeftArm, 17 },
+                { ArmorLocation.LeftTorso, 17 },
+                { ArmorLocation.CenterTorso, 16},
+                { ArmorLocation.RightTorso, 17},
+                { ArmorLocation.RightArm, 17},
+                { ArmorLocation.Head, 16}
+              }
+            },
+            { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.LeftArm, 17 },
+                { ArmorLocation.LeftTorso, 17 },
+                { ArmorLocation.CenterTorso, 16},
+                { ArmorLocation.RightTorso, 17},
+                { ArmorLocation.RightArm, 17},
+                { ArmorLocation.Head, 16}
+              }
+            },
+            { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() {
+                { ArmorLocation.LeftArm, 17 },
+                { ArmorLocation.LeftTorso, 17 },
+                { ArmorLocation.CenterTorso, 16},
+                { ArmorLocation.RightTorso, 17},
+                { ArmorLocation.RightArm, 17},
+                { ArmorLocation.Head, 16}
+              }
+            }
+          };
+          PUNCH_mech_table.ParentStructureId = "mech";
+          PUNCH_mech_table.Id = $"CBTBE_MELEE_{DamageTable.PUNCH.ToString()}";
+          CustomHitTableDef.Register(PUNCH_mech_table);
+          CustomHitTableDef KICK_mech_table = new CustomHitTableDef();
+          KICK_mech_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() {
+              { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 60 },
+                  { ArmorLocation.RightLeg, 40 }
+                }
+              },
+              { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 50 },
+                  { ArmorLocation.RightLeg, 50 }
+                }
+              },
+              { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 40 },
+                  { ArmorLocation.RightLeg, 60 }
+                }
+              },
+              { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 50 },
+                  { ArmorLocation.RightLeg, 50 }
+                }
+              },
+              { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 50 },
+                  { ArmorLocation.RightLeg, 50 }
+                }
+              },
+              { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 50 },
+                  { ArmorLocation.RightLeg, 50 }
+                }
+              },
+              { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() {
+                  { ArmorLocation.LeftLeg, 50 },
+                  { ArmorLocation.RightLeg, 50 }
+                }
+              }
+            };
+          KICK_mech_table.ParentStructureId = "mech";
+          KICK_mech_table.Id = $"CBTBE_MELEE_{DamageTable.KICK.ToString()}";
+          CustomHitTableDef.Register(KICK_mech_table);
+        CustomHitTableDef PUNCH_vehcile_table = new CustomHitTableDef();
+        PUNCH_vehcile_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() {
+            { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 8},
+                { VehicleChassisLocations.Rear.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 8},
+                { VehicleChassisLocations.Right.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Right.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 8},
+                { VehicleChassisLocations.Rear.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 8},
+                { VehicleChassisLocations.Right.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 8 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 8 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 8},
+                { VehicleChassisLocations.Right.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Right.toFakeArmor(), 40 },
+              }
+            },
+            { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Right.toFakeArmor(), 40 },
+              }
+            }
+          };
+        PUNCH_vehcile_table.ParentStructureId = "vehicle";
+        PUNCH_vehcile_table.Id = $"CBTBE_MELEE_{DamageTable.PUNCH.ToString()}";
+        CustomHitTableDef.Register(PUNCH_vehcile_table);
+        CustomHitTableDef KICK_vehicle_table = new CustomHitTableDef();
+        KICK_vehicle_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() {
+            { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 8},
+                { VehicleChassisLocations.Rear.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 8},
+                { VehicleChassisLocations.Right.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
+                { VehicleChassisLocations.Right.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 8},
+                { VehicleChassisLocations.Rear.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 8},
+                { VehicleChassisLocations.Right.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 8 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 8 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 8},
+                { VehicleChassisLocations.Right.toFakeArmor(), 8},
+              }
+            },
+            { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Right.toFakeArmor(), 40 },
+              }
+            },
+            { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() {
+                { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Front.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Left.toFakeArmor(), 40 },
+                { VehicleChassisLocations.Right.toFakeArmor(), 40 },
+              }
+            }
+          };
+        KICK_vehicle_table.ParentStructureId = "mech";
+        KICK_vehicle_table.Id = $"CBTBE_MELEE_{DamageTable.KICK.ToString()}";
+        CustomHitTableDef.Register(KICK_vehicle_table);
+      } catch (Exception e) {
+          Mod.Log.Error?.Write(e.ToString());
+        }
+      }
+    }
 
     [HarmonyPatch(typeof(HitLocation), "GetVehicleHitTable")]
     static class HitLocation_GetVehicleHitTable

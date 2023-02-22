@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -146,6 +147,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                         {
                             Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed");
                             allowedWeapons.Add(weapon);
+                            weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
                         }
                         else
                         {
@@ -341,6 +343,11 @@ namespace CBTBehaviorsEnhanced.Melee {
             if (!(__instance.OwningMech is TrooperSquad))
             {
                 Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
+                foreach(var sequence in ___meleeSequence.directorSequences) {
+                  foreach(var weapon in sequence.allSelectedWeapons) {
+                    weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
+                  }
+                }
                 ModState.ForceDamageTable = DamageTable.NONE;
             }
 
@@ -351,7 +358,7 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(typeof(MechMeleeSequence), "FireWeapons")]
     static class MechMeleeSequence_FireWeapons
     {
-        static void Prefix(MechMeleeSequence __instance)
+        static void Prefix(MechMeleeSequence __instance, AttackStackSequence ___meleeSequence)
         {
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
             Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
@@ -369,6 +376,15 @@ namespace CBTBehaviorsEnhanced.Melee {
 
             // Reset damage table 
             ModState.ForceDamageTable = DamageTable.NONE;
+      try {
+        foreach (var sequence in ___meleeSequence.directorSequences) {
+          foreach (var weapon in sequence.allSelectedWeapons) {
+            weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
+          }
+        }
+      }catch(Exception e) {
+        Mod.MeleeLog.Error?.Write(e.ToString());
+      }
 
         }
     }
