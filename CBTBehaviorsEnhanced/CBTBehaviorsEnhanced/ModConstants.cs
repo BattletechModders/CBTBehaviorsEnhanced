@@ -142,5 +142,7 @@ namespace CBTBehaviorsEnhanced
         public const string Turret_Tag_Class_Medium = "unit_medium";
         public const string Turret_tag_Class_Heavy = "unit_heavy";
 
+        public const string SPECIAL_HIT_TABLE_NAME = "CAC_SPECIAL_HIT_TABLE";
+
     }
 }

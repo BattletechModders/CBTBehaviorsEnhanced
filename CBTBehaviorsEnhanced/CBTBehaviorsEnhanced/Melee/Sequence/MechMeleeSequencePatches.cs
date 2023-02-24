@@ -147,6 +147,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                         {
                             Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed");
                             allowedWeapons.Add(weapon);
+                            // Associate the weapon with the CU special hit tables for unique tables (vtols, etc)
                             weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
                         }
                         else
