@@ -114,6 +114,8 @@ namespace CBTBehaviorsEnhanced
             Mod.Log.Info?.Write($"  DamageClusterDivisor: {this.Melee.Charge.DamageClusterDivisor}");
             Mod.Log.Info?.Write($"  Unsteady => AttackerOnHit: {this.Melee.Charge.UnsteadyAttackerOnHit}  AttackerOnMiss: {this.Melee.Charge.UnsteadyAttackerOnMiss}  TargetOnHit: {this.Melee.Charge.UnsteadyTargetOnHit}");
             Mod.Log.Info?.Write($"  TargetVehicleEvasionPipsRemoved: {this.Melee.Charge.TargetVehicleEvasionPipsRemoved}");
+            Mod.Log.Info?.Write($"  MultiplyAttackerSelfDamageByHexesMoved: {this.Melee.Charge.MultiplyAttackerSelfDamageByHexesMoved}");
+            Mod.Log.Info?.Write($"  SelfCTKillVirtDamageMulti: {this.Melee.Charge.SelfCTKillVirtDamageMulti}");
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("  -- DFA OPTIONS --");
