@@ -163,7 +163,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 			Mod.MeleeLog.Info?.Write($" - Tonnage => Attacker: {attacker.tonnage}  Target: {targetTonnage}");
 
 			// Calculate attacker damage
-			float attackerDamage = attacker.ChargeAttackerDamage(targetTonnage);
+			float attackerDamage = attacker.ChargeAttackerDamage(targetTonnage, hexesMoved);
 			attackerDamage = attacker.ApplyChargeDamageReduction(attackerDamage);
 			DamageHelper.ClusterDamage(attackerDamage, Mod.Config.Melee.Charge.DamageClusterDivisor, out this.AttackerDamageClusters);
 

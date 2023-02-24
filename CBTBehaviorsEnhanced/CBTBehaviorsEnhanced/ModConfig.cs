@@ -4,6 +4,7 @@ using BattleTech;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using System.Text;
 
 namespace CBTBehaviorsEnhanced
@@ -379,6 +380,11 @@ namespace CBTBehaviorsEnhanced
 
         // The number of pips to remove from vehicles when hit by this attack
         public int TargetVehicleEvasionPipsRemoved = 4;
+
+        // If true, distance moved multipies attacker self damage as well (non-TT compliant)
+        public bool MultiplyAttackerSelfDamageByHexesMoved = false;
+        // The amount to multiply self-kill damage by
+        public float SelfCTKillVirtDamageMulti = -1f;
     }
 
     // BT Manual pg.37 

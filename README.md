@@ -15,6 +15,7 @@ This mod requires the following mods. Grab the latest releases for each of them 
 *  [IRBTModUtils](https://github.com/iceraptor/IRBTModUtils) - general utility classes common to all of my mods
 * [MechEngineer](https://github.com/BattletechModders/mechengineer) - implements many TableTop components like engines, gyros, actuators, and more. 
 * [CustomComponents](https://github.com/BattletechModders/customcomponents) - provides the ability to tag specific components with mod-specific objects. Used to identify MechEngineer gyros, engines, and more.
+* [CustomUnits](https://github.com/BattletechModders/CustomAmmoCategories/tree/master/CustomUnits) - provides support for punch and hit tables on units like vtols, etc.
 
 :exclamation: Users of KMission's [CustomActivatableEquipment](https://github.com/CMiSSioN/CustomActivatableEquipment) should change the setting `StartupByHeatControl` in mod.json to false. If you do not, AI-based heat effects (ammo explosions, pilot injuries, etc.) will not be applied.
 
@@ -132,6 +133,8 @@ Charge attacks inflict damage and instability on both the attacker and target, a
 
 `finalDamage = RoundUP( ( (raw * attacker/target tonnage) + mod) * multi * hexesMoved)`
 
+By default the attacker's self damage from the charge does not get multiplied by the distance moved. This is TableTop behavior. If `Melee.Charge.MultiplyAttackerSelfDamageByHexesMoved` is true, this is changed so that attacker self damage is multiplied by the distance moved.
+
 The inputs for these values differ based upon configuration values (exposed through `mod.json`) and per-unit statistic values (added through status effects). They vary between attacker and target, allowing mod authors great flexibility in designing attacks.
 
 *Attacker Inputs*
@@ -171,6 +174,8 @@ Damage is applied to the attacker and target as a series of clusters. The size o
 * **UnsteadyAttackerOnHit** - if set to true, the *attacker* will be marked Unsteady on a *successful* charge
 * **UnsteadyAttackerOnMiss**- if set to true, the *attacker* will be marked Unsteady on a *failed* charge
 * **UnsteadyTargetOnHit**- if set to true, the *target* will be marked Unsteady on a *successful* charge
+
+When charging the AI will evaluate its own armor, structure, and evasion loss as part of it's determination to charge. The `Melee.Charge.SelfCTKillVirtDamageMulti` configuration value is a multiplier for this damage in the case that self-damage is greater than the current armor and structure in the attacker's CT.
 
 ### Death From Above Attacks
 

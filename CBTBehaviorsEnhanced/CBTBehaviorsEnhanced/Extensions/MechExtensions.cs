@@ -49,11 +49,12 @@ namespace CBTBehaviorsEnhanced.Extensions
             return checkMod;
         }
 
-        public static float ChargeAttackerDamage(this Mech mech, float targetTonnage)
+        public static float ChargeAttackerDamage(this Mech mech, float targetTonnage, int hexesMoved)
         {
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerDamagePerTargetTon * targetTonnage);
+            int moveMulti = Mod.Config.Melee.Charge.MultiplyAttackerSelfDamageByHexesMoved ? hexesMoved : 1;
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerDamagePerTargetTon * targetTonnage * hexesMoved);
             Mod.MeleeDamageLog.Debug?.Write($"Charge Attacker: {mech.DistinctId()} baseDamage: {Mod.Config.Melee.Charge.AttackerDamagePerTargetTon} x " +
-                $"target tonnage: {targetTonnage} = {raw}");
+                $"target tonnage: {targetTonnage} x moveMulti: {moveMulti} = {raw}");
 
             // Modifiers
             float mod = mech.StatCollection.ContainsStatistic(ModStats.ChargeAttackerDamageMod) ?

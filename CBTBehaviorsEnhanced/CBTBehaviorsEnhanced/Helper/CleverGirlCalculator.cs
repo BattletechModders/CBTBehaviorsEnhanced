@@ -133,10 +133,26 @@ namespace CBTBehaviorsEnhanced.Helper
                             Mod.AILog.Info?.Write($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
                         }
 
-                        float virtualDamage = evasionBreakUtility + knockdownUtility - selfEvasionDamage - selfDamage;
-                        Mod.AILog.Info?.Write($"  Virtual damage calculated as {virtualDamage} = " +
-                            $"evasionBreakUtility: {evasionBreakUtility} + knockdownUtility: {knockdownUtility}" +
-                            $" - selfDamage: {selfDamage} - selfEvasionDamage: {selfEvasionDamage}");
+                        float virtualDamage = evasionBreakUtility + knockdownUtility;
+                        Mod.AILog.Info?.Write($"  Virtual damage base {virtualDamage} = " +
+                            $"evasionBreakUtility: {evasionBreakUtility} + knockdownUtility: {knockdownUtility}");
+
+                        float selfCenterTorsoArmorAndStructure = attacker.GetCurrentArmor(ArmorLocation.CenterTorso) + attacker.GetCurrentStructure(ChassisLocations.CenterTorso);
+                        if (selfEvasionDamage + selfDamage >= selfCenterTorsoArmorAndStructure)
+                        {
+                            virtualDamage += selfEvasionDamage;
+                            virtualDamage += selfDamage;
+                            virtualDamage *= Mod.Config.Melee.Charge.SelfCTKillVirtDamageMulti;
+                            Mod.AILog.Info?.Write($"  virtual damage can CT kill, inverting virtual damage");
+                        }
+                        else
+                        {
+                            virtualDamage -= selfEvasionDamage;
+                            virtualDamage -= selfDamage;                            
+                            Mod.AILog.Info?.Write($"  virtual damage reduced by selfDamage: {selfDamage} selfEvasionDamage: {selfEvasionDamage}");
+                        }
+
+                        Mod.AILog.Info?.Write($"  Modified virtual damage: {virtualDamage}");
 
                         stateTotalDamage += virtualDamage;
                         // Add to melee damage as well, to so it can be set on the melee weapon
