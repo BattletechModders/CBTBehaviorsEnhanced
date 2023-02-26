@@ -1,7 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
-using Harmony;
+using HarmonyLib;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Heat

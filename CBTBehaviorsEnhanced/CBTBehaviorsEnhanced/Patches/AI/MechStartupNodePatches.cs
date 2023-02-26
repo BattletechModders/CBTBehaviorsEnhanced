@@ -1,7 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
-using Harmony;
+using HarmonyLib;
 using System.Reflection;
 using us.frostraptor.modUtils;
 

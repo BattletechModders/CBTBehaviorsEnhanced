@@ -1,6 +1,6 @@
 ﻿using BattleTech;
 using BattleTech.UI;
-using Harmony;
+using HarmonyLib;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Patches

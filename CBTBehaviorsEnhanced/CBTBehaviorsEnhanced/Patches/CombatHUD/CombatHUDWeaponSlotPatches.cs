@@ -2,7 +2,7 @@
 using BattleTech.UI;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.MeleeStates;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;

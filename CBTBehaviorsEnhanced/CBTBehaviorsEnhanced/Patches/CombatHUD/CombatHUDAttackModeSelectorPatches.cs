@@ -3,7 +3,7 @@ using BattleTech.UI;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
 using CustomAmmoCategoriesLog;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;

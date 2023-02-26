@@ -1,6 +1,6 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Helper;
-using Harmony;
+using HarmonyLib;
 using Localize;
 using System.Collections.Generic;
 using System.Linq;
