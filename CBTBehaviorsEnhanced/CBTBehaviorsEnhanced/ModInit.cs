@@ -3,7 +3,7 @@ using CBTBehaviorsEnhanced.CAC;
 using CBTBehaviorsEnhanced.Move;
 using CBTBehaviorsEnhanced.Patches.AI.InfluenceMap;
 using CustAmmoCategories;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
@@ -100,7 +100,7 @@ namespace CBTBehaviorsEnhanced
             CustomComponents.Registry.RegisterSimpleCustomComponents(Assembly.GetExecutingAssembly());
 
             //HarmonyInstance.DEBUG = true;
-            var harmony = HarmonyInstance.Create(HarmonyPackage);
+            var harmony = new Harmony(HarmonyPackage);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 

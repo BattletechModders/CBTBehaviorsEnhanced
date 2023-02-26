@@ -1,7 +1,7 @@
 ﻿using BattleTech;
 using CBTBehaviorsEnhanced.Extensions;
 using CustAmmoCategories;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;

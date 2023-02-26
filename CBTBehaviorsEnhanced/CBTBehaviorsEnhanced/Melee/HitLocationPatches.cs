@@ -3,7 +3,7 @@ using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
 using CustAmmoCategories;
 using CustomUnits;
-using Harmony;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 

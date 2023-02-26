@@ -2,7 +2,7 @@
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;

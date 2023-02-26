@@ -6,7 +6,7 @@ using CustAmmoCategories;
 using CustomAmmoCategoriesPatches;
 using CustomUnits;
 using FluffyUnderware.DevTools.Extensions;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;

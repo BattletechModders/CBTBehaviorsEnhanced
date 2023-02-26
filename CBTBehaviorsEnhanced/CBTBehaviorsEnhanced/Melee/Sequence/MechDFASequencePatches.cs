@@ -5,7 +5,7 @@ using CBTBehaviorsEnhanced.MeleeStates;
 using CustAmmoCategories;
 using CustomAmmoCategoriesPatches;
 using FluffyUnderware.DevTools.Extensions;
-using Harmony;
+using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;

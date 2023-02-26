@@ -1,6 +1,6 @@
 ﻿
 using BattleTech;
-using Harmony;
+using HarmonyLib;
 using System;
 
 namespace CBTBehaviorsEnhanced {
