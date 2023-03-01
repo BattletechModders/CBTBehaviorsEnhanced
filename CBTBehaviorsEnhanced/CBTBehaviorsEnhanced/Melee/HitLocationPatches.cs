@@ -275,7 +275,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                         }
                     }
                 };
-                KICK_vehicle_table.ParentStructureId = "mech";
+                KICK_vehicle_table.ParentStructureId = "vehicle";
                 KICK_vehicle_table.Id = $"CBTBE_MELEE_{DamageTable.KICK.ToString()}";
                 CustomHitTableDef.Register(KICK_vehicle_table);
             }
