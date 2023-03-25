@@ -107,6 +107,8 @@ namespace CBTBehaviorsEnhanced.Patches
 
             // --- PHYSICAL WEAPON STATS ---
             __instance.StatCollection.AddStatistic<bool>(ModStats.PunchIsPhysicalWeapon, false);
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponNonBiped, false);
+
             __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponIgnoreActuators, false);
 
             __instance.StatCollection.AddStatistic<string>(ModStats.PhysicalWeaponLocationTable, "");

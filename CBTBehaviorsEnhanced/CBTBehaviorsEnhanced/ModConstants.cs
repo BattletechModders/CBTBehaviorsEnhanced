@@ -102,6 +102,7 @@ namespace CBTBehaviorsEnhanced
 
         // --- PHYSICAL WEAPON STATS ---
         public const string PunchIsPhysicalWeapon = "CBTBE_Punch_Is_Physical_Weapon"; // bool - if true, signals that this unit has a physical attack
+        public const string PhysicalWeaponNonBiped = "CBTBE_NonBiped_Physical_Weapon"; // bool - if true, signals that 1) this unit is not a biped and 2) has physical weapons. Skips actuator checks
 
         public const string PhysicalWeaponLocationTable = "CBTBE_Physical_Weapon_Location_Table"; // string Allows setting attack type to punch or standard
         public const string PhysicalWeaponAttackMod = "CBTBE_Physical_Weapon_Attack_Mod"; // int - a straight modifier to the attack roll

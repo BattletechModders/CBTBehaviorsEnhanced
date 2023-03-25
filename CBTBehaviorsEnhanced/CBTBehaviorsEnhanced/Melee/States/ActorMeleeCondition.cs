@@ -114,7 +114,25 @@ namespace CBTBehaviorsEnhanced
 					return;
 				}
 
-				if (ModState.MEIsLoaded)
+                if (mech.IsQuadMech())
+                {
+                    Statistic nonBipedPhysicalAttack = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponNonBiped);
+                    if (nonBipedPhysicalAttack.Value<bool>())
+                    {
+                        Mod.MeleeLog.Info?.Write(" -- unit is quad with physical weapon");
+                        hasPhysicalAttack = true;
+                    }
+					else
+					{
+                        Mod.MeleeLog.Info?.Write(" -- unit is quad but does not have nonbiped weapon, skipping");
+                    }
+                }
+				else
+				{
+                    Mod.MeleeLog.Info?.Write(" -- unit is not a quad mech");
+                }
+
+                if (ModState.MEIsLoaded)
                 {
 					foreach (MechComponent mc in mech.allComponents)
 					{
@@ -158,7 +176,7 @@ namespace CBTBehaviorsEnhanced
 					hasPhysicalAttack = true;
 				}
 
-				Mod.MeleeLog.Info?.Write(" -- unit can melee");
+                Mod.MeleeLog.Info?.Write(" -- unit can melee");
 				canMelee = true;
 			}
 			else
@@ -261,13 +279,17 @@ namespace CBTBehaviorsEnhanced
 			// Even if you have a physical attack... just no.
 			if (actor.IsVehicle() || actor.IsNaval()) return false;
 
-			// Quad mechs have no physical attacks
-			if (actor.IsQuadMech()) return false;
+            // If the ignore actuators stat is set, allow the attack regardless of actuator damage
+            Mech mech = actor as Mech;
 
-			// If the ignore actuators stat is set, allow the attack regardless of actuator damage
-			Mech mech = actor as Mech;
+            // Quad mechs do not typically have weapons... but some (Kiso) can. This ignores all actuator checks entirely!
+            if (actor.IsQuadMech())
+            {
+                Statistic nonBipedPhyiscalAttack = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponNonBiped);
+				return nonBipedPhyiscalAttack.Value<bool>();
+            }
 
-			Statistic ignoreActuatorsStat = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
+            Statistic ignoreActuatorsStat = mech.StatCollection.GetStatistic(ModStats.PhysicalWeaponIgnoreActuators);
 			if (ignoreActuatorsStat != null && ignoreActuatorsStat.Value<bool>())
             {
 				Mod.MeleeLog.Debug?.Write($"Actor has ignoreActuators set, allowing use of physical attack");

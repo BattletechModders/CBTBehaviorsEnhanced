@@ -1,11 +1,9 @@
 ﻿using BattleTech;
-using CBTBehaviorsEnhanced.CAC;
 using CBTBehaviorsEnhanced.Move;
 using CBTBehaviorsEnhanced.Patches.AI.InfluenceMap;
-using CustAmmoCategories;
-using HarmonyLib;
 using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Logging;
+using HarmonyLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
