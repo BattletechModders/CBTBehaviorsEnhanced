@@ -28,9 +28,9 @@
 		<AssemblyTitle>CBTBehaviorsEnhanced</AssemblyTitle>
 		<Product>CBTBehaviorsEnhanced</Product>
 		<Copyright>Copyright © 2023</Copyright>
-		<AssemblyVersion>0.10.0.3</AssemblyVersion>
-		<FileVersion>0.10.0.3</FileVersion>
-		<ProductVersion>0.10.0.3</ProductVersion>
+		<AssemblyVersion>0.10.0.5</AssemblyVersion>
+		<FileVersion>0.10.0.5</FileVersion>
+		<ProductVersion>0.10.0.5</ProductVersion>
 		<LangVersion>7.3</LangVersion>
 	</PropertyGroup>
 
