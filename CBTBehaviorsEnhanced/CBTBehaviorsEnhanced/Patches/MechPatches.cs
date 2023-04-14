@@ -1,8 +1,5 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
-using CustAmmoCategories;
-using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;
@@ -117,11 +114,11 @@ namespace CBTBehaviorsEnhanced.Patches
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponExtraHitsCount, 0f);
 
             // Don't initialize these so their presence can signify the choice
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit, 
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnHit,
                 Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnHit);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss, 
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyAttackerOnMiss,
                 Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyAttackerOnMiss);
-            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit, 
+            __instance.StatCollection.AddStatistic<bool>(ModStats.PhysicalWeaponUnsteadyTargetOnHit,
                 Mod.Config.Melee.PhysicalWeapon.DefaultUnsteadyTargetOnHit);
 
             __instance.StatCollection.AddStatistic<float>(ModStats.PhysicalWeaponTargetDamage, 0f);
@@ -154,8 +151,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(Mech), "TakeWeaponDamage")]
     public static class Mech_TakeWeaponDamage
     {
-        public static void Prefix(Mech __instance, ref float damageAmount, DamageType damageType)
+        public static void Prefix(ref bool __runOriginal, Mech __instance, ref float damageAmount, DamageType damageType)
         {
+            if (!__runOriginal) return;
+
             // 	public override void TakeWeaponDamage(WeaponHitInfo hitInfo, int hitLocation, Weapon weapon, float damageAmount, float directStructureDamage, int hitIndex, DamageType damageType)
             if (damageType == DamageType.DFASelf)
             {
@@ -171,12 +170,15 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(Mech), "ApplyStartupHeatSinks")]
     public static class Mech_ApplyStartupHeatSinks
     {
-        public static bool Prefix(Mech __instance, int stackID)
+        public static void Prefix(ref bool __runOriginal, Mech __instance, int stackID)
         {
+            if (!__runOriginal) return;
+
             Mod.Log.Trace?.Write("M:ASHS - entered.");
             Mod.Log.Debug?.Write($" Actor: {CombatantUtils.Label(__instance)} sinking {__instance.AdjustedHeatsinkCapacity} at startup.");
             __instance.ApplyHeatSinks(stackID);
-            return false;
+
+            __runOriginal = false;
         }
     }
 
@@ -184,9 +186,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(Mech), "CheckForHeatDamage")]
     public static class Mech_CheckForHeatDamage
     {
-        static bool Prefix(Mech __instance, int stackID, string attackerID)
+        static void Prefix(ref bool __runOriginal, Mech __instance, int stackID, string attackerID)
         {
-            return false;
+            if (!__runOriginal) return;
+            __runOriginal = false;
         }
     }
 
@@ -195,8 +198,10 @@ namespace CBTBehaviorsEnhanced.Patches
     static class Mech_OnActivationEnd
     {
         [HarmonyAfter("us.frostraptor.SkillBasedInit")]
-        static void Prefix(Mech __instance)
+        static void Prefix(ref bool __runOriginal, Mech __instance)
         {
+            if (!__runOriginal) return;
+
             Mod.HeatLog.Info?.Write($"AT END OF TURN: ACTOR: {__instance.DistinctId()} has currentHeat: {__instance.CurrentHeat}" +
                 $" tempHeat: {__instance.TempHeat}  maxHeat: {__instance.MaxHeat}  heatsinkCapacity: {__instance.AdjustedHeatsinkCapacity}");
 
@@ -296,8 +301,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch("MaxMeleeEngageRangeDistance", MethodType.Getter)]
     public static class Mech_MaxMeleeEngageRangeDistance_Get
     {
-        public static void Postfix(Mech __instance, ref float __result)
+        public static void Postfix(ref bool __runOriginal, Mech __instance, ref float __result)
         {
+            if (!__runOriginal) return;
+
             if (SharedState.Combat != null)
                 __result = __instance.ModifiedRunDistanceExt(false);
         }
@@ -307,8 +314,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPriority(Priority.Last)]
     public static class Mech_DamageLocation
     {
-        public static void Prefix(Mech __instance)
+        public static void Prefix(ref bool __runOriginal, Mech __instance)
         {
+            if (!__runOriginal) return;
+
             // Invalidate any held state on damage
             ModState.InvalidateState(__instance);
         }
@@ -318,8 +327,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPriority(Priority.Last)]
     public static class Mech_StandFromProne
     {
-        public static void Prefix(Mech __instance)
+        public static void Prefix(ref bool __runOriginal, Mech __instance)
         {
+            if (!__runOriginal) return;
+
             // Invalidate any held state on damage
             ModState.InvalidateState(__instance);
         }

@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using CustomUnits;
+﻿using CustomUnits;
 using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Extension;
 using UnityEngine;

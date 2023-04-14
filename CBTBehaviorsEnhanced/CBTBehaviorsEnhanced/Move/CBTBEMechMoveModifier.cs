@@ -1,8 +1,6 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Helper;
+﻿using CBTBehaviorsEnhanced.Helper;
 using CustomUnits;
 using IRBTModUtils.Extension;
-using System;
 using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced.Move

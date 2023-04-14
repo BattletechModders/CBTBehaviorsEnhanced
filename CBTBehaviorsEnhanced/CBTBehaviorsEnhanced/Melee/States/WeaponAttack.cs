@@ -1,14 +1,10 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
-using CustomUnits;
-using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.MeleeStates

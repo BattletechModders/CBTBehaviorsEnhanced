@@ -1,11 +1,8 @@
-﻿
-using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
-using HarmonyLib;
+﻿using CBTBehaviorsEnhanced.Extensions;
+using CBTBehaviorsEnhanced.Helper;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System.Collections.Generic;
-using CBTBehaviorsEnhanced.Helper;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced
@@ -16,8 +13,10 @@ namespace CBTBehaviorsEnhanced
         [HarmonyPatch(typeof(OrderSequence), "OnUpdate")]
         public static class OrderSequence_OnUpdate
         {
-            public static void Prefix(OrderSequence __instance, ref bool __state)
+            public static void Prefix(ref bool __runOriginal, OrderSequence __instance, ref bool __state)
             {
+                if (!__runOriginal) return;
+
                 __state = false;
 
                 Mech mech = __instance.owningActor as Mech;
@@ -97,8 +96,10 @@ namespace CBTBehaviorsEnhanced
         [HarmonyPatch(typeof(ActorMovementSequence), "OnComplete")]
         public static class ActorMovementSequence_OnComplete
         {
-            private static void Prefix(ActorMovementSequence __instance)
+            private static void Prefix(ref bool __runOriginal, ActorMovementSequence __instance)
             {
+                if (!__runOriginal) return;
+
                 Mod.ActivationLog.Info?.Write($"AMS:OC:PRE entered for actor: {CombatantUtils.Label(__instance?.OwningActor)}");
 
                 // Interleaved - check for visibility to any enemies 
@@ -167,8 +168,10 @@ namespace CBTBehaviorsEnhanced
         [HarmonyPatch(typeof(MechJumpSequence), "OnComplete")]
         public static class MechJumpSequence_OnComplete
         {
-            private static void Prefix(MechJumpSequence __instance)
+            private static void Prefix(ref bool __runOriginal, MechJumpSequence __instance)
             {
+                if (!__runOriginal) return;
+
                 Mod.ActivationLog.Debug?.Write($"MJS:OC entered for actor: {CombatantUtils.Label(__instance.OwningMech)}");
 
                 // Check for visibility to any enemies
@@ -188,11 +191,11 @@ namespace CBTBehaviorsEnhanced
                     // Vehicles, Naval unit & BA do not fall over
                     if (__instance.OwningMech.IsVehicle() || __instance.OwningMech.IsNaval() ||
                         __instance.OwningMech.IsTrooper()) return;
-                    
+
                     Mod.Log.Info?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} has actuator damage, forcing piloting check.");
                     float checkMod = __instance.OwningMech.PilotCheckMod(Mod.Config.SkillChecks.ModPerPointOfPiloting);
 
-                    bool sourcePassed = Mod.Config.Developer.ForceFallAfterJump ? false : 
+                    bool sourcePassed = Mod.Config.Developer.ForceFallAfterJump ? false :
                         CheckHelper.DidCheckPassThreshold(Mod.Config.Move.FallAfterJumpChance, __instance.OwningMech, checkMod, ModText.FT_Fall_After_Jump);
                     if (!sourcePassed)
                     {
@@ -230,10 +233,13 @@ namespace CBTBehaviorsEnhanced
         public static class AbstractActor_ResolveAttackSequence_Patch
         {
 
-            private static bool Prefix(AbstractActor __instance)
+            private static void Prefix(ref bool __runOriginal, AbstractActor __instance)
             {
+                if (!__runOriginal) return;
+
                 Mod.Log.Trace?.Write("AA:RAS:PRE entered");
-                return !Mod.Config.Features.PermanentEvasion;
+
+                __runOriginal = !Mod.Config.Features.PermanentEvasion;
             }
 
             private static void Postfix(AbstractActor __instance, string sourceID, int sequenceID, int stackItemID, AttackDirection attackDirection)

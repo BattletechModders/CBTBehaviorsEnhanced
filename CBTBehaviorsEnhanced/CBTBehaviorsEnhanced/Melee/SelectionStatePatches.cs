@@ -1,8 +1,5 @@
-﻿using BattleTech;
-using BattleTech.UI;
+﻿using BattleTech.UI;
 using CBTBehaviorsEnhanced.MeleeStates;
-using HarmonyLib;
-using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
@@ -42,7 +39,7 @@ namespace CBTBehaviorsEnhanced.Melee
             if (__instance.SelectedActor is Mech selectedMech && selectedAttack != null && __instance.PotentialMeleeTarget != null)
             {
                 float newStability = selectedMech.CurrentStability + selectedAttack.AttackerInstability;
-                
+
                 List<WayPoint> waypoints = ActorMovementSequence.ExtractWaypointsFromPath(selectedMech, selectedMech.Pathing.CurrentPath, selectedMech.Pathing.ResultDestination, selectedMech.Pathing.CurrentMeleeTarget, selectedMech.Pathing.MoveType);
                 StabilityChangeSource changeSource = StabilityChangeSource.Moving;
                 if (WayPoint.GetDistFromWaypointList(selectedMech.CurrentPosition, waypoints) < 1f)

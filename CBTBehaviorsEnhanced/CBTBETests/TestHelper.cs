@@ -1,12 +1,6 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced;
-using Harmony;
+﻿using CBTBehaviorsEnhanced;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CBTBETests
@@ -22,7 +16,7 @@ namespace CBTBETests
             DescriptionDef descriptionDef = new DescriptionDef("foo", "bar", "raboof", "", 100, 0, true, "", "", "");
             ChassisDef chassisDef = new ChassisDef(descriptionDef, "", "", "", "", "", tonnage, tonnage, WeightClass.ASSAULT,
                 0, 0, 0, 0, 0, 0, new float[] { 0 }, 0, 0, 0, 0, 0,
-                true, 0, 0, 0, 0, 0, 0, 0, 0, new LocationDef[] { }, new MechComponentRef[] { }, 
+                true, 0, 0, 0, 0, 0, 0, 0, 0, new LocationDef[] { }, new MechComponentRef[] { },
                 new HBS.Collections.TagSet());
             Traverse tonnageT = Traverse.Create(chassisDef).Property("Tonnage");
             tonnageT.SetValue(tonnage);
@@ -41,7 +35,7 @@ namespace CBTBETests
             return mech;
         }
 
-       public static Turret BuildTestTurret(float tonnage)
+        public static Turret BuildTestTurret(float tonnage)
         {
             Turret turret = new Turret();
             return (Turret)InitAbstractActor(turret);
@@ -61,7 +55,7 @@ namespace CBTBETests
         {
             ActorMeleeCondition mmc = new ActorMeleeCondition(mech,
                 true, true, 2, 2, true, true,
-                true, true, 2, 2, true, true, 
+                true, true, 2, 2, true, true,
                 true, true);
 
             return mmc;
@@ -88,7 +82,7 @@ namespace CBTBETests
 
             // Vanilla
             actor.StatCollection.AddStatistic<float>("SensorSignatureModifier", 1.0f);
-            
+
             return actor;
         }
 

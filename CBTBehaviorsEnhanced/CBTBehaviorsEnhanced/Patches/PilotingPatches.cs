@@ -1,21 +1,23 @@
-﻿
-using BattleTech;
-using HarmonyLib;
-using System;
+﻿using System;
 
-namespace CBTBehaviorsEnhanced {
+namespace CBTBehaviorsEnhanced
+{
 
     // TODO: Should use the delta across the entire attack sequence, not just one weapon
-    public static class PilotingPatches {
+    public static class PilotingPatches
+    {
 
         [HarmonyPatch(typeof(Mech), "ResolveWeaponDamage", new Type[] { typeof(WeaponHitInfo), typeof(Weapon), typeof(MeleeAttackType) })]
-        public static class Mech_ResolveWeaponDamage {
-            public static void Postfix(Mech __instance, WeaponHitInfo hitInfo, Weapon weapon, MeleeAttackType meleeAttackType) {
+        public static class Mech_ResolveWeaponDamage
+        {
+            public static void Postfix(Mech __instance, WeaponHitInfo hitInfo, Weapon weapon, MeleeAttackType meleeAttackType)
+            {
                 Mod.Log.Trace?.Write("M:RWD entered.");
 
                 AttackDirector.AttackSequence attackSequence = __instance.Combat.AttackDirector.GetAttackSequence(hitInfo.attackSequenceId);
                 AbstractActor target = __instance.Combat.FindActorByGUID(hitInfo.targetId);
-                if (target is Mech targetMech) {
+                if (target is Mech targetMech)
+                {
 
                     // Feature: Piloting Skill Check from instability
                     // TODO: Let instability represent this?

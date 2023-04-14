@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
@@ -7,7 +6,6 @@ using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.MeleeStates
@@ -139,7 +137,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
- 
+
             // If target is prone, -2 modifier
             if (target.IsProne) this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 

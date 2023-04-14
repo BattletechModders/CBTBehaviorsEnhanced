@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using IRBTModUtils;
-using IRBTModUtils.Extension;
+﻿using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
@@ -325,7 +323,7 @@ namespace CBTBehaviorsEnhanced.Extensions
 
         public static bool CanMakePhysicalWeaponAttack(this Mech mech)
         {
-            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);            
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             return attackerCondition.CanUsePhysicalAttack();
         }
 

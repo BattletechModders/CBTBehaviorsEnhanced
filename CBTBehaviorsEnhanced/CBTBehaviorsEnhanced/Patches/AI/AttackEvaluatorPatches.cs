@@ -1,12 +1,5 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.MeleeStates;
-using HarmonyLib;
+﻿using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CBTBehaviorsEnhanced.Patches.AI
 {

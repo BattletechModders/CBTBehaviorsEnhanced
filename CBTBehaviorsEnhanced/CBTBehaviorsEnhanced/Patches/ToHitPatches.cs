@@ -1,7 +1,5 @@
-﻿using BattleTech;
-using BattleTech.UI;
+﻿using BattleTech.UI;
 using CBTBehaviorsEnhanced.MeleeStates;
-using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;

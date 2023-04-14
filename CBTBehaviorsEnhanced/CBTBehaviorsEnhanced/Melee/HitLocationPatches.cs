@@ -1,9 +1,6 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Helper;
-using CBTBehaviorsEnhanced.MeleeStates;
+﻿using CBTBehaviorsEnhanced.MeleeStates;
 using CustAmmoCategories;
 using CustomUnits;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 
@@ -22,9 +19,9 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
             try
             {
                 CustomHitTableDef PUNCH_mech_table = new CustomHitTableDef();
-                PUNCH_mech_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() 
+                PUNCH_mech_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>()
                 {
-                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftTorso, 34 },
                             { ArmorLocation.CenterTorso, 16 },
@@ -32,7 +29,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { ArmorLocation.Head, 16 }
                         }
                     },
-                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftArm, 17 },
                             { ArmorLocation.LeftTorsoRear, 17 },
@@ -42,7 +39,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { ArmorLocation.Head, 16}
                         }
                     },
-                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.RightTorso, 34 },
                             { ArmorLocation.CenterTorso, 16 },
@@ -50,7 +47,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { ArmorLocation.Head, 16 }
                         }
                     },
-                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftArm, 17 },
                             { ArmorLocation.LeftTorso, 17 },
@@ -60,7 +57,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { ArmorLocation.Head, 16}
                         }
                     },
-                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftArm, 17 },
                             { ArmorLocation.LeftTorso, 17 },
@@ -70,7 +67,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { ArmorLocation.Head, 16}
                         }
                     },
-                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftArm, 17 },
                             { ArmorLocation.LeftTorso, 17 },
@@ -80,7 +77,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { ArmorLocation.Head, 16}
                         }
                     },
-                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftArm, 17 },
                             { ArmorLocation.LeftTorso, 17 },
@@ -96,45 +93,45 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                 CustomHitTableDef.Register(PUNCH_mech_table);
 
                 CustomHitTableDef KICK_mech_table = new CustomHitTableDef();
-                KICK_mech_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() 
+                KICK_mech_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>()
                 {
-                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 60 },
                             { ArmorLocation.RightLeg, 40 }
                         }
                       },
-                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 50 },
                             { ArmorLocation.RightLeg, 50 }
                         }
                     },
-                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 40 },
                             { ArmorLocation.RightLeg, 60 }
                         }
                     },
-                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 50 },
                             { ArmorLocation.RightLeg, 50 }
                         }
                     },
-                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 50 },
                             { ArmorLocation.RightLeg, 50 }
                         }
                     },
-                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 50 },
                             { ArmorLocation.RightLeg, 50 }
                         }
                     },
-                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>()
                         {
                             { ArmorLocation.LeftLeg, 50 },
                             { ArmorLocation.RightLeg, 50 }
@@ -146,9 +143,9 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                 CustomHitTableDef.Register(KICK_mech_table);
 
                 CustomHitTableDef PUNCH_vehicle_table = new CustomHitTableDef();
-                PUNCH_vehicle_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() 
+                PUNCH_vehicle_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>()
                 {
-                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Left.toFakeArmor(), 40 },
@@ -156,7 +153,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Rear.toFakeArmor(), 8},
                           }
                     },
-                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
@@ -164,7 +161,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 8},
                           }
                     },
-                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Right.toFakeArmor(), 40 },
@@ -172,7 +169,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Rear.toFakeArmor(), 8},
                           }
                     },
-                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 40 },
@@ -180,7 +177,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 8 },
@@ -189,7 +186,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 40 },
@@ -198,7 +195,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 40 },
                         }
                     },
-                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 40 },
@@ -213,9 +210,9 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                 CustomHitTableDef.Register(PUNCH_vehicle_table);
 
                 CustomHitTableDef KICK_vehicle_table = new CustomHitTableDef();
-                KICK_vehicle_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>() 
+                KICK_vehicle_table.HitTable = new Dictionary<AttackDirection, Dictionary<ArmorLocation, int>>()
                 {
-                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromLeft, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
                             { VehicleChassisLocations.Left.toFakeArmor(), 40 },
@@ -223,7 +220,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Rear.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromBack, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
                             { VehicleChassisLocations.Rear.toFakeArmor(), 40 },
@@ -231,7 +228,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromRight, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
                             { VehicleChassisLocations.Right.toFakeArmor(), 40 },
@@ -239,7 +236,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Rear.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromFront, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 4 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 40 },
@@ -247,7 +244,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromTop, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 8 },
@@ -256,7 +253,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 8},
                         }
                     },
-                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.FromArtillery, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 40 },
@@ -265,7 +262,7 @@ namespace CBTBehaviorsEnhanced.Patches.Melee
                             { VehicleChassisLocations.Right.toFakeArmor(), 40 },
                         }
                     },
-                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>() 
+                    { AttackDirection.ToProne, new Dictionary<ArmorLocation, int>()
                         {
                             { VehicleChassisLocations.Turret.toFakeArmor(), 40 },
                             { VehicleChassisLocations.Front.toFakeArmor(), 40 },

@@ -1,12 +1,9 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
-using HarmonyLib;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using static AIUtil;
@@ -19,10 +16,12 @@ namespace CBTBehaviorsEnhanced.Patches.AI
     static class AIUtil_ExpectedDamageForAttack
     {
 
-        static void Prefix(AIUtil __instance, AbstractActor unit, AttackType attackType, List<Weapon> weaponList,
-        ICombatant target, Vector3 attackPosition, Vector3 targetPosition, bool useRevengeBonus, 
-        AbstractActor unitForBVContext)
+        static void Prefix(ref bool __runOriginal, AIUtil __instance, AbstractActor unit, AttackType attackType, List<Weapon> weaponList,
+            ICombatant target, Vector3 attackPosition, Vector3 targetPosition, bool useRevengeBonus,
+            AbstractActor unitForBVContext)
         {
+            if (!__runOriginal) return;
+
             Mech attackingMech = unit as Mech;
             AbstractActor targetActor = target as AbstractActor;
             Mech targetMech = target as Mech;
@@ -197,8 +196,10 @@ namespace CBTBehaviorsEnhanced.Patches.AI
     static class AIUtil_GetAcceptableHeatLevelForMech
     {
         // float GetAcceptableHeatLevelForMech(Mech mech)
-        static bool Prefix(Mech mech, ref float __result)
+        static void Prefix(ref bool __runOriginal, Mech mech, ref float __result)
         {
+            if (!__runOriginal) return;
+
             float heatCheckMod = mech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
             float bhvarAcceptableHeatFraction = UnitHelper.GetBehaviorVariableValue(mech.BehaviorTree, BehaviorVariableName.Float_AcceptableHeatLevel).FloatVal;
             Mod.AILog.Info?.Write($"== Unit: {mech.DistinctId()} has heatCheckMod: {heatCheckMod}  heatRiskRatio: {bhvarAcceptableHeatFraction}  currentHeat: {mech.CurrentHeat}");
@@ -212,7 +213,8 @@ namespace CBTBehaviorsEnhanced.Patches.AI
 
             __result = acceptableHeats.First<int>();
             Mod.AILog.Info?.Write($"  using lowest acceptable heat value of: {__result}");
-            return false;
+            
+            __runOriginal = false;
         }
 
 

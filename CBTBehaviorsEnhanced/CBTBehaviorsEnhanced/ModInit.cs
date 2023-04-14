@@ -1,9 +1,7 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Move;
+﻿using CBTBehaviorsEnhanced.Move;
 using CBTBehaviorsEnhanced.Patches.AI.InfluenceMap;
 using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Logging;
-using HarmonyLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -79,8 +77,7 @@ namespace CBTBehaviorsEnhanced
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Log.Info?.Write($"Product version: {fvi.ProductVersion}");
-            Log.Info?.Write($"Assembly version: {asm.GetName().Version}");
+            Log.Info?.Write($"File version: {fvi.FileVersion}");
 
             Log.Debug?.Write($"ModDir is:{modDirectory}");
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
@@ -98,19 +95,17 @@ namespace CBTBehaviorsEnhanced
             // Initialize custom components
             CustomComponents.Registry.RegisterSimpleCustomComponents(Assembly.GetExecutingAssembly());
 
-            //HarmonyInstance.DEBUG = true;
-            var harmony = new Harmony(HarmonyPackage);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), HarmonyPackage);
         }
 
-        public static void FinishedLoading(List<string> loadOrder) 
+        public static void FinishedLoading(List<string> loadOrder)
         {
             Mod.Log.Info?.Write("Invoking FinishedLoading");
 
             // Check for RolePlayer and use it's BehaviorVar link instead
             //InitRoleplayerLink();
 
-            foreach (string name in loadOrder) 
+            foreach (string name in loadOrder)
             {
                 if (name.Equals("MechEngineer"))
                 {

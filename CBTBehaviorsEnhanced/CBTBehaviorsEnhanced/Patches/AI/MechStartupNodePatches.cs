@@ -1,7 +1,5 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
-using HarmonyLib;
 using System.Reflection;
 using us.frostraptor.modUtils;
 
@@ -24,10 +22,10 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             AbstractActor unit = unitT.GetValue<AbstractActor>();
             if (unit is Mech mech)
             {
-                
+
                 float heatCheck = mech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
                 int futureHeat = mech.CurrentHeat - mech.AdjustedHeatsinkCapacity;
-                
+
                 // Check to see if we will shutdown
                 bool passedStartupCheck = CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.Shutdown, futureHeat, mech, heatCheck, ModText.FT_Check_Startup);
                 Mod.Log.Info?.Write($"AI unit {CombatantUtils.Label(mech)} heatCheck: {heatCheck} vs. futureHeat: {futureHeat} " +
@@ -71,5 +69,5 @@ namespace CBTBehaviorsEnhanced.Patches.AI
 
     }
 
-   
+
 }

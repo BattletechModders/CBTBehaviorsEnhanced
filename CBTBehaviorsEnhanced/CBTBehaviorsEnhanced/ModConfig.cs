@@ -1,10 +1,6 @@
-﻿
-
-using BattleTech;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Security.Policy;
 using System.Text;
 
 namespace CBTBehaviorsEnhanced
@@ -266,7 +262,7 @@ namespace CBTBehaviorsEnhanced
                 this.CustomCategories.LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
             if (this.CustomCategories.HandActuatorCategoryId.Length == 0)
                 this.CustomCategories.HandActuatorCategoryId = new string[] { "ArmHandActuator" };
-           
+
         }
     }
 
@@ -497,7 +493,7 @@ namespace CBTBehaviorsEnhanced
         public Dictionary<ArmorLocation, int> MechLocations = new Dictionary<ArmorLocation, int>();
         [JsonIgnore]
         public int MechLocationsTotalWeight = 0;
-        
+
         public Dictionary<string, int> VehicleWeights = new Dictionary<string, int>();
         [JsonIgnore]
         public Dictionary<VehicleChassisLocations, int> VehicleLocations = new Dictionary<VehicleChassisLocations, int>();

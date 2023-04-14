@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using HBS.Collections;
+﻿using HBS.Collections;
 
 namespace CBTBehaviorsEnhanced.Extensions
 {

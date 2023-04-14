@@ -1,9 +1,11 @@
 ﻿using CustomComponents;
 
-namespace CBTBehaviorsEnhanced.Components {
+namespace CBTBehaviorsEnhanced.Components
+{
 
     [CustomComponent("VolatileAmmo")]
-    class VolatileAmmo : SimpleCustomComponent {
+    class VolatileAmmo : SimpleCustomComponent
+    {
         public float damageWeighting = 1f;
     }
 }

@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CBTBETests

@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using IRBTModUtils.CustomInfluenceMap;
 using IRBTModUtils.Extension;
 using UnityEngine;

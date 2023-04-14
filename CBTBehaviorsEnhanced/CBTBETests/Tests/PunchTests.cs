@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced;
+﻿using CBTBehaviorsEnhanced;
 using CBTBehaviorsEnhanced.Extensions;
 using IRBTModUtils.Extension;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

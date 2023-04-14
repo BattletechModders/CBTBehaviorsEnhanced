@@ -1,10 +1,5 @@
-﻿using BattleTech;
-using CustAmmoCategories;
-using CustomUnits;
-using HarmonyLib;
-using HBS.Collections;
+﻿using CustomUnits;
 using IRBTModUtils.Extension;
-using System;
 
 namespace CBTBehaviorsEnhanced.Helper
 {

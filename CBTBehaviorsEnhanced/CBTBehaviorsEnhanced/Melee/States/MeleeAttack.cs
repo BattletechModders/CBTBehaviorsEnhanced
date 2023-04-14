@@ -1,10 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Helper;
-using IRBTModUtils;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using us.frostraptor.modUtils;
+﻿using System.Collections.Generic;
 
 namespace CBTBehaviorsEnhanced.MeleeStates
 {
@@ -43,7 +37,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         // What animation to use
         public MeleeAttackType AttackAnimation = MeleeAttackType.NotSet;
 
-        public MeleeAttack(MeleeState state) 
+        public MeleeAttack(MeleeState state)
         {
             this.state = state;
         }
@@ -53,10 +47,10 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
     public enum DamageTable
     {
-        NONE, 
-        STANDARD, 
+        NONE,
+        STANDARD,
         REAR,
-        PUNCH, 
+        PUNCH,
         KICK
     }
 }

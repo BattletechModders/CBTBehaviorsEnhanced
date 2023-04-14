@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Helper;
-using CustAmmoCategories;
+﻿using CustAmmoCategories;
 using CustomUnits;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
@@ -60,7 +58,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         public MeleeAttack GetHighestDamageAttackForUI()
         {
             MeleeAttack selectedAttack = null;
-            
+
             List<MeleeAttack> attacks = new List<MeleeAttack> { PhysicalWeapon, Kick, Punch };
             float selectedDamage = 0;
             foreach (MeleeAttack attack in attacks)
@@ -103,7 +101,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
             // Do not include charge by default; only include it when all other attacks are null
             List<MeleeAttack> allStates = new List<MeleeAttack> { Kick, PhysicalWeapon, Punch };
-            
+
             // Do not use DFA here, because it's selected differently in UI.
             if (includeDFA && DFA != null) allStates.Add(DFA);
 
@@ -231,16 +229,16 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             // CU integration; subtract flying height from current Position.
             //   Treat both units as if they were 'on the ground'
             float attackerBase_Y = attacker.CurrentPosition.y - attacker.FlyingHeight();
-            float attackerLOS_Y = attacker.LOSSourcePositions[0].y;            
+            float attackerLOS_Y = attacker.LOSSourcePositions[0].y;
             float attackerHeightBaseToLOS = attackerLOS_Y - attackerBase_Y;
-            
+
             attackerBase_Y = attackPosition.y;
             attackerLOS_Y = attackerBase_Y + attackerHeightBaseToLOS;
             Mod.MeleeLog.Info?.Write($" - attackerBase_Y: {attackerBase_Y} attackerLOS_Y: {attackerLOS_Y} attackerHeightBaseToLOS: {attackerHeightBaseToLOS}");
 
-            float targetBase_Y = target.CurrentPosition.y - target.FlyingHeight(); 
+            float targetBase_Y = target.CurrentPosition.y - target.FlyingHeight();
             float targetLOS_Y = ((AbstractActor)target).LOSSourcePositions[0].y;
-            Mod.MeleeLog.Info?.Write($" - targetBase_Y: {targetBase_Y} targetLOS_Y: {targetLOS_Y }");
+            Mod.MeleeLog.Info?.Write($" - targetBase_Y: {targetBase_Y} targetLOS_Y: {targetLOS_Y}");
 
             // If attacker base > target base -> attacker base
             // else if target base > attacker LOS -> attacker LOS 

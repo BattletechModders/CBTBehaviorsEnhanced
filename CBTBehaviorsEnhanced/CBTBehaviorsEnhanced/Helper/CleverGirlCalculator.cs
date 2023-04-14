@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.MeleeStates;
+﻿using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -15,9 +14,9 @@ namespace CBTBehaviorsEnhanced.Helper
         //     this is necessary to allow the EV calculations to proccess in CG
         //  - attackPos has to be a valid attackPosition for the target. This can be the 'safest' position as evaluated by 
         //     FindBestPositionToMeleeFrom
-        public static void OptimizeMelee(Mech attacker, AbstractActor target, Vector3 attackPos, 
+        public static void OptimizeMelee(Mech attacker, AbstractActor target, Vector3 attackPos,
             List<Weapon> canFireInMeleeWeapons,
-            out List<Weapon> usableWeapons, out MeleeAttack selectedState, 
+            out List<Weapon> usableWeapons, out MeleeAttack selectedState,
             out float virtualMeleeDamage, out float totalStateDamage)
         {
             usableWeapons = new List<Weapon>();
@@ -148,7 +147,7 @@ namespace CBTBehaviorsEnhanced.Helper
                         else
                         {
                             virtualDamage -= selfEvasionDamage;
-                            virtualDamage -= selfDamage;                            
+                            virtualDamage -= selfDamage;
                             Mod.AILog.Info?.Write($"  virtual damage reduced by selfDamage: {selfDamage} selfEvasionDamage: {selfEvasionDamage}");
                         }
 
@@ -177,7 +176,8 @@ namespace CBTBehaviorsEnhanced.Helper
                 Mod.AILog.Info?.Write($"=== Best state for attacker: {attacker.DistinctId()} vs. " +
                     $"target: {target.DistinctId()} at attackPos: {attackPos} is state: {selectedState?.Label} with " +
                     $"virtualMeleeDamage: {virtualMeleeDamage} and totalStateDamage: {totalStateDamage}");
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Mod.AILog.Warn?.Write(e, $"Failed to optimize melee attack! ");
                 Mod.AILog.Warn?.Write($"  Attacker: {(attacker == null ? "IS NULL" : attacker.DistinctId())}");

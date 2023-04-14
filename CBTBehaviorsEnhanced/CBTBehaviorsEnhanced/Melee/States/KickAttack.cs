@@ -1,15 +1,10 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
-using IRBTModUtils.Extension;
 using Localize;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.MeleeStates
@@ -128,7 +123,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             this.AttackModifiers.Add(ModText.LT_Label_Easy_to_Kick, Mod.Config.Melee.Kick.BaseAttackBonus);
 
             // If target is prone, -2 modifier
-            if (target.IsProne) 
+            if (target.IsProne)
                 this.AttackModifiers.Add(ModText.LT_Label_Target_Prone, Mod.Config.Melee.ProneTargetAttackModifier);
 
             // Actuator damage; +1 for foot actuator, +2 to hit for each upper/lower actuator hit
@@ -160,7 +155,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 $"vs. target: {CombatantUtils.Label(target)}");
 
             float damage = attacker.KickDamage();
-            
+
             // Adjust damage for any target resistance
             damage = target.ApplyKickDamageReduction(damage);
 

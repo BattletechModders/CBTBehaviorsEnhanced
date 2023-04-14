@@ -1,6 +1,4 @@
-﻿
-using BattleTech;
-using CBTBehaviorsEnhanced.Components;
+﻿using CBTBehaviorsEnhanced.Components;
 using CustAmmoCategories;
 using CustomComponents;
 using IRBTModUtils.Extension;
@@ -10,8 +8,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced {
-    public static class HeatHelper {
+namespace CBTBehaviorsEnhanced
+{
+    public static class HeatHelper
+    {
 
         /* CAC manipulates a unit's heat scale multiple times during their activation. See ApplyHeatSinks.cs for most of the logic.
          * When it applies a heat event, it consumes a certain amount of HeatSinkCapacity, and records the remainder in CurrentHeat.
@@ -19,7 +19,8 @@ namespace CBTBehaviorsEnhanced {
          * Because of this, tracking heat and capacity values requires normalizing these disparate units back into
          * a linear scale. This is necessary for our purposes, as we want to show the player a prediction of what's going to occur.
          */
-        public static int NormalizedHeatSinkCapacity(this Mech mech) {
+        public static int NormalizedHeatSinkCapacity(this Mech mech)
+        {
             // Total HeatSinkCapacity is HeatSinkCapacity (patched by KMission) + UsedHeatSinksCap
             int totalHeatSinkCap = mech.HeatSinkCapacity + mech.UsedHeatSinksCap();
             Mod.HeatLog.Trace?.Write($"Mech: {CombatantUtils.Label(mech)} has totalHeatSinkCap: {totalHeatSinkCap} from currentCap: {mech.HeatSinkCapacity} + usedCap: {mech.UsedHeatSinksCap()}");
@@ -30,7 +31,8 @@ namespace CBTBehaviorsEnhanced {
          * the remainder capacity modified by the designMask, which would be difficult to normalize. Instead, just replay the logic from Mech::AdjustedHeatSinkCapacity
          * on NormalizedHeatSinkCapacity to ensure an accurate prediction.  
          */
-        public static int NormalizedAdjustedHeatSinkCapacity(this Mech mech, bool isProjectedHeat, bool fractional) {
+        public static int NormalizedAdjustedHeatSinkCapacity(this Mech mech, bool isProjectedHeat, bool fractional)
+        {
 
             int capacity = fractional ? mech.HeatSinkCapacity : mech.NormalizedHeatSinkCapacity();
             float adjustedNormalizedCap = (float)capacity * mech.DesignMaskHeatMulti(isProjectedHeat);
@@ -40,19 +42,24 @@ namespace CBTBehaviorsEnhanced {
         }
 
         // Replicates logic from Mech::AdjustedHeatSinkCapacity to allow displaying multiplier
-        public static float DesignMaskHeatMulti(this Mech mech, bool isProjectedHeat) {
+        public static float DesignMaskHeatMulti(this Mech mech, bool isProjectedHeat)
+        {
             float capacityMulti = 1f;
 
-            try {
+            try
+            {
                 // Check for currently occupied, or future
-                if (isProjectedHeat) {
+                if (isProjectedHeat)
+                {
                     Mod.HeatLog.Trace?.Write("Calculating projected position heat.");
-                    if (mech.Pathing != null && mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0) {
+                    if (mech.Pathing != null && mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0)
+                    {
 
                         // Determine the destination designMask
                         Mod.HeatLog.Trace?.Write($"CurrentPath has: {mech.Pathing.CurrentPath.Count} nodes, using destination path: {mech.Pathing.ResultDestination}");
                         DesignMaskDef destinationDesignMaskDef = mech?.Combat?.MapMetaData?.GetPriorityDesignMaskAtPos(mech.Pathing.ResultDestination);
-                        if (destinationDesignMaskDef != null && !Mathf.Approximately(destinationDesignMaskDef.heatSinkMultiplier, 1f)) {
+                        if (destinationDesignMaskDef != null && !Mathf.Approximately(destinationDesignMaskDef.heatSinkMultiplier, 1f))
+                        {
                             Mod.HeatLog.Trace?.Write($"Destination design mask: {destinationDesignMaskDef?.Description?.Name} has heatSinkMulti: x{destinationDesignMaskDef?.heatSinkMultiplier} ");
                             capacityMulti *= destinationDesignMaskDef.heatSinkMultiplier;
                         }
@@ -67,44 +74,57 @@ namespace CBTBehaviorsEnhanced {
 
                         // This assumes 1) only KMission is using stickyEffects that modify HeatSinkCapacity and 2) it has a stackLimit of 1. Anything else will break this.
                         float stickyModifier = 1f;
-                        foreach (MapTerrainCellWaypoint cell in terrainWaypoints) {
-                            if (cell != null && cell?.cell?.BurningStrength > 0 && cell?.cell?.mapMetaData?.designMaskDefs != null) {
+                        foreach (MapTerrainCellWaypoint cell in terrainWaypoints)
+                        {
+                            if (cell != null && cell?.cell?.BurningStrength > 0 && cell?.cell?.mapMetaData?.designMaskDefs != null)
+                            {
                                 Mod.HeatLog.Trace?.Write($"  checking burningCell for designMask.");
-                                foreach (DesignMaskDef cellDesignMaskDef in cell?.cell?.mapMetaData?.designMaskDefs?.Values) {
+                                foreach (DesignMaskDef cellDesignMaskDef in cell?.cell?.mapMetaData?.designMaskDefs?.Values)
+                                {
                                     Mod.HeatLog.Trace?.Write($"    checking designMask for stickyEffects.");
                                     if (cellDesignMaskDef.stickyEffect != null && cellDesignMaskDef.stickyEffect?.statisticData != null &&
-                                        cellDesignMaskDef.stickyEffect.statisticData.statName == ModStats.HBS_HeatSinkCapacity) {
+                                        cellDesignMaskDef.stickyEffect.statisticData.statName == ModStats.HBS_HeatSinkCapacity)
+                                    {
                                         Mod.HeatLog.Trace?.Write($"      found stickyEffects.");
                                         stickyModifier = Single.Parse(cellDesignMaskDef.stickyEffect.statisticData.modValue);
                                     }
                                 }
                             }
                         }
-                        if (!Mathf.Approximately(stickyModifier, 1f)) {
+                        if (!Mathf.Approximately(stickyModifier, 1f))
+                        {
                             capacityMulti *= stickyModifier;
                             Mod.HeatLog.Trace?.Write($"  capacityMulti: {capacityMulti} after stickyModifier: {stickyModifier}");
                         }
 
-                    } else {
+                    }
+                    else
+                    {
                         Mod.HeatLog.Trace?.Write($"Current path is null or has 0 count, skipping.");
                     }
-                } else {
+                }
+                else
+                {
                     Mod.HeatLog.Trace?.Write("Calculating current position heat.");
-                    if (mech.occupiedDesignMask != null && !Mathf.Approximately(mech.occupiedDesignMask.heatSinkMultiplier, 1f)) {
+                    if (mech.occupiedDesignMask != null && !Mathf.Approximately(mech.occupiedDesignMask.heatSinkMultiplier, 1f))
+                    {
                         Mod.HeatLog.Trace?.Write($"Multi for currentPos is: {mech?.occupiedDesignMask?.heatSinkMultiplier}");
                         capacityMulti *= mech.occupiedDesignMask.heatSinkMultiplier;
                     }
 
                 }
 
-                if (mech?.Combat?.MapMetaData?.biomeDesignMask != null && !Mathf.Approximately(mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier, 1f)) {
+                if (mech?.Combat?.MapMetaData?.biomeDesignMask != null && !Mathf.Approximately(mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier, 1f))
+                {
                     Mod.HeatLog.Trace?.Write($"Biome: {mech.Combat.MapMetaData.biomeDesignMask.Id} has heatSinkMulti: x{mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier} ");
                     capacityMulti *= mech.Combat.MapMetaData.biomeDesignMask.heatSinkMultiplier;
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Mod.HeatLog.Error?.Write(e, $"Failed to calculate designMaskHeatMulti due to error: {e}");
             }
-            
+
             Mod.HeatLog.Trace?.Write($"Calculated capacityMulti: {capacityMulti} x globalHeatSinkMulti: {mech.Combat.Constants.Heat.GlobalHeatSinkMultiplier} ");
             capacityMulti *= mech.Combat.Constants.Heat.GlobalHeatSinkMultiplier;
             return capacityMulti;
@@ -114,13 +134,15 @@ namespace CBTBehaviorsEnhanced {
          *   Calculate this heat so we can show it to the player
          *   TODO: Handle unaffected by fire
          */
-        public static int CACTerrainHeat(this Mech mech) {
+        public static int CACTerrainHeat(this Mech mech)
+        {
             float terrainHeat = 0f;
 
             // If the unit has been marked as not being affected by fire, skip it entirely 
             if (mech.UnaffectedFire()) { return 0; }
 
-            if (mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0) {
+            if (mech.Pathing.CurrentPath != null && mech.Pathing.CurrentPath.Count > 0)
+            {
 
                 List<WayPoint> waypointsFromPath = ActorMovementSequence.ExtractWaypointsFromPath(
                     mech, mech.Pathing.CurrentPath, mech.Pathing.ResultDestination, (ICombatant)mech.Pathing.CurrentMeleeTarget, mech.Pathing.MoveType
@@ -130,8 +152,10 @@ namespace CBTBehaviorsEnhanced {
 
                 float sumOfCellHeat = 0f;
                 int totalCells = 0;
-                foreach (MapTerrainCellWaypoint cell in terrainWaypoints) {
-                    if (cell != null && cell.cell.BurningStrength > 0) {
+                foreach (MapTerrainCellWaypoint cell in terrainWaypoints)
+                {
+                    if (cell != null && cell.cell.BurningStrength > 0)
+                    {
                         Mod.HeatLog.Trace?.Write($" --Adding {cell.cell.BurningStrength} heat from cell at worldPos: {cell.cell.WorldPos()}");
                         sumOfCellHeat += cell.cell.BurningStrength;
                         totalCells += 1;
@@ -139,9 +163,12 @@ namespace CBTBehaviorsEnhanced {
                 }
                 terrainHeat = totalCells != 0 ? (float)Math.Ceiling(sumOfCellHeat / totalCells) : 0;
                 Mod.HeatLog.Trace?.Write($"TerrainHeat: {terrainHeat} = sumOfHeat: {sumOfCellHeat} / totalCells: {totalCells}");
-            } else {
+            }
+            else
+            {
                 MapTerrainDataCellEx cell = mech.Combat.MapMetaData.GetCellAt(mech.CurrentPosition) as MapTerrainDataCellEx;
-                if (cell != null && cell.BurningStrength > 0) {
+                if (cell != null && cell.BurningStrength > 0)
+                {
                     Mod.HeatLog.Trace?.Write($"Adding {cell.BurningStrength} heat from current position: {mech.CurrentPosition}");
                     terrainHeat = cell.BurningStrength;
                 }
@@ -150,7 +177,8 @@ namespace CBTBehaviorsEnhanced {
             return (int)Math.Ceiling(terrainHeat);
         }
 
-        public class CalculatedHeat {
+        public class CalculatedHeat
+        {
             public int CurrentHeat;
             public int ProjectedHeat;
             public int TempHeat;
@@ -165,7 +193,8 @@ namespace CBTBehaviorsEnhanced {
             public int ThresholdHeat;
         }
 
-        public static CalculatedHeat CalculateHeat(Mech mech, int projectedHeat) {
+        public static CalculatedHeat CalculateHeat(Mech mech, int projectedHeat)
+        {
             // Calculate the heat from CAC burning 
             int cacTerrainHeat = mech.CACTerrainHeat();
             int currentPathNodes = mech.Pathing != null && mech.Pathing.CurrentPath != null ? mech.Pathing.CurrentPath.Count : 0;
@@ -187,7 +216,8 @@ namespace CBTBehaviorsEnhanced {
             if (thresholdHeat > Mod.Config.Heat.MaxHeat) thresholdHeat = Mod.Config.Heat.MaxHeat;
             Mod.HeatLog.Trace?.Write($"Threshold heat: {thresholdHeat} = futureHeat: {futureHeat} + sinkableHeat: {sinkableHeat}");
 
-            return new CalculatedHeat {
+            return new CalculatedHeat
+            {
                 CurrentHeat = currentHeat,
                 ProjectedHeat = projectedHeat,
                 TempHeat = tempHeat,
@@ -201,21 +231,25 @@ namespace CBTBehaviorsEnhanced {
             };
         }
 
-        public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isVolatile) {
+        public static AmmunitionBox FindMostDamagingAmmoBox(Mech mech, bool isVolatile)
+        {
             Mod.HeatLog.Debug?.Write($"Checking mech: {mech.DistinctId()} for ammo w/ isVolatile: {isVolatile}");
             float totalDamage = 0f;
             AmmunitionBox mostDangerousBox = null;
-            foreach (AmmunitionBox ammoBox in mech.ammoBoxes) {
+            foreach (AmmunitionBox ammoBox in mech.ammoBoxes)
+            {
                 Mod.HeatLog.Debug?.Write($" -- ammoBox: {ammoBox.UIName}");
 
-                if (ammoBox.IsFunctional == false) {
-                    Mod.HeatLog.Debug?.Write($" -- ammobox is not functional, skipping."); 
-                    continue; 
+                if (ammoBox.IsFunctional == false)
+                {
+                    Mod.HeatLog.Debug?.Write($" -- ammobox is not functional, skipping.");
+                    continue;
                 }
 
-                if (ammoBox.CurrentAmmo <= 0) {
+                if (ammoBox.CurrentAmmo <= 0)
+                {
                     Mod.HeatLog.Debug?.Write($" -- ammobox  has no ammo, skipping.");
-                    continue; 
+                    continue;
                 }
 
                 if (!ammoBox.mechComponentRef.Is<VolatileAmmo>(out VolatileAmmo vAmmo) && isVolatile)
@@ -234,7 +268,8 @@ namespace CBTBehaviorsEnhanced {
                 }
 
                 // Multiply box damage by the volatile weighting
-                if (vAmmo != null) {
+                if (vAmmo != null)
+                {
                     boxDamage *= vAmmo.damageWeighting;
                 }
 
@@ -246,7 +281,7 @@ namespace CBTBehaviorsEnhanced {
             }
 
             return mostDangerousBox;
-        } 
+        }
 
         // This method is separated out from the main flow to prevent the ME assembly from being loaded. 
         //   C# IL won't load a type outside of a method invocation. Isolating the compile-time linkage in this
