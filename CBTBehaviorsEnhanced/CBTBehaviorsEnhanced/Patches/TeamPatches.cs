@@ -35,9 +35,8 @@ namespace CBTBehaviorsEnhanced.Patches
                     }
                 }
 
-                Traverse numUnitsEndingActivationT = Traverse.Create(__instance).Field("numUnitsEndingActivation");
-                int currentValue = numUnitsEndingActivationT.GetValue<int>();
-                numUnitsEndingActivationT.SetValue(currentValue + numUnitsEndingActivation);
+                int currentValue = __instance.numUnitsEndingActivation;
+                __instance.numUnitsEndingActivation = currentValue + numUnitsEndingActivation;
             }
 
         }

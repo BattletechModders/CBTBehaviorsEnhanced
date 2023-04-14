@@ -3,15 +3,9 @@ using System.Reflection;
 
 namespace CBTBehaviorsEnhanced.Patches.AI
 {
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(CanMeleeHostileTargetsNode), "Tick")]
     static class CanMeleeHostileTargetsNode_Tick_Patch
     {
-
-        static MethodBase TargetMethod()
-        {
-            var type = AccessTools.TypeByName("CanMeleeHostileTargetsNode");
-            return AccessTools.Method(type, "Tick");
-        }
 
         static void Prefix(ref bool __runOriginal, ref BehaviorTreeResults __result,
             string ___name, BehaviorTree ___tree, AbstractActor ___unit)

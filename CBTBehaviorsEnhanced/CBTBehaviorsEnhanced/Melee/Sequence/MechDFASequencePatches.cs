@@ -301,8 +301,7 @@ namespace CBTBehaviorsEnhanced.Melee
             ModState.ForceDamageTable = DamageTable.NONE;
 
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
-            Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
-            BuildWeaponDirectorSequenceT.GetValue();
+            __instance.BuildWeaponDirectorSequence();
             Mod.MeleeLog.Debug?.Write(" -- Done!");
         }
     }

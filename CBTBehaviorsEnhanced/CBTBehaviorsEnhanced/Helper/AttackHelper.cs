@@ -86,8 +86,7 @@ namespace CBTBehaviorsEnhanced.Helper
                 );
             Mod.Log.Debug?.Write("  -- created attack sequence");
 
-            Traverse weaponHitInfosT = Traverse.Create(attackSequence).Field("weaponHitInfo");
-            WeaponHitInfo?[][] sequenceHitInfos = weaponHitInfosT.GetValue<WeaponHitInfo?[][]>();
+            WeaponHitInfo?[][] sequenceHitInfos = attackSequence.weaponHitInfo;
             Mod.Log.Debug?.Write("  -- fetched weaponHitInfo from attack Sequence");
             if (sequenceHitInfos != null)
             {

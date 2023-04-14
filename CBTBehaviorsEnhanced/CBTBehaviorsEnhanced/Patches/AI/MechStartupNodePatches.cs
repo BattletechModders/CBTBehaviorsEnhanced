@@ -6,20 +6,12 @@ using us.frostraptor.modUtils;
 namespace CBTBehaviorsEnhanced.Patches.AI
 {
     // This node is used by the behavior tree, and it expects it to always pass. Intercept and apply the explosion logic.
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(MechStartUpNode), "Tick")]
     static class MechStartUpNode_Tick
     {
-
-        // These patches target internal classes that can't be addressed with annotations
-        static MethodBase TargetMethod()
-        {
-            return AccessTools.Method("MechStartUpNode:Tick");
-        }
-
         static void Postfix(BehaviorNode __instance, ref BehaviorTreeResults __result)
         {
-            Traverse unitT = Traverse.Create(__instance).Field("unit");
-            AbstractActor unit = unitT.GetValue<AbstractActor>();
+            AbstractActor unit = __instance.unit;
             if (unit is Mech mech)
             {
 

@@ -22,9 +22,6 @@ namespace CBTBehaviorsEnhanced.Patches
 
             Mod.UILog.Trace?.Write("CHUDWS:SHC entered");
 
-            Traverse addToolTipDetailT = Traverse.Create(__instance)
-                .Method("AddToolTipDetail", new Type[] { typeof(string), typeof(int) });
-
             AbstractActor actor = __instance.DisplayedWeapon.parent;
             if (actor.HasMovedThisRound && actor.JumpedLastRound ||
                 (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
@@ -32,7 +29,7 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
                 Mod.UILog.Trace?.Write($"Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
-                addToolTipDetailT.GetValue(new object[] { localText, Mod.Config.ToHitSelfJumped });
+                __instance.AddToolTipDetail(localText, Mod.Config.ToHitSelfJumped);
             }
 
             // Check melee patches
@@ -46,7 +43,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                         Mod.UILog.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
-                        addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
+                        __instance.AddToolTipDetail(localText, kvp.Value);
                     }
                 }
             }

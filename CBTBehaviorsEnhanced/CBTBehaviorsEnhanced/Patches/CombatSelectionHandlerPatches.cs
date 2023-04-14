@@ -17,9 +17,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             Mod.Log.Trace?.Write($"CSH:RCI");
 
-            AbstractActor selectedActor = __instance.SelectedActor;
-            Traverse combatT = Traverse.Create(__instance).Property("Combat");
-            CombatGameState combat = combatT.GetValue<CombatGameState>();
+            CombatGameState combat = __instance.Combat;
 
             if (__instance.ActiveState.IsComplete && !combat.TurnDirector.IsInterleaved)
             {

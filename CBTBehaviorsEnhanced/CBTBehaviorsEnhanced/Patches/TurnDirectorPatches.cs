@@ -112,14 +112,12 @@ namespace CBTBehaviorsEnhanced.Patches
             if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0)
             {
                 Mod.Log.Info?.Write("Sending TurnActorActivateMessage");
-                Traverse staamT = Traverse.Create(__instance).Method("SendTurnActorActivateMessage", new object[] { __instance.ActiveTurnActorIndex });
-                staamT.GetValue();
+                __instance.SendTurnActorActivateMessage(__instance.ActiveTurnActorIndex);
             }
             else
             {
                 Mod.Log.Debug?.Write("Incrementing ActiveTurnActor");
-                Traverse iataT = Traverse.Create(__instance).Method("IncrementActiveTurnActor");
-                iataT.GetValue();
+                __instance.IncrementActiveTurnActor();
             }
 
             __runOriginal = false;
@@ -202,8 +200,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     Mod.Log.Info?.Write("No actors have contact, returning to non-interleaved mode.");
 
-                    Traverse turnDirectorT = Traverse.Create(__instance).Property("IsInterleaved");
-                    turnDirectorT.SetValue(false);
+                    __instance.IsInterleaved = false;
 
                     __instance.Combat.MessageCenter.PublishMessage(new LostContactMessage());
                     return;

@@ -92,16 +92,8 @@ namespace CBTBehaviorsEnhanced.Melee
             {
                 Mod.MeleeLog.Info?.Write($"  -- Invalid sequence in OnAdded, skipping!");
 
-                Traverse meleeTargetT = Traverse.Create(__instance).Property("MeleeTarget");
-                meleeTargetT.SetValue(null);
-
-                // This apparently throws NREs in some cases... so skip
-                //Traverse setStateT = Traverse.Create(__instance).Method("setState");
-                //setStateT.GetValue(new object[] { FakeMeleeSequenceState.Finished });
-
-                Traverse ordersAreCompleteT = Traverse.Create(__instance).Property("OrdersAreComplete");
-                ordersAreCompleteT.SetValue(true);
-
+                __instance.MeleeTarget = null;
+                __instance.OrdersAreComplete = true;
                 return;
             }
 
@@ -195,8 +187,7 @@ namespace CBTBehaviorsEnhanced.Melee
         {
             if (!__runOriginal) return;
 
-            Traverse BuildMeleeDirectorSequenceT = Traverse.Create(__instance).Method("BuildMeleeDirectorSequence");
-            BuildMeleeDirectorSequenceT.GetValue();
+            __instance.BuildMeleeDirectorSequence();
 
             if (__instance.OwningMech.GameRep != null)
             {
@@ -209,10 +200,7 @@ namespace CBTBehaviorsEnhanced.Melee
             SharedState.Combat.MessageCenter.AddSubscriber(MessageCenterMessageType.OnAttackComplete, __instance.OnMeleeComplete);
             SharedState.Combat.MessageCenter.AddSubscriber(MessageCenterMessageType.OnAttackSequenceFire, __instance.OnMeleeReady);
 
-            // Reading meleeSequence as a property doesn't seem to work, because it always returns null. I'm unsure if this
-            //   is a harmony bug... so read it directly, which seems to work.
-            Traverse meleeSequenceT = Traverse.Create(__instance).Field("meleeSequence");
-            AttackStackSequence meleeSequence = meleeSequenceT.GetValue<AttackStackSequence>();
+            AttackStackSequence meleeSequence = __instance.meleeSequence;
 
             SharedState.Combat.MessageCenter.PublishMessage(new AddParallelSequenceToStackMessage(meleeSequence));
 
@@ -375,18 +363,8 @@ namespace CBTBehaviorsEnhanced.Melee
             if (!__runOriginal) return;
 
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
-            Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
-            if (BuildWeaponDirectorSequenceT == null)
-            {
-                Mod.Log.Error?.Write($"No method named BuildWeaponDirectorSequence found - no clue what will happen next!");
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-                Mod.Log.Info?.Write($"  Error occured at: {t}");
-            }
-            else
-            {
-                BuildWeaponDirectorSequenceT.GetValue();
-                Mod.MeleeLog.Debug?.Write(" -- Done!");
-            }
+            __instance.BuildWeaponDirectorSequence();
+            Mod.MeleeLog.Debug?.Write(" -- Done!");
 
             // Reset damage table 
             ModState.ForceDamageTable = DamageTable.NONE;

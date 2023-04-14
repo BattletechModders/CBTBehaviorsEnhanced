@@ -36,12 +36,8 @@ namespace CBTBehaviorsEnhanced.Patches
             Mod.UILog.Trace?.Write("CHUDHD:I - entered.");
             if (__instance.DisplayedActor != null && __instance.DisplayedActor is Mech displayedMech)
             {
-                Traverse origWidthT = Traverse.Create(__instance).Property("origWidth");
-                float origWidth = origWidthT.GetValue<float>();
-
-                Traverse rectTransformT = Traverse.Create(__instance).Property("rectTransform");
-                RectTransform rectTransform = rectTransformT.GetValue<RectTransform>();
-
+                float origWidth = __instance.origWidth;
+                RectTransform rectTransform = __instance.rectTransform;
                 rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, origWidth);
             }
         }
@@ -127,12 +123,7 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             Mod.UILog.Trace?.Write("CHUBSP:SSDI:POST entered.");
 
-            var type = __instance.GetType();
-            MethodInfo methodInfo = type.GetMethod("ShowDebuff", (BindingFlags.NonPublic | BindingFlags.Instance), null,
-                new Type[] { typeof(SVGAsset), typeof(Text), typeof(Text), typeof(Vector3), typeof(bool) }, new ParameterModifier[5]);
-
-            Traverse HUDT = Traverse.Create(__instance).Property("HUD");
-            CombatHUD HUD = HUDT.GetValue<CombatHUD>();
+            CombatHUD HUD = __instance.HUD;
 
             CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(mech, HUD.SelectionHandler.ProjectedHeatForState);
             Mod.UILog.Debug?.Write($"In ShutdownIndicator, projectedHeat {HUD.SelectionHandler.ProjectedHeatForState} => calculatedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
@@ -143,20 +134,18 @@ namespace CBTBehaviorsEnhanced.Patches
             if (mech.IsShutDown)
             {
                 Mod.UILog.Info?.Write($" Mech {CombatantUtils.Label(mech)} is shutdown, displaying the shutdown warning");
-                methodInfo.Invoke(__instance, new object[] {
-                    LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
+                __instance.ShowDebuff(LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
-                    __instance.defaultIconScale, false });
+                    __instance.defaultIconScale, false);
             }
             else if (calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat)
             {
                 Mod.UILog.Info?.Write($"Mech {mech.DistinctId()} has thresholdHeat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}. Displaying heat warning.");
-                methodInfo.Invoke(__instance, new object[] {
-                    LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
+                __instance.ShowDebuff(LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
                     new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TEXT]),
-                    __instance.defaultIconScale, false });
+                    __instance.defaultIconScale, false);
             }
         }
     }
@@ -168,23 +157,19 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             Mod.UILog.Trace?.Write("CHUDAMS:U - entered.");
 
-            Traverse HUDT = Traverse.Create(__instance).Property("HUD");
-            CombatHUD HUD = HUDT.GetValue<CombatHUD>();
+            CombatHUD HUD = __instance.HUD;
             if (HUD != null && HUD.SelectedActor != null && HUD.SelectedActor is Mech)
             {
 
-                Traverse showHeatWarningsT = Traverse.Create(__instance).Field("showHeatWarnings");
-                bool showHeatWarnings = showHeatWarningsT.GetValue<bool>();
+                bool showHeatWarnings = __instance.showHeatWarnings;
                 if (showHeatWarnings)
                 {
-
                     CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(HUD.SelectedActor as Mech, HUD.SelectionHandler.ProjectedHeatForState);
                     //Mod.UILog.Debug?.Write($" In CombatHUDAttackModeSelector, projectedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
                     bool isOverheated = calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat;
                     bool isShutdown = calculatedHeat.ThresholdHeat >= Mod.Config.Heat.MaxHeat;
 
-                    Traverse updateOverheatWarningsT = Traverse.Create(__instance).Method("UpdateOverheatWarnings", new object[] { isOverheated, isShutdown });
-                    updateOverheatWarningsT.GetValue();
+                    __instance.UpdateOverheatWarnings(isOverheated, isShutdown);
                 }
 
             }

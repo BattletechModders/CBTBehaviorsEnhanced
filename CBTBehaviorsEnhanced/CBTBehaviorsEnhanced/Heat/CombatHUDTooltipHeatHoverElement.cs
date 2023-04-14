@@ -64,10 +64,8 @@ namespace CBTBehaviorsEnhanced.Heat
             // Force a recalculation of the overheat warning
             if (calculatedHeat.FutureHeat > Mod.Config.Heat.WarnAtHeat)
             {
-                Traverse statusPanelT = Traverse.Create(HUD.MechTray).Field("StatusPanel");
-                CombatHUDStatusPanel combatHUDStatusPanel = statusPanelT.GetValue<CombatHUDStatusPanel>();
-                Traverse showShutdownIndicator = Traverse.Create(combatHUDStatusPanel).Method("ShowShutDownIndicator", new object[] { displayedMech });
-                showShutdownIndicator.GetValue();
+                CombatHUDStatusPanel combatHUDStatusPanel = HUD.MechTray.StatusPanel;
+                combatHUDStatusPanel.ShowShutDownIndicator(displayedMech);
             }
 
             float sinkCapMulti = displayedMech.DesignMaskHeatMulti(calculatedHeat.IsProjectedHeat);

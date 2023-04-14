@@ -23,8 +23,7 @@ namespace CBTBehaviorsEnhanced
                 if (__instance == null || __instance.owningActor == null || mech == null) return; // Nothing to do
 
                 // sequenceIsComplete should be false here, but true in the postfix
-                Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
-                __state = sequenceIsCompleteT.GetValue<bool>();
+                __state = __instance.sequenceIsComplete;
             }
 
             public static void Postfix(OrderSequence __instance, bool __state)
@@ -65,8 +64,7 @@ namespace CBTBehaviorsEnhanced
                 }
 
                 // Finally, check to see if the sequence isn't complete yet
-                Traverse sequenceIsCompleteT = Traverse.Create(__instance).Property("sequenceIsComplete");
-                bool sequenceIsComplete = sequenceIsCompleteT.GetValue<bool>();
+                bool sequenceIsComplete = __instance.sequenceIsComplete;
                 if (!sequenceIsComplete)
                 {
                     Mod.ActivationLog.Debug?.Write($" -- !sequenceIsComplete: {sequenceIsComplete}, skipping");
