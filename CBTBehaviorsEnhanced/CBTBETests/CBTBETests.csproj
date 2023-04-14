@@ -30,17 +30,18 @@
 		<AssemblyTitle>CBTBETests</AssemblyTitle>
 		<Product>CBTBETests</Product>
 		<Copyright>Copyright ©  2023</Copyright>
-		<AssemblyVersion>0.10.0.0</AssemblyVersion>
-		<FileVersion>0.10.0.0</FileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>2.0.0</FileVersion>
+    <LangVersion>11</LangVersion>
 	</PropertyGroup>
 
   
 	<Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" 
 		Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-		<PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -48,11 +49,11 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<Reference Include="0Harmony">
-			<Private>True</Private>
-		</Reference>
-		<Reference Include="Assembly-CSharp">
-			<Private>True</Private>
+    <!-- Assets need to be private / included for testing purposes. Do not ship them-->
+    <PackageReference Include="HarmonyX" Version="2.10.1">
+    </PackageReference>
+    
+    <Reference Include="Assembly-CSharp">
 		</Reference>
 		<Reference Include="System">
 		  <Private>False</Private>
@@ -60,12 +61,11 @@
 		<Reference Include="System.Core">
 		  <Private>False</Private>
 		</Reference>		
+    
 		<Reference Include="IRBTModUtils">
 			<HintPath>$(DeployedModPath)\..\IRBTModUtils\IRBTModUtils.dll</HintPath>
-			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
-			<Private>False</Private>
 		</Reference>		
 	</ItemGroup>
 
