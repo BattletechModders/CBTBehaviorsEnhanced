@@ -30,7 +30,6 @@
 		<Copyright>Copyright © 2023</Copyright>
 		<AssemblyVersion>2.1.0</AssemblyVersion>
 		<FileVersion>2.1.0</FileVersion>
-		<ProductVersion>2.1.0</ProductVersion>
 		<LangVersion>11</LangVersion>
 	</PropertyGroup>
 
@@ -39,7 +38,6 @@
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods_CBDE\Core\CBTBehaviorsEnhanced" Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods_CBDE\Core\CBTBehaviorsEnhanced')" />
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RogueTechRepo)\Core\CBTBehaviorsEnhanced" Condition="'$(RogueTechRepo)' != '' And Exists('$(RogueTechRepo)\Core\CBTBehaviorsEnhanced')" />
 	</Target>
-
 
   <PropertyGroup>
     <!-- avoids IgnoresAccessChecksToAttribute warnings -->
