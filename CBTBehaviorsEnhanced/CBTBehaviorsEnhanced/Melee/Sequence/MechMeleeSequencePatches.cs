@@ -340,7 +340,7 @@ namespace CBTBehaviorsEnhanced.Melee
             if (!(__instance.OwningMech is TrooperSquad))
             {
                 __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
-                Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); ModState.ForceDamageTable = DamageTable.NONE;
+                Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
                 ModState.ForceDamageTable = DamageTable.NONE;
             }
 
@@ -370,7 +370,8 @@ namespace CBTBehaviorsEnhanced.Melee
                 //        }
                 //    }
                 __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
-                Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); ModState.ForceDamageTable = DamageTable.NONE;
+                Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); 
+                ModState.ForceDamageTable = DamageTable.NONE;
             }
             catch (Exception e) {
                 Mod.MeleeLog.Error?.Write(e.ToString());
