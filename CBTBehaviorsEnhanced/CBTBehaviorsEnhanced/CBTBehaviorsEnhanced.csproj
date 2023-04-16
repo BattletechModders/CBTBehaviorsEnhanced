@@ -30,6 +30,7 @@
 		<Copyright>Copyright © 2023</Copyright>
 		<AssemblyVersion>2.1.0</AssemblyVersion>
 		<FileVersion>2.1.0</FileVersion>
+		<ProductVersion>2.1.0</ProductVersion>
 		<LangVersion>11</LangVersion>
 	</PropertyGroup>
 

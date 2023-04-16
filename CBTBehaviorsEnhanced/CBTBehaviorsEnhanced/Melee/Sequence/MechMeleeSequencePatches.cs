@@ -142,7 +142,7 @@ namespace CBTBehaviorsEnhanced.Melee
                         {
                             allowedWeapons.Add(weapon);
                             // Associate the weapon with the CU special hit tables for unique tables (vtols, etc)
-                            weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
+                            //weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
                             Mod.MeleeLog.Debug?.Write($" -- Weapon: {weapon.UIName} is allowed. HitTable:{weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
                         }
                         else
@@ -339,15 +339,8 @@ namespace CBTBehaviorsEnhanced.Melee
             // Reset damage table for mechs only; troops need to persist through to the end
             if (!(__instance.OwningMech is TrooperSquad))
             {
-                Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
-                foreach (var sequence in ___meleeSequence.directorSequences)
-                {
-                    foreach (var weapon in sequence.allSelectedWeapons)
-                    {
-                        weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
-                        Mod.MeleeLog.Debug?.Write($"  -- Weapon: {weapon.UIName} is reseted. HitTable:{weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
-                    }
-                }
+                __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
+                Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); ModState.ForceDamageTable = DamageTable.NONE;
                 ModState.ForceDamageTable = DamageTable.NONE;
             }
 
@@ -368,23 +361,20 @@ namespace CBTBehaviorsEnhanced.Melee
 
             // Reset damage table 
             ModState.ForceDamageTable = DamageTable.NONE;
-            try
-            {
-                Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
-                foreach (var sequence in ___meleeSequence.directorSequences)
-                {
-                    foreach (var weapon in sequence.allSelectedWeapons)
-                    {
-                        weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
-                        Mod.MeleeLog.Debug?.Write($"  -- Weapon: {weapon.UIName} is reseted. HitTable:{weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
-                    }
-                }
+            try {
+                //    Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
+                //    foreach (var sequence in ___meleeSequence.directorSequences) {
+                //        foreach (var weapon in sequence.allSelectedWeapons) {
+                //            weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
+                //            Mod.MeleeLog.Debug?.Write($"  -- Weapon: {weapon.UIName} is reseted. HitTable:{weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
+                //        }
+                //    }
+                __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
+                Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); ModState.ForceDamageTable = DamageTable.NONE;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Mod.MeleeLog.Error?.Write(e.ToString());
             }
-
         }
     }
 
