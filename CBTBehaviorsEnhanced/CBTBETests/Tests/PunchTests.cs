@@ -94,19 +94,19 @@ namespace CBTBETests
                 canMelee: true, hasPhysical: true);
             Assert.AreEqual(25, attacker50.PunchDamage());
 
-            // 0.25 reduction for one missing arm actuator
+            // 0.5 reduction for one missing arm actuator
             ModState.meleeConditionCache[attacker50.DistinctId()] = new ActorMeleeCondition(attacker50,
                 leftHip: true, rightHip: true, leftLeg: 2, rightLeg: 2, leftFoot: true, rightFoot: true,
-                leftShoulder: true, rightShoulder: true, leftArm: 1, rightArm: 1, leftHand: false, rightHand: false,
-                canMelee: true, hasPhysical: true);
-            Assert.AreEqual(19, attacker50.PunchDamage());
-
-            // 0.5 reduction for both missing arm actuators
-            ModState.meleeConditionCache[attacker50.DistinctId()] = new ActorMeleeCondition(attacker50,
-                leftHip: true, rightHip: true, leftLeg: 2, rightLeg: 2, leftFoot: true, rightFoot: true,
-                leftShoulder: true, rightShoulder: true, leftArm: 0, rightArm: 0, leftHand: false, rightHand: false,
+                leftShoulder: true, rightShoulder: true, leftArm: 1, rightArm: 1, leftHand: true, rightHand: true,
                 canMelee: true, hasPhysical: true);
             Assert.AreEqual(13, attacker50.PunchDamage());
+
+            // 0.25 reduction for both missing arm actuators
+            ModState.meleeConditionCache[attacker50.DistinctId()] = new ActorMeleeCondition(attacker50,
+                leftHip: true, rightHip: true, leftLeg: 2, rightLeg: 2, leftFoot: true, rightFoot: true,
+                leftShoulder: true, rightShoulder: true, leftArm: 0, rightArm: 0, leftHand: true, rightHand: true,
+                canMelee: true, hasPhysical: true);
+            Assert.AreEqual(7, attacker50.PunchDamage());
 
             // 0 damage if shoulders are disabled
             ModState.meleeConditionCache[attacker50.DistinctId()] = new ActorMeleeCondition(attacker50,

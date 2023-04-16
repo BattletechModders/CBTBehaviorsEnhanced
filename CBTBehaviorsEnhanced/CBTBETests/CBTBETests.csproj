@@ -2,18 +2,18 @@
 
   <Target Name="ValidateBattleTechGameDir" Condition="'$(BattleTechGameDir)' == '' Or !Exists('$(BattleTechGameDir)')">
 		<Error Text="BattleTechGameDir variable not set properly" />
-	</Target>  
-  	
-	<PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced')">
-		<!-- Modpack -->
-		<DeployedModPath>$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced</DeployedModPath>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\CBTBehaviorsEnhanced')">
-		<!-- flat dir -->
-		<DeployedModPath>$(BattleTechGameDir)\Mods\CBTBehaviorsEnhanced</DeployedModPath>
-	</PropertyGroup>
-	
-  	<PropertyGroup>
+	</Target>
+
+  <PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced')">
+    <!-- Modpack -->
+    <DeployedModPath>$(BattleTechGameDir)\Mods\Core\CBTBehaviorsEnhanced</DeployedModPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\CBTBehaviorsEnhanced')">
+    <!-- flat dir -->
+    <DeployedModPath>$(BattleTechGameDir)\Mods\CBTBehaviorsEnhanced</DeployedModPath>
+  </PropertyGroup>
+  
+	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFramework>net472</TargetFramework>
 		<AssemblySearchPaths>
@@ -30,8 +30,6 @@
 		<AssemblyTitle>CBTBETests</AssemblyTitle>
 		<Product>CBTBETests</Product>
 		<Copyright>Copyright ©  2023</Copyright>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
-    <FileVersion>2.0.0</FileVersion>
     <LangVersion>11</LangVersion>
 	</PropertyGroup>
 
@@ -47,7 +45,16 @@
 	<ItemGroup>
 		<ProjectReference Include="..\CBTBehaviorsEnhanced\CBTBehaviorsEnhanced.csproj" />
 	</ItemGroup>
-	
+
+  <PropertyGroup>
+    <!-- avoids IgnoresAccessChecksToAttribute warnings -->
+    <PublicizerRuntimeStrategies>Unsafe;IgnoresAccessChecksTo</PublicizerRuntimeStrategies>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer" Version="2.2.1" />
+    <Publicize Include="Assembly-CSharp;UnityEngine.UI" />
+  </ItemGroup>
+  
 	<ItemGroup>
     <!-- Assets need to be private / included for testing purposes. Do not ship them-->
     <PackageReference Include="HarmonyX" Version="2.10.1">
@@ -60,8 +67,17 @@
 		</Reference>	
 		<Reference Include="System.Core">
 		  <Private>False</Private>
-		</Reference>		
-    
+		</Reference>
+
+    <Reference Include="CustomAmmoCategories">
+      <HintPath>$(DeployedModPath)\..\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
+    </Reference>
+    <Reference Include="CustomComponents">
+      <HintPath>$(DeployedModPath)\..\CustomComponents\CustomComponents.dll</HintPath>
+    </Reference>
+    <Reference Include="CustomUnits">
+      <HintPath>$(DeployedModPath)\..\CustomUnits\CustomUnits.dll</HintPath>
+    </Reference>
 		<Reference Include="IRBTModUtils">
 			<HintPath>$(DeployedModPath)\..\IRBTModUtils\IRBTModUtils.dll</HintPath>
 		</Reference>

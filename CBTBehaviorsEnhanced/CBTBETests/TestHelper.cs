@@ -1,7 +1,9 @@
 ﻿using CBTBehaviorsEnhanced;
+using CBTBehaviorsEnhanced.Patches;
 using System;
 using System.Reflection;
 using UnityEngine;
+using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 
 namespace CBTBETests
 {
@@ -11,26 +13,34 @@ namespace CBTBETests
         {
             Mech mech = new Mech();
 
-            MechDef mechDef = new MechDef();
-
             DescriptionDef descriptionDef = new DescriptionDef("foo", "bar", "raboof", "", 100, 0, true, "", "", "");
             ChassisDef chassisDef = new ChassisDef(descriptionDef, "", "", "", "", "", tonnage, tonnage, WeightClass.ASSAULT,
                 0, 0, 0, 0, 0, 0, new float[] { 0 }, 0, 0, 0, 0, 0,
                 true, 0, 0, 0, 0, 0, 0, 0, 0, new LocationDef[] { }, new MechComponentRef[] { },
                 new HBS.Collections.TagSet());
-            Traverse tonnageT = Traverse.Create(chassisDef).Property("Tonnage");
-            tonnageT.SetValue(tonnage);
+            chassisDef.Tonnage = tonnage;
 
-            Traverse chassisT = Traverse.Create(mechDef).Field("_chassisDef");
-            chassisT.SetValue(chassisDef);
-
-            Traverse mechDefT = Traverse.Create(mech).Property("MechDef");
-            mechDefT.SetValue(mechDef);
+            MechDef mechDef = new MechDef();
+            mechDef._chassisDef = chassisDef;
+            mechDef.chassisID = descriptionDef.Id;
+            mech.MechDef = mechDef;
 
             mech = (Mech)InitAbstractActor(mech);
+            mech.isPilotable = true;
 
-            Traverse pilotT = Traverse.Create(mech).Property("pilot");
-            pilotT.SetValue(BuildTestPilot());
+            mech.StatCollection.AddStatistic("Head.Structure", 1f);
+            mech.StatCollection.AddStatistic("CenterTorso.Structure", 1f);
+            mech.StatCollection.AddStatistic("LeftTorso.Structure", 1f);
+            mech.StatCollection.AddStatistic("RightTorso.Structure", 1f);
+            mech.StatCollection.AddStatistic("LeftArm.Structure", 1f);
+            mech.StatCollection.AddStatistic("RightArm.Structure", 1f);
+            mech.StatCollection.AddStatistic("LeftLeg.Structure", 1f);
+            mech.StatCollection.AddStatistic("RightLeg.Structure", 1f);
+
+            InitModStats(mech);
+
+            mech.pilot = BuildTestPilot();
+            mech.pilot._parentActor = mech;
 
             return mech;
         }
@@ -59,6 +69,11 @@ namespace CBTBETests
                 true, true);
 
             return mmc;
+        }
+
+        // Do this after initialization to allow CU to bootstrap CustomInfo
+        private static void InitModStats(AbstractActor actor)
+        {
         }
 
         private static AbstractActor InitAbstractActor(AbstractActor actor)

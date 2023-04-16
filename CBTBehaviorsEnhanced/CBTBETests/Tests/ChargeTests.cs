@@ -1,8 +1,13 @@
-﻿using CBTBehaviorsEnhanced.Extensions;
+﻿using BattleTech;
+using CBTBehaviorsEnhanced;
+using CBTBehaviorsEnhanced.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using UnityEngine;
 
 namespace CBTBETests
 {
+
     [TestClass]
     public class ChargeTests
     {
@@ -10,6 +15,8 @@ namespace CBTBETests
         public void TestChargeInstab_Attacker_NoStats()
         {
             Mech attacker20 = TestHelper.BuildTestMech(tonnage: 20);
+            attacker20.statCollection.AddStatistic<int>(ModStats.ChargeAttackerDamageMod, 0);
+            attacker20.statCollection.AddStatistic<float>(ModStats.ChargeAttackerDamageMulti, 1f);
 
             // instab = AttackerInstabPerTargetTon * targetTonnage * hexesMoved
             Assert.AreEqual(10, attacker20.ChargeAttackerInstability(20, 1));
@@ -39,6 +46,8 @@ namespace CBTBETests
         public void TestChargeInstab_Target_NoStats()
         {
             Mech attacker20 = TestHelper.BuildTestMech(tonnage: 20);
+            attacker20.statCollection.AddStatistic<int>(ModStats.ChargeTargetInstabilityMod, 0);
+            attacker20.statCollection.AddStatistic<float>(ModStats.ChargeTargetInstabilityMulti, 1f);
 
             // instab = AttackerInstabPerTargetTon * attackerTonnage * hexesMoved
             Assert.AreEqual(10, attacker20.ChargeTargetInstability(20, 1));
