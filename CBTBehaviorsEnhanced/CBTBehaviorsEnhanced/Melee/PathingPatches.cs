@@ -1,11 +1,8 @@
-﻿using BattleTech;
-using CustAmmoCategories;
-using HarmonyLib;
+﻿using CustAmmoCategories;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
@@ -13,13 +10,15 @@ namespace CBTBehaviorsEnhanced.Melee
 {
 
     [HarmonyPatch(typeof(Pathing), "GetMeleeDestsForTarget")]
-    public static class Pathing_GetMeleeDestsForTarget
+    static class Pathing_GetMeleeDestsForTarget
     {
 
         // WARNING: Prefix false code here!
         // Allow the player to move if they are already in combat. Vanilla normally disables this.
-        public static bool Prefix(Pathing __instance, AbstractActor target, ref List<PathNode> __result)
+        static void Prefix(ref bool __runOriginal, Pathing __instance, AbstractActor target, ref List<PathNode> __result)
         {
+            if (!__runOriginal) return;
+
             Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} at pos: {__instance.OwningActor.CurrentPosition} rot: {__instance.OwningActor.CurrentRotation} " +
                 $"to target: {CombatantUtils.Label(target)} at pos: {target.CurrentPosition} rot: {target.CurrentRotation}");
 
@@ -28,7 +27,8 @@ namespace CBTBehaviorsEnhanced.Melee
             if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost)
             {
                 __result = new List<PathNode>();
-                return false;
+                __runOriginal = false;
+                return;
             }
 
             // If the target ignores pathing (it's a VTOL or similar), prevent building any pathing to them
@@ -36,14 +36,13 @@ namespace CBTBehaviorsEnhanced.Melee
             {
                 Mod.Log.Info?.Write($"Target: {target.DistinctId()} is unaffected by pathing - cannot be meleed!");
                 __result = new List<PathNode>();
-                return false;
+                __runOriginal = false;
+                return;
             }
 
             // Get the Melee and Sprinting grids
-            Traverse walkingGridT = Traverse.Create(__instance).Property("WalkingGrid");
-            PathNodeGrid walkingGrid = walkingGridT.GetValue<PathNodeGrid>();
-            Traverse sprintingGridT = Traverse.Create(__instance).Property("SprintingGrid");
-            PathNodeGrid sprintingGrid = sprintingGridT.GetValue<PathNodeGrid>();
+            PathNodeGrid walkingGrid = __instance.WalkingGrid;
+            PathNodeGrid sprintingGrid = __instance.SprintingGrid;
 
             PathNodeGrid meleeGrid = sprintingGrid;
             if (__instance.OwningActor.MaxWalkDistance > __instance.OwningActor.MaxSprintDistance)
@@ -103,7 +102,8 @@ namespace CBTBehaviorsEnhanced.Melee
 
             __result = pathNodesForPoints;
 
-            return false;
+            __runOriginal = false;
+            return;
         }
     }
 
@@ -124,8 +124,7 @@ namespace CBTBehaviorsEnhanced.Melee
                 {
                     Mod.MeleeLog.Info?.Write($"Setting meleeGrid to SprintingGrid");
 
-                    Traverse sprintingGridT = Traverse.Create(__instance).Property("SprintingGrid");
-                    __result = sprintingGridT.GetValue<PathNodeGrid>();
+                    __result = __instance.SprintingGrid;
                 }
                 else
                 {
@@ -139,20 +138,16 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyPatch(typeof(Pathing), "SetMeleeTarget")]
     public static class Pathing_SetMeleeTarget
     {
-        static bool Prefix(Pathing __instance, AbstractActor target)
+        static void Prefix(ref bool __runOriginal, Pathing __instance, AbstractActor target)
         {
+            if (!__runOriginal) return;
+
             __instance.UnlockPosition();
+            __instance.MoveType = MoveType.Melee;
+            __instance.CurrentMeleeTarget = target;
+            __instance.CurrentDestination = target.CurrentPosition;
+            __instance.HasMeleeDestSelection = false;
 
-            Traverse moveTypeT = Traverse.Create(__instance).Property("MoveType");
-            moveTypeT.SetValue(MoveType.Melee);
-            
-            Traverse currentMeleeTargetT = Traverse.Create(__instance).Property("CurrentMeleeTarget");
-            currentMeleeTargetT.SetValue(target);
-            Traverse currentDestinationT = Traverse.Create(__instance).Property("CurrentDestination");
-            currentDestinationT.SetValue(target.CurrentPosition);
-
-            Traverse hasMeleeDestSelectionT = Traverse.Create(__instance).Property("HasMeleeDestSelection");
-            hasMeleeDestSelectionT.SetValue(false);
             if (target != null)
             {
                 List<AbstractActor> allActors = SharedState.Combat.AllActors;
@@ -160,18 +155,16 @@ namespace CBTBehaviorsEnhanced.Melee
                 allActors.Remove(target);
                 if (__instance.GetMeleeDestination(target, allActors, out var endNode, out __instance.ResultDestination, out __instance.ResultAngle))
                 {
-                    Traverse meleeGridT = Traverse.Create(__instance).Property("MeleeGrid");
-                    Traverse sprintingGridT = Traverse.Create(__instance).Property("SprintingGrid");
-                    PathNodeGrid pathNodeGrid = __instance.OwningActor.MaxSprintDistance > __instance.OwningActor.MaxWalkDistance ? 
-                        sprintingGridT.GetValue<PathNodeGrid>() : meleeGridT.GetValue<PathNodeGrid>();
+                    PathNodeGrid pathNodeGrid = __instance.OwningActor.MaxSprintDistance > __instance.OwningActor.MaxWalkDistance ?
+                        __instance.SprintingGrid : __instance.MeleeGrid;
 
                     Mod.MeleeLog.Info?.Write($"{__instance.OwningActor.DistinctId()} has " +
                         $"maxWalkDistance: {__instance.OwningActor.MaxWalkDistance}  " +
                         $"maxSprintDistance: {__instance.OwningActor.MaxSprintDistance} ");
 
-                    __instance.CurrentPath = pathNodeGrid.BuildPathFromEnd(endNode, 
-                        __instance.OwningActor.MaxMeleeEngageRangeDistance, __instance.ResultDestination, 
-                        target.CurrentPosition, target, out var _, 
+                    __instance.CurrentPath = pathNodeGrid.BuildPathFromEnd(endNode,
+                        __instance.OwningActor.MaxMeleeEngageRangeDistance, __instance.ResultDestination,
+                        target.CurrentPosition, target, out var _,
                         out __instance.ResultDestination, out __instance.ResultAngle);
                 }
                 else
@@ -185,43 +178,16 @@ namespace CBTBehaviorsEnhanced.Melee
             }
             __instance.LockPosition();
 
-            return false;
+            __runOriginal = false;
         }
     }
-
-    //[HarmonyPatch(typeof(Pathing), "getGrid")]
-    //static class Pathing_getGrid
-    //{
-    //    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    //    {
-    //        MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-    //        MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-    //        instructions = instructions.MethodReplacer(miold, minew);
-    //        return instructions;
-    //    }
-    //}
-
-    // If melee from sprint is enable, use a transpile to swap the grids used to calculate the path
-    //[HarmonyPatch(typeof(Pathing), "SetMeleeTarget")]
-    //public static class Pathing_SetMeleeTarget
-    //{
-    //    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    //    {
-    //        MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-    //        MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-    //        instructions = instructions.MethodReplacer(miold, minew);
-    //        return instructions;
-    //    }
-    //}
-
-
 
     [HarmonyPatch(typeof(Pathing), "UpdateMeleePath")]
     [HarmonyBefore("io.mission.customunits")]
     static class Pathing_UpdateMeleePath
     {
         private static Vector3 resultDest = Vector3.zero;
-        
+
         static void Postfix(Pathing __instance, bool calledFromUI)
         {
             try

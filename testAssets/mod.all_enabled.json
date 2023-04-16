@@ -28,15 +28,15 @@
         "Trace" : false,
 
 		"Developer": {
-            "ForceFallAfterJump" : false,
-            "ForceInvalidateAllMeleeAttacks" : false,
+            "ForceFallAfterJump" : true,
+            "ForceInvalidateAllMeleeAttacks" : true,
             "DebugHeatToAdd" : 150
         },
 		
         "Features" : {
-            "BiomeBreaches" : false,
+            "BiomeBreaches" : true,
 			"PermanentEvasion" : true,
-            "StartupChecks" : false
+            "StartupChecks" : true
         },
 
         "ToHitSelfJumped": 2,
@@ -170,7 +170,7 @@
         "Piloting" : {
             "StabilityCheck" : 0.30,
             "DFAReductionMulti" : 0.05,
-            "ShowAllStabilityRolls" : false,
+            "ShowAllStabilityRolls" : true,
             "StandAttemptFallChance" : 0.30,
             "FallingDamagePerTenTons" : 5
         },

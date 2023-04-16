@@ -1,5 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced;
+﻿using CBTBehaviorsEnhanced;
 using CBTBehaviorsEnhanced.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;

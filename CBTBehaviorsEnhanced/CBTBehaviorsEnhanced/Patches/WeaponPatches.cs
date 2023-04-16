@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.MeleeStates;
-using HarmonyLib;
+﻿using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 

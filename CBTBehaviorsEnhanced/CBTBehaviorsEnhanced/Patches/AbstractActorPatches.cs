@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using HarmonyLib;
-using IRBTModUtils.Extension;
+﻿using IRBTModUtils.Extension;
 using System;
 using UnityEngine;
 
@@ -36,8 +34,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(AbstractActor), "OnRecomputePathing")]
     static class AbstractActor_OnRecomputePathing
     {
-        static void Prefix(AbstractActor __instance)
+        static void Prefix(ref bool __runOriginal, AbstractActor __instance)
         {
+            if (!__runOriginal) return;
+
             Mod.MoveLog.Info?.Write($"Recomputing pathing for actor: {__instance.DistinctId()}");
         }
 
@@ -45,14 +45,9 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             if (__instance.Pathing != null)
             {
-                Traverse pathingT = Traverse.Create(__instance.Pathing);
-
-                Traverse walkGridT = pathingT.Property("WalkingGrid");
-                PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
-                Traverse sprintGridT = pathingT.Property("SprintingGrid");
-                PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
-                Traverse backwardGridT = pathingT.Property("BackwardGrid");
-                PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+                PathNodeGrid walkGrid = __instance.Pathing.WalkingGrid;
+                PathNodeGrid sprintGrid = __instance.Pathing.SprintingGrid;
+                PathNodeGrid backwardGrid = __instance.Pathing.BackwardGrid;
 
                 Mod.MoveLog.Info?.Write($" -- after aa:orp reset, actor: {__instance.DistinctId()} has costLeft: {__instance?.Pathing.CostLeft}  " +
                     $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
@@ -64,8 +59,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(AbstractActor), "ResetPathing")]
     static class AbstractActor_ResetPathing
     {
-        static void Prefix(AbstractActor __instance)
+        static void Prefix(ref bool __runOriginal, AbstractActor __instance)
         {
+            if (!__runOriginal) return;
+
             Mod.MoveLog.Info?.Write($"Resetting pathing for actor: {__instance.DistinctId()}");
         }
 
@@ -73,14 +70,9 @@ namespace CBTBehaviorsEnhanced.Patches
         {
             if (__instance.Pathing != null)
             {
-                Traverse pathingT = Traverse.Create(__instance.Pathing);
-
-                Traverse walkGridT = pathingT.Property("WalkingGrid");
-                PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
-                Traverse sprintGridT = pathingT.Property("SprintingGrid");
-                PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
-                Traverse backwardGridT = pathingT.Property("BackwardGrid");
-                PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+                PathNodeGrid walkGrid = __instance.Pathing.WalkingGrid;
+                PathNodeGrid sprintGrid = __instance.Pathing.SprintingGrid;
+                PathNodeGrid backwardGrid = __instance.Pathing.BackwardGrid;
 
                 Mod.MoveLog.Info?.Write($" -- after aa:rp reset, actor: {__instance.DistinctId()} has costLeft: {__instance?.Pathing.CostLeft}  " +
                     $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");
@@ -91,22 +83,18 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(Pathing), "ResetPathGrid")]
     static class Pathing_ResetPathGrid
     {
-        static void Prefix(Pathing __instance, Vector3 origin, float beginAngle, AbstractActor actor, bool justStoodUp)
+        static void Prefix(ref bool __runOriginal, Pathing __instance, Vector3 origin, float beginAngle, AbstractActor actor, bool justStoodUp)
         {
+            if (!__runOriginal) return;
+
             Mod.MoveLog.Info?.Write($"Resetting path grid for actor: {actor.DistinctId()} for origin: {origin} and beginAngle: {beginAngle}");
         }
 
         static void Postfix(Pathing __instance, Vector3 origin, float beginAngle, AbstractActor actor, bool justStoodUp)
         {
-
-            Traverse instanceT = Traverse.Create(__instance);
-            
-            Traverse walkGridT = instanceT.Property("WalkingGrid");
-            PathNodeGrid walkGrid = walkGridT.GetValue<PathNodeGrid>();
-            Traverse sprintGridT = instanceT.Property("SprintingGrid");
-            PathNodeGrid sprintGrid = sprintGridT.GetValue<PathNodeGrid>();
-            Traverse backwardGridT = instanceT.Property("BackwardGrid");
-            PathNodeGrid backwardGrid = backwardGridT.GetValue<PathNodeGrid>();
+            PathNodeGrid walkGrid = __instance.WalkingGrid;
+            PathNodeGrid sprintGrid = __instance.SprintingGrid;
+            PathNodeGrid backwardGrid = __instance.BackwardGrid;
 
             Mod.MoveLog.Info?.Write($" -- after p:rpg reset, actor: {actor.DistinctId()} has costLeft: {__instance.CostLeft}  " +
                 $"maxDistance => walk: {walkGrid?.MaxDistance}  sprint: {sprintGrid?.MaxDistance}  backwards: {backwardGrid?.MaxDistance}");

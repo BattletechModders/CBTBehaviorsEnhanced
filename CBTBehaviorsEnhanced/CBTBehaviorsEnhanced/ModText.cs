@@ -201,8 +201,8 @@ namespace CBTBehaviorsEnhanced
         public class QuipsConfig
         {
             public List<string> Breach = new List<string>();
-            public List<string> Knockdown = new List<string>() {};
-            public List<string> Startup = new List<string> {};
+            public List<string> Knockdown = new List<string>() { };
+            public List<string> Startup = new List<string> { };
         }
         public QuipsConfig Quips = new QuipsConfig();
 
@@ -212,7 +212,7 @@ namespace CBTBehaviorsEnhanced
         {
             if (this.Quips.Breach.Count == 0)
             {
-                this.Quips.Breach = new List<string>() 
+                this.Quips.Breach = new List<string>()
                 {
                     "Shit, explosive decompression!",
                     "Hull breach detected!",
@@ -228,7 +228,7 @@ namespace CBTBehaviorsEnhanced
 
             if (this.Quips.Knockdown.Count == 0)
             {
-                this.Quips.Knockdown = new List<string>() 
+                this.Quips.Knockdown = new List<string>()
                 {
                     "Oh .. shit!",
                     "FML",
@@ -249,9 +249,9 @@ namespace CBTBehaviorsEnhanced
                 };
             }
 
-            if (this.Quips.Startup.Count == 0) 
+            if (this.Quips.Startup.Count == 0)
             {
-                this.Quips.Startup = new List<string> 
+                this.Quips.Startup = new List<string>
                 {
                     "Start damn you",
                     "Can't see through this heat",

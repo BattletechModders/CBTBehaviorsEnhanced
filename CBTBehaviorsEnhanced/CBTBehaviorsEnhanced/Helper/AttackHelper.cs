@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using CustAmmoCategories;
-using HarmonyLib;
+﻿using CustAmmoCategories;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -22,7 +20,7 @@ namespace CBTBehaviorsEnhanced.Helper
                 FloatieMessage.MessageNature nature = mech.GetCurrentArmor(location) > 0f ?
                     FloatieMessage.MessageNature.ArmorDamage : FloatieMessage.MessageNature.StructureDamage;
 
-                FloatieMessage message = new FloatieMessage(sourceGUID, mech.GUID, $"{damage}", 
+                FloatieMessage message = new FloatieMessage(sourceGUID, mech.GUID, $"{damage}",
                     SharedState.Combat.Constants.CombatUIConstants.floatieSizeMedium, nature,
                     vector.x, vector.y, vector.z);
 
@@ -61,8 +59,8 @@ namespace CBTBehaviorsEnhanced.Helper
             }
         }
 
-        public static void CreateImaginaryAttack(Mech attacker, Weapon attackWeapon, ICombatant target, 
-            int weaponHitInfoStackItemUID, float[] damageClusters, 
+        public static void CreateImaginaryAttack(Mech attacker, Weapon attackWeapon, ICombatant target,
+            int weaponHitInfoStackItemUID, float[] damageClusters,
             DamageType damageType, MeleeAttackType meleeAttackType)
         {
             Mod.Log.Warn?.Write($"DOING IMAGINARY ATTACK FOR: {attacker.DistinctId()} USING: {attackWeapon.Name}_{attackWeapon.uid}");
@@ -79,17 +77,16 @@ namespace CBTBehaviorsEnhanced.Helper
             attackWeapon.ResetWeapon();
             attackWeapon.StatCollection.Set<int>("ShotsWhenFired", damageClusters.Length);
             List<Weapon> attackWeapons = new List<Weapon>() { attackWeapon };
-            
+
             AttackDirector.AttackSequence attackSequence = target.Combat.AttackDirector.CreateAttackSequence(
-                stackItemUID: 0, attacker: attacker, target: target, 
-                attackPosition: attacker.CurrentPosition, attackRotation: attacker.CurrentRotation, 
-                attackSequenceIdx: 0, selectedWeapons: attackWeapons, 
+                stackItemUID: 0, attacker: attacker, target: target,
+                attackPosition: attacker.CurrentPosition, attackRotation: attacker.CurrentRotation,
+                attackSequenceIdx: 0, selectedWeapons: attackWeapons,
                 meleeAttackType: meleeAttackType, calledShotLocation: 0, isMoraleAttack: false
                 );
             Mod.Log.Debug?.Write("  -- created attack sequence");
 
-            Traverse weaponHitInfosT = Traverse.Create(attackSequence).Field("weaponHitInfo");
-            WeaponHitInfo?[][] sequenceHitInfos = weaponHitInfosT.GetValue<WeaponHitInfo?[][]>();
+            WeaponHitInfo?[][] sequenceHitInfos = attackSequence.weaponHitInfo;
             Mod.Log.Debug?.Write("  -- fetched weaponHitInfo from attack Sequence");
             if (sequenceHitInfos != null)
             {
@@ -102,12 +99,12 @@ namespace CBTBehaviorsEnhanced.Helper
             Mod.Log.Info?.Write($"  Attack direction is: {attackDirection}");
 
             int i = 0;
-            
+
             if (ModState.ForceDamageTable != MeleeStates.DamageTable.NONE)
             {
                 // If we're using a kick/punch table, push the table into CU to use with unconventional hit locations (helis, vtols, etc)
                 Thread.CurrentThread.pushToStack<string>(ModConsts.SPECIAL_HIT_TABLE_NAME, $"CBTBE_MELEE_{ModState.ForceDamageTable.ToString()}");
-            }                
+            }
 
             foreach (int damage in damageClusters)
             {
@@ -183,13 +180,13 @@ namespace CBTBehaviorsEnhanced.Helper
                     {
                         // Divide the damage into N hits, using the extra attacks + 1 as divisor
                         float averaged = (float)Math.Floor(totalDamage / (extraAttacks + 1));
-                        Mod.Log.Info?.Write($"Adding {extraAttacks + 1 } clusters of {averaged} damage averaged from {totalDamage} damage.");
+                        Mod.Log.Info?.Write($"Adding {extraAttacks + 1} clusters of {averaged} damage averaged from {totalDamage} damage.");
                         damageClusters = Enumerable.Repeat(averaged, extraAttacks + 1).ToArray();
                     }
                     else
                     {
                         // Each extra attack adds a new strike
-                        Mod.Log.Info?.Write($"Adding {extraAttacks + 1 } clusters of {totalDamage} damage.");
+                        Mod.Log.Info?.Write($"Adding {extraAttacks + 1} clusters of {totalDamage} damage.");
                         damageClusters = Enumerable.Repeat(totalDamage, extraAttacks + 1).ToArray();
                     }
                 }
@@ -211,7 +208,7 @@ namespace CBTBehaviorsEnhanced.Helper
         public static bool WillInjuriesKillTarget(AbstractActor target, int numInjuries)
         {
             Mech targetMech = target as Mech;
-            if (targetMech == null || targetMech.pilot == null || 
+            if (targetMech == null || targetMech.pilot == null ||
                 targetMech.pilot.StatCollection.GetValue<bool>(ModStats.HBS_Ignore_Pilot_Injuries)) return false;
 
             Mod.Log.Info?.Write($"  Target: {target.DistinctId()} has injuries: {targetMech.pilot.Injuries} + new: {numInjuries} " +
@@ -263,7 +260,7 @@ namespace CBTBehaviorsEnhanced.Helper
             Mod.Log.Info?.Write($"  instability delta => {instabilityDelta} = attack: {instability} x receivedMulti: {receivedInstabMulti} x entrenchedMulti: {targetMech.EntrenchedMultiplier}");
 
             float totalInstability = targetMech.CurrentStability + instabilityDelta;
-            
+
             return totalInstability;
         }
     }

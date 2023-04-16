@@ -1,11 +1,9 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
 using CustAmmoCategories;
 using CustomAmmoCategoriesPatches;
 using FluffyUnderware.DevTools.Extensions;
-using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -15,7 +13,8 @@ using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Melee {
+namespace CBTBehaviorsEnhanced.Melee
+{
 
     [HarmonyPatch(typeof(MechDFASequence), "Init")]
     [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List<Weapon>), typeof(Vector3), typeof(Quaternion) })]
@@ -75,8 +74,10 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechDFASequence_OnAdded
     {
-        static void Prefix(MechMeleeSequence __instance)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance)
         {
+            if (!__runOriginal) return;
+
             Mod.MeleeLog.Info?.Write($"DFASequence added for attacker: {__instance.OwningMech.DistinctId()} from position: {__instance.DesiredMeleePosition}  " +
                 $"against target: {__instance.MeleeTarget.DistinctId()}");
         }
@@ -140,8 +141,10 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechDFASequence_ExecuteJump
     {
-        static void Prefix(MechDFASequence __instance)
+        static void Prefix(ref bool __runOriginal, MechDFASequence __instance)
         {
+            if (!__runOriginal) return;
+
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
             if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0 && __instance.OwningMech.isHasStability())
             {
@@ -155,8 +158,10 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechDFASequence_OnMeleeComplete
     {
-        static void Prefix(MechDFASequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
+        static void Prefix(ref bool __runOriginal, MechDFASequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
         {
+            if (!__runOriginal) return;
+
             Mod.Log.Trace?.Write("MMS:OMC entered.");
 
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
@@ -218,7 +223,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                 {
 
                     // Target mech stability and unsteady
-                    
+
                     if (__instance.DFATarget is Mech targetMech && targetMech.isHasStability() && !targetMech.IsProne)
                     {
                         if (seqState.meleeAttack.TargetInstability != 0)
@@ -232,7 +237,7 @@ namespace CBTBehaviorsEnhanced.Melee {
                             Mod.MeleeLog.Info?.Write(" -- Forcing target to become unsteady from attack!");
                             targetMech.DumpEvasion(forceUnsteady: true);
                         }
-                        
+
                     }
 
                     // Target vehicle evasion damage
@@ -288,14 +293,15 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(typeof(MechDFASequence), "FireWeapons")]
     static class MechDFASequence_FireWeapons
     {
-        static void Prefix(MechDFASequence __instance)
+        static void Prefix(ref bool __runOriginal, MechDFASequence __instance)
         {
+            if (!__runOriginal) return;
+
             // Reset melee state
             ModState.ForceDamageTable = DamageTable.NONE;
 
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
-            Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
-            BuildWeaponDirectorSequenceT.GetValue();
+            __instance.BuildWeaponDirectorSequence();
             Mod.MeleeLog.Debug?.Write(" -- Done!");
         }
     }

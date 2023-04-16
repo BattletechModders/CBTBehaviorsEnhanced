@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using IRBTModUtils;
-using IRBTModUtils.Extension;
+﻿using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
@@ -52,7 +50,7 @@ namespace CBTBehaviorsEnhanced.Extensions
         public static float ChargeAttackerDamage(this Mech mech, float targetTonnage, int hexesMoved)
         {
             int moveMulti = Mod.Config.Melee.Charge.MultiplyAttackerSelfDamageByHexesMoved ? hexesMoved : 1;
-            float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerDamagePerTargetTon * targetTonnage * hexesMoved);
+            float raw = (float)Math.Ceiling(Mod.Config.Melee.Charge.AttackerDamagePerTargetTon * targetTonnage * moveMulti);
             Mod.MeleeDamageLog.Debug?.Write($"Charge Attacker: {mech.DistinctId()} baseDamage: {Mod.Config.Melee.Charge.AttackerDamagePerTargetTon} x " +
                 $"target tonnage: {targetTonnage} x moveMulti: {moveMulti} = {raw}");
 
@@ -325,7 +323,7 @@ namespace CBTBehaviorsEnhanced.Extensions
 
         public static bool CanMakePhysicalWeaponAttack(this Mech mech)
         {
-            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);            
+            ActorMeleeCondition attackerCondition = ModState.GetMeleeCondition(mech);
             return attackerCondition.CanUsePhysicalAttack();
         }
 

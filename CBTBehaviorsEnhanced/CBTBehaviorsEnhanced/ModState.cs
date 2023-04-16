@@ -1,16 +1,15 @@
-﻿
-using BattleTech;
-using BattleTech.UI;
+﻿using BattleTech.UI;
 using CBTBehaviorsEnhanced.MeleeStates;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace CBTBehaviorsEnhanced {
-    public static class ModState {
+namespace CBTBehaviorsEnhanced
+{
+    public static class ModState
+    {
 
         public const int NO_ATTACK_SEQUENCE_ID = -1; // Attack sequences are always 0 or positive integers (see AttackDirector:44) Use -1 to signify 'no sequence'
 
@@ -48,7 +47,8 @@ namespace CBTBehaviorsEnhanced {
         public static MethodInfo RolePlayerGetBehaviorVar;
         public static bool MEIsLoaded;
 
-        public static void Reset() {
+        public static void Reset()
+        {
 
             Mod.Log.Info?.Write($"RESETTING MOD STATE!");
 
@@ -160,7 +160,7 @@ namespace CBTBehaviorsEnhanced {
 
         public static MeleeState AddorUpdateMeleeState(AbstractActor attacker, Vector3 attackPos, ICombatant target)
         {
-            
+
             Mech attackerMech = attacker as Mech;
             if (attackerMech == null) return null;
 

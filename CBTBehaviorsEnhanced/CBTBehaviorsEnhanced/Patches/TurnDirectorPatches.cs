@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using HarmonyLib;
-using IRBTModUtils;
+﻿using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -54,13 +52,16 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(TurnDirector), "OnTurnActorActivateComplete")]
     public static class TurnDirector_OnTurnActorActivateComplete
     {
-        private static bool Prefix(TurnDirector __instance)
+        private static void Prefix(ref bool __runOriginal, TurnDirector __instance)
         {
+            if (!__runOriginal) return;
+
             Mod.Log.Trace?.Write($"TD:OTAAC invoked");
 
             if (__instance.IsMissionOver)
             {
-                return false;
+                __runOriginal = false;
+                return;
             }
 
             Mod.Log.Debug?.Write($"TD isInterleaved: {__instance.Combat.TurnDirector.IsInterleaved}  isInterleavePending: {__instance.Combat.TurnDirector.IsInterleavePending}" +
@@ -111,17 +112,16 @@ namespace CBTBehaviorsEnhanced.Patches
             if (!__instance.IsInterleavePending && !__instance.IsInterleaved && numUnusedUnitsForCurrentPhase > 0)
             {
                 Mod.Log.Info?.Write("Sending TurnActorActivateMessage");
-                Traverse staamT = Traverse.Create(__instance).Method("SendTurnActorActivateMessage", new object[] { __instance.ActiveTurnActorIndex });
-                staamT.GetValue();
+                __instance.SendTurnActorActivateMessage(__instance.ActiveTurnActorIndex);
             }
             else
             {
                 Mod.Log.Debug?.Write("Incrementing ActiveTurnActor");
-                Traverse iataT = Traverse.Create(__instance).Method("IncrementActiveTurnActor");
-                iataT.GetValue();
+                __instance.IncrementActiveTurnActor();
             }
 
-            return false;
+            __runOriginal = false;
+            return;
         }
     }
 
@@ -129,8 +129,10 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(TurnDirector), "DoAnyUnitsHaveContactWithEnemy", MethodType.Getter)]
     static class TurnDirector_DoAnyUnitsHaveContactWithEnemy_Getter
     {
-        static bool Prefix(TurnDirector __instance, ref bool __result)
+        static void Prefix(ref bool __runOriginal, TurnDirector __instance, ref bool __result)
         {
+            if (!__runOriginal) return;
+
             Mod.Log.Trace?.Write($"TD:DAUHCWE_GET - entered.");
 
             __result = false;
@@ -158,7 +160,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             Mod.Log.Debug?.Write(" == DONE ==");
 
-            return false;
+            __runOriginal = false;            
         }
     }
 
@@ -166,17 +168,15 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(TurnDirector), "NotifyContact")]
     public static class TurnDirector_NotifyContact
     {
-        public static bool Prefix(TurnDirector __instance, VisibilityLevel contactLevel)
+        public static void Prefix(ref bool __runOriginal, TurnDirector __instance, VisibilityLevel contactLevel)
         {
+            if (!__runOriginal) return;
+
             Mod.Log.Trace?.Write($"TD:NC - entered.");
             if (__instance.IsInterleaved && contactLevel == VisibilityLevel.None && !__instance.DoAnyUnitsHaveContactWithEnemy)
             {
                 Mod.Log.Info?.Write("Intercepting lostContact state, allowing remainder of actors to move.");
-                return false;
-            }
-            else
-            {
-                return true;
+                __runOriginal = false;
             }
         }
     }
@@ -200,8 +200,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 {
                     Mod.Log.Info?.Write("No actors have contact, returning to non-interleaved mode.");
 
-                    Traverse turnDirectorT = Traverse.Create(__instance).Property("IsInterleaved");
-                    turnDirectorT.SetValue(false);
+                    __instance.IsInterleaved = false;
 
                     __instance.Combat.MessageCenter.PublishMessage(new LostContactMessage());
                     return;

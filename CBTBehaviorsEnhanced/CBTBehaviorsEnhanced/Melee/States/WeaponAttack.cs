@@ -1,14 +1,10 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CustAmmoCategories;
 using CustomComponents;
-using CustomUnits;
-using IRBTModUtils.Extension;
 using Localize;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.MeleeStates
@@ -58,7 +54,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 this.OnTargetVehicleHitEvasionPipsRemoved = Mod.Config.Melee.PhysicalWeapon.TargetVehicleEvasionPipsRemoved;
 
                 // Set the animation type
-                this.AttackAnimation = MeleeAttackType.Punch;
+                this.AttackAnimation = state.attacker.IsQuadMech() ? MeleeAttackType.Tackle : MeleeAttackType.Punch;
             }
         }
 
@@ -115,22 +111,23 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
             }
 
-            // If no punch - we're not a valid attack.
-            if (!validAnimations.Contains(MeleeAttackType.Punch))
+            // Check animations
+            if (target.IsQuadMech() && !validAnimations.Contains(MeleeAttackType.Tackle))
             {
-                Mod.MeleeLog.Info?.Write("Animations do not include a punch, cannot use physical weapon.");
+                Mod.MeleeLog.Info?.Write("Animations do not include a tackle, cannot use non-biped physical weapon.");
+                return false;
+
+            }
+            else if (!validAnimations.Contains(MeleeAttackType.Punch))
+            {
+                Mod.MeleeLog.Info?.Write("Animations do not include a punch, cannot use biped physical weapon.");
                 return false;
             }
+
 
             if (target.UnaffectedPathing())
             {
                 Mod.MeleeLog.Info?.Write($"Target is unaffected by pathing, likely a VTOL or LAM in flight. Cannot melee it!");
-                return false;
-            }
-
-            if (target.IsQuadMech())
-            {
-                Mod.MeleeLog.Info?.Write($"Attacker is a quad, cannot make physical weapon attack.");
                 return false;
             }
 

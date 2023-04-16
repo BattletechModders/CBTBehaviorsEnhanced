@@ -1,9 +1,5 @@
-﻿using BattleTech;
-using BattleTech.UI;
-using CBTBehaviorsEnhanced.Helper;
+﻿using BattleTech.UI;
 using CBTBehaviorsEnhanced.MeleeStates;
-using CustomAmmoCategoriesLog;
-using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -48,7 +44,7 @@ namespace CBTBehaviorsEnhanced.Patches
             punchShutdownWarn.SetActive(false);
             GameObject sideWedges = newButton.gameObject.transform.Find("confirmFrame_sideWedges (1)").gameObject;
             sideWedges.SetActive(false);
-       
+
             Mod.UILog.Trace?.Write($"Redid layout for {goName}.");
             return newButton;
         }
@@ -112,14 +108,16 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(typeof(CombatHUDAttackModeSelector), "ShowFireButton")]
     static class CombatHUDAttackModeSelector_ShowFireButton
     {
-        static void Prefix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
+        static void Prefix(ref bool __runOriginal, CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode,
             ref string additionalDetails, bool showHeatWarnings)
         {
+            if (!__runOriginal) return;
+
             Mod.UILog.Debug?.Write($"ShowFireButton:PRE called with mode: {mode}");
 
-            if (SharedState.CombatHUD == null || 
+            if (SharedState.CombatHUD == null ||
                 SharedState.CombatHUD.SelectionHandler == null ||
-                 SharedState.CombatHUD.SelectionHandler.ActiveState == null) 
+                 SharedState.CombatHUD.SelectionHandler.ActiveState == null)
                 return; // Nothing to do
 
             if (SharedState.CombatHUD.SelectionHandler.ActiveState.PreviewPos == null ||
@@ -156,7 +154,7 @@ namespace CBTBehaviorsEnhanced.Patches
             }
         }
 
-        static void Postfix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode, 
+        static void Postfix(CombatHUDAttackModeSelector __instance, CombatHUDFireButton.FireMode mode,
             ref string additionalDetails, bool showHeatWarnings)
         {
             try
@@ -223,7 +221,7 @@ namespace CBTBehaviorsEnhanced.Patches
                         __instance.ForceRefreshImmediate();
                     }
                     else
-                    {                        
+                    {
                         if (autoselectedAttack != null)
                         {
                             CombatHUDAttackModeSelector selector = SharedState.CombatHUD.AttackModeSelector;
@@ -302,7 +300,7 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 Mod.Log.Warn?.Write(e, "Failed to update the CombatButton states - warn Frost!");
             }
-            
+
         }
 
         private static void ToggleStateButtons(MeleeState meleeState)
@@ -377,11 +375,12 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyPatch(new Type[] { })]
     static class CombatHUDFireButton_OnClick
     {
-        static bool Prefix(CombatHUDFireButton __instance)
+        static void Prefix(ref bool __runOriginal, CombatHUDFireButton __instance)
         {
+            if (!__runOriginal) return;
 
-            if (__instance == null || __instance.gameObject == null) return true;
-            
+            if (__instance == null || __instance.gameObject == null) return;
+
             Mod.UILog.Info?.Write($"CHUDFB - OnClick FIRED for FireMode: {__instance.CurrentFireMode}");
 
             bool shouldReturn = true;
@@ -396,7 +395,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     meleeState.Charge
                     );
                 Mod.UILog.Info?.Write("User selected Charge button");
-                shouldReturn = false;                
+                shouldReturn = false;
             }
             else if (__instance.gameObject.name == ModConsts.KickFB_GO_ID)
             {
@@ -434,7 +433,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 Mod.UILog.Info?.Write("User selected Punch button");
                 shouldReturn = false;
             }
-            else 
+            else
             {
 
                 MeleeAttack selectedAttack2 = ModState.GetSelectedAttack(SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor);
@@ -452,9 +451,9 @@ namespace CBTBehaviorsEnhanced.Patches
                     if (selectedAttack2 is PunchAttack)
                         ModState.PunchFB.CurrentFireMode = CombatHUDFireButton.FireMode.None;
 
-                    return true;
+                    return;
                 }
-                
+
             }
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(SharedState.CombatHUD?.SelectionHandler?.ActiveState?.SelectedActor);
@@ -477,7 +476,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 SharedState.CombatHUD.WeaponPanel.RefreshDisplayedWeapons();
             }
 
-            return shouldReturn;
+            __runOriginal = shouldReturn;
         }
     }
 

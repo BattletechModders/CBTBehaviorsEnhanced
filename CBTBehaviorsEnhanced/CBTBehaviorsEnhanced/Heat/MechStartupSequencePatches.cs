@@ -1,7 +1,5 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
-using HarmonyLib;
 using us.frostraptor.modUtils;
 
 namespace CBTBehaviorsEnhanced.Heat
@@ -9,16 +7,18 @@ namespace CBTBehaviorsEnhanced.Heat
 
     // Forces the mech to make a piloting skill check, or fail to startup when shutdown
     [HarmonyPatch(typeof(MechStartupInvocation), "Invoke")]
-    public static class MechStartupInvocation_Invoke
+    static class MechStartupInvocation_Invoke
     {
-        public static bool Prepare() { return Mod.Config.Features.StartupChecks; }
+        static bool Prepare() { return Mod.Config.Features.StartupChecks; }
 
-        public static bool Prefix(MechStartupInvocation __instance, CombatGameState combatGameState)
+        static void Prefix(ref bool __runOriginal, MechStartupInvocation __instance, CombatGameState combatGameState)
         {
+            if (!__runOriginal) return;
 
             Mech mech = combatGameState.FindActorByGUID(__instance.MechGUID) as Mech;
-            if (mech == null) { return true; }
-
+            if (mech == null) 
+                return;
+            
             Mod.Log.Info?.Write($"Processing startup for Mech: {CombatantUtils.Label(mech)}");
 
             // Check to see if we should restart automatically
@@ -45,10 +45,10 @@ namespace CBTBehaviorsEnhanced.Heat
             bool failedVolatileAmmoCheck = CheckHelper.ResolveVolatileAmmoCheck(mech, futureHeat, -1, heatCheck + ammoCheckMod);
             if (failedVolatileAmmoCheck) Mod.Log.Info?.Write("  -- unit did not pass volatile ammo explosion check!");
 
-            if (passedStartupCheck) 
+            if (passedStartupCheck)
             {
                 Mod.Log.Debug?.Write($" -- passed startup roll, going through regular MechStartupSequence.");
-                return true; 
+                return;
             }
 
             Mod.Log.Info?.Write($" -- failed startup roll, venting heat but remaining offline.");
@@ -64,7 +64,7 @@ namespace CBTBehaviorsEnhanced.Heat
             AddSequenceToStackMessage.Publish(combatGameState.MessageCenter, doneWithActorSequence);
 
             Mod.Log.Debug?.Write($" -- sent sequence to messageCenter");
-            return false;
+            __runOriginal = false;
         }
     }
 

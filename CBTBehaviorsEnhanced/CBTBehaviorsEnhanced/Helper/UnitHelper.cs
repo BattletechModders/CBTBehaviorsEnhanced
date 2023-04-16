@@ -1,10 +1,5 @@
-﻿using BattleTech;
-using CustAmmoCategories;
-using CustomUnits;
-using HarmonyLib;
-using HBS.Collections;
+﻿using CustomUnits;
 using IRBTModUtils.Extension;
-using System;
 
 namespace CBTBehaviorsEnhanced.Helper
 {
@@ -249,8 +244,7 @@ namespace CBTBehaviorsEnhanced.Helper
 
             if (bTree.unit.team != null)
             {
-                Traverse bvT = Traverse.Create(bTree.unit.team).Field("BehaviorVariables");
-                BehaviorVariableScope bvs = bvT.GetValue<BehaviorVariableScope>();
+                BehaviorVariableScope bvs = bTree.unit.team.BehaviorVariables;
                 behaviorVariableValue = bvs.GetVariable(name);
                 if (behaviorVariableValue != null)
                 {

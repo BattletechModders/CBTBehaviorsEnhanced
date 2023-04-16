@@ -1,33 +1,29 @@
-﻿using BattleTech;
-using BattleTech.StringInterpolation;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
 using CBTBehaviorsEnhanced.MeleeStates;
 using CustAmmoCategories;
 using CustomAmmoCategoriesPatches;
 using CustomUnits;
 using FluffyUnderware.DevTools.Extensions;
-using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
-using Localize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using UnityEngine;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced.Melee {
+namespace CBTBehaviorsEnhanced.Melee
+{
 
     [HarmonyPatch(typeof(MechMeleeSequence), MethodType.Constructor)]
-    [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List <Weapon>), typeof(Vector3)})]
+    [HarmonyPatch(new Type[] { typeof(Mech), typeof(ICombatant), typeof(List<Weapon>), typeof(Vector3) })]
     public static class MechMeleeSequence_ctor
     {
         public static bool isValid = false;
 
-        static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget, 
+        static void Postfix(MechMeleeSequence __instance, Mech mech, ICombatant meleeTarget,
             List<Weapon> requestedWeapons, Vector3 desiredMeleePosition)
         {
             try
@@ -88,22 +84,16 @@ namespace CBTBehaviorsEnhanced.Melee {
             Finished
         }
 
-        static void Prefix(MechMeleeSequence __instance)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance)
         {
+            if (!__runOriginal) return;
+
             if (!MechMeleeSequence_ctor.isValid)
             {
                 Mod.MeleeLog.Info?.Write($"  -- Invalid sequence in OnAdded, skipping!");
 
-                Traverse meleeTargetT = Traverse.Create(__instance).Property("MeleeTarget");
-                meleeTargetT.SetValue(null);
-
-                // This apparently throws NREs in some cases... so skip
-                //Traverse setStateT = Traverse.Create(__instance).Method("setState");
-                //setStateT.GetValue(new object[] { FakeMeleeSequenceState.Finished });
-
-                Traverse ordersAreCompleteT = Traverse.Create(__instance).Property("OrdersAreComplete");
-                ordersAreCompleteT.SetValue(true);
-
+                __instance.MeleeTarget = null;
+                __instance.OrdersAreComplete = true;
                 return;
             }
 
@@ -118,8 +108,9 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_BuildMeleeDirectorSequence
     {
-        static void Prefix(MechMeleeSequence __instance, List<Weapon> ___requestedWeapons)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, List<Weapon> ___requestedWeapons)
         {
+            if (!__runOriginal) return;
 
             // TODO: If this happens before the above... need to grab the selected melee type from state
             Mod.MeleeLog.Info?.Write($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon.UIName}");
@@ -174,8 +165,9 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_ExecuteMove
     {
-        static void Prefix(MechMeleeSequence __instance)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance)
         {
+            if (!__runOriginal) return;
 
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
             if (seqState.meleeAttack != null && seqState.meleeAttack.AttackerInstability != 0 && __instance.OwningMech.isHasStability())
@@ -191,10 +183,11 @@ namespace CBTBehaviorsEnhanced.Melee {
     static class MechMeleeSequence_ExecuteMelee
     {
         // Remove the BuildWeaponDirectorSequence, to prevent duplicate ammo consumption
-        static bool Prefix(MechMeleeSequence __instance)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance)
         {
-            Traverse BuildMeleeDirectorSequenceT = Traverse.Create(__instance).Method("BuildMeleeDirectorSequence");
-            BuildMeleeDirectorSequenceT.GetValue();
+            if (!__runOriginal) return;
+
+            __instance.BuildMeleeDirectorSequence();
 
             if (__instance.OwningMech.GameRep != null)
             {
@@ -207,17 +200,14 @@ namespace CBTBehaviorsEnhanced.Melee {
             SharedState.Combat.MessageCenter.AddSubscriber(MessageCenterMessageType.OnAttackComplete, __instance.OnMeleeComplete);
             SharedState.Combat.MessageCenter.AddSubscriber(MessageCenterMessageType.OnAttackSequenceFire, __instance.OnMeleeReady);
 
-            // Reading meleeSequence as a property doesn't seem to work, because it always returns null. I'm unsure if this
-            //   is a harmony bug... so read it directly, which seems to work.
-            Traverse meleeSequenceT = Traverse.Create(__instance).Field("meleeSequence");
-            AttackStackSequence meleeSequence = meleeSequenceT.GetValue<AttackStackSequence>();
+            AttackStackSequence meleeSequence = __instance.meleeSequence;
 
             SharedState.Combat.MessageCenter.PublishMessage(new AddParallelSequenceToStackMessage(meleeSequence));
 
-            return false;
+            __runOriginal = false;
         }
     }
-    
+
     // TODO: Applying all the self-damage and instab reduction here feels weird, as it could interact with the
     //   weapons fire poorly. Maybe these should be largely moved to the end?
     //   Also means weapons won't benefit from evasion strip when they are fired. Seems like a problem and won't be reflected
@@ -226,8 +216,10 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_OnMeleeComplete
     {
-        static void Prefix(MechMeleeSequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
         {
+            if (!__runOriginal) return;
+
             Mod.MeleeLog.Trace?.Write("MMS:OMC entered.");
 
             AttackCompleteMessage attackCompleteMessage = message as AttackCompleteMessage;
@@ -347,15 +339,9 @@ namespace CBTBehaviorsEnhanced.Melee {
             // Reset damage table for mechs only; troops need to persist through to the end
             if (!(__instance.OwningMech is TrooperSquad))
             {
-                //Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
-                //foreach(var sequence in ___meleeSequence.directorSequences) {
-                //    foreach(var weapon in sequence.allSelectedWeapons) {
-                //        weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
-                //        Mod.MeleeLog.Debug?.Write($"  -- Weapon: {weapon.UIName} is reseted. HitTable:{weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
-                //    }
-                //}
                 __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
                 Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); ModState.ForceDamageTable = DamageTable.NONE;
+                ModState.ForceDamageTable = DamageTable.NONE;
             }
 
         }
@@ -365,21 +351,13 @@ namespace CBTBehaviorsEnhanced.Melee {
     [HarmonyPatch(typeof(MechMeleeSequence), "FireWeapons")]
     static class MechMeleeSequence_FireWeapons
     {
-        static void Prefix(MechMeleeSequence __instance, AttackStackSequence ___meleeSequence)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, AttackStackSequence ___meleeSequence)
         {
+            if (!__runOriginal) return;
+
             Mod.MeleeLog.Debug?.Write("Regenerating melee support weapons hit locations...");
-            Traverse BuildWeaponDirectorSequenceT = Traverse.Create(__instance).Method("BuildWeaponDirectorSequence");
-            if (BuildWeaponDirectorSequenceT == null)
-            {
-                Mod.Log.Error?.Write($"No method named BuildWeaponDirectorSequence found - no clue what will happen next!");
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-                Mod.Log.Info?.Write($"  Error occured at: {t}");
-            }
-            else
-            {
-                BuildWeaponDirectorSequenceT.GetValue();
-                Mod.MeleeLog.Debug?.Write(" -- Done!");
-            }
+            __instance.BuildWeaponDirectorSequence();
+            Mod.MeleeLog.Debug?.Write(" -- Done!");
 
             // Reset damage table 
             ModState.ForceDamageTable = DamageTable.NONE;

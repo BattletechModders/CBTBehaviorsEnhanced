@@ -1,10 +1,4 @@
-﻿using BattleTech;
-using IRBTModUtils.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IRBTModUtils.Extension;
 using UnityEngine;
 
 namespace CBTBehaviorsEnhanced.CAC

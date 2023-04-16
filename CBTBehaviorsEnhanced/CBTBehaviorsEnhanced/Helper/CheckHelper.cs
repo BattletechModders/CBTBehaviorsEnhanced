@@ -1,32 +1,39 @@
-﻿using BattleTech;
-using CustomComponents;
+﻿using CustomComponents;
 using Localize;
 using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
 
-namespace CBTBehaviorsEnhanced {
-    public class CheckHelper {
-        public static bool DidCheckPassThreshold(SortedDictionary<int, float> dict, int heatValue, Mech mech, float skillMod, string floatieText) {
+namespace CBTBehaviorsEnhanced
+{
+    public class CheckHelper
+    {
+        public static bool DidCheckPassThreshold(SortedDictionary<int, float> dict, int heatValue, Mech mech, float skillMod, string floatieText)
+        {
             float checkTarget = 0f;
-            foreach (KeyValuePair<int, float> kvp in dict) {
-                if (heatValue >= kvp.Key) {
+            foreach (KeyValuePair<int, float> kvp in dict)
+            {
+                if (heatValue >= kvp.Key)
+                {
                     checkTarget = kvp.Value;
                 }
             }
             Mod.HeatLog.Info?.Write($"  For heat value: {heatValue} target roll is: {checkTarget}");
             return PassedCheck(checkTarget, mech, skillMod, floatieText);
         }
-        public static bool DidCheckPassThreshold(float checkTarget, AbstractActor actor, float skillMod, string floatieText) {
+        public static bool DidCheckPassThreshold(float checkTarget, AbstractActor actor, float skillMod, string floatieText)
+        {
             return PassedCheck(checkTarget, actor, skillMod, floatieText);
         }
 
-        private static bool PassedCheck(float checkTarget, AbstractActor actor, float skillMod, string floatieText) {
+        private static bool PassedCheck(float checkTarget, AbstractActor actor, float skillMod, string floatieText)
+        {
             // If the threshold is -1, you auto-fail
-            if (checkTarget == -1f) {
+            if (checkTarget == -1f)
+            {
                 actor.Combat.MessageCenter.PublishMessage(
                     new FloatieMessage(actor.GUID, actor.GUID,
-                    $"{new Text(floatieText).ToString()} {new Text(Mod.LocalizedText.Floaties[ModText.FT_Auto_Fail]).ToString()}", 
+                    $"{new Text(floatieText).ToString()} {new Text(Mod.LocalizedText.Floaties[ModText.FT_Auto_Fail]).ToString()}",
                     FloatieMessage.MessageNature.Neutral)
                     );
                 return false;
@@ -42,7 +49,8 @@ namespace CBTBehaviorsEnhanced {
             if (checkResult > checkTarget) { operatorText = ">"; } else if (checkResult < checkTarget) { operatorText = "<"; }
 
             bool passedCheck = checkTarget != -1f && checkResult >= checkTarget;
-            if (!passedCheck) {
+            if (!passedCheck)
+            {
                 actor.Combat.MessageCenter.PublishMessage(
                     new FloatieMessage(actor.GUID, actor.GUID,
                         $"{new Text(floatieText).ToString()} {checkResult:P1} {operatorText} {checkTarget:P1}",
@@ -69,7 +77,7 @@ namespace CBTBehaviorsEnhanced {
                     {
                         AudioEventManager.PlayAudioEvent("audioeventdef_musictriggers_combat", "friendly_warrior_injured", null, null);
                     }
-                } 
+                }
                 else
                 {
                     mech.FlagForDeath("Pilot Killed", DeathMethod.PilotKilled, DamageType.OverheatSelf, 1, sequenceGUID, "0", false);
@@ -146,7 +154,7 @@ namespace CBTBehaviorsEnhanced {
             return failedAmmoCheck;
         }
 
-        public  static bool ResolveVolatileAmmoCheck(Mech mech, int heatToCheck, int rootSequenceGUID, float heatCheck)
+        public static bool ResolveVolatileAmmoCheck(Mech mech, int heatToCheck, int rootSequenceGUID, float heatCheck)
         {
             bool failedVolatileAmmoCheck = false;
             AmmunitionBox mostDamagingVolatile = HeatHelper.FindMostDamagingAmmoBox(mech, true);

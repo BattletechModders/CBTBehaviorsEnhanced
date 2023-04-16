@@ -1,8 +1,6 @@
-﻿using BattleTech;
-using BattleTech.UI;
+﻿using BattleTech.UI;
 using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.MeleeStates;
-using HarmonyLib;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using Localize;
@@ -24,9 +22,6 @@ namespace CBTBehaviorsEnhanced.Patches
 
             Mod.UILog.Trace?.Write("CHUDWS:SHC entered");
 
-            Traverse addToolTipDetailT = Traverse.Create(__instance)
-                .Method("AddToolTipDetail", new Type[] { typeof(string), typeof(int) });
-
             AbstractActor actor = __instance.DisplayedWeapon.parent;
             if (actor.HasMovedThisRound && actor.JumpedLastRound ||
                 (SharedState.CombatHUD?.SelectionHandler?.ActiveState != null &&
@@ -34,7 +29,7 @@ namespace CBTBehaviorsEnhanced.Patches
             {
                 string localText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Attacker_Jumped]).ToString();
                 Mod.UILog.Trace?.Write($"Adding Attacker Jump modifier of: {Mod.Config.ToHitSelfJumped}");
-                addToolTipDetailT.GetValue(new object[] { localText, Mod.Config.ToHitSelfJumped });
+                __instance.AddToolTipDetail(localText, Mod.Config.ToHitSelfJumped);
             }
 
             // Check melee patches
@@ -48,20 +43,22 @@ namespace CBTBehaviorsEnhanced.Patches
                     {
                         string localText = new Text(Mod.LocalizedText.Labels[kvp.Key]).ToString();
                         Mod.UILog.Debug?.Write($" - SetHitChance found attack modifier: {localText} = {kvp.Value}");
-                        addToolTipDetailT.GetValue(new object[] { localText, kvp.Value });
+                        __instance.AddToolTipDetail(localText, kvp.Value);
                     }
                 }
             }
         }
     }
 
-    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon", 
+    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "RefreshDisplayedWeapon",
         new Type[] { typeof(ICombatant), typeof(int?), typeof(bool), typeof(bool) })]
     [HarmonyAfter("io.mission.modrepuation", "io.mission.customunits")]
     static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
     {
-        static void Prefix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
+        static void Prefix(ref bool __runOriginal, CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
         {
+
+            if (!__runOriginal) return;
 
             if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null ||
                 !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
@@ -73,7 +70,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 return; // Skip melee and dfa weapons, let normal processing handle them
             }
 
-            
+
             if (ModState.MeleeAttackContainer?.activeInHierarchy == true || // Handle normal melee states
                 SharedState.CombatHUD?.AttackModeSelector?.FireButton?.CurrentFireMode == CombatHUDFireButton.FireMode.DFA) // Handle DFA state
             {
@@ -95,7 +92,7 @@ namespace CBTBehaviorsEnhanced.Patches
                 }
             }
 
-            
+
 
             ___displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, false);
         }
@@ -117,14 +114,14 @@ namespace CBTBehaviorsEnhanced.Patches
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
             if (selectedAttack == null || selectedAttack is DFAAttack)
             {
-                string weaponLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_Weapon], 
+                string weaponLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_Weapon],
                     new object[] { Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_No_Attack_Type] }
                     ).ToString();
                 __instance.WeaponText.SetText(weaponLabel);
 
                 Mech parentMech = ___displayedWeapon.parent as Mech;
 
-                float kickDam = parentMech.KickDamage();               
+                float kickDam = parentMech.KickDamage();
                 float punchDam = parentMech.PunchDamage();
                 float weapDam = parentMech.PhysicalWeaponDamage();
                 string damageText = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_No_Attack_Type_Damage],
@@ -144,7 +141,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     attackName = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
                 else if (selectedAttack is PunchAttack)
                     attackName = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Punch];
-                
+
                 string weaponLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_Weapon],
                     new object[] { attackName }
                     ).ToString();

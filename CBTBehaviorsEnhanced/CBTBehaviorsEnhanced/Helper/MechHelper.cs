@@ -1,9 +1,6 @@
-﻿using BattleTech;
-using CBTBehaviorsEnhanced.Extensions;
+﻿using CBTBehaviorsEnhanced.Extensions;
 using IRBTModUtils.Extension;
 using Localize;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using us.frostraptor.modUtils;
 

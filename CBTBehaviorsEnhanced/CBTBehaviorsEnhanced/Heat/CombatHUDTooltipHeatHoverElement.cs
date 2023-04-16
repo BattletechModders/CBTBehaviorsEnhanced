@@ -1,14 +1,14 @@
-﻿using BattleTech;
-using BattleTech.UI;
+﻿using BattleTech.UI;
 using CBTBehaviorsEnhanced.Extensions;
-using HarmonyLib;
 using System.Collections.Generic;
 using System.Text;
 using us.frostraptor.modUtils;
 using static CBTBehaviorsEnhanced.HeatHelper;
 
-namespace CBTBehaviorsEnhanced.Heat {
-    public class CombatHUDSidePanelHeatHoverElement : CombatHUDSidePanelHoverElement {
+namespace CBTBehaviorsEnhanced.Heat
+{
+    public class CombatHUDSidePanelHeatHoverElement : CombatHUDSidePanelHoverElement
+    {
 
         private CombatHUD CombatHUD = null;
 
@@ -18,7 +18,8 @@ namespace CBTBehaviorsEnhanced.Heat {
         private int CACTerrainHeat = 0;
         private int CurrentPathNodes = 0;
 
-        public new void Init(CombatHUD HUD) {
+        public new void Init(CombatHUD HUD)
+        {
             CombatHUD = HUD;
 
             this.Title = new Localize.Text(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Title]));
@@ -28,15 +29,16 @@ namespace CBTBehaviorsEnhanced.Heat {
             base.Init(CombatHUD);
         }
 
-        public void UpdateText(Mech displayedMech) {
+        public void UpdateText(Mech displayedMech)
+        {
 
             CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(displayedMech, CombatHUD.SelectionHandler.ProjectedHeatForState);
 
             // If everything has changed, skip and avoid the update
-            if (calculatedHeat.CurrentHeat == CurrentHeat && 
+            if (calculatedHeat.CurrentHeat == CurrentHeat &&
                 calculatedHeat.TempHeat == TempHeat &&
-                calculatedHeat.ProjectedHeat == ProjectedHeat && 
-                calculatedHeat.CACTerrainHeat == this.CACTerrainHeat && 
+                calculatedHeat.ProjectedHeat == ProjectedHeat &&
+                calculatedHeat.CACTerrainHeat == this.CACTerrainHeat &&
                 calculatedHeat.CurrentPathNodes == CurrentPathNodes) { return; }
 
             Mod.HeatLog.Debug?.Write($"Updating heat dialog for actor: {CombatantUtils.Label(displayedMech)}");
@@ -60,11 +62,10 @@ namespace CBTBehaviorsEnhanced.Heat {
             float heatCheck = displayedMech.HeatCheckMod(Mod.Config.SkillChecks.ModPerPointOfGuts);
 
             // Force a recalculation of the overheat warning
-            if (calculatedHeat.FutureHeat > Mod.Config.Heat.WarnAtHeat) {
-                Traverse statusPanelT = Traverse.Create(HUD.MechTray).Field("StatusPanel");
-                CombatHUDStatusPanel combatHUDStatusPanel = statusPanelT.GetValue<CombatHUDStatusPanel>();
-                Traverse showShutdownIndicator = Traverse.Create(combatHUDStatusPanel).Method("ShowShutDownIndicator", new object[] { displayedMech });
-                showShutdownIndicator.GetValue();
+            if (calculatedHeat.FutureHeat > Mod.Config.Heat.WarnAtHeat)
+            {
+                CombatHUDStatusPanel combatHUDStatusPanel = HUD.MechTray.StatusPanel;
+                combatHUDStatusPanel.ShowShutDownIndicator(displayedMech);
             }
 
             float sinkCapMulti = displayedMech.DesignMaskHeatMulti(calculatedHeat.IsProjectedHeat);
@@ -75,25 +76,31 @@ namespace CBTBehaviorsEnhanced.Heat {
 
             float threshold = 0f;
             // Check Ammo
-            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion) {
+            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Explosion)
+            {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
-            if (threshold != 0f && threshold != -1f) { 
+            if (threshold != 0f && threshold != -1f)
+            {
                 Mod.HeatLog.Debug?.Write($"Ammo Explosion Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Explosion], new object[] { heatCheck * 100f, threshold * 100f }
                     ));
-            } else if (threshold == -1f) {
+            }
+            else if (threshold == -1f)
+            {
                 Mod.HeatLog.Debug?.Write($"Ammo Explosion Guaranteed!");
                 warningSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Explosion_Warning]));
             }
 
             // Check Injury
             threshold = 0f;
-            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.PilotInjury) {
+            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.PilotInjury)
+            {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
-            if (threshold != 0f) {
+            if (threshold != 0f)
+            {
                 Mod.HeatLog.Debug?.Write($"Injury Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Injury], new object[] { heatCheck * 100f, threshold * 100f }
@@ -102,10 +109,12 @@ namespace CBTBehaviorsEnhanced.Heat {
 
             // Check System Failure
             threshold = 0f;
-            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.SystemFailures) {
+            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.SystemFailures)
+            {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
-            if (threshold != 0f) {
+            if (threshold != 0f)
+            {
                 Mod.HeatLog.Debug?.Write($"System Failure Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Sys_Failure], new object[] { heatCheck * 100f, threshold * 100f }
@@ -114,35 +123,43 @@ namespace CBTBehaviorsEnhanced.Heat {
 
             // Check Shutdown
             threshold = 0f;
-            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown) {
+            foreach (KeyValuePair<int, float> kvp in Mod.Config.Heat.Shutdown)
+            {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { threshold = kvp.Value; }
             }
-            if (threshold != 0f && threshold != -1f) {
+            if (threshold != 0f && threshold != -1f)
+            {
                 Mod.HeatLog.Debug?.Write($"Shutdown Threshold: {threshold} vs. d100+{heatCheck * 100f}");
                 descSB.Append(new Localize.Text(
                     Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Shutdown], new object[] { heatCheck * 100f, threshold * 100f }
                 ));
-            } else if (threshold == -1f) {
+            }
+            else if (threshold == -1f)
+            {
                 Mod.HeatLog.Debug?.Write($"Shutdown Guaranteed!");
                 warningSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Shutdown_Warning]));
             }
 
             // Attack modifiers
             int modifier = 0;
-            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
+            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing)
+            {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { modifier = kvp.Value; }
             }
-            if (modifier != 0) {
+            if (modifier != 0)
+            {
                 Mod.HeatLog.Debug?.Write($"Attack Modifier: +{modifier}");
-                descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Attack], new object[] { modifier}));
+                descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Attack], new object[] { modifier }));
             }
             modifier = 0;
 
             // Movement modifier
-            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing) {
+            foreach (KeyValuePair<int, int> kvp in Mod.Config.Heat.Firing)
+            {
                 if (calculatedHeat.ThresholdHeat >= kvp.Key) { modifier = kvp.Value; }
             }
-            if (modifier != 0) {
+            if (modifier != 0)
+            {
                 Mod.HeatLog.Debug?.Write($"Movement Modifier: -{modifier * 30}m");
                 descSB.Append(new Localize.Text(Mod.LocalizedText.Tooltips[ModText.CHUD_TT_Move], new object[] { modifier * 30f }));
             }
