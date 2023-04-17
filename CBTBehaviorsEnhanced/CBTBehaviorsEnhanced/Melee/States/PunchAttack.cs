@@ -107,7 +107,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
             }
 
-            if (target.IsQuadMech())
+            if (attacker.IsQuadMech())
             {
                 Mod.MeleeLog.Info?.Write($"Attacker is a quad, cannot punch.");
                 return false;
