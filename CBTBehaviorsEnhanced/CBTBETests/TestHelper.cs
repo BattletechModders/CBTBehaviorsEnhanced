@@ -54,9 +54,7 @@ namespace CBTBETests
         public static Vehicle BuildTestVehicle(float tonnage)
         {
             Vehicle vehicle = new Vehicle();
-
-            Traverse tonnageT = Traverse.Create(vehicle.VehicleDef.Chassis).Property("Tonnage");
-            tonnageT.SetValue(vehicle);
+            vehicle.VehicleDef.Chassis.Tonnage = tonnage; ;
 
             return (Vehicle)InitAbstractActor(vehicle);
         }
@@ -83,11 +81,9 @@ namespace CBTBETests
             CombatGameConstants constants = (CombatGameConstants)constantsCI.Invoke(new object[] { });
 
             CombatGameState cgs = new CombatGameState();
-            Traverse constantsT = Traverse.Create(cgs).Property("Constants");
-            constantsT.SetValue(constants);
+            cgs.Constants = constants;
 
-            Traverse combatT = Traverse.Create(actor).Property("Combat");
-            combatT.SetValue(cgs);
+            actor.Combat = cgs;
 
             // Init any required stats
             actor.StatCollection = new StatCollection();
@@ -104,16 +100,13 @@ namespace CBTBETests
         private static Pilot BuildTestPilot()
         {
             HumanDescriptionDef pilotDescDef = new HumanDescriptionDef();
-            Traverse pilotDescNameT = Traverse.Create(pilotDescDef).Property("Name");
-            pilotDescNameT.SetValue("PilotFoo");
+            pilotDescDef.Name = "PilotFoo";
 
             PilotDef pilotDef = new PilotDef();
             Guid guid = new Guid();
-            Traverse pilotDescT = Traverse.Create(pilotDef).Property("Description");
-            pilotDescT.SetValue(pilotDescDef);
+            pilotDef.Description = pilotDescDef;
 
-            Traverse pilotTagsT = Traverse.Create(pilotDef).Property("PilotTags");
-            pilotTagsT.SetValue(new HBS.Collections.TagSet());
+            pilotDef.PilotTags = new HBS.Collections.TagSet();
 
             Pilot pilot = new Pilot(pilotDef, guid.ToString(), false);
 
@@ -147,8 +140,7 @@ namespace CBTBETests
             statCollection.AddStatistic("MediumRange", mediumRange);
             statCollection.AddStatistic("LongRange", longRange);
 
-            Traverse statCollectionT = Traverse.Create(weapon).Field("statCollection");
-            statCollectionT.SetValue(statCollection);
+            weapon.statCollection = statCollection;
 
             return weapon;
         }
