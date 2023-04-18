@@ -89,9 +89,8 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechDFASequence_BuildMeleeDirectorSequence
     {
-        static void Postfix(MechDFASequence __instance, List<Weapon> ___requestedWeapons)
+        static void Postfix(MechDFASequence __instance)
         {
-
             // TODO: If this happens before the above... need to grab the selected melee type from state
             Mod.MeleeLog.Info?.Write($"Setting current melee type to: {MeleeAttackType.DFA} and weapon to: {__instance.OwningMech.DFAWeapon.UIName}");
 
@@ -118,7 +117,7 @@ namespace CBTBehaviorsEnhanced.Melee
                 {
                     Mod.MeleeLog.Debug?.Write($"Filtering DFA weapons by attack type: {seqState.meleeAttack.Label}");
                     List<Weapon> allowedWeapons = new List<Weapon>();
-                    foreach (Weapon weapon in ___requestedWeapons)
+                    foreach (Weapon weapon in __instance.requestedWeapons)
                     {
                         if (seqState.meleeAttack.IsRangedWeaponAllowed(weapon))
                         {
@@ -128,8 +127,8 @@ namespace CBTBehaviorsEnhanced.Melee
                     }
                     Mod.MeleeLog.Debug?.Write($"  -- After filtering {allowedWeapons.Count} waepons will be used.");
 
-                    ___requestedWeapons.Clear();
-                    ___requestedWeapons.AddRange(allowedWeapons);
+                    __instance.requestedWeapons.Clear();
+                    __instance.requestedWeapons.AddRange(allowedWeapons);
                 }
             }
         }
@@ -158,7 +157,7 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechDFASequence_OnMeleeComplete
     {
-        static void Prefix(ref bool __runOriginal, MechDFASequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
+        static void Prefix(ref bool __runOriginal, MechDFASequence __instance, MessageCenterMessage message)
         {
             if (!__runOriginal) return;
 
@@ -169,11 +168,11 @@ namespace CBTBehaviorsEnhanced.Melee
                 $"target: {CombatantUtils.Label(__instance.DFATarget)}.");
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
 
-            if (attackCompleteMessage.stackItemUID == ___meleeSequence.SequenceGUID && seqState.meleeAttack != null)
+            if (attackCompleteMessage.stackItemUID == __instance.meleeSequence.SequenceGUID && seqState.meleeAttack != null)
             {
                 // Check to see if the target was hit
                 bool targetWasHit = false;
-                foreach (AttackDirector.AttackSequence attackSequence in ___meleeSequence.directorSequences)
+                foreach (AttackDirector.AttackSequence attackSequence in __instance.meleeSequence.directorSequences)
                 {
                     if (!attackSequence.attackCompletelyMissed)
                     {

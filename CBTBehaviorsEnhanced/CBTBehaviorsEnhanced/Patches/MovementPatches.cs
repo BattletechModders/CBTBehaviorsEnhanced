@@ -71,7 +71,7 @@ namespace CBTBehaviorsEnhanced
                     return;
                 }
 
-                // At this point, ___state should be false and sequenceIsComplete is true. This represents OnUpdate flipping the value during it's processing.
+                // At this point, __state should be false and sequenceIsComplete is true. This represents OnUpdate flipping the value during it's processing.
                 Mod.ActivationLog.Info?.Write($" -- AT ACTIVATION END, checking for heat sequence creation. ");
                 Mod.ActivationLog.Info?.Write($"  -- isInterleavePending => {SharedState.Combat?.TurnDirector?.IsInterleavePending}  " +
                     $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");

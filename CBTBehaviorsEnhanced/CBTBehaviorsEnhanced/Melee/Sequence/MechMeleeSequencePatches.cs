@@ -108,7 +108,7 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_BuildMeleeDirectorSequence
     {
-        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, List<Weapon> ___requestedWeapons)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance)
         {
             if (!__runOriginal) return;
 
@@ -136,7 +136,7 @@ namespace CBTBehaviorsEnhanced.Melee
                 {
                     Mod.MeleeLog.Debug?.Write($"Filtering melee weapons by attack type: {seqState.meleeAttack.Label}");
                     List<Weapon> allowedWeapons = new List<Weapon>();
-                    foreach (Weapon weapon in ___requestedWeapons)
+                    foreach (Weapon weapon in __instance.requestedWeapons)
                     {
                         if (seqState.meleeAttack.IsRangedWeaponAllowed(weapon))
                         {
@@ -152,8 +152,8 @@ namespace CBTBehaviorsEnhanced.Melee
                     }
                     Mod.MeleeLog.Debug?.Write($"  -- After filtering {allowedWeapons.Count} weapons will be used.");
 
-                    ___requestedWeapons.Clear();
-                    ___requestedWeapons.AddRange(allowedWeapons);
+                    __instance.requestedWeapons.Clear();
+                    __instance.requestedWeapons.AddRange(allowedWeapons);
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyBefore("io.mission.modrepuation")]
     static class MechMeleeSequence_OnMeleeComplete
     {
-        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, MessageCenterMessage message, AttackStackSequence ___meleeSequence)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, MessageCenterMessage message)
         {
             if (!__runOriginal) return;
 
@@ -226,11 +226,11 @@ namespace CBTBehaviorsEnhanced.Melee
             Mod.MeleeLog.Info?.Write($"== Resolving cluster damage, instability, and unsteady on melee attacker: {CombatantUtils.Label(__instance.OwningMech)} and target: {CombatantUtils.Label(__instance.MeleeTarget)}.");
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
 
-            if (attackCompleteMessage.stackItemUID == ___meleeSequence.SequenceGUID && seqState.meleeAttack != null)
+            if (attackCompleteMessage.stackItemUID == __instance.meleeSequence.SequenceGUID && seqState.meleeAttack != null)
             {
                 // Check to see if the target was hit
                 bool targetWasHit = false;
-                foreach (AttackDirector.AttackSequence attackSequence in ___meleeSequence.directorSequences)
+                foreach (AttackDirector.AttackSequence attackSequence in __instance.meleeSequence.directorSequences)
                 {
                     if (!attackSequence.attackCompletelyMissed)
                     {
@@ -351,7 +351,7 @@ namespace CBTBehaviorsEnhanced.Melee
     [HarmonyPatch(typeof(MechMeleeSequence), "FireWeapons")]
     static class MechMeleeSequence_FireWeapons
     {
-        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance, AttackStackSequence ___meleeSequence)
+        static void Prefix(ref bool __runOriginal, MechMeleeSequence __instance)
         {
             if (!__runOriginal) return;
 
@@ -362,13 +362,6 @@ namespace CBTBehaviorsEnhanced.Melee
             // Reset damage table 
             ModState.ForceDamageTable = DamageTable.NONE;
             try {
-                //    Mod.MeleeLog.Info?.Write($" -- resetting damage table so mech weapons fire will randomize normally");
-                //    foreach (var sequence in ___meleeSequence.directorSequences) {
-                //        foreach (var weapon in sequence.allSelectedWeapons) {
-                //            weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
-                //            Mod.MeleeLog.Debug?.Write($"  -- Weapon: {weapon.UIName} is reseted. HitTable:{weapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
-                //        }
-                //    }
                 __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>(string.Empty);
                 Mod.MeleeLog.Debug?.Write($"  -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is reseted. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}"); 
                 ModState.ForceDamageTable = DamageTable.NONE;

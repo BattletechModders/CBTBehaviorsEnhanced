@@ -7,14 +7,13 @@ namespace CBTBehaviorsEnhanced.Patches.AI
     static class CanMeleeHostileTargetsNode_Tick_Patch
     {
 
-        static void Prefix(ref bool __runOriginal, ref BehaviorTreeResults __result,
-            string ___name, BehaviorTree ___tree, AbstractActor ___unit)
+        static void Prefix(ref bool __runOriginal, CanMeleeHostileTargetsNode __instance, ref BehaviorTreeResults __result)
         {
             if (!__runOriginal) return;
 
             Mod.AILog.Info?.Write("CanMeleeHostileTargetsNode:Tick() invoked.");
 
-            if (!(___unit is Mech))
+            if (!(__instance.unit is Mech))
             {
                 // Not a mech, so don't allow them to melee
                 __result = new BehaviorTreeResults(BehaviorNodeState.Failure);
@@ -23,10 +22,10 @@ namespace CBTBehaviorsEnhanced.Patches.AI
             }
 
 
-            Mod.AILog.Info?.Write($"AI attacker: {___unit.DistinctId()} has {___unit.BehaviorTree.enemyUnits.Count} enemy units.");
-            for (int j = 0; j < ___unit.BehaviorTree.enemyUnits.Count; j++)
+            Mod.AILog.Info?.Write($"AI attacker: {__instance.unit.DistinctId()} has {__instance.unit.BehaviorTree.enemyUnits.Count} enemy units.");
+            for (int j = 0; j < __instance.unit.BehaviorTree.enemyUnits.Count; j++)
             {
-                ICombatant targetCombatant = ___unit.BehaviorTree.enemyUnits[j];
+                ICombatant targetCombatant = __instance.unit.BehaviorTree.enemyUnits[j];
 
                 // Skip the retaliation check; melee w/ kick is always viable, as is charge
                 //Mech targetMech = targetCombatant as Mech;
@@ -45,20 +44,20 @@ namespace CBTBehaviorsEnhanced.Patches.AI
                 //	}
                 //}
 
-                if (___unit.CanEngageTarget(targetCombatant))
+                if (__instance.unit.CanEngageTarget(targetCombatant))
                 {
-                    Mod.AILog.Info?.Write($"AI attacker: {___unit.DistinctId()} can engage target: {targetCombatant.DistinctId()}, returning true nodeState.");
+                    Mod.AILog.Info?.Write($"AI attacker: {__instance.unit.DistinctId()} can engage target: {targetCombatant.DistinctId()}, returning true nodeState.");
                     __result = new BehaviorTreeResults(BehaviorNodeState.Success);
                     __runOriginal = false;
                     return;                    
                 }
                 else
                 {
-                    Mod.AILog.Info?.Write($"AI attacker: {___unit.DistinctId()} can NOT engage target: {targetCombatant.DistinctId()}");
+                    Mod.AILog.Info?.Write($"AI attacker: {__instance.unit.DistinctId()} can NOT engage target: {targetCombatant.DistinctId()}");
                 }
             }
 
-            Mod.AILog.Info?.Write($"AI source: {___unit.DistinctId()} could find no targets, skipping.");
+            Mod.AILog.Info?.Write($"AI source: {__instance.unit.DistinctId()} could find no targets, skipping.");
             // Fall through - couldn't find a single enemy unit we could attack, so skip
             __result = new BehaviorTreeResults(BehaviorNodeState.Failure);
 

@@ -15,10 +15,10 @@ namespace CBTBehaviorsEnhanced.Patches
     static class CombatHUDWeaponSlot_SetHitChance
     {
 
-        static void Postfix(CombatHUDWeaponSlot __instance, ICombatant target, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Postfix(CombatHUDWeaponSlot __instance, ICombatant target)
         {
 
-            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null || target == null) return;
+            if (__instance == null || __instance.displayedWeapon == null || __instance.HUD.SelectedActor == null || target == null) return;
 
             Mod.UILog.Trace?.Write("CHUDWS:SHC entered");
 
@@ -33,11 +33,11 @@ namespace CBTBehaviorsEnhanced.Patches
             }
 
             // Check melee patches
-            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
-            if (selectedAttack != null && ___displayedWeapon.Type == WeaponType.Melee)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.HUD.SelectedActor);
+            if (selectedAttack != null && __instance.displayedWeapon.Type == WeaponType.Melee)
             {
-                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
-                    ___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
+                if (__instance.displayedWeapon.WeaponSubType == WeaponSubType.Melee ||
+                    __instance.displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     foreach (KeyValuePair<string, int> kvp in selectedAttack.AttackModifiers)
                     {
@@ -55,17 +55,17 @@ namespace CBTBehaviorsEnhanced.Patches
     [HarmonyAfter("io.mission.modrepuation", "io.mission.customunits")]
     static class CombatHUDWeaponSlot_RefreshDisplayedWeapon
     {
-        static void Prefix(ref bool __runOriginal, CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, CombatHUDWeaponSlot.WeaponSlotType ___weaponSlotType)
+        static void Prefix(ref bool __runOriginal, CombatHUDWeaponSlot __instance)
         {
 
             if (!__runOriginal) return;
 
-            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null ||
+            if (__instance == null || __instance.displayedWeapon == null || __instance.HUD.SelectedActor == null ||
                 !Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack) return;
 
-            if (!(___weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
+            if (!(__instance.weaponSlotType == CombatHUDWeaponSlot.WeaponSlotType.Normal))
             {
-                Mod.UILog.Trace?.Write($"RefreshDisplayedWeapon:PRE - Updating {___HUD.SelectedActor.DistinctId()} " +
+                Mod.UILog.Trace?.Write($"RefreshDisplayedWeapon:PRE - Updating {__instance.HUD.SelectedActor.DistinctId()} " +
                     $"melee or dfa weapon with text: {__instance.DamageText.text}");
                 return; // Skip melee and dfa weapons, let normal processing handle them
             }
@@ -74,19 +74,19 @@ namespace CBTBehaviorsEnhanced.Patches
             if (ModState.MeleeAttackContainer?.activeInHierarchy == true || // Handle normal melee states
                 SharedState.CombatHUD?.AttackModeSelector?.FireButton?.CurrentFireMode == CombatHUDFireButton.FireMode.DFA) // Handle DFA state
             {
-                MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+                MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.HUD.SelectedActor);
                 if (selectedAttack != null)
                 {
-                    Mod.UILog.Trace?.Write($"Checking ranged weapons attacker: {___HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
+                    Mod.UILog.Trace?.Write($"Checking ranged weapons attacker: {__instance.HUD.SelectedActor.DistinctId()} using selectedAttack: {selectedAttack.Label}");
 
                     // Check if the weapon can fire according to the select melee type
-                    bool isAllowed = selectedAttack.IsRangedWeaponAllowed(___displayedWeapon);
-                    Mod.UILog.Trace?.Write($"Ranged weapon '{___displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
+                    bool isAllowed = selectedAttack.IsRangedWeaponAllowed(__instance.displayedWeapon);
+                    Mod.UILog.Trace?.Write($"Ranged weapon '{__instance.displayedWeapon.UIName}' can fire in melee by type? {isAllowed}");
 
                     if (!isAllowed)
                     {
                         Mod.UILog.Trace?.Write($"Disabling weapon from selection");
-                        ___displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, true);
+                        __instance.displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, true);
                         return;
                     }
                 }
@@ -94,7 +94,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
 
 
-            ___displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, false);
+            __instance.displayedWeapon.StatCollection.Set(ModStats.HBS_Weapon_Temporarily_Disabled, false);
         }
     }
 
@@ -103,15 +103,15 @@ namespace CBTBehaviorsEnhanced.Patches
     static class CombatHUDWeaponSlot_UpdateMeleeWeapon
     {
 
-        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Postfix(CombatHUDWeaponSlot __instance)
         {
 
-            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
+            if (__instance == null || __instance.displayedWeapon == null || __instance.HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UMW entered");
-            Mod.UILog.Trace?.Write($"UpdateMeleeWeapon called for: {___HUD.SelectedActor.DistinctId()} using " +
-                $"weapon: {___displayedWeapon.UIName}_{___displayedWeapon.uid}");
+            Mod.UILog.Trace?.Write($"UpdateMeleeWeapon called for: {__instance.HUD.SelectedActor.DistinctId()} using " +
+                $"weapon: {__instance.displayedWeapon.UIName}_{__instance.displayedWeapon.uid}");
 
-            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.HUD.SelectedActor);
             if (selectedAttack == null || selectedAttack is DFAAttack)
             {
                 string weaponLabel = new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Panel_Melee_Weapon],
@@ -119,7 +119,7 @@ namespace CBTBehaviorsEnhanced.Patches
                     ).ToString();
                 __instance.WeaponText.SetText(weaponLabel);
 
-                Mech parentMech = ___displayedWeapon.parent as Mech;
+                Mech parentMech = __instance.displayedWeapon.parent as Mech;
 
                 float kickDam = parentMech.KickDamage();
                 float punchDam = parentMech.PunchDamage();
@@ -152,9 +152,9 @@ namespace CBTBehaviorsEnhanced.Patches
                 Mod.UILog.Debug?.Write($" -- attackState: {attackName} has targetDamageClusters: {selectedAttack.TargetDamageClusters.Length}" +
                     $"  with totalDamage: {totalDamage}");
 
-                ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, totalDamage);
-                ___displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, selectedAttack.TargetInstability);
-                CustAmmoCategories.DamageModifiersCache.ClearDamageCache(___displayedWeapon);
+                __instance.displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, totalDamage);
+                __instance.displayedWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, selectedAttack.TargetInstability);
+                CustAmmoCategories.DamageModifiersCache.ClearDamageCache(__instance.displayedWeapon);
 
                 string damageTextS = $"{totalDamage}";
                 if (selectedAttack.TargetDamageClusters.Length > 1)
@@ -175,18 +175,18 @@ namespace CBTBehaviorsEnhanced.Patches
     static class CombatHUDWeaponSlot_UpdateDFAWeapon
     {
 
-        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD)
+        static void Postfix(CombatHUDWeaponSlot __instance)
         {
 
-            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
+            if (__instance == null || __instance.displayedWeapon == null || __instance.HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UDFAW entered");
 
-            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.HUD.SelectedActor);
             if (selectedAttack == null || !(selectedAttack is DFAAttack))
             {
                 Mod.UILog.Trace?.Write("Defaulting DFA damage.");
 
-                Mech parentMech = ___displayedWeapon.parent as Mech;
+                Mech parentMech = __instance.displayedWeapon.parent as Mech;
                 float targetDamage = parentMech.DFATargetDamage();
                 __instance.DamageText.SetText($"{targetDamage}");
             }
@@ -216,41 +216,41 @@ namespace CBTBehaviorsEnhanced.Patches
     static class CombatHUDWeaponSlot_GenerateToolTipStrings
     {
 
-        static void Postfix(CombatHUDWeaponSlot __instance, Weapon ___displayedWeapon, CombatHUD ___HUD, int ___displayedHeat)
+        static void Postfix(CombatHUDWeaponSlot __instance)
         {
 
-            if (__instance == null || ___displayedWeapon == null || ___HUD.SelectedActor == null) return;
+            if (__instance == null || __instance.displayedWeapon == null || __instance.HUD.SelectedActor == null) return;
 
             Mod.UILog.Trace?.Write("CHUDWS:GTTS entered");
 
             // Check melee patches
-            MeleeAttack selectedAttack = ModState.GetSelectedAttack(___HUD.SelectedActor);
-            if (selectedAttack != null && ___displayedWeapon.Type == WeaponType.Melee)
+            MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.HUD.SelectedActor);
+            if (selectedAttack != null && __instance.displayedWeapon.Type == WeaponType.Melee)
             {
-                if (___displayedWeapon.WeaponSubType == WeaponSubType.Melee)
+                if (__instance.displayedWeapon.WeaponSubType == WeaponSubType.Melee)
                 {
                     float targetDamage = selectedAttack.TargetDamageClusters.Sum();
-                    Mod.UILog.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.UILog.Trace?.Write($" - Extra Strings for type: {__instance.displayedWeapon.Type} && {__instance.displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {selectedAttack.TargetInstability}  " +
-                        $"heat: {___displayedHeat}");
+                        $"heat: {__instance.displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], selectedAttack.TargetInstability),
-                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], __instance.displayedHeat)
                     };
                 }
-                else if (___displayedWeapon.WeaponSubType == WeaponSubType.DFA)
+                else if (__instance.displayedWeapon.WeaponSubType == WeaponSubType.DFA)
                 {
                     float targetDamage = selectedAttack.TargetDamageClusters.Sum();
-                    Mod.UILog.Trace?.Write($" - Extra Strings for type: {___displayedWeapon.Type} && {___displayedWeapon.WeaponSubType} " +
+                    Mod.UILog.Trace?.Write($" - Extra Strings for type: {__instance.displayedWeapon.Type} && {__instance.displayedWeapon.WeaponSubType} " +
                         $"=> Damage: {targetDamage}  instability: {selectedAttack.TargetInstability}  " +
-                        $"heat: {___displayedHeat}");
+                        $"heat: {__instance.displayedHeat}");
                     __instance.ToolTipHoverElement.ExtraStrings = new List<Text>
                     {
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Damage], targetDamage),
                         new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Instability], selectedAttack.TargetInstability),
-                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], ___displayedHeat)
+                        new Text(Mod.LocalizedText.Labels[ModText.LT_Label_Weapon_Hover_Heat], __instance.displayedHeat)
                     };
 
                 }

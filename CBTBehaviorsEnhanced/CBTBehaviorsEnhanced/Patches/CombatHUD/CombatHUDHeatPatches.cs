@@ -75,7 +75,7 @@ namespace CBTBehaviorsEnhanced.Patches
         public static CombatHUDSidePanelHeatHoverElement HoverElement = null;
         public static CombatHUD HUD = null;
 
-        public static void Postfix(CombatHUDMechTray __instance, CombatHUD ___HUD)
+        public static void Postfix(CombatHUDMechTray __instance)
         {
             Mod.UILog.Trace?.Write("CHUDMT::Init - entered.");
 
@@ -89,9 +89,9 @@ namespace CBTBehaviorsEnhanced.Patches
 
                 HoverElement = heatDisplay.gameObject.AddComponent<CombatHUDSidePanelHeatHoverElement>();
                 HoverElement.name = "CBTBE_Hover_Element";
-                HoverElement.Init(___HUD);
+                HoverElement.Init(__instance.HUD);
             }
-            HUD = ___HUD;
+            HUD = __instance.HUD;
         }
     }
 
