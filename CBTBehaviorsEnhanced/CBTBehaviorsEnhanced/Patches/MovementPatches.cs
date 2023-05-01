@@ -77,16 +77,16 @@ namespace CBTBehaviorsEnhanced
                     $"highestEnemyContactLevel => {SharedState.Combat?.LocalPlayerTeam?.VisibilityCache.HighestEnemyContactLevel}");
 
                 // By default OrderSequence:OnUpdate doesn't apply a MechHeatSequence if you are in non-interleaved mode. Why? I don't know. Force it to add one here.
-                MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
-                if (heatSequence != null)
-                {
-                    Mod.ActivationLog.Info?.Write($" -- Creating heat sequence for non-interleaved mode");
-                    __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
-                }
-                else
-                {
-                    Mod.ActivationLog.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
-                }
+                //MechHeatSequence heatSequence = mech.GenerateEndOfTurnHeat(__instance);
+                //if (heatSequence != null)
+                //{
+                //    Mod.ActivationLog.Info?.Write($" -- Creating heat sequence for non-interleaved mode");
+                //    __instance.AddChildSequence(heatSequence, __instance.MessageIndex);
+                //}
+                //else
+                //{
+                //    Mod.ActivationLog.Warn?.Write($"FAILED TO CREATE HEAT SEQUENCE FOR MECH: {mech.DistinctId()} - UNIT WILL CONTINUE TO GAIN HEAT!");
+                //}
 
             }
         }
