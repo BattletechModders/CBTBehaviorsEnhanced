@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
+using static FSM.StringStateMachine;
 
 namespace CBTBehaviorsEnhanced.Melee
 {
@@ -61,6 +62,19 @@ namespace CBTBehaviorsEnhanced.Melee
                     sb.Append(",");
                 }
                 Mod.MeleeLog.Info?.Write($"  -- Initial requested weapons: {sb}");
+
+                // Modify the owning mech melee weapon to do the 'first' hit - but apply stab damage later
+                float targetDamage = selectedAttack.TargetDamageClusters?.Length > 0 ?
+                    selectedAttack.TargetDamageClusters[0] : 0;
+                __instance.OwningMech.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
+                __instance.OwningMech.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
+                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set melee weapon damage: {targetDamage} and instability: {selectedAttack.TargetInstability}");
+                // Associate the melee weapon itself with the CU special hit tables for unique tables (vtols, etc)
+
+                // Make sure we use the targets's damage table
+                ModState.ForceDamageTable = selectedAttack.TargetTable;
+                __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
+                Mod.MeleeLog.Debug?.Write($" -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is allowed. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
 
                 isValid = true;
             }
@@ -118,18 +132,18 @@ namespace CBTBehaviorsEnhanced.Melee
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
             if (seqState.meleeAttack != null)
             {
-                // Modify the owning mech melee weapon to do the 'first' hit - but apply stab damage later
-                float targetDamage = seqState.meleeAttack.TargetDamageClusters?.Length > 0 ?
-                    seqState.meleeAttack.TargetDamageClusters[0] : 0;
-                __instance.OwningMech.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
-                __instance.OwningMech.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
-                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set melee weapon damage: {targetDamage} and instability: {seqState.meleeAttack.TargetInstability}");
-                // Associate the melee weapon itself with the CU special hit tables for unique tables (vtols, etc)
+                //// Modify the owning mech melee weapon to do the 'first' hit - but apply stab damage later
+                //float targetDamage = seqState.meleeAttack.TargetDamageClusters?.Length > 0 ?
+                //    seqState.meleeAttack.TargetDamageClusters[0] : 0;
+                //__instance.OwningMech.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
+                //__instance.OwningMech.MeleeWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
+                //Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set melee weapon damage: {targetDamage} and instability: {seqState.meleeAttack.TargetInstability}");
+                //// Associate the melee weapon itself with the CU special hit tables for unique tables (vtols, etc)
 
-                // Make sure we use the targets's damage table
-                ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
-                __instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
-                Mod.MeleeLog.Debug?.Write($" -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is allowed. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
+                //// Make sure we use the targets's damage table
+                //ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
+                //__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).SetValue<string>($"CBTBE_MELEE_{ModState.ForceDamageTable}");
+                //Mod.MeleeLog.Debug?.Write($" -- Weapon: {__instance.OwningMech.MeleeWeapon.UIName} is allowed. HitTable:{__instance.OwningMech.MeleeWeapon.StatCollection.GetOrCreateStatisic<string>(CustomAmmoCategories.SPECIAL_HIT_TABLE_NAME, string.Empty).Value<string>()}");
 
                 // Filter any weapons from requested weapons. This works because BuildMeleeDirectorSequence is called immediately before BuildWeaponDirectorSequence
                 if (Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack)

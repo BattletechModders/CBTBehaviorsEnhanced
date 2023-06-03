@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using us.frostraptor.modUtils;
+using static FSM.StringStateMachine;
 
 namespace CBTBehaviorsEnhanced.Melee
 {
@@ -61,6 +62,20 @@ namespace CBTBehaviorsEnhanced.Melee
                 }
                 Mod.MeleeLog.Info?.Write($"  -- Initial requested weapons: {sb}");
 
+                // Modify the owning mech DFA melee weapon to do the 'first' hit
+                float targetDamage = selectedAttack.TargetDamageClusters?.Length > 0 ?
+                   selectedAttack.TargetDamageClusters[0] : 0;
+                __instance.OwningMech.DFAWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
+                __instance.OwningMech.DFAWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
+                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set DFA weapon damage: {targetDamage}  and instability: {selectedAttack.TargetInstability}");
+
+                // Cache the attacker's original DFASelfDamage value and set it to zero, so we can apply our own damage
+                ModState.OriginalDFASelfDamage = __instance.OwningMech.StatCollection.GetValue<float>(ModStats.HBS_DFA_Self_Damage);
+                __instance.OwningMech.StatCollection.Set<float>(ModStats.HBS_DFA_Self_Damage, 0f);
+                __instance.OwningMech.StatCollection.Set<bool>(ModStats.HBS_DFA_Causes_Self_Unsteady, false);
+
+                // Make sure we use the target's damage table
+                ModState.ForceDamageTable = selectedAttack.TargetTable;
 
             }
             catch (Exception e)
@@ -97,20 +112,20 @@ namespace CBTBehaviorsEnhanced.Melee
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
             if (seqState.meleeAttack != null)
             {
-                // Modify the owning mech DFA melee weapon to do the 'first' hit
-                float targetDamage = seqState.meleeAttack.TargetDamageClusters?.Length > 0 ?
-                    seqState.meleeAttack.TargetDamageClusters[0] : 0;
-                __instance.OwningMech.DFAWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
-                __instance.OwningMech.DFAWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
-                Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set DFA weapon damage: {targetDamage}  and instability: {seqState.meleeAttack.TargetInstability}");
+                //// Modify the owning mech DFA melee weapon to do the 'first' hit
+                //float targetDamage = seqState.meleeAttack.TargetDamageClusters?.Length > 0 ?
+                //    seqState.meleeAttack.TargetDamageClusters[0] : 0;
+                //__instance.OwningMech.DFAWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_DamagePerShot, targetDamage);
+                //__instance.OwningMech.DFAWeapon.StatCollection.Set<float>(ModStats.HBS_Weapon_Instability, 0);
+                //Mod.MeleeLog.Info?.Write($"For {CombatantUtils.Label(__instance.OwningMech)} set DFA weapon damage: {targetDamage}  and instability: {seqState.meleeAttack.TargetInstability}");
 
-                // Cache the attacker's original DFASelfDamage value and set it to zero, so we can apply our own damage
-                ModState.OriginalDFASelfDamage = __instance.OwningMech.StatCollection.GetValue<float>(ModStats.HBS_DFA_Self_Damage);
-                __instance.OwningMech.StatCollection.Set<float>(ModStats.HBS_DFA_Self_Damage, 0f);
-                __instance.OwningMech.StatCollection.Set<bool>(ModStats.HBS_DFA_Causes_Self_Unsteady, false);
+                //// Cache the attacker's original DFASelfDamage value and set it to zero, so we can apply our own damage
+                //ModState.OriginalDFASelfDamage = __instance.OwningMech.StatCollection.GetValue<float>(ModStats.HBS_DFA_Self_Damage);
+                //__instance.OwningMech.StatCollection.Set<float>(ModStats.HBS_DFA_Self_Damage, 0f);
+                //__instance.OwningMech.StatCollection.Set<bool>(ModStats.HBS_DFA_Causes_Self_Unsteady, false);
 
-                // Make sure we use the target's damage table
-                ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
+                //// Make sure we use the target's damage table
+                //ModState.ForceDamageTable = seqState.meleeAttack.TargetTable;
 
                 // Filter any weapons from requested weapons. This works because BuildMeleeDirectorSequence is called immediately before BuildWeaponDirectorSequence
                 if (Mod.Config.Melee.FilterCanUseInMeleeWeaponsByAttack)
@@ -125,7 +140,7 @@ namespace CBTBehaviorsEnhanced.Melee
                             allowedWeapons.Add(weapon);
                         }
                     }
-                    Mod.MeleeLog.Debug?.Write($"  -- After filtering {allowedWeapons.Count} waepons will be used.");
+                    Mod.MeleeLog.Debug?.Write($"  -- After filtering {allowedWeapons.Count} weapons will be used.");
 
                     __instance.requestedWeapons.Clear();
                     __instance.requestedWeapons.AddRange(allowedWeapons);
