@@ -103,11 +103,17 @@ namespace CBTBehaviorsEnhanced.Helper
             if (ModState.ForceDamageTable != MeleeStates.DamageTable.NONE)
             {
                 // If we're using a kick/punch table, push the table into CU to use with unconventional hit locations (helis, vtols, etc)
-                Thread.CurrentThread.pushToStack<string>(ModConsts.SPECIAL_HIT_TABLE_NAME, $"CBTBE_MELEE_{ModState.ForceDamageTable.ToString()}");
+                Mod.Log.Info?.Write($"  --- setting attack table: {ModState.ForceDamageTable}");
+                Thread.CurrentThread.pushToStack<string>(ModConsts.SPECIAL_HIT_TABLE_NAME, $"CBTBE_MELEE_{ModState.ForceDamageTable}");            
             }
 
             foreach (int damage in damageClusters)
             {
+                Mod.Log.Debug?.Write($"  ---- hitInfo.attackDirections => length: {hitInfo.attackDirections.Length}");
+                Mod.Log.Debug?.Write($"  ---- hitInfo.hitQualities => length: {hitInfo.hitQualities.Length}");
+                Mod.Log.Debug?.Write($"  ---- hitInfo.hitPositions => length: {hitInfo.hitPositions.Length}");
+                Mod.Log.Debug?.Write($"  ---- hitInfo.hitLocations => length: {hitInfo.hitLocations.Length}");
+
                 // Set hit qualities
                 hitInfo.attackDirections[i] = attackDirection;
                 hitInfo.hitQualities[i] = AttackImpactQuality.Solid;
@@ -118,7 +124,8 @@ namespace CBTBehaviorsEnhanced.Helper
                 if (target is Mech mech)
                 {
                     ArmorLocation location =
-                        SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
+                        mech.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, mech, randomRoll, ArmorLocation.None, 0f);
+                    Mod.Log.Debug?.Write($"  ---- generated attack location: {location}");
                     hitInfo.hitLocations[i] = (int)location;
 
                     adjustedDamage = mech.GetAdjustedDamageForMelee(damage, attackWeapon.WeaponCategoryValue);
@@ -128,7 +135,8 @@ namespace CBTBehaviorsEnhanced.Helper
                 else if (target is Vehicle vehicle)
                 {
                     VehicleChassisLocations location =
-                        SharedState.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
+                        vehicle.Combat.HitLocation.GetHitLocation(attacker.CurrentPosition, vehicle, randomRoll, VehicleChassisLocations.None, 0f);
+                    Mod.Log.Debug?.Write($"  ---- generated attack location: {location}");
                     hitInfo.hitLocations[i] = (int)location;
 
                     adjustedDamage = vehicle.GetAdjustedDamageForMelee(damage, attackWeapon.WeaponCategoryValue);
@@ -138,8 +146,9 @@ namespace CBTBehaviorsEnhanced.Helper
                 else if (target is Turret turret)
                 {
                     BuildingLocation location = BuildingLocation.Structure;
+                    Mod.Log.Debug?.Write($"  ---- generated attack location: {location}");
                     hitInfo.hitLocations[i] = (int)BuildingLocation.Structure;
-
+                    
                     adjustedDamage = turret.GetAdjustedDamageForMelee(damage, attackWeapon.WeaponCategoryValue);
                     Mod.Log.Info?.Write($"  {adjustedDamage} damage to location: {location}");
                     ShowDamageFloatie(turret, adjustedDamage, hitInfo.attackerId);
@@ -153,6 +162,7 @@ namespace CBTBehaviorsEnhanced.Helper
 
             if (ModState.ForceDamageTable != MeleeStates.DamageTable.NONE)
             {
+                Mod.Log.Info?.Write($"  --- reverting attack table");
                 Thread.CurrentThread.popFromStack<string>(ModConsts.SPECIAL_HIT_TABLE_NAME);
             }
             Mod.Log.Debug?.Write("  -- done with damage cluster iteration");
