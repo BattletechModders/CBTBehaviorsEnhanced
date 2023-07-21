@@ -262,3 +262,5 @@ __pycache__/
 
 # Ignore the VS Directory.build.props file
 Directory.Build.props 
+
+*.md.backup
