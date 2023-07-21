@@ -57,6 +57,14 @@ namespace CBTBehaviorsEnhanced
                 return;
             }
 
+            // If we're in non-interleaved, prevent combat
+            if (!actor.Combat.TurnDirector.IsInterleaved)
+            {
+                Mod.MeleeLog.Info?.Write(" -- Cannot melee in non-interleaved mode");
+                canMelee = false;
+                return;
+            }
+
             // Vehicles can charge so long as they have movement, don't look for movement crits
             if (actor.IsVehicle() || actor.IsNaval())
             {
