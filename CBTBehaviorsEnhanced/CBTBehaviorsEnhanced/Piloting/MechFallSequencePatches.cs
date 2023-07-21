@@ -1,5 +1,6 @@
 ﻿using CBTBehaviorsEnhanced.Extensions;
 using CBTBehaviorsEnhanced.Helper;
+using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
 using us.frostraptor.modUtils;
@@ -10,6 +11,7 @@ namespace CBTBehaviorsEnhanced.Piloting
     [HarmonyPatch(typeof(MechFallSequence), "OnAdded")]
     public class MechFallSequence_OnAdded
     {
+        [HarmonyPostfix]
         public static void Postfix(MechFallSequence __instance)
         {
             Mod.Log.Trace?.Write("MFS:OnAdded - entered.");
@@ -17,45 +19,40 @@ namespace CBTBehaviorsEnhanced.Piloting
         }
     }
 
-    // In TT mechs take damage from falling. In BTG only he pilot takes damage. Create a new attack sequence and apply
-    //   the TT rules for falling damage
+    // In TT mechs take damage from falling. In BTG only he pilot takes damage.
+    // Create a new attack sequence and damage the mech.
     [HarmonyPatch(typeof(MechFallSequence), "OnComplete")]
     public class MechFallSequence_OnComplete
     {
+        [HarmonyPrefix]
         static void Prefix(ref bool __runOriginal, MechFallSequence __instance)
         {
             if (!__runOriginal) return;
 
             Mod.Log.Trace?.Write("MFS:OnComplete - entered.");
-            int damagePointsTT = (int)Math.Ceiling(__instance.OwningMech.tonnage / 10f);
-            Mod.Log.Debug?.Write($"Actor: {CombatantUtils.Label(__instance.OwningMech)} will suffer {damagePointsTT} TT damage points.");
+            int rawDamage = (int)Math.Floor(__instance.OwningMech.tonnage * Mod.Config.Piloting.FallDamagePerTon);
+            Mod.Log.Debug?.Write($"Actor: {__instance.OwningMech.DistinctId()} has fallen. Raw damage is: {rawDamage} from " +
+                $"tonnage: {__instance.OwningMech.tonnage} x damagePerTon: {Mod.Config.Piloting.FallDamagePerTon}");
 
-            // Check for any pilot skill damage reduction
-            float damageReduction = 1.0f - __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.DFAReductionMulti);
-            float reducedDamage = (float)Math.Max(0f, Math.Floor(damageReduction * damagePointsTT));
-            Mod.Log.Debug?.Write($" Reducing TT fall damage from: {damagePointsTT} by {damageReduction:P1} to {reducedDamage}");
+            float fallReductionMulti = __instance.OwningMech.PilotCheckMod(Mod.Config.Piloting.FallDamageReductionMulti);
+            int ignoredDamage = (int)Math.Floor(Math.Max(0, rawDamage * fallReductionMulti));
+            int fallingDamage = Math.Max(1, rawDamage - ignoredDamage);
+            Mod.Log.Debug?.Write($"  - Fall damage reduced by {ignoredDamage} points to {fallingDamage}");
 
-            List<float> locationDamage = new List<float>();
-            while (damagePointsTT >= 5)
-            {
-                locationDamage.Add(5 * Mod.Config.Piloting.FallingDamagePerTenTons);
-                damagePointsTT -= 5;
-            }
-            if (damagePointsTT > 0)
-            {
-                locationDamage.Add(damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons);
-            }
+            // Cluster damage
+            DamageHelper.ClusterDamage(fallingDamage, Mod.Config.Piloting.FallDamageClusterDivisor, out float[] fallDamageClusters);
+            Mod.Log.Debug?.Write($"Actor {__instance.OwningMech.DistinctId()} has fallen - taking {fallingDamage} damage in {fallDamageClusters.Length} clusters.");
 
-            Mod.Log.Info?.Write($"FALLING DAMAGE: TT damage: {damagePointsTT} => {damagePointsTT * Mod.Config.Piloting.FallingDamagePerTenTons} falling damage to actor: {CombatantUtils.Label(__instance.OwningMech)}");
-
-            try
+            try 
             {
                 (Weapon melee, Weapon dfa) fakeWeapons = ModState.GetFakedWeapons(__instance.OwningMech);
-                AttackHelper.CreateImaginaryAttack(__instance.OwningMech, fakeWeapons.melee, __instance.OwningMech, __instance.SequenceGUID, locationDamage.ToArray(), DamageType.KnockdownSelf, MeleeAttackType.NotSet);
-            }
-            catch (Exception e)
+                AttackHelper.CreateImaginaryAttack(__instance.OwningMech, fakeWeapons.melee, __instance.OwningMech, __instance.SequenceGUID, 
+                    fallDamageClusters, DamageType.KnockdownSelf, MeleeAttackType.NotSet);
+                Mod.Log.Debug?.Write($"  - Fall damage applied.");
+            } 
+            catch (Exception e) 
             {
-                Mod.Log.Error?.Write(e, "FAILED TO APPLY FALL DAMAGE");
+                Mod.Log.Error?.Write(e, "FAILED TO APPLY FALL DAMAGE!");
             }
         }
     }

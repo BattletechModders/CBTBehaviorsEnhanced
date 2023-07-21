@@ -127,7 +127,7 @@ namespace CBTBehaviorsEnhanced.Melee
             if (!__runOriginal) return;
 
             // TODO: If this happens before the above... need to grab the selected melee type from state
-            Mod.MeleeLog.Info?.Write($"Setting current melee type to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon.UIName}");
+            Mod.MeleeLog.Info?.Write($"Setting current melee animation to: {__instance.selectedMeleeType} and weapon to: {__instance.OwningMech.MeleeWeapon.UIName}");
 
             (MeleeAttack meleeAttack, Weapon fakeWeapon) seqState = ModState.GetMeleeSequenceState(__instance.SequenceGUID);
             if (seqState.meleeAttack != null)

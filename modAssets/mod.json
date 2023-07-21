@@ -172,7 +172,9 @@
             "DFAReductionMulti" : 0.05,
             "ShowAllStabilityRolls" : false,
             "StandAttemptFallChance" : 0.30,
-            "FallingDamagePerTenTons" : 5
+			"FallDamagePerTon": 1,
+			"FallDamageReductionMulti": 0.05,
+			"FallDamageClusterDivisor": 25.0
         },
         
         "Breaches" : {

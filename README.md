@@ -106,6 +106,24 @@ Whenever you mech becomes unstable, every hit that causes stability damage will 
 
 Difficulty percentage is configurable in the mod.json file.
 
+### Fall Damage
+
+In HBS BT, when a BattleMech falls over the pilot takes an injury and nothing else happens. In tabletop, mechs take armor and structure damage proportional to their tonnage. CBTBE replicates this behavior by applying damage after the fall sequence finishes. This damage can result in additional pilot hits, component loss, or ammo explosions! 
+
+By default, the unit takes damage equal to it's tonnage times `Piloting.FallDamagePerTon` value in `mod.json` This damage is reduced by (normalized) piloting skill. The unit takes `piloting_normalized x Piloting.FallDamageReductionMulti` less damage from the fall, simulating more skillful pilots helping their units land gracefully. Actuator damage that reduces the effective piloting skill is applied, as described in "Classic Movement - Leg Damage"
+
+```
+Wolverine with tonnage 55 falls
+rawDamage = 55 * Piloting.FallDamagePerTon (default: 1) => 55 points of damage
+Piloting skill of 5
+ignoreMulti = Piloting.FallDamageReductionMulti (default: 0.05) x 5 => 0.25
+ignoredDamage = FLOOR(rawDamage (55) x ignoreMulti (0.25)) => FLOOR(13.75) => 13
+fallDamage = rawDamage (55) - ignoredDamage(13) = 42
+if Piloting.FallDamageClusterDivisor = 25, unit takes two hits of [25, 17] damage
+```
+
+The total damage is applied as clusters of damage. No cluster will be greater than `Piloting.FallDamageClusterDivisor`.
+
 ### Piloting TODO 
 
 * TODO: When standing, make a piloting check or fall over again
