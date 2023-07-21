@@ -116,19 +116,19 @@ namespace CBTBehaviorsEnhanced.Melee
         {
             if (moveType == MoveType.Melee)
             {
-                Mod.MeleeLog.Info?.Write($"{__instance.OwningActor.DistinctId()} has " +
+                Mod.MeleeLog.Trace?.Write($"{__instance.OwningActor.DistinctId()} has " +
                     $"maxWalkDistance: {__instance.OwningActor.MaxWalkDistance}  " +
                     $"maxSprintDistance: {__instance.OwningActor.MaxSprintDistance} ");
 
                 if (__instance.OwningActor.MaxSprintDistance > __instance.OwningActor.MaxWalkDistance)
                 {
-                    Mod.MeleeLog.Info?.Write($"Setting meleeGrid to SprintingGrid");
+                    Mod.MeleeLog.Trace?.Write($"Setting meleeGrid to SprintingGrid");
 
                     __result = __instance.SprintingGrid;
                 }
                 else
                 {
-                    Mod.MeleeLog.Info?.Write($"Setting meleeGrid to meleeGrid");
+                    Mod.MeleeLog.Trace?.Write($"Setting meleeGrid to meleeGrid");
                 }
             }
         }
@@ -158,7 +158,7 @@ namespace CBTBehaviorsEnhanced.Melee
                     PathNodeGrid pathNodeGrid = __instance.OwningActor.MaxSprintDistance > __instance.OwningActor.MaxWalkDistance ?
                         __instance.SprintingGrid : __instance.MeleeGrid;
 
-                    Mod.MeleeLog.Info?.Write($"{__instance.OwningActor.DistinctId()} has " +
+                    Mod.MeleeLog.Trace?.Write($"{__instance.OwningActor.DistinctId()} has " +
                         $"maxWalkDistance: {__instance.OwningActor.MaxWalkDistance}  " +
                         $"maxSprintDistance: {__instance.OwningActor.MaxSprintDistance} ");
 
