@@ -20,7 +20,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         public readonly Mech attacker;
         public readonly Vector3 attackPos;
         public readonly AbstractActor target;
-
+        public readonly bool skipValidatePathing;
         public readonly HashSet<MeleeAttackType> validAnimations;
 
         public bool HasWalkAttackNodes { get => walkNodes?.Count > 0; }
@@ -29,12 +29,12 @@ namespace CBTBehaviorsEnhanced.MeleeStates
         public bool HasSprintAttackNodes { get => sprintNodes?.Count > 0; }
         private readonly List<PathNode> sprintNodes;
 
-        public MeleeState(Mech attacker, Vector3 attackPos, AbstractActor target)
+        public MeleeState(Mech attacker, Vector3 attackPos, AbstractActor target, bool skipValidatePathing = false)
         {
             this.attacker = attacker;
             this.attackPos = attackPos;
             this.target = target;
-
+            this.skipValidatePathing = skipValidatePathing;
             this.validAnimations = AvailableAttacks(attacker, attackPos, target);
             this.walkNodes = GetMeleeDestsForTarget(attacker, attackPos, target, true);
             this.sprintNodes = GetMeleeDestsForTarget(attacker, attackPos, target, false);

@@ -158,7 +158,7 @@ namespace CBTBehaviorsEnhanced
             return cachedState;
         }
 
-        public static MeleeState AddorUpdateMeleeState(AbstractActor attacker, Vector3 attackPos, ICombatant target)
+        public static MeleeState AddorUpdateMeleeState(AbstractActor attacker, Vector3 attackPos, ICombatant target, bool skipValidatePathing = false)
         {
 
             Mech attackerMech = attacker as Mech;
@@ -167,7 +167,7 @@ namespace CBTBehaviorsEnhanced
             AbstractActor targetActor = target as AbstractActor;
             if (targetActor == null) return null;
 
-            MeleeState state = new MeleeState(attackerMech, attackPos, targetActor);
+            MeleeState state = new MeleeState(attackerMech, attackPos, targetActor, skipValidatePathing);
             Dictionary<Vector3, MeleeState> positionDict;
             meleeStates.TryGetValue(attacker?.DistinctId(), out positionDict);
             if (positionDict == null)

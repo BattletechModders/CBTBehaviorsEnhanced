@@ -29,7 +29,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             Mod.MeleeLog.Info?.Write($"Building DFA state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_DeathFromAbove];
-            this.IsValid = ValidateAttack(state.attacker, state.target);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.skipValidatePathing);
             if (IsValid)
             {
                 this.UsePilotingDelta = Mod.Config.Melee.DFA.UsePilotingDelta;
@@ -71,7 +71,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             return false;
         }
 
-        private bool ValidateAttack(Mech attacker, AbstractActor target)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, bool skipValidatePathing)
         {
             ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
             if (!meleeCondition.CanDFA())
@@ -80,7 +80,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
             }
 
-            if (!attacker.CanDFATargetFromPosition(target, attacker.CurrentPosition))
+            if (!skipValidatePathing && !attacker.CanDFATargetFromPosition(target, attacker.CurrentPosition))
             {
                 Mod.MeleeLog.Info?.Write($"Attacker unable to DFA target from their position.");
                 return false;

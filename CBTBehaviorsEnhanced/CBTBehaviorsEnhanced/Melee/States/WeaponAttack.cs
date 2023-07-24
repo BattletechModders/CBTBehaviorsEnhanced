@@ -26,7 +26,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             Mod.MeleeLog.Info?.Write($"Building PHYSICAL WEAPON state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Physical_Weapon];
-            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations, state.skipValidatePathing);
             if (IsValid)
             {
 
@@ -101,7 +101,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             return true;
         }
 
-        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations, bool skipValidatePathing)
         {
 
             ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
@@ -132,7 +132,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             }
 
             // If distance > walkSpeed, disable kick/physical weapon/punch            
-            if (!state.HasWalkAttackNodes)
+            if (!skipValidatePathing && !state.HasWalkAttackNodes)
             {
                 Mod.MeleeLog.Info?.Write($"No walking nodes found for melee attack!");
                 return false;

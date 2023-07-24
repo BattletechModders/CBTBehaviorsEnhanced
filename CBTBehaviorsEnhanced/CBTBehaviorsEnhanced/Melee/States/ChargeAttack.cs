@@ -27,7 +27,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             Mod.MeleeLog.Info?.Write($"Building CHARGE state for attacker: {CombatantUtils.Label(state.attacker)} @ attackPos: {state.attackPos} vs. target: {CombatantUtils.Label(state.target)}");
 
             this.Label = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Type_Charge];
-            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations);
+            this.IsValid = ValidateAttack(state.attacker, state.target, state.validAnimations, state.skipValidatePathing);
             if (IsValid)
             {
                 float distance = (state.attacker.CurrentPosition - state.target.CurrentPosition).magnitude;
@@ -75,7 +75,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             return false;
         }
 
-        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations)
+        private bool ValidateAttack(Mech attacker, AbstractActor target, HashSet<MeleeAttackType> validAnimations, bool skipValidatePathing)
         {
             ActorMeleeCondition meleeCondition = ModState.GetMeleeCondition(attacker);
             if (!meleeCondition.CanCharge())
@@ -105,7 +105,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             }
 
             // If distance > walkSpeed, disable kick/physical weapon/punch            
-            if (!state.HasSprintAttackNodes)
+            if (!skipValidatePathing && !state.HasSprintAttackNodes)
             {
                 Mod.MeleeLog.Info?.Write($"No sprinting nodes found for melee attack!");
                 return false;
