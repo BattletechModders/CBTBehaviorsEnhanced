@@ -38,7 +38,7 @@ namespace CBTBehaviorsEnhanced.Helper
             if (cluster == remainder)
                 return $"{cluster}x{clusterDamage.Length}";
             else
-                return $"{clusterDamage[0]}x{clusterDamage.Length - 1}, {remainder}";
+                return $"{clusterDamage[0]}x{clusterDamage.Length - 1} + {remainder}";
         }
     }
 
