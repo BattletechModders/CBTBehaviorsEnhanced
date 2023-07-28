@@ -4,6 +4,7 @@ using CustAmmoCategories;
 using CustomComponents;
 using Localize;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using us.frostraptor.modUtils;
 
@@ -144,11 +145,19 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
+            string targetDamageS = this.TargetDamageClusters.Count() > 1 ?
+                $"{this.TargetDamageClusters.Sum()} ({DamageHelper.ClusterDamageStringForUI(this.TargetDamageClusters)})" :
+                this.TargetDamageClusters[0].ToString();
+
+            string targetTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Standard];
+            if (this.AttackerTable == DamageTable.PUNCH)
+                targetTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Punch];
+            if (this.AttackerTable == DamageTable.KICK)
+                targetTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Legs];
 
             string localText = new Text(
                 Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Physical_Weapon_Desc],
-                new object[] {
-                })
+                new object[] { targetDamageS, this.TargetInstability, targetTable })
                 .ToString();
 
             this.DescriptionNotes.Add(localText);

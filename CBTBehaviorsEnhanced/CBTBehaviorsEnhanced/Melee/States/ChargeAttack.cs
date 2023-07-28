@@ -117,12 +117,20 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            int sumAttackerDamage = this.AttackerDamageClusters.Count() > 0 ?
-                (int)Math.Ceiling(this.AttackerDamageClusters.Sum()) : 0;
+            string attackerDamageS = this.AttackerDamageClusters.Count() > 1 ?
+                $"{this.AttackerDamageClusters.Sum()} ({DamageHelper.ClusterDamageStringForUI(this.AttackerDamageClusters)})" :
+                this.AttackerDamageClusters[0].ToString();
+            string targetDamageS = this.TargetDamageClusters.Count() > 1 ?
+                $"{this.TargetDamageClusters.Sum()} ({DamageHelper.ClusterDamageStringForUI(this.TargetDamageClusters)})" :
+                this.TargetDamageClusters[0].ToString();
+
+            string attackTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Standard];
+            
             string localText = new Text(
                 Mod.LocalizedText.AttackDescriptions[ModText.LT_AtkDesc_Charge_Desc],
                 new object[] {
-                    sumAttackerDamage, this.AttackerInstability
+                    targetDamageS, this.TargetInstability, attackTable, 
+                    attackerDamageS, this.AttackerInstability, attackTable
                 })
                 .ToString();
 

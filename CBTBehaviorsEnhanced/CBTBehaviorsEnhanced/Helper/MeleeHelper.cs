@@ -26,6 +26,20 @@ namespace CBTBehaviorsEnhanced.Helper
             }
             clusteredDamage = clusters.ToArray();
         }
+
+        public static string ClusterDamageStringForUI(float[] clusterDamage)
+        {
+            if (clusterDamage == null || clusterDamage.Length == 0) return "0";
+            if (clusterDamage.Length == 1) return clusterDamage[0].ToString();
+
+            // Do this fucking complicated bullshit to deal with TT stupidity
+            float remainder = clusterDamage[clusterDamage.Length - 1];
+            float cluster = clusterDamage[clusterDamage.Length - 2];
+            if (cluster == remainder)
+                return $"{cluster}x{clusterDamage.Length}";
+            else
+                return $"{clusterDamage[0]}x{clusterDamage.Length - 1}, {remainder}";
+        }
     }
 
     public static class MeleeHelper

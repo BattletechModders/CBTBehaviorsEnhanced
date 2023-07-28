@@ -98,8 +98,8 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateMeleeWeapon")]
-    [HarmonyPatch(new Type[] { })]
+    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateMeleeWeapon", new Type[] { })]
+    [HarmonyAfter("io.mission.modrepuation", "io.mission.customunits")]
     static class CombatHUDWeaponSlot_UpdateMeleeWeapon
     {
 
@@ -108,7 +108,7 @@ namespace CBTBehaviorsEnhanced.Patches
 
             if (__instance == null || __instance.displayedWeapon == null || __instance.HUD.SelectedActor == null) return;
             Mod.UILog.Trace?.Write("CHUDWS:UMW entered");
-            Mod.UILog.Trace?.Write($"UpdateMeleeWeapon called for: {__instance.HUD.SelectedActor.DistinctId()} using " +
+            Mod.UILog.Debug?.Write($"UpdateMeleeWeapon called for: {__instance.HUD.SelectedActor.DistinctId()} using " +
                 $"weapon: {__instance.displayedWeapon.UIName}_{__instance.displayedWeapon.uid}");
 
             MeleeAttack selectedAttack = ModState.GetSelectedAttack(__instance.HUD.SelectedActor);
@@ -147,7 +147,6 @@ namespace CBTBehaviorsEnhanced.Patches
                     ).ToString();
                 __instance.WeaponText.SetText(weaponLabel);
 
-
                 float totalDamage = selectedAttack.TargetDamageClusters.Sum();
                 Mod.UILog.Debug?.Write($" -- attackState: {attackName} has targetDamageClusters: {selectedAttack.TargetDamageClusters.Length}" +
                     $"  with totalDamage: {totalDamage}");
@@ -157,11 +156,6 @@ namespace CBTBehaviorsEnhanced.Patches
                 CustAmmoCategories.DamageModifiersCache.ClearDamageCache(__instance.displayedWeapon);
 
                 string damageTextS = $"{totalDamage}";
-                if (selectedAttack.TargetDamageClusters.Length > 1)
-                {
-                    int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
-                    damageTextS = $"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})";
-                }
                 Mod.UILog.Trace?.Write($"  -- using damageText: {damageTextS}");
                 __instance.DamageText.SetText(damageTextS);
 
@@ -169,9 +163,8 @@ namespace CBTBehaviorsEnhanced.Patches
         }
     }
 
-
-    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateDFAWeapon")]
-    [HarmonyPatch(new Type[] { })]
+    [HarmonyPatch(typeof(CombatHUDWeaponSlot), "UpdateDFAWeapon", new Type[] { })]
+    [HarmonyAfter("io.mission.modrepuation", "io.mission.customunits")]
     static class CombatHUDWeaponSlot_UpdateDFAWeapon
     {
 
@@ -192,21 +185,12 @@ namespace CBTBehaviorsEnhanced.Patches
             }
             else if (selectedAttack is DFAAttack)
             {
-                Mod.UILog.Trace?.Write("Updating labels for DFA state.");
+                Mod.UILog.Debug?.Write("Updating labels for DFA state.");
 
                 float totalDamage = selectedAttack.TargetDamageClusters.Sum();
-                if (selectedAttack.TargetDamageClusters.Length > 1)
-                {
-                    int avgDamage = (int)Math.Floor(totalDamage / selectedAttack.TargetDamageClusters.Length);
-                    string damageS = $"{avgDamage} <size=80%>(x{selectedAttack.TargetDamageClusters.Length})";
-                    Mod.UILog.Debug?.Write($"  - damageS is: {damageS}");
-                    __instance.DamageText.SetText(damageS);
-                }
-                else
-                {
-                    __instance.DamageText.SetText($"{totalDamage}");
-                    Mod.UILog.Trace?.Write($"  - damageS is: {totalDamage}");
-                }
+                Mod.UILog.Trace?.Write($"  - damageS is: {totalDamage}");
+                __instance.DamageText.SetText($"{totalDamage}");
+
             }
         }
     }

@@ -46,31 +46,29 @@
 
     "AttackDescriptions" : {
         "CHARGE_DESC" : 
-            "Charges damage both the attacker and target. Damage is randomized across all locations in 25 point clusters. <color=#ff0000>Attacker takes {0} damage and {1} instability.</color>" ,
+            "<align=\"left\"><b>CHARGE</b>\n<color=#00ff00>Target    DMG: {0} STAB: {1}  {2}</color>\n<color=#ff0000>Attacker  DMG: {3} STAB: {4}  {5}</color>\n" ,
         "DFA_DESC" : 
-            "Death-From-Above attacks damage both the attacker and target. Damage is delivered as 25 point clusters randomized to the target arms, torsos, and head and attacker legs. <color=#ff0000>Attacker takes {0} damage and {1} instability.</color>",
+            "<align=\"left\"><b>DEATH FROM ABOVE</b>\n<color=#00ff00>Target    DMG: {0} STAB: {1}  {2}</color>\n<color=#ff0000>Attacker  DMG: {3} STAB: {4}  {5}</color>\n",
         "KICK_DESC" :
-            "Kicks inflict a single hit that strikes the legs of the target.",
+            "<align=\"left\"><b>KICK</b>\n<color=#00ff00>Target    DMG: {0} STAB: {1}  {2}</color>",
         "PHYSICAL_WEAPON_DESC" :
-            "Physical weapons inflict a single hit whose location can vary. See the weapon details.",
+            "<align=\"left\"><b>MELEE WEAPON</b>\n<color=#00ff00>Target    DMG: {0} STAB: {1}  {2}</color>",
         "PUNCH_DESC" :
-            "Punches inflict a single hit that strikes the arms, torsos, and head of the target. "
+            "<align=\"left\"><b>PUNCH</b>\n<color=#00ff00>Target    DMG: {0} STAB: {1}  {2}</color>"
     },
 
     "Labels" : {
         "ATK_MOD_ACTUATOR_DAMAGE" : "ACTUATOR DAMAGE",
         "ATK_MOD_ATTACKER_JUMPED" : "ATTACKER JUMPED",
+        "ATK_MOD_CHARGE_MOD" : "CHARGE MOD",
         "ATK_MOD_COMPARATIVE_PILOTING" : "PILOTING DELTA",
         "ATK_MOD_EASY_TO_KICK" : "EASY TO KICK",
-        "ATK_MOD_TARGET_PRONE" : "PRONE MELEE TARGET",
-        "ATK_MOD_OVERHEATED" : "OVERHEATED",
-
-        "ATK_MOD_CHARGE_MOD" : "CHARGE MOD",
         "ATK_MOD_KICK_MOD" : "KICK MOD",
         "ATK_MOD_PUNCH_MOD" : "PUNCH MOD",
+        "ATK_MOD_TARGET_PRONE" : "PRONE MELEE TARGET",
         "ATK_MOD_PHYS_WEP_MOD" : "P.WEAP MOD",
-		"ATK_MOD_DFA_MOD" : "DFA MOD",
-		
+        "ATK_MOD_OVERHEATED" : "OVERHEATED",
+
         "WEAPON_HOVER_DAMAGE" : "{0} dmg" ,
         "WEAPON_HOVER_INSTABILITY" : "{0} stab" ,
         "WEAPON_HOVER_HEAT" : "+{0} heat" ,
@@ -78,8 +76,12 @@
         "MELEE_TYPE_CHARGE" : "CHARGE" ,
         "MELEE_TYPE_DFA" : "DFA" ,
         "MELEE_TYPE_KICK" : "KICK" ,
-        "MELEE_TYPE_PHYSICAL_WEAPON" : "PHY. WEAPON" ,
+        "MELEE_TYPE_PHYSICAL_WEAPON" : "WEAPON" ,
         "MELEE_TYPE_PUNCH" : "PUNCH" ,
+		
+		"MELEE_TABLE_PUNCH" : "<size=80%>Can hit: head, arms, torsos</size>",
+		"MELEE_TABLE_LEGS" : "<size=80%>Can hit: legs</size>",
+		"MELEE_TABLE_STANDARD" : "<size=80%>Can hit: everywhere</size>",
 
         "WEAPON_PANEL_MELEE_WEAPON" : "MELEE - {0}",
         "WEAPON_PANEL_MELEE_NO_ATTACK_TYPE" : "(w/p/k)",
