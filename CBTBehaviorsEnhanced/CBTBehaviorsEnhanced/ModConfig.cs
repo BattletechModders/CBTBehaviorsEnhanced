@@ -386,6 +386,9 @@ namespace CBTBehaviorsEnhanced
         public bool MultiplyAttackerSelfDamageByHexesMoved = false;
         // The amount to multiply self-kill damage by
         public float SelfCTKillVirtDamageMulti = -1f;
+
+        // If true, Charge should never be valid for AI
+        public bool ForceAlwaysInvalidForAI = false;
     }
 
     // BT Manual pg.37 
@@ -414,6 +417,10 @@ namespace CBTBehaviorsEnhanced
         public int TargetVehicleEvasionPipsRemoved = 4;
 
         public bool EnableTrooperDFAButSeriouslyGetOnStratOpsAlready = false;
+
+        // If true, DFA should never be valid for AI
+        public bool ForceAlwaysInvalidForAI = false;
+
     }
 
     public class KickMeleeOps
