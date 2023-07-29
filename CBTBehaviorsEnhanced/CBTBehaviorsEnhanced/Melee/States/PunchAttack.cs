@@ -127,9 +127,11 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            string targetDamageS = this.TargetDamageClusters.Count() > 1 ?
-                $"{this.TargetDamageClusters.Sum()} ({DamageHelper.ClusterDamageStringForUI(this.TargetDamageClusters)})" :
-                this.TargetDamageClusters[0].ToString();
+            float[] adjTargetDamage = DamageHelper.AdjustDamageByTargetTypeForUI(this.TargetDamageClusters, target, attacker.MeleeWeapon);
+
+            string targetDamageS = adjTargetDamage.Count() > 1 ?
+                $"{adjTargetDamage.Sum()} ({DamageHelper.ClusterDamageStringForUI(adjTargetDamage)})" :
+                adjTargetDamage[0].ToString();
 
             string targetTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Punch];
 

@@ -99,12 +99,15 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         private void CreateDescriptions(Mech attacker, AbstractActor target)
         {
-            string attackerDamageS = this.AttackerDamageClusters.Count() > 1 ?
-                $"{this.AttackerDamageClusters.Sum()} ({DamageHelper.ClusterDamageStringForUI(this.AttackerDamageClusters)})" :
-                this.AttackerDamageClusters[0].ToString();
-            string targetDamageS = this.TargetDamageClusters.Count() > 1 ?
-                $"{this.TargetDamageClusters.Sum()} ({DamageHelper.ClusterDamageStringForUI(this.TargetDamageClusters)})" :
-                this.TargetDamageClusters[0].ToString();
+            float[] adjAttackerDamage = DamageHelper.AdjustDamageByTargetTypeForUI(this.AttackerDamageClusters, attacker, attacker.MeleeWeapon);
+            float[] adjTargetDamage = DamageHelper.AdjustDamageByTargetTypeForUI(this.TargetDamageClusters, target, attacker.MeleeWeapon);
+
+            string attackerDamageS = adjAttackerDamage.Count() > 1 ?
+                $"{adjAttackerDamage.Sum()} ({DamageHelper.ClusterDamageStringForUI(adjAttackerDamage)})" :
+                adjAttackerDamage[0].ToString();
+            string targetDamageS = adjTargetDamage.Count() > 1 ?
+                $"{adjTargetDamage.Sum()} ({DamageHelper.ClusterDamageStringForUI(adjTargetDamage)})" :
+                adjTargetDamage[0].ToString();
 
             string targetTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Punch];
             string attackerTable = Mod.LocalizedText.Labels[ModText.LT_Label_Melee_Table_Legs];
