@@ -82,6 +82,7 @@ namespace CBTBehaviorsEnhanced
             Log.Debug?.Write($"ModDir is:{modDirectory}");
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
+            Mod.LocalizedText.LogConfig();
 
             if (settingsE != null)
             {

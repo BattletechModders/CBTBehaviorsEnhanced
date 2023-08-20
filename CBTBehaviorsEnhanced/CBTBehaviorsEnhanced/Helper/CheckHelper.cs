@@ -63,11 +63,13 @@ namespace CBTBehaviorsEnhanced
 
         public static bool ResolvePilotInjuryCheck(Mech mech, int heatToCheck, int rootSequenceGUID, int sequenceGUID, float heatCheck)
         {
+            //if (mech.pilot.IsIncapacitated)
+
             bool failedInjuryCheck = !CheckHelper.DidCheckPassThreshold(Mod.Config.Heat.PilotInjury, heatToCheck, mech, heatCheck, ModText.FT_Check_Injury);
             Mod.Log.Debug?.Write($"  failedInjuryCheck: {failedInjuryCheck}");
             if (failedInjuryCheck)
             {
-                Mod.Log.Info?.Write($"-- Pilot Heat Injury check failed for {CombatantUtils.Label(mech)}, forcing injury from heat");
+                Mod.Log.Info?.Write($"-- Pilot Heat Injury check failed for {mech.DistinctId()}, forcing injury from heat");
                 mech.pilot.InjurePilot(sequenceGUID.ToString(), rootSequenceGUID, 1, DamageType.OverheatSelf, null, mech);
                 if (!mech.pilot.IsIncapacitated)
                 {

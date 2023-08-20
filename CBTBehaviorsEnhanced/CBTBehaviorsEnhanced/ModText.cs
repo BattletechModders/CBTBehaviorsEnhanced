@@ -102,6 +102,39 @@ namespace CBTBehaviorsEnhanced
         }
         public QuipsConfig Quips = new();
 
+        public void LogConfig()
+        {
+            Mod.Log.Info?.Write("=== MOD TEXT BEGIN ===");
+
+            Mod.Log.Info?.Write("  -- Floaties");
+            foreach (KeyValuePair<string, string> kvp in this.Floaties)
+            {
+                Mod.Log.Info?.Write($"  {kvp.Key}: {kvp.Value}");
+            }
+            Mod.Log.Info?.Write("");
+
+            Mod.Log.Info?.Write("  -- Tooltips");
+            foreach (KeyValuePair<string, string> kvp in this.Tooltips)
+            {
+                Mod.Log.Info?.Write($"  {kvp.Key}: {kvp.Value}");
+            }
+            Mod.Log.Info?.Write("");
+
+            Mod.Log.Info?.Write("  -- Attack Descriptions");
+            foreach (KeyValuePair<string, string> kvp in this.AttackDescriptions)
+            {
+                Mod.Log.Info?.Write($"  {kvp.Key}: {kvp.Value}");
+            }
+            Mod.Log.Info?.Write("");
+
+            Mod.Log.Info?.Write("  -- Labels");
+            foreach (KeyValuePair<string, string> kvp in this.Labels)
+            {
+                Mod.Log.Info?.Write($"  {kvp.Key}: {kvp.Value}");
+            }
+            Mod.Log.Info?.Write("");
+        }
+
         // Newtonsoft seems to merge values into existing dictionaries instead of replacing them entirely. So instead
         //   populate default values in dictionaries through this call instead
         public void InitUnsetValues()

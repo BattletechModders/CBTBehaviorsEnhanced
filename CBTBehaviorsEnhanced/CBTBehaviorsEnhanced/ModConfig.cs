@@ -265,7 +265,6 @@ namespace CBTBehaviorsEnhanced
                 this.CustomCategories.LowerArmActuatorCategoryId = new string[] { "ArmLowerActuator" };
             if (this.CustomCategories.HandActuatorCategoryId.Length == 0)
                 this.CustomCategories.HandActuatorCategoryId = new string[] { "ArmHandActuator" };
-
         }
     }
 
