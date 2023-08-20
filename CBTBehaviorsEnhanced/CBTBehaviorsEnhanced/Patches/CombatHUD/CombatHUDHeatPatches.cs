@@ -111,42 +111,53 @@ namespace CBTBehaviorsEnhanced.Patches
 
     // TODO: FIXME - should trigger on guesstimated heat as well.
     [HarmonyPatch(typeof(CombatHUDStatusPanel), "ShowShutDownIndicator", null)]
-    public static class CombatHUDStatusPanel_ShowShutDownIndicator
+    static class CombatHUDStatusPanel_ShowShutDownIndicator
     {
-        public static void Prefix(ref bool __runOriginal, CombatHUDStatusPanel __instance)
+        static void Prefix(ref bool __runOriginal, CombatHUDStatusPanel __instance)
         {
             Mod.UILog.Trace?.Write("CHUBSP:SSDI:PRE entered.");
             __runOriginal = false;
         }
 
-        public static void Postfix(CombatHUDStatusPanel __instance, Mech mech)
+        static void Postfix(CombatHUDStatusPanel __instance, Mech mech)
         {
             Mod.UILog.Trace?.Write("CHUBSP:SSDI:POST entered.");
 
             CombatHUD HUD = __instance.HUD;
 
-            CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(mech, HUD.SelectionHandler.ProjectedHeatForState);
-            Mod.UILog.Debug?.Write($"In ShutdownIndicator, projectedHeat {HUD.SelectionHandler.ProjectedHeatForState} => calculatedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
-            Mod.UILog.Debug?.Write($"  current: {calculatedHeat.CurrentHeat} projected: {calculatedHeat.ProjectedHeat} temp: {calculatedHeat.TempHeat}  " +
-                $"sinkable: {calculatedHeat.SinkableHeat}  sinkCapacity: {calculatedHeat.OverallSinkCapacity}  future: {calculatedHeat.FutureHeat}  threshold: {calculatedHeat.ThresholdHeat}");
-            Mod.UILog.Debug?.Write($"  CACTerrainHeat{calculatedHeat.CACTerrainHeat}  CurrentPathNodes: {calculatedHeat.CurrentPathNodes}  isProjectedHeat: {calculatedHeat.IsProjectedHeat}");
+            if (HUD == null || HUD.SelectionHandler == null) return;
+            
+            try
+            {
+                CalculatedHeat calculatedHeat = HeatHelper.CalculateHeat(mech, HUD.SelectionHandler.ProjectedHeatForState);
+                Mod.UILog.Debug?.Write($"In ShutdownIndicator, projectedHeat {HUD.SelectionHandler.ProjectedHeatForState} => calculatedHeat: {calculatedHeat.ThresholdHeat} vs {Mod.Config.Heat.WarnAtHeat}");
+                Mod.UILog.Debug?.Write($"  current: {calculatedHeat.CurrentHeat} projected: {calculatedHeat.ProjectedHeat} temp: {calculatedHeat.TempHeat}  " +
+                    $"sinkable: {calculatedHeat.SinkableHeat}  sinkCapacity: {calculatedHeat.OverallSinkCapacity}  future: {calculatedHeat.FutureHeat}  threshold: {calculatedHeat.ThresholdHeat}");
+                Mod.UILog.Debug?.Write($"  CACTerrainHeat{calculatedHeat.CACTerrainHeat}  CurrentPathNodes: {calculatedHeat.CurrentPathNodes}  isProjectedHeat: {calculatedHeat.IsProjectedHeat}");
 
-            if (mech.IsShutDown)
-            {
-                Mod.UILog.Info?.Write($" Mech {CombatantUtils.Label(mech)} is shutdown, displaying the shutdown warning");
-                __instance.ShowDebuff(LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
-                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
-                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
-                    __instance.defaultIconScale, false);
+                if (mech.IsShutDown)
+                {
+                    Mod.UILog.Info?.Write($" Mech {CombatantUtils.Label(mech)} is shutdown, displaying the shutdown warning");
+                    __instance.ShowDebuff(LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusShutDownIcon,
+                        new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TITLE]),
+                        new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_SHUTDOWN_TEXT]),
+                        __instance.defaultIconScale, false);
+                }
+                else if (calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat)
+                {
+                    Mod.UILog.Info?.Write($"Mech {mech.DistinctId()} has thresholdHeat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}. Displaying heat warning.");
+                    __instance.ShowDebuff(LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
+                        new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
+                        new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TEXT]),
+                        __instance.defaultIconScale, false);
+                }
             }
-            else if (calculatedHeat.ThresholdHeat >= Mod.Config.Heat.WarnAtHeat)
+            catch (Exception e)
             {
-                Mod.UILog.Info?.Write($"Mech {mech.DistinctId()} has thresholdHeat {calculatedHeat.ThresholdHeat} >= warningHeat: {Mod.Config.Heat.WarnAtHeat}. Displaying heat warning.");
-                __instance.ShowDebuff(LazySingletonBehavior<UIManager>.Instance.UILookAndColorConstants.StatusOverheatingIcon,
-                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TITLE]),
-                    new Text(Mod.LocalizedText.Tooltips[ModText.CHUDSP_TT_WARN_OVERHEAT_TEXT]),
-                    __instance.defaultIconScale, false);
+                Mod.UILog.Warn?.Write(e, "Failed to update CHUDStatusPanel due to error!");
             }
+
+
         }
     }
 
