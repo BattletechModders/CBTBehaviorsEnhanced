@@ -11,6 +11,9 @@
         "INJURY_CHECK" : "Pilot Injury Check",
         "SYSTEM_FAILURE_CHECK": "System Failure Check",
         "FALLING_CHECK" : "Falling Check",
+		
+		"PILOT_DEATH_OVERHEAT": "Overheat Death",
+		"PILOT_DEATH_FALLING": "Falling Death",
 
         "MELEE_KICK" : "Kick Falling Check",
         "MELEE_CHARGE" : "Charge Falling Check",
