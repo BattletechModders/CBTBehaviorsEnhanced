@@ -41,7 +41,7 @@ namespace CBTBehaviorsEnhanced.Heat
                 calculatedHeat.CACTerrainHeat == this.CACTerrainHeat &&
                 calculatedHeat.CurrentPathNodes == CurrentPathNodes) { return; }
 
-            Mod.HeatLog.Debug?.Write($"Updating heat dialog for actor: {CombatantUtils.Label(displayedMech)}");
+            Mod.HeatLog.Debug?.Write($"Updating heat dialog for actor: {displayedMech.DistinctId()}");
             Mod.HeatLog.Debug?.Write($"  previous values:  CurrentHeat: {CurrentHeat}  ProjectedHeat: {ProjectedHeat}  TempHeat: {TempHeat}  CACTerrainHeat: {CACTerrainHeat}  currentPathNodes: {CurrentPathNodes}");
             this.CurrentHeat = calculatedHeat.CurrentHeat;
             this.ProjectedHeat = calculatedHeat.ProjectedHeat;
