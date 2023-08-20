@@ -1,191 +1,233 @@
 {
-    "Name": "CBTBehaviorsEnhanced",
-    "Enabled": true,
+	"Name": "CBTBehaviorsEnhanced",
+	"Enabled": true,
 	"Hidden": true,
-    "Version": "2.0.0",
-    "Description": "Provides TableTop like behaviors for heat, movement, and more",
-    "Author": "FrostRaptor",
-    "Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
-    "Contact": "",
-    "DLL": "CBTBehaviorsEnhanced.dll",
-    "DependsOn" : [ "IRBTModUtils", "CustomComponents", "Custom Ammo Categories", "CustomUnits" ],
-    "OptionallyDependsOn": [ "BetterAI", "MechEngineer", "CustomBundleDebugContent" ],
-    "ConflictsWith": [ "CharlesB" ],
-	"Manifest" : [
-		{
-			"Type" : "ChassisDef",
-			"Path" : "test/chassis",
-			"AddToDB" : true
+	"Version": "2.0.0",
+	"Description": "Provides TableTop like behaviors for heat, movement, and more",
+	"Author": "FrostRaptor",
+	"Website": "https://github.com/IceRaptor/CBTBehaviorsEnhanced/",
+	"Contact": "",
+	"DLL": "CBTBehaviorsEnhanced.dll",
+	"DependsOn": ["IRBTModUtils", "CustomComponents", "Custom Ammo Categories", "CustomUnits"],
+	"OptionallyDependsOn": ["BetterAI", "MechEngineer", "CustomBundleDebugContent"],
+	"ConflictsWith": ["CharlesB"],
+	"Manifest": [{
+			"Type": "ChassisDef",
+			"Path": "test/chassis",
+			"AddToDB": true
 		},
 		{
-			"Type" : "UpgradeDef",
-			"Path" : "test/upgrade",
-			"AddToDB" : true
-		},
+			"Type": "UpgradeDef",
+			"Path": "test/upgrade",
+			"AddToDB": true
+		}
 	],
-    "Settings": {
-        "Debug" : false,
-        "Trace" : false,
+	"Settings": {
+		"Debug": false,
+		"Trace": false,
 
 		"Developer": {
-            "ForceFallAfterJump" : false,
-            "ForceInvalidateAllMeleeAttacks" : false,
-            "DebugHeatToAdd" : 150
-        },
-		
-        "Features" : {
-            "BiomeBreaches" : false,
-			"PermanentEvasion" : true,
-            "StartupChecks" : false
-        },
+			"ForceFallAfterJump": false,
+			"ForceInvalidateAllMeleeAttacks": false,
+			"DebugHeatToAdd": 150
+		},
 
-        "ToHitSelfJumped": 2,
+		"Features": {
+			"BiomeBreaches": false,
+			"PermanentEvasion": true,
+			"StartupChecks": false
+		},
 
-		"CustomCategories" : {
-           "HipActuatorCategoryId" :  [ "LegHip" ],
-           "UpperLegActuatorCategoryId" :  [ "LegUpperActuator" ],
-           "LowerLegActuatorCategoryId" :  [ "LegLowerActuator" ],
-           "FootActuatorCategoryId" :  [ "LegFootActuator" ],
+		"ToHitSelfJumped": 2,
 
-           "ShoulderActuatorCategoryId" : [ "ArmShoulder" ],
-           "UpperArmActuatorCategoryId" :  [ "ArmUpperActuator" ],
-           "LowerArmActuatorCategoryId" :  [ "ArmLowerActuator", "OmniLowerActuator"],
-           "HandActuatorCategoryId" :  [ "ArmHandActuator", "OmniHandActuator" ]
-        },
+		"CustomCategories": {
+			"HipActuatorCategoryId": ["LegHip"],
+			"UpperLegActuatorCategoryId": ["LegUpperActuator"],
+			"LowerLegActuatorCategoryId": ["LegLowerActuator"],
+			"FootActuatorCategoryId": ["LegFootActuator"],
 
-        "Heat" : {
-            "Movement" : { "15": 0, "30" : -1, "45" : -1, "60" : -2, "75" : -2, "93" : -3, "111" : -3, "129" : -4, "147" : -4 },
-            "Firing" : { "24" : 1, "39" : 2, "51" : 3, "72" : 4, "99" : 5, "123" : 6, "144" : 7 },
-            "Shutdown" : { "42" : 0.1, "54" : 0.3, "66" : 0.6, "78" : 0.8,  "90" : 0.9, "102" : 1.0, "114" : 1.1, "126" : 1.2, "138" : 1.3, "150" : -1 },
-            "Explosion" : { "57" : 0.1, "69": 0.3, "84" : 0.5, "105" : 0.8, "120" : 0.95, "135" : -1 },
-            "PilotInjury" : { "84" : 0.3, "117" : 0.6, "141" : 0.8 },
-            "SystemFailures" : { "108" : 0.3, "132" : 0.6 },
-            "ShowLowOverheatAnim" : 42,
-            "ShowExtremeOverheatAnim" : 90,
-            "ShutdownFallThreshold" : 0.75,
-            "MaxHeat" : 150,
-            "WarnAtHeat" : 42
-        },
+			"ShoulderActuatorCategoryId": ["ArmShoulder"],
+			"UpperArmActuatorCategoryId": ["ArmUpperActuator"],
+			"LowerArmActuatorCategoryId": ["ArmLowerActuator", "OmniLowerActuator"],
+			"HandActuatorCategoryId": ["ArmHandActuator", "OmniHandActuator"]
+		},
 
-        "Melee" : {
-			"AI" : {
-                "EvasionPipRemovedUtility" : 10.0,
-                "EvasionPipLostUtility" : 40.0,
-                "PilotInjuryMultiUtility" : 2.0
-            },
-		
-            "Charge" : {
-                "AttackerDamagePerTargetTon" : 2,
-                "TargetDamagePerAttackerTon" : 0.5,
-                "AttackerInstabilityPerTargetTon" : 0.25,
-                "TargetInstabilityPerAttackerTon" : 0.25,
-                "DamageClusterDivisor" : 25.0,
-                "UnsteadyAttackerOnHit" : false,
-                "UnsteadyAttackerOnMiss" : true,
-                "UnsteadyTargetOnHit" : false,
-				"UsePilotingDelta" : false
-            },
+		"Heat": {
+			"Movement": {
+				"15": 0,
+				"30": -1,
+				"45": -1,
+				"60": -2,
+				"75": -2,
+				"93": -3,
+				"111": -3,
+				"129": -4,
+				"147": -4
+			},
+			"Firing": {
+				"24": 1,
+				"39": 2,
+				"51": 3,
+				"72": 4,
+				"99": 5,
+				"123": 6,
+				"144": 7
+			},
+			"Shutdown": {
+				"42": 0.1,
+				"54": 0.3,
+				"66": 0.6,
+				"78": 0.8,
+				"90": 0.9,
+				"102": 1.0,
+				"114": 1.1,
+				"126": 1.2,
+				"138": 1.3,
+				"150": -1
+			},
+			"Explosion": {
+				"57": 0.1,
+				"69": 0.3,
+				"84": 0.5,
+				"105": 0.8,
+				"120": 0.95,
+				"135": -1
+			},
+			"PilotInjury": {
+				"84": 0.3,
+				"117": 0.6,
+				"141": 0.8
+			},
+			"SystemFailures": {
+				"108": 0.3,
+				"132": 0.6
+			},
+			"ShowLowOverheatAnim": 42,
+			"ShowExtremeOverheatAnim": 90,
+			"ShutdownFallThreshold": 0.75,
+			"MaxHeat": 150,
+			"WarnAtHeat": 42
+		},
 
-            "DFA" : {
-                "AttackerDamagePerTargetTon" : 1.5,
-                "TargetDamagePerAttackerTon" : 2,
-                "AttackerInstabilityPerTargetTon" : 1,
-                "TargetInstabilityPerAttackerTon" : 1,
-                "DamageClusterDivisor" : 25.0,
-                "UnsteadyAttackerOnHit" : true,
-                "UnsteadyAttackerOnMiss" : false,
-                "UnsteadyTargetOnHit" : true,
-				"UsePilotingDelta" : false
-            },
+		"Melee": {
+			"AI": {
+				"EvasionPipRemovedUtility": 10.0,
+				"EvasionPipLostUtility": 40.0,
+				"PilotInjuryMultiUtility": 2.0
+			},
 
-            "Kick" : {
-                "BaseAttackBonus" : -2,
-                "LegActuatorDamageMalus" : 2,
-                "FootActuatorDamageMalus" : 1,
-                "TargetDamagePerAttackerTon" : 1,
-                "TargetInstabilityPerAttackerTon" : 0.5,
-                "LegActuatorDamageReduction" : 0.5,
-                "UnsteadyAttackerOnHit" : false,
-                "UnsteadyAttackerOnMiss" : true,
-                "UnsteadyTargetOnHit" : true
-            },
+			"Charge": {
+				"AttackerDamagePerTargetTon": 2,
+				"TargetDamagePerAttackerTon": 0.5,
+				"AttackerInstabilityPerTargetTon": 0.25,
+				"TargetInstabilityPerAttackerTon": 0.25,
+				"DamageClusterDivisor": 25.0,
+				"UnsteadyAttackerOnHit": false,
+				"UnsteadyAttackerOnMiss": true,
+				"UnsteadyTargetOnHit": false,
+				"UsePilotingDelta": false
+			},
 
-            "PhysicalWeapon" : {
-                "ArmActuatorDamageMalus" : 2,
-                "DefaultDamagePerAttackerTon" : 2,
-                "DefaultInstabilityPerAttackerTon" : 1,
-                "DefaultUnsteadyAttackerOnHit" : false,
-                "DefaultUnsteadyAttackerOnMiss" : false,
-                "DefaultUnsteadyTargetOnHit" : false
-            },
+			"DFA": {
+				"AttackerDamagePerTargetTon": 1.5,
+				"TargetDamagePerAttackerTon": 2,
+				"AttackerInstabilityPerTargetTon": 1,
+				"TargetInstabilityPerAttackerTon": 1,
+				"DamageClusterDivisor": 25.0,
+				"UnsteadyAttackerOnHit": true,
+				"UnsteadyAttackerOnMiss": false,
+				"UnsteadyTargetOnHit": true,
+				"UsePilotingDelta": false
+			},
 
-            "Punch" : {
-                "ArmActuatorDamageMalus" : 2,
-                "HandActuatorDamageMalus" : 1,
-                "TargetDamagePerAttackerTon" : 0.5,
-                "TargetInstabilityPerAttackerTon" : 0.5,
-                "ArmActuatorDamageReduction" : 0.5,
-                "UnsteadyAttackerOnHit" : false,
-                "UnsteadyAttackerOnMiss" : false,
-                "UnsteadyTargetOnHit" : false
-            },
-			
-			"Turrets" : {
-                "DefaultTonnage" : 100.0,
-                "LightTonnage" : 25.0,
-                "MediumTonnage" : 50.0,
-                "HeavyTonnage" : 75.0
-            },
-			
-			"Swarm" : {
-				"MechWeights" : {
-					"Head" : 8,
-					"CenterTorso" : 16,
-					"CenterTorsoRear" : 16,
-					"LeftTorso" : 16,
-					"LeftTorsoRear" : 16,
-					"RightTorso" : 16,
-					"RightTorsoRear" : 16
+			"Kick": {
+				"BaseAttackBonus": -2,
+				"LegActuatorDamageMalus": 2,
+				"FootActuatorDamageMalus": 1,
+				"TargetDamagePerAttackerTon": 1,
+				"TargetInstabilityPerAttackerTon": 0.5,
+				"LegActuatorDamageReduction": 0.5,
+				"UnsteadyAttackerOnHit": false,
+				"UnsteadyAttackerOnMiss": true,
+				"UnsteadyTargetOnHit": true
+			},
+
+			"PhysicalWeapon": {
+				"ArmActuatorDamageMalus": 2,
+				"DefaultDamagePerAttackerTon": 2,
+				"DefaultInstabilityPerAttackerTon": 1,
+				"DefaultUnsteadyAttackerOnHit": false,
+				"DefaultUnsteadyAttackerOnMiss": false,
+				"DefaultUnsteadyTargetOnHit": false
+			},
+
+			"Punch": {
+				"ArmActuatorDamageMalus": 2,
+				"HandActuatorDamageMalus": 1,
+				"TargetDamagePerAttackerTon": 0.5,
+				"TargetInstabilityPerAttackerTon": 0.5,
+				"ArmActuatorDamageReduction": 0.5,
+				"UnsteadyAttackerOnHit": false,
+				"UnsteadyAttackerOnMiss": false,
+				"UnsteadyTargetOnHit": false
+			},
+
+			"Turrets": {
+				"DefaultTonnage": 100.0,
+				"LightTonnage": 25.0,
+				"MediumTonnage": 50.0,
+				"HeavyTonnage": 75.0
+			},
+
+			"Swarm": {
+				"MechWeights": {
+					"Head": 8,
+					"CenterTorso": 16,
+					"CenterTorsoRear": 16,
+					"LeftTorso": 16,
+					"LeftTorsoRear": 16,
+					"RightTorso": 16,
+					"RightTorsoRear": 16
 				},
-				"VehicleWeights" : {
-					"Turret" : 40,
-					"Left" : 16,
-					"Right" : 16,
-					"Rear" : 40
+				"VehicleWeights": {
+					"Turret": 40,
+					"Left": 16,
+					"Right": 16,
+					"Rear": 40
 				}
 			},
 
-            "AllowMeleeFromSprint" : true,
-            "ProneTargetAttackModifier" : -2,
-            "FilterCanUseInMeleeWeaponsByAttack" : true
-        },
-        
-        "Move" : {
-            "MinimumMove" : 40.0,
-            "RunMulti" : 1.5,
-            "FallAfterRunChance" : 0.30,
-            "FallAfterJumpChance" : 0.30
-        },
-        
-        "Piloting" : {
-            "StabilityCheck" : 0.30,
-            "DFAReductionMulti" : 0.05,
-            "ShowAllStabilityRolls" : false,
-            "StandAttemptFallChance" : 0.30,
+			"AllowMeleeFromSprint": true,
+			"ProneTargetAttackModifier": -2,
+			"FilterCanUseInMeleeWeaponsByAttack": true
+		},
+
+		"Move": {
+			"MinimumMove": 40.0,
+			"RunMulti": 1.5,
+			"FallAfterRunChance": 0.30,
+			"FallAfterJumpChance": 0.30
+		},
+
+		"Piloting": {
+			"StabilityCheck": 0.30,
+			"DFAReductionMulti": 0.05,
+			"ShowAllStabilityRolls": false,
+			"StandAttemptFallChance": 0.30,
 			"FallDamagePerTon": 1,
 			"FallDamageReductionMulti": 0.05,
 			"FallDamageClusterDivisor": 25.0
-        },
-        
-        "Breaches" : {
-            "VacuumCheck" : 0.17,
-            "ThinAtmoCheck" : 0.03
-        },
-		
-		"SkillChecks" : {
-			"ModPerPointOfPiloting" : 0.05,
-			"ModPerPointOfGuts" : 0.05
+		},
+
+		"Breaches": {
+			"VacuumCheck": 0.17,
+			"ThinAtmoCheck": 0.03
+		},
+
+		"SkillChecks": {
+			"ModPerPointOfPiloting": 0.05,
+			"ModPerPointOfGuts": 0.05
 		}
 
-    }
+	}
 }
