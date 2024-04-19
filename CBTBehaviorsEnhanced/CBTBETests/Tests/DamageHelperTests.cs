@@ -19,7 +19,7 @@ namespace CBTBETests
             Assert.AreEqual("17", DamageHelper.ClusterDamageStringForUI(clusterDamage17));
 
             float[] clusterDamage56 = new float[] { 25, 25, 6 };
-            Assert.AreEqual("25x2, 6", DamageHelper.ClusterDamageStringForUI(clusterDamage56));
+            Assert.AreEqual("25x2 + 6", DamageHelper.ClusterDamageStringForUI(clusterDamage56));
 
             float[] clusterDamage150 = new float[] { 25, 25, 25, 25, 25, 25 };
             Assert.AreEqual("25x6", DamageHelper.ClusterDamageStringForUI(clusterDamage150));

@@ -71,87 +71,7 @@ namespace CBTBehaviorsEnhanced.Helper
                     float stateTotalDamage = meleeDamage + rangedDamage;
                     if (targetMech != null)
                     {
-                        float totalTargetStab = meleeState.TargetInstability + rangedStab;
-                        Mod.AILog.Info?.Write($"  - Calculating utility based upon total projected instab of: {totalTargetStab}");
-
-                        // Apply evasion break and knockdown utility to the melee weapon
-                        float evasionBreakUtility = 0f;
-                        if (targetMech != null && targetMech.EvasivePipsCurrent > 0 &&
-                             (meleeState.OnTargetMechHitForceUnsteady || AttackHelper.WillUnsteadyTarget(totalTargetStab, targetMech))
-                           )
-                        {
-                            // Target will lose their evasion pips
-                            evasionBreakUtility = targetMech.EvasivePipsCurrent * Mod.Config.Melee.AI.EvasionPipRemovedUtility;
-                            Mod.AILog.Info?.Write($"  Adding {evasionBreakUtility} virtual damage to EV from " +
-                                $"evasivePips: {targetMech.EvasivePipsCurrent} x bonusDamagePerPip: {Mod.Config.Melee.AI.EvasionPipRemovedUtility}");
-                        }
-
-                        float knockdownUtility = 0f;
-                        if (targetMech != null && targetMech.pilot != null &&
-                            AttackHelper.WillKnockdownTarget(totalTargetStab, targetMech, meleeState.OnTargetMechHitForceUnsteady))
-                        {
-                            float centerTorsoArmorAndStructure = targetMech.GetMaxArmor(ArmorLocation.CenterTorso) + targetMech.GetMaxStructure(ChassisLocations.CenterTorso);
-                            if (AttackHelper.WillInjuriesKillTarget(targetMech, 1))
-                            {
-                                knockdownUtility = centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility;
-                                Mod.AILog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
-                                    $"centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}");
-                            }
-                            else
-                            {
-                                // Attack won't kill, so only apply a fraction equal to the totalHeath 
-                                float injuryDivisor = targetMech.pilot.TotalHealth - (targetMech.pilot.Injuries + 1);
-                                if (injuryDivisor <= 0) injuryDivisor = 1;
-
-                                knockdownUtility = (centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility) / injuryDivisor;
-                                Mod.AILog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
-                                    $"(centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}) " +
-                                    $"/ injuryDivisor: {injuryDivisor}");
-                            }
-                        }
-
-                        // Check to see how much evasion loss the attacker will have
-                        //  use current pips + any pips gained from movement (charge)
-                        float distance = (attackPos + attacker.CurrentPosition).magnitude;
-                        int newPips = attacker.GetEvasivePipsResult(distance, false, false, true);
-                        int normedNewPips = (attacker.EvasivePipsCurrent + newPips) > attacker.StatCollection.GetValue<int>("MaxEvasivePips") ?
-                            attacker.StatCollection.GetValue<int>("MaxEvasivePips") : (attacker.EvasivePipsCurrent + newPips);
-                        float selfEvasionDamage = 0f;
-                        if (meleeState.UnsteadyAttackerOnHit || meleeState.UnsteadyAttackerOnMiss)
-                        {
-                            // TODO: Should evaluate chance to hit, and apply these partial damage based upon success chances
-                            selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipLostUtility;
-                            Mod.AILog.Info?.Write($"  Reducing virtual damage by {selfEvasionDamage} due to potential loss of {normedNewPips} pips.");
-                        }
-
-                        // Check to see how much damage the attacker will take
-                        float selfDamage = 0f;
-                        if (meleeState.AttackerDamageClusters.Length > 0)
-                        {
-                            selfDamage = meleeState.AttackerDamageClusters.Sum();
-                            Mod.AILog.Info?.Write($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
-                        }
-
-                        float virtualDamage = evasionBreakUtility + knockdownUtility;
-                        Mod.AILog.Info?.Write($"  Virtual damage base {virtualDamage} = " +
-                            $"evasionBreakUtility: {evasionBreakUtility} + knockdownUtility: {knockdownUtility}");
-
-                        float selfCenterTorsoArmorAndStructure = attacker.GetCurrentArmor(ArmorLocation.CenterTorso) + attacker.GetCurrentStructure(ChassisLocations.CenterTorso);
-                        if (selfEvasionDamage + selfDamage >= selfCenterTorsoArmorAndStructure)
-                        {
-                            virtualDamage += selfEvasionDamage;
-                            virtualDamage += selfDamage;
-                            virtualDamage *= Mod.Config.Melee.Charge.SelfCTKillVirtDamageMulti;
-                            Mod.AILog.Info?.Write($"  virtual damage can CT kill, inverting virtual damage");
-                        }
-                        else
-                        {
-                            virtualDamage -= selfEvasionDamage;
-                            virtualDamage -= selfDamage;
-                            Mod.AILog.Info?.Write($"  virtual damage reduced by selfDamage: {selfDamage} selfEvasionDamage: {selfEvasionDamage}");
-                        }
-
-                        Mod.AILog.Info?.Write($"  Modified virtual damage: {virtualDamage}");
+                        float virtualDamage = CalculateUtilityVirtualDamage(attacker, attackPos, targetMech, rangedStab, meleeState);
 
                         stateTotalDamage += virtualDamage;
                         // Add to melee damage as well, to so it can be set on the melee weapon
@@ -183,7 +103,91 @@ namespace CBTBehaviorsEnhanced.Helper
                 Mod.AILog.Warn?.Write($"  Attacker: {(attacker == null ? "IS NULL" : attacker.DistinctId())}");
                 Mod.AILog.Warn?.Write($"  Target: {(target == null ? "IS NULL" : target.DistinctId())}");
             }
-            return;
+        }
+
+        public static float CalculateUtilityVirtualDamage(Mech attacker, Vector3 attackPos, Mech targetMech, float rangedStab, MeleeAttack meleeState)
+        {
+            float totalTargetStab = meleeState.TargetInstability + rangedStab;
+            Mod.MeleeLog.Info?.Write($"  - Calculating utility based upon total projected instab of: {totalTargetStab}");
+
+            // Apply evasion break and knockdown utility to the melee weapon
+            float evasionBreakUtility = 0f;
+            if (targetMech != null && targetMech.EvasivePipsCurrent > 0 &&
+                (meleeState.OnTargetMechHitForceUnsteady || AttackHelper.WillUnsteadyTarget(totalTargetStab, targetMech))
+               )
+            {
+                // Target will lose their evasion pips
+                evasionBreakUtility = targetMech.EvasivePipsCurrent * Mod.Config.Melee.AI.EvasionPipRemovedUtility;
+                Mod.MeleeLog.Info?.Write($"  Adding {evasionBreakUtility} virtual damage to EV from " +
+                                         $"evasivePips: {targetMech.EvasivePipsCurrent} x bonusDamagePerPip: {Mod.Config.Melee.AI.EvasionPipRemovedUtility}");
+            }
+
+            float knockdownUtility = 0f;
+            if (targetMech != null && targetMech.pilot != null &&
+                AttackHelper.WillKnockdownTarget(totalTargetStab, targetMech, meleeState.OnTargetMechHitForceUnsteady))
+            {
+                float centerTorsoArmorAndStructure = targetMech.GetMaxArmor(ArmorLocation.CenterTorso) + targetMech.GetMaxStructure(ChassisLocations.CenterTorso);
+                if (AttackHelper.WillInjuriesKillTarget(targetMech, 1))
+                {
+                    knockdownUtility = centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility;
+                    Mod.MeleeLog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
+                                             $"centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}");
+                }
+                else
+                {
+                    // Attack won't kill, so only apply a fraction equal to the totalHeath 
+                    float injuryDivisor = targetMech.pilot.TotalHealth - (targetMech.pilot.Injuries + 1);
+                    if (injuryDivisor <= 0) injuryDivisor = 1;
+
+                    knockdownUtility = (centerTorsoArmorAndStructure * Mod.Config.Melee.AI.PilotInjuryMultiUtility) / injuryDivisor;
+                    Mod.MeleeLog.Info?.Write($"  Adding {knockdownUtility} virtual damage to EV from " +
+                                             $"(centerTorsoArmorAndStructure: {centerTorsoArmorAndStructure} x injuryMultiUtility: {Mod.Config.Melee.AI.PilotInjuryMultiUtility}) " +
+                                             $"/ injuryDivisor: {injuryDivisor}");
+                }
+            }
+
+            // Check to see how much evasion loss the attacker will have
+            //  use current pips + any pips gained from movement (charge)
+            float distance = (attackPos + attacker.CurrentPosition).magnitude;
+            int newPips = attacker.GetEvasivePipsResult(distance, false, false, true);
+            int normedNewPips = (attacker.EvasivePipsCurrent + newPips) > attacker.StatCollection.GetValue<int>("MaxEvasivePips") ? attacker.StatCollection.GetValue<int>("MaxEvasivePips") : (attacker.EvasivePipsCurrent + newPips);
+            float selfEvasionDamage = 0f;
+            if (meleeState.UnsteadyAttackerOnHit || meleeState.UnsteadyAttackerOnMiss)
+            {
+                // TODO: Should evaluate chance to hit, and apply these partial damage based upon success chances
+                selfEvasionDamage = normedNewPips * Mod.Config.Melee.AI.EvasionPipLostUtility;
+                Mod.MeleeLog.Info?.Write($"  Reducing virtual damage by {selfEvasionDamage} due to potential loss of {normedNewPips} pips.");
+            }
+
+            // Check to see how much damage the attacker will take
+            float selfDamage = 0f;
+            if (meleeState.AttackerDamageClusters.Length > 0)
+            {
+                selfDamage = meleeState.AttackerDamageClusters.Sum();
+                Mod.MeleeLog.Info?.Write($"  Reducing virtual damage by {selfDamage} due to attacker damage on attack.");
+            }
+
+            float virtualDamage = evasionBreakUtility + knockdownUtility;
+            Mod.MeleeLog.Info?.Write($"  Virtual damage base {virtualDamage} = " +
+                                     $"evasionBreakUtility: {evasionBreakUtility} + knockdownUtility: {knockdownUtility}");
+
+            float selfCenterTorsoArmorAndStructure = attacker.GetCurrentArmor(ArmorLocation.CenterTorso) + attacker.GetCurrentStructure(ChassisLocations.CenterTorso);
+            if (selfEvasionDamage + selfDamage >= selfCenterTorsoArmorAndStructure)
+            {
+                virtualDamage += selfEvasionDamage;
+                virtualDamage += selfDamage;
+                virtualDamage *= Mod.Config.Melee.Charge.SelfCTKillVirtDamageMulti;
+                Mod.MeleeLog.Info?.Write($"  virtual damage can CT kill, inverting virtual damage");
+            }
+            else
+            {
+                virtualDamage -= selfEvasionDamage;
+                virtualDamage -= selfDamage;
+                Mod.MeleeLog.Info?.Write($"  virtual damage reduced by selfDamage: {selfDamage} selfEvasionDamage: {selfEvasionDamage}");
+            }
+
+            Mod.MeleeLog.Info?.Write($"  Modified virtual damage: {virtualDamage}");
+            return virtualDamage;
         }
     }
 }
