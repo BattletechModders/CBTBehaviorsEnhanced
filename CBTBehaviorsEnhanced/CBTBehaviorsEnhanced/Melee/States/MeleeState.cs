@@ -1,4 +1,5 @@
-﻿using CustAmmoCategories;
+﻿using BattleTech;
+using CustAmmoCategories;
 using CustomUnits;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
@@ -211,6 +212,69 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             return availableAttacks;
         }
 
+        private static MeleeAttackHeight GetValidMeleeHeightsCU(CustomMech attacker, Vector3 attackPosition, CustomMech target)
+        {
+            float targetDist = Vector3.Distance(attackPosition, target.CurrentPosition);
+            Mod.MeleeLog.Info?.Write($" - attackposition to target position:{targetDist} border {attacker.Combat.HexGrid.HexWidth * 1.5f}");
+            if (targetDist > (attacker.Combat.HexGrid.HexWidth * 1.5f))
+            {
+                Mod.MeleeLog.Info?.Write($" - not near. Assume preview");
+                return MeleeAttackHeight.Ground;
+            }
+            Vector3 attackToTargetPos = attackPosition;
+            attackToTargetPos.y = target.CurrentPosition.y;
+            attackToTargetPos = target.CurrentPosition - attackToTargetPos;
+            Quaternion toTargetRot = Quaternion.LookRotation(attackToTargetPos);
+            //Vector3[] targetLoS = target.GetLOSTargetPositions(target.CurrentPosition, target.CurrentRotation, 0f);
+            Vector3[] attackerLoS = attacker.GetLOSSourcePositions(attackPosition, toTargetRot, 0f);
+            float attackerHighestLoS = float.NaN;
+            foreach (var los in attackerLoS)
+            {
+                if (float.IsNaN(attackerHighestLoS) || (attackerHighestLoS < los.y)) { attackerHighestLoS = los.y; }
+            }
+            if (float.IsNaN(attackerHighestLoS)) {
+                attackerHighestLoS = attackPosition.y + (attacker.TargetPosition.y - attacker.FlyingHeight() - attacker.CurrentPosition.y);
+            }
+            float targetHighestLoS = target.TargetPosition.y - target.FlyingHeight();
+            float targetLowestLoS = target.CurrentPosition.y;
+
+            float attackerLowestLoS = attackPosition.y;
+            float attackerHeight = attackerHighestLoS - attackerLowestLoS;
+            MeleeAttackHeight result = MeleeAttackHeight.None;
+            float delta20 = attackerHeight * 0.2f + attackerLowestLoS;
+            float delta20_2 = attackerHeight * 0.2f + attackerLowestLoS;
+
+            float delta30 = attackerHeight * 0.3f + attackerLowestLoS;
+
+            float delta75 = attackerHeight * 0.75f + attackerLowestLoS;
+
+            float delta45 = attackerHeight * 0.45f + attackerLowestLoS;
+            float delta45_2 = attackerHeight * 0.45f + attackerLowestLoS;
+
+            Mod.MeleeLog.Info?.Write($" - attackerLowestLoS: {attackerLowestLoS} attackerHighestLoS: {attackerHighestLoS} attackerHeight: {attackerHeight}");
+            Mod.MeleeLog.Info?.Write($" - delta20: {delta20} delta30: {delta30} delta45: {delta45} delta45: {delta75}");
+            Mod.MeleeLog.Info?.Write($" - targetLowestLoS: {targetLowestLoS} targetHighestLoS: {targetHighestLoS}");
+            if ((attackerLowestLoS <= targetHighestLoS) && (delta20 >= targetLowestLoS)) {
+                Mod.MeleeLog.Info?.Write(" - adding Ground attack.");
+                result |= MeleeAttackHeight.Ground;
+            }
+            if ((delta20 <= targetHighestLoS) && (delta45 >= targetLowestLoS))
+            {
+                Mod.MeleeLog.Info?.Write(" - adding Low attack.");
+                result |= MeleeAttackHeight.Low;
+            }
+            if ((delta30 <= targetHighestLoS) && (delta75 >= targetLowestLoS))
+            {
+                Mod.MeleeLog.Info?.Write(" - adding Medium attack.");
+                result |= MeleeAttackHeight.Medium;
+            }
+            if ((delta45 <= targetHighestLoS) && (attackerHighestLoS >= targetLowestLoS))
+            {
+                Mod.MeleeLog.Info?.Write(" - adding High attack.");
+                result |= MeleeAttackHeight.High;
+            }
+            return result;
+        }
 
         // Duplication of HBS code for improved readability and logging
         private static MeleeAttackHeight GetValidMeleeHeights(Mech attacker, Vector3 attackPosition, ICombatant target)
@@ -219,16 +283,21 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 $"vs. target: {target.DistinctId()}");
 
             MeleeAttackHeight meleeAttackHeight = MeleeAttackHeight.None;
-            AbstractActor abstractActor = target as AbstractActor;
+            AbstractActor targetActor = target as AbstractActor;
 
-            if (abstractActor == null || abstractActor.UnitType == UnitType.Turret)
+            if (targetActor == null || targetActor.UnitType == UnitType.Turret)
             {
                 return (MeleeAttackHeight.Low | MeleeAttackHeight.Medium | MeleeAttackHeight.High);
             }
-
+            CustomMech attackerCU = attacker as CustomMech;
+            CustomMech targetCU = targetActor as CustomMech;
+            if ((attackerCU != null) && (target != null)) {
+                Mod.MeleeLog.Info?.Write($" - both attacker and target is custom units. Behavior is extended");
+                return GetValidMeleeHeightsCU(attackerCU, attackPosition, targetCU);
+            }
             // CU integration; subtract flying height from current Position.
             //   Treat both units as if they were 'on the ground'
-            float attackerBase_Y = attacker.CurrentPosition.y - attacker.FlyingHeight();
+            float attackerBase_Y = attacker.CurrentPosition.y;
             float attackerLOS_Y = attacker.LOSSourcePositions[0].y;
             float attackerHeightBaseToLOS = attackerLOS_Y - attackerBase_Y;
 
@@ -236,7 +305,7 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             attackerLOS_Y = attackerBase_Y + attackerHeightBaseToLOS;
             Mod.MeleeLog.Info?.Write($" - attackerBase_Y: {attackerBase_Y} attackerLOS_Y: {attackerLOS_Y} attackerHeightBaseToLOS: {attackerHeightBaseToLOS}");
 
-            float targetBase_Y = target.CurrentPosition.y - target.FlyingHeight();
+            float targetBase_Y = target.CurrentPosition.y;
             float targetLOS_Y = ((AbstractActor)target).LOSSourcePositions[0].y;
             Mod.MeleeLog.Info?.Write($" - targetBase_Y: {targetBase_Y} targetLOS_Y: {targetLOS_Y}");
 
