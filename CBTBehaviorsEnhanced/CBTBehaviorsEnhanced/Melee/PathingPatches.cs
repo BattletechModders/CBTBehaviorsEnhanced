@@ -1,4 +1,5 @@
-﻿using CustAmmoCategories;
+﻿using BattleTech.Save.SaveGameStructure;
+using CustAmmoCategories;
 using IRBTModUtils;
 using IRBTModUtils.Extension;
 using System;
@@ -15,11 +16,30 @@ namespace CBTBehaviorsEnhanced.Melee
 
         // WARNING: Prefix false code here!
         // Allow the player to move if they are already in combat. Vanilla normally disables this.
+        private static string ATTACKER_GUID = string.Empty;
+        private static string TARGET_GUID = string.Empty;
+        private static Vector3 ATTACKER_POSITION = Vector3.zero;
+        private static Vector3 TARGET_POSITION = Vector3.zero;
+        private static void SaveSituation(Pathing pathing, AbstractActor target)
+        {
+            ATTACKER_GUID = pathing.OwningActor.GUID;
+            TARGET_GUID = target.GUID;
+            ATTACKER_POSITION = pathing.OwningActor.CurrentPosition;
+            TARGET_POSITION = target.CurrentPosition;
+        }
+        private static bool IsSameSituation(Pathing pathing, AbstractActor target)
+        {
+            if (ATTACKER_GUID != pathing.OwningActor.GUID) { return false; }
+            if (TARGET_GUID != target.GUID) { return false; }
+            if (ATTACKER_POSITION != pathing.OwningActor.CurrentPosition) { return false; }
+            if (TARGET_POSITION != target.CurrentPosition) { return false; }
+            return true;
+        }
         static void Prefix(ref bool __runOriginal, Pathing __instance, AbstractActor target, ref List<PathNode> __result)
         {
             if (!__runOriginal) return;
 
-            Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} at pos: {__instance.OwningActor.CurrentPosition} rot: {__instance.OwningActor.CurrentRotation} " +
+            if(IsSameSituation(__instance, target) == false) Mod.MeleeLog.Debug?.Write($"Building melee pathing from attacker: {CombatantUtils.Label(__instance.OwningActor)} at pos: {__instance.OwningActor.CurrentPosition} rot: {__instance.OwningActor.CurrentRotation} " +
                 $"to target: {CombatantUtils.Label(target)} at pos: {target.CurrentPosition} rot: {target.CurrentRotation}");
 
             // If the target isn't visible, prevent building any path to them.
@@ -27,16 +47,16 @@ namespace CBTBehaviorsEnhanced.Melee
             if (visibilityLevel < VisibilityLevel.LOSFull && visibilityLevel != VisibilityLevel.BlipGhost)
             {
                 __result = new List<PathNode>();
-                __runOriginal = false;
+                __runOriginal = false; SaveSituation(__instance, target);
                 return;
             }
 
             // If the target ignores pathing (it's a VTOL or similar), prevent building any pathing to them
             if (target != null && target.UnaffectedPathing())
             {
-                Mod.Log.Info?.Write($"Target: {target.DistinctId()} is unaffected by pathing - cannot be meleed!");
+                if (IsSameSituation(__instance, target) == false) Mod.Log.Info?.Write($"Target: {target.DistinctId()} is unaffected by pathing - cannot be meleed!");
                 __result = new List<PathNode>();
-                __runOriginal = false;
+                __runOriginal = false; SaveSituation(__instance, target);
                 return;
             }
 
@@ -47,7 +67,7 @@ namespace CBTBehaviorsEnhanced.Melee
             PathNodeGrid meleeGrid = sprintingGrid;
             if (__instance.OwningActor.MaxWalkDistance > __instance.OwningActor.MaxSprintDistance)
             {
-                Mod.MeleeLog.Info?.Write($"Using walkingGrid to find all possible nodes");
+                if (IsSameSituation(__instance, target) == false) Mod.MeleeLog.Info?.Write($"Using walkingGrid to find all possible nodes");
                 meleeGrid = walkingGrid;
             }
 
@@ -65,7 +85,7 @@ namespace CBTBehaviorsEnhanced.Melee
                     pathNodesForPoints.RemoveAt(i);
                 }
             }
-            Mod.MeleeLog.Debug?.Write($"  found {pathNodesForPoints.Count} nodes that are not blocked and within height");
+            if (IsSameSituation(__instance, target) == false) Mod.MeleeLog.Debug?.Write($"  found {pathNodesForPoints.Count} nodes that are not blocked and within height");
 
             if (pathNodesForPoints.Count > 1)
             {
@@ -102,7 +122,7 @@ namespace CBTBehaviorsEnhanced.Melee
 
             __result = pathNodesForPoints;
 
-            __runOriginal = false;
+            __runOriginal = false; SaveSituation(__instance, target);
             return;
         }
     }
