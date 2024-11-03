@@ -654,3 +654,4 @@ This calculation can be further modified by a per-unit statistic. Any mech can b
 * TODO: AI should select most favorable melee attack
   * Check for head damage that a punch would eliminate
   * Check for leg damage that would result in a falldown
+* TODO: Change Troopers to only support PhyWeapons
