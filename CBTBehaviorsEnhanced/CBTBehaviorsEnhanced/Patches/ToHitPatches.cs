@@ -48,6 +48,9 @@ namespace CBTBehaviorsEnhanced.Patches
     }
 
     [HarmonyPatch(typeof(ToHit), "GetAllModifiers")]
+    [HarmonyAfter(new string[] {
+        "io.mission.modrepuation"
+    })]
     static class ToHit_GetAllModifiers
     {
         static void Postfix(ToHit __instance, ref float __result, AbstractActor attacker, Weapon weapon, ICombatant target,
