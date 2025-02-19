@@ -9,6 +9,9 @@ using UnityEngine;
 namespace CBTBehaviorsEnhanced.Patches
 {
     [HarmonyPatch(typeof(ToHit), "GetAllMeleeModifiers")]
+	[HarmonyAfter(new string[] {
+        "io.mission.modrepuation"
+    })]
     static class ToHit_GetAllMeleeModifiers
     {
         static void Postfix(ToHit __instance, ref float __result, Mech attacker, ICombatant target, Vector3 targetPosition, MeleeAttackType meleeAttackType)

@@ -312,6 +312,9 @@ namespace CBTBehaviorsEnhanced.Patches
 
     [HarmonyPatch(typeof(Mech), "DamageLocation")]
     [HarmonyPriority(Priority.Last)]
+    [HarmonyBefore(new string[] {
+        "io.mission.customunits"
+    })]
     public static class Mech_DamageLocation
     {
         public static void Prefix(ref bool __runOriginal, Mech __instance)
