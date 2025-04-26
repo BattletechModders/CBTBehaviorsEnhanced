@@ -125,6 +125,10 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         private void CalculateModifiers(Mech attacker, AbstractActor target)
         {
+
+            // Base attack mod
+            this.AttackModifiers.Add(ModText.LT_Label_DFA_Base_Attack_Mod, Mod.Config.Melee.DFA.BaseAttackBonus);
+
             // Always add the jump modifier
             this.AttackModifiers.Add(ModText.LT_Label_Attacker_Jumped, Mod.Config.ToHitSelfJumped);
 

@@ -28,8 +28,8 @@
 		<AssemblyTitle>CBTBehaviorsEnhanced</AssemblyTitle>
 		<Product>CBTBehaviorsEnhanced</Product>
 		<Copyright>Copyright © 2023</Copyright>
-		<AssemblyVersion>2.4.2</AssemblyVersion>
-		<FileVersion>2.4.2</FileVersion>
+		<AssemblyVersion>2.4.4</AssemblyVersion>
+		<FileVersion>2.4.4</FileVersion>
 		<LangVersion>11</LangVersion>
 	</PropertyGroup>
 

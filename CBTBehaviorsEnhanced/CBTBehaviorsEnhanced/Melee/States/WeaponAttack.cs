@@ -61,6 +61,15 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
         public override bool IsRangedWeaponAllowed(Weapon weapon)
         {
+
+            if (base.state.attacker.IsTrooper())
+            {
+
+                Mod.MeleeLog.Debug?.Write($"Attacker is trooper, enabling weapons.");
+                return true;
+            }
+
+            // Mech only considerations
             if (weapon.componentDef.IsCategory(ModConsts.CC_Category_NeverMelee))
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed as it can never be used in melee");
@@ -73,20 +82,6 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return true;
             }
 
-            if (base.state.attacker.IsTrooper())
-            {
-
-                Mod.MeleeLog.Debug?.Write($"Attacker is trooper, enabling weapons.");
-                return true;
-            }
-
-            // Mech only considerations
-            if (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm)
-            {
-                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon because it is in the arms.");
-                return false;
-            }
-
             if (weapon.componentDef.IsCategory(ModConsts.CC_Category_HandHeld_NoArmMelee))
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon as it is a handheld that requires hands");
@@ -97,6 +92,12 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             {
                 Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} enabled for physical weapon, hand-held that should always be used");
                 return true;
+            }
+
+            if (weapon.Location == (int)ChassisLocations.LeftArm || weapon.Location == (int)ChassisLocations.RightArm)
+            {
+                Mod.MeleeLog.Debug?.Write($"Weapon: {weapon.UIName} disallowed for physical weapon because it is in the arms.");
+                return false;
             }
 
             return true;
@@ -119,12 +120,16 @@ namespace CBTBehaviorsEnhanced.MeleeStates
                 return false;
 
             }
-            else if (!validAnimations.Contains(MeleeAttackType.Punch))
+            else if (attacker.IsTrooper() || attacker.IsVehicle())
             {
-                Mod.MeleeLog.Info?.Write("Animations do not include a punch, cannot use biped physical weapon.");
+                // Skip the animation check
+                Mod.MeleeLog.Info?.Write("Attacker is trooper or vehicle, skipping animation check.");
+            }
+            else if (!validAnimations.Contains(MeleeAttackType.Punch) && !(validAnimations.Contains(MeleeAttackType.Tackle)))
+            {
+                Mod.MeleeLog.Info?.Write("Animations do not include a punch or tackle, cannot use biped physical weapon.");
                 return false;
             }
-
 
             if (target.UnaffectedPathing())
             {

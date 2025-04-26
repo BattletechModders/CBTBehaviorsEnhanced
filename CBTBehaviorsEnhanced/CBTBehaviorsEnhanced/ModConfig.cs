@@ -393,6 +393,8 @@ namespace CBTBehaviorsEnhanced
     // BT Manual pg.37 
     public class DFAMeleeOpts
     {
+        public int BaseAttackBonus = 0;
+
         // TT => 1 point / 10, HBS => 5 points / 10 == 0.5 points per ton, x3 for DFA
         public float AttackerDamagePerTargetTon = 0.5f;
         public float TargetDamagePerAttackerTon = 1.5f;

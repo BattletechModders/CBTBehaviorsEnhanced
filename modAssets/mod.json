@@ -129,6 +129,7 @@
 			},
 
 			"DFA": {
+				"BaseAttackBonus" : 0,
 				"AttackerDamagePerTargetTon": 1.5,
 				"TargetDamagePerAttackerTon": 2,
 				"AttackerInstabilityPerTargetTon": 1,

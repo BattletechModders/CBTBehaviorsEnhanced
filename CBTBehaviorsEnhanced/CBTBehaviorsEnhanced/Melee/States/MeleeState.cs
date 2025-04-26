@@ -297,13 +297,13 @@ namespace CBTBehaviorsEnhanced.MeleeStates
             }
             // CU integration; subtract flying height from current Position.
             //   Treat both units as if they were 'on the ground'
-            float attackerBase_Y = attacker.CurrentPosition.y;
-            float attackerLOS_Y = attacker.LOSSourcePositions[0].y;
-            float attackerHeightBaseToLOS = attackerLOS_Y - attackerBase_Y;
+            float attackerLOS_Y = attacker.LOSSourcePositions[0].y - attacker.FlyingHeight();
+            float attackerLOS0Height = attackerLOS_Y - attacker.CurrentPosition.y;
+            Mod.MeleeLog.Info?.Write($" - attackLOSSrc_Y: {attacker.LOSSourcePositions[0].y} - flyingHeight: {attacker.FlyingHeight()} = attackerLOS_Y: {attackerLOS_Y} => attackerHeightBaseToLOS: {attackerLOS0Height}");
 
-            attackerBase_Y = attackPosition.y;
-            attackerLOS_Y = attackerBase_Y + attackerHeightBaseToLOS;
-            Mod.MeleeLog.Info?.Write($" - attackerBase_Y: {attackerBase_Y} attackerLOS_Y: {attackerLOS_Y} attackerHeightBaseToLOS: {attackerHeightBaseToLOS}");
+            float attackerBase_Y = attackPosition.y;
+            attackerLOS_Y = attackerBase_Y + attackerLOS0Height;
+            Mod.MeleeLog.Info?.Write($" - attackPosition_Y: {attackerBase_Y} + attackerHeightBaseToLOS: {attackerLOS0Height} = attackerLOS_Y: {attackerLOS_Y}");
 
             float targetBase_Y = target.CurrentPosition.y;
             float targetLOS_Y = ((AbstractActor)target).LOSSourcePositions[0].y;
@@ -326,15 +326,15 @@ namespace CBTBehaviorsEnhanced.MeleeStates
 
             float lowestAttack_Y = attackerBase_Y;
 
-            float delta20 = attackerHeightBaseToLOS * 0.2f + attackerBase_Y;
-            float delta20_2 = attackerHeightBaseToLOS * 0.2f + attackerBase_Y;
+            float delta20 = attackerLOS0Height * 0.2f + attackerBase_Y;
+            float delta20_2 = attackerLOS0Height * 0.2f + attackerBase_Y;
 
-            float delta30 = attackerHeightBaseToLOS * 0.3f + attackerBase_Y;
+            float delta30 = attackerLOS0Height * 0.3f + attackerBase_Y;
 
-            float delta75 = attackerHeightBaseToLOS * 0.75f + attackerBase_Y;
+            float delta75 = attackerLOS0Height * 0.75f + attackerBase_Y;
 
-            float delta45 = attackerHeightBaseToLOS * 0.45f + attackerBase_Y;
-            float delta45_2 = attackerHeightBaseToLOS * 0.45f + attackerBase_Y;
+            float delta45 = attackerLOS0Height * 0.45f + attackerBase_Y;
+            float delta45_2 = attackerLOS0Height * 0.45f + attackerBase_Y;
 
             float highestAttack_Y = attackerLOS_Y;
 
